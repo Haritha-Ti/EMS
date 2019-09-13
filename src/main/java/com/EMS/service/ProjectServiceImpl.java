@@ -11,6 +11,7 @@ import com.EMS.model.ClientModel;
 import com.EMS.model.ContractModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.EmployeeContractors;
 import com.EMS.model.Resources;
 import com.EMS.repository.ClientRepository;
 import com.EMS.repository.ContractRepository;
@@ -18,6 +19,7 @@ import com.EMS.repository.DepartmentRepository;
 import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.ResourceRepository;
 import com.EMS.repository.UserRepository;
+import com.EMS.repository.EmployeeContractorsRepository;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -39,6 +41,9 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	ClientRepository client_repository;
+
+	@Autowired
+	EmployeeContractorsRepository employeeContractorsRepository;
 	
 	@Override
 	public ProjectModel save_project_record(ProjectModel projectmodel) {
@@ -182,7 +187,11 @@ public class ProjectServiceImpl implements ProjectService {
 		return location;
 	}
 
-
+	@Override
+	public List<EmployeeContractors> getEmployeeContractorsList() {
+		List<EmployeeContractors> list=employeeContractorsRepository.findAll();
+		return list;
+	}
 
 
 

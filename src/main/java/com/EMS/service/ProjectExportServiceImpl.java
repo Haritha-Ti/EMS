@@ -36,11 +36,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+
 import com.EMS.repository.UserRepository;
 import com.EMS.repository.TimeTrackApprovalJPARepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.HolidayRepository;
 import com.EMS.repository.UserLeaveSummaryRepository;
+import com.EMS.model.UserLeaveSummary;
 
 @Service
 public class ProjectExportServiceImpl implements ProjectExportService {
@@ -1378,6 +1380,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 	}
 
+
+
 	/*private int countWeekendDays(int year, int month) {
 		Calendar calendar = Calendar.getInstance();
 		// Note that month is 0-based in calendar, bizarrely.
@@ -1442,4 +1446,114 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		return workingDays;
 	}
 
-}
+	@Override
+	public void exportLeaveReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,Date startDate, Date endDate) throws ParseException {
+
+		String[] headers = new String[4];
+		headers[0] = "Name";
+		headers[1] = "Date";
+		headers[2] = "Employee Type (FT / SC)";
+		headers[3] = "Contractor";
+//Removing grids
+		sheet.setDisplayGridlines(false);
+		//Freezing columns and rows from scrooling
+		sheet.createFreezePane(0,3);
+
+		//Bordered Cell Style
+		CellStyle borderedCellStyle = workbook.createCellStyle();
+		borderedCellStyle.setBorderLeft(BorderStyle.THIN);
+		borderedCellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderRight(BorderStyle.THIN);
+		borderedCellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderTop(BorderStyle.THIN);
+		borderedCellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderBottom(BorderStyle.THIN);
+		borderedCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+
+		//Title Cell Style
+		CellStyle titleCellStyle = workbook.createCellStyle();
+		//titleCellStyle.setFont((org.apache.poi.ss.usermodel.Font) headerFont);
+
+		Row titleRow = sheet.createRow(0);
+		Cell titleCell = titleRow.createCell(0);
+		titleCell.setCellValue(reportName);
+		titleCell.setCellStyle(titleCellStyle);
+
+		titleRow = sheet.createRow(1);
+		titleCell = titleRow.createCell(1);
+		titleCell.setCellValue("");
+
+		XSSFFont font = (XSSFFont) workbook.createFont();
+		font.setFontName("Liberation Sans");
+		font.setFontHeightInPoints((short)10);
+		font.setBold(true);
+
+		// Header Cell Style
+		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.cloneStyleFrom(borderedCellStyle);
+		headerCellStyle.setBorderTop(BorderStyle.THICK);
+		headerCellStyle.setFont(font);
+
+		Row headerRow = sheet.createRow(2);
+		int widthInChars = 50;
+		sheet.setColumnWidth(4, widthInChars);
+		for (int i = 0; i < headers.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(headers[i]);
+			cell.setCellStyle(headerCellStyle);
+		}
+
+		// Create Other rows and cells with contacts data
+		int rowNum = 3;
+		ExportApprovalReportModel totalSummary = new ExportApprovalReportModel();
+		//List<Object[]> userList = userLeaveSummaryRepository.getUserLeaveListByMonth(startDate,endDate);
+		List<UserLeaveSummary> userList = userLeaveSummaryRepository.getUserLeaveListByMonth(startDate,endDate);
+		List<Object[]> Listdata = new ArrayList<>();
+		for(UserLeaveSummary item : userList) {
+			String name = item.getUser().getFirstName()+" "+item.getUser().getLastName();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String leaveDate = sdf.format(item.getLeaveDate());
+			String contractorName = " ";
+			String employeeType = "FT";
+			if(item.getUser().getContractor()!=null){
+				contractorName = item.getUser().getContractor().getContractorName();
+				employeeType = "SC";
+			}
+
+			Row row = sheet.createRow(rowNum++);
+
+			/*Cell cell = row.createCell(0);
+			cell.setCellValue((Long) summary[0]);
+			cell.setCellStyle(borderedCellStyle);*/
+
+			Cell cell = row.createCell(0);
+			cell.setCellValue(name);
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(1);
+			cell.setCellValue(leaveDate);
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(2);
+			cell.setCellValue(employeeType);
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(3);
+			cell.setCellValue(contractorName);
+			cell.setCellStyle(borderedCellStyle);
+
+
+
+
+		}
+
+		// Resize all columns to fit the content size
+		for (int i = 0; i < headers.length; i++) {
+			sheet.autoSizeColumn(i);
+		}
+
+		//Adding filter menu in column headers
+		sheet.setAutoFilter(new CellRangeAddress(2,rowNum , 0, 1));
+	}
+
+	}

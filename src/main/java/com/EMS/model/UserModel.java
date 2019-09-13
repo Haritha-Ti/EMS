@@ -44,6 +44,9 @@ public class UserModel implements UserDetails{
 
 	@ManyToOne
 	private RoleModel role;
+
+	@ManyToOne
+	private EmployeeContractors contractor;
 	
 	private String firstName, lastName,password;
 	private String email;
@@ -58,6 +61,7 @@ public class UserModel implements UserDetails{
 	private boolean active;
 	private String empCategory,cppLevel,Recruiter,referredBy;
 	private Date terminationDate;
+
 	
 	
 	
@@ -242,6 +246,15 @@ public class UserModel implements UserDetails{
 		this.terminationDate = terminationDate;
 	}
 
+	public EmployeeContractors getContractor() {
+		return contractor;
+	}
+
+	public void setContractor(EmployeeContractors contractor) {
+		this.contractor = contractor;
+	}
+
+
 	public UserModel() {
 
 	}
@@ -258,6 +271,7 @@ public class UserModel implements UserDetails{
 		this.email = email;
 		this.contact = contact;
 		this.employmentType = employmentType;
+
 	}
 
 	 @Override

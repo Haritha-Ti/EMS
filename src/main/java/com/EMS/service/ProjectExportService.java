@@ -1,6 +1,7 @@
 package com.EMS.service;
 
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,5 +26,7 @@ public interface ProjectExportService {
 	public void exportBenchReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, String reportType, Date startDate, Date endDate) throws FileNotFoundException;
 
 	public void exportSummaryReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, String reportType, Date startDate, Date endDate) throws Exception;
+
+	public void exportLeaveReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, Date startDate, Date endDate) throws FileNotFoundException, ParseException;
 
 }

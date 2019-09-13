@@ -29,4 +29,9 @@ public interface UserLeaveSummaryRepository extends JpaRepository<UserLeaveSumma
     @Query(value = "select COUNT(*) from user_leave_summary where user_user_id=?1 and leave_date<=?3 and leave_date>=?2 and leave_type='HD'",nativeQuery = true)
     int getHalfDayLeaveDays(long userId, Date startDate, Date endDate);
 
+    @Query("select u from UserLeaveSummary u where u.leaveDate<=?2 and u.leaveDate>=?1 order by u.user.firstName")
+    List<UserLeaveSummary> getUserLeaveListByMonth(Date startDate, Date endDate);
+    //@Query(value = "select CONCAT(u.first_name,' ',u.last_name) as name,leave_date,u.contractor_contractor_id from user_leave_summary us inner join user u ON us.user_user_id = u.user_id  where  leave_date<=?2 and leave_date>=?1",nativeQuery = true)
+   // List<Object[]> getUserLeaveListByMonth(Date startDate, Date endDate);
+
 }

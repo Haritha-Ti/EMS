@@ -28,6 +28,7 @@ import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.Resources;
 import com.EMS.model.UserModel;
+import com.EMS.model.EmployeeContractors;
 import com.EMS.service.ProjectService;
 import com.EMS.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -233,6 +234,7 @@ public class ProjectController {
 		ArrayNode department_array = objectMapper.createArrayNode();
 		ArrayNode project_array = objectMapper.createArrayNode();
 		ArrayNode client_array = objectMapper.createArrayNode();
+		ArrayNode employeeContractors_array = objectMapper.createArrayNode();
 
 		// json object for storing records array
 		ObjectNode array = objectMapper.createObjectNode();
@@ -346,6 +348,22 @@ public class ProjectController {
 				array.set("department_resource", department_array);
 
 			}
+
+			// Method invocation for getting employee contractors list
+			List<EmployeeContractors> contractorslist = projectservice.getEmployeeContractorsList();
+
+			if (contractorslist.isEmpty())
+				array.set("contractorList", employeeContractors_array);
+			else {
+				for (EmployeeContractors contractors : contractorslist) {
+					ObjectNode contractorobj = objectMapper.createObjectNode();
+					contractorobj.put("contractorId", contractors.getContractorId());
+					contractorobj.put("contractorName", contractors.getContractorName());
+					employeeContractors_array.add(contractorobj);
+				}
+				array.set("contractorList", employeeContractors_array);
+			}
+
 
 			// storing data on response object
 			responsedata.put("status", "success");

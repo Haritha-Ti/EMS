@@ -8,6 +8,7 @@ import java.util.List;
 import java.security.NoSuchAlgorithmException;
 import javax.servlet.http.HttpServletResponse;
 
+import com.EMS.model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.EMS.model.DepartmentModel;
-import com.EMS.model.PageRule;
-import com.EMS.model.RoleModel;
-import com.EMS.model.Technology;
-import com.EMS.model.UserModel;
-import com.EMS.model.UserTechnology;
-import com.EMS.model.UserTaskCategory;
-import com.EMS.model.TaskCategory;
-import com.EMS.model.UserTermination;
 import com.EMS.repository.UserRepository;
 import com.EMS.security.jwt.JwtTokenProvider;
 import com.EMS.service.LoginService;
@@ -189,6 +181,13 @@ public class LoginController {
 				role = login_service.getRole(roleId);
 			if (role != null)
 				user.setRole(role);
+
+			Long contractorId = requestdata.get("contractors").asLong();
+			EmployeeContractors contractor = null;
+			if ( contractorId != 0 )
+				contractor = login_service.getContractor(contractorId);
+			if (contractor != null)
+				user.setContractor(contractor);
 
 			String dob = requestdata.get("dob").asText();
 			String joindate = requestdata.get("joiningDate").asText();
@@ -563,6 +562,14 @@ public class LoginController {
 				if (role != null)
 					user.setRole(role);
 
+
+				Long contractorId = requestdata.get("contractor").asLong();
+				EmployeeContractors contractor = null;
+				if (contractorId != null)
+					contractor = login_service.getContractor(contractorId);
+				if (contractor != null)
+					user.setContractor(contractor);
+
 				String dob = requestdata.get("dob").asText();
 				String joindate = requestdata.get("joiningDate").asText();
 
@@ -677,6 +684,16 @@ public class LoginController {
 					role = login_service.getRole(roleId);
 				if (role != null)
 					user.setRole(role);
+
+				Long contractorId = requestdata.get("contractors").asLong();
+				EmployeeContractors contractor = null;
+				System.out.println("contractorId "+contractorId);
+				if(contractorId ==0)
+					user.setContractor(null);
+				if (contractorId !=0 )
+					contractor = login_service.getContractor(contractorId);
+				if (contractor != null)
+					user.setContractor(contractor);
 
 				String dob = requestdata.get("dob").asText();
 				String joindate = requestdata.get("joiningDate").asText();
