@@ -1174,6 +1174,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 						holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,terminationDate);
 						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,terminationDate);
 						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,startDate,terminationDate);
+
 					}
 				}
 
@@ -1185,7 +1186,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 				billable    = timeTrackApprovalJPARepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id);
 				nonBillable = timeTrackApprovalJPARepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id);
 				overtime    = timeTrackApprovalJPARepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id);
-				working_days = calculateWorkingDays(startDate,endDate);
+				working_days = calculateWorkingDays(startDate,end_date);
 				holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,end_date);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,end_date);
 				halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,startDate,end_date);
@@ -1209,6 +1210,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			totalWorkingHours = (working_days-holidays)*8;
 			leaveHours = (fullDayLeaveDays*8)+(halfDayLeaveDays*4);
 			totalWorkedHours = totalWorkingHours -leaveHours;
+
 			for(Object[] items : loggedData) {
 
 				if(items[1] != null)
