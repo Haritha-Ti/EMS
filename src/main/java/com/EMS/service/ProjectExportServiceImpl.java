@@ -1451,11 +1451,12 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	@Override
 	public void exportLeaveReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,Date startDate, Date endDate) throws ParseException {
 
-		String[] headers = new String[4];
+		String[] headers = new String[5];
 		headers[0] = "Name";
 		headers[1] = "Date";
-		headers[2] = "Employee Type (FT / SC)";
-		headers[3] = "Contractor";
+		headers[2] = "Leave Type";
+		headers[3] = "Employee Type (FT / SC)";
+		headers[4] = "Contractor";
 //Removing grids
 		sheet.setDisplayGridlines(false);
 		//Freezing columns and rows from scrooling
@@ -1515,6 +1516,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			String name = item.getUser().getFirstName()+" "+item.getUser().getLastName();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String leaveDate = sdf.format(item.getLeaveDate());
+			String leaveType = item.getLeaveType();
 			String contractorName = " ";
 			String employeeType = "FT";
 			if(item.getUser().getContractor()!=null){
@@ -1537,12 +1539,18 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(2);
-			cell.setCellValue(employeeType);
+			cell.setCellValue(leaveType);
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(3);
+			cell.setCellValue(employeeType);
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(4);
 			cell.setCellValue(contractorName);
 			cell.setCellStyle(borderedCellStyle);
+
+
 
 
 
@@ -1555,7 +1563,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		}
 
 		//Adding filter menu in column headers
-		sheet.setAutoFilter(new CellRangeAddress(2,rowNum , 0, 1));
+		sheet.setAutoFilter(new CellRangeAddress(2,rowNum , 0, 4));
 	}
 
 	}

@@ -371,7 +371,7 @@ public class PulseReportController {
 
 			Workbook workrbook = new XSSFWorkbook();
 
-			Sheet sheet = workrbook.createSheet("Beach");
+			Sheet sheet = workrbook.createSheet("Leave");
 			String nameofReport   = "LEAVE REPORT";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
 			projectExportService.exportLeaveReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,startDate,endDate);
