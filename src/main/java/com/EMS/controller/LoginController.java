@@ -810,5 +810,44 @@ public class LoginController {
 
 	}
 
+	@GetMapping("/getAllUserList")
+	public JsonNode getAllUserList(HttpServletResponse httpstatus) throws ParseException {
 
+		ObjectNode dataNode = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		ArrayNode userarray=objectMapper.createArrayNode();
+
+
+		try {
+			JsonNode userList = userService.getAllUserList();
+			for(JsonNode nodeItem : userList) {
+				ArrayNode techarray=objectMapper.createArrayNode();
+
+				List<Object[]> technologyList = userService.getUserTechnologyList(nodeItem.get("userId").asLong());
+				for(Object[] item : technologyList) {
+					ObjectNode responseData=objectMapper.createObjectNode();
+					String experience = String.valueOf(item[0]);
+					String id = String.valueOf(item[1]);
+					responseData.put("id", id);
+					responseData.put("experience", experience);
+					techarray.add(responseData);
+				}
+				((ObjectNode) nodeItem).set("technologyList", techarray);
+				userarray.add(nodeItem);
+			}
+
+			dataNode.set("userList", userarray);
+
+			node.put("status", "success");
+			node.set("data", dataNode);
+
+		} catch (Exception e) {
+			System.out.println("Exception " + e);
+			node.put("status", "failure");
+			node.set("data", dataNode);
+		}
+
+		return node;
+
+	}
 }

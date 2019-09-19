@@ -197,4 +197,11 @@ public class UserServiceImpl implements UserService {
 		UserTaskCategoryRepository.save(usertask);
 
 	}
+
+	@Override
+	public JsonNode getAllUserList() {
+		JsonNode node = objectMapper.createObjectNode();
+		node = objectMapper.convertValue(userRepository.getAllUsers(), JsonNode.class);
+		return node;
+	}
 }
