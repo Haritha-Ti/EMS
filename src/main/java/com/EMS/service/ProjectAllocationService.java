@@ -36,7 +36,8 @@ public interface ProjectAllocationService {
 	AllocationModel findById(Long id);
 	public List<AllocationModel> getAllocationListonDate(long projectId, LocalDate startDate, LocalDate endDate);
 	public Integer getUserrole(Long userId);
-	public List<Long> getUserAllocatedProjects(Long userId);
+	public List<Object[]> getUserAllocatedProjects(Long userId);
+
 	
 
 

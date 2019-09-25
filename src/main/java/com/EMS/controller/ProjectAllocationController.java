@@ -695,17 +695,16 @@ public class ProjectAllocationController {
 			List<ProjectModel> projectList=new ArrayList<ProjectModel>();
 			if(roleid==1) {
 				projectList = projectService.getProjectList();
-			}else if(roleid==2) {
+			}else if((roleid==2)||(roleid==4)||(roleid==5)) {
 				
-				List<Long> projectIdsList=projectAllocation.getUserAllocatedProjects(userId);
+				List<Object[]> projectIdsList=projectAllocation.getUserAllocatedProjects(userId);
 				System.out.println("size : "+projectIdsList.size());
-				for(Object projectid : projectIdsList) {
-					System.out.println("1");
-					String value=projectid.toString();
-					System.out.println("value : "+value);
-					Long projectId=Long.parseLong(value);
-					System.out.println("project Id : "+projectId);
-					ProjectModel projectdata=projectService.getProjectId(projectId);
+				for(Object[] projectid : projectIdsList) {
+					System.out.println("project "+projectid);
+					ProjectModel projectobj=new ProjectModel();
+					projectobj.setProjectId(Long.parseLong(projectid[1].toString()));
+					System.out.println("project Id : "+projectobj.getProjectId());
+					ProjectModel projectdata=projectService.getProjectId(projectobj.getProjectId());
 					projectList.add(projectdata);
 				}
 			}
@@ -786,4 +785,59 @@ public class ProjectAllocationController {
 		}
 		return jsonDataRes;
 	}
+	
+	
+	@PostMapping(value = "/getUserBasedProjects")
+	public ObjectNode getUserBasedProjects(@RequestBody ObjectNode requestdata,HttpServletResponse httpstatus) {
+		ObjectNode jsonData = objectMapper.createObjectNode();
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		try {
+			
+			Long userId=requestdata.get("userId").asLong();
+			System.out.println("userId : "+userId);
+			Integer roleid=projectAllocation.getUserrole(userId);
+			System.out.println("roleId : "+roleid);
+			
+			List<ProjectModel> projectList=new ArrayList<ProjectModel>();
+			if(roleid==1) {
+				projectList = projectService.getProjectList();
+			}else if((roleid==2)||(roleid==4)||(roleid==5)) {
+				
+				List<Object[]> projectIdsList=projectAllocation.getUserAllocatedProjects(userId);
+				System.out.println("size : "+projectIdsList.size());
+				for(Object[] projectid : projectIdsList) {
+					System.out.println("project "+projectid);
+					ProjectModel projectobj=new ProjectModel();
+					projectobj.setProjectId(Long.parseLong(projectid[1].toString()));
+					System.out.println("project Id : "+projectobj.getProjectId());
+					ProjectModel projectdata=projectService.getProjectId(projectobj.getProjectId());
+					projectList.add(projectdata);
+				}
+			}
+				
+			ArrayNode jsonProjectArray = objectMapper.createArrayNode();
+			// Add project list to json object
+			if (!(projectList).isEmpty() && projectList.size() > 0) {
+				for (ProjectModel project : projectList) {
+					ObjectNode jsonObject = objectMapper.createObjectNode();
+					jsonObject.put("projectId", project.getProjectId());
+					jsonObject.put("projectName", project.getProjectName());
+					jsonProjectArray.add(jsonObject);
+				}
+				jsonData.set("projectList", jsonProjectArray);
+			}
+			
+			jsonDataRes.set("data", jsonData);
+			jsonDataRes.put("status", "success");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "success");
+		} catch (Exception e) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+		return jsonDataRes;
+	}
+	
+	
 }

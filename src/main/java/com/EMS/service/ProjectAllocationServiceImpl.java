@@ -178,11 +178,10 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 	}
 
 	@Override
-	public List<Long> getUserAllocatedProjects(Long userId) {
-		List<Long> projectIdList = projectAllocationRepository.getUserProjects(userId);
+	public List<Object[]> getUserAllocatedProjects(Long userId) {
+		List<Object[]> projectIdList = projectAllocationRepository.getUserProjects(userId);
 		return projectIdList;
 	}
-
 
 
 }

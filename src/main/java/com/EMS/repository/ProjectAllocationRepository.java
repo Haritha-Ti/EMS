@@ -66,10 +66,8 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	@Query(value="SELECT * FROM allocation where project_project_id=:projectId AND date(start_date)>=:startDate AND date(end_date)<=:endDate",nativeQuery=true)
 	List<AllocationModel> getProjectDatewiseLists(long projectId, LocalDate startDate, LocalDate endDate);
 
-	@Query("select u.project.projectId from AllocationModel u where u.user.userId = ?1")
-	List<Long> getUserProjects(Long userId);
-
-
+	@Query("select DISTINCT(u.project.projectName),u.project.projectId from AllocationModel u where u.user.userId = ?1")
+	List<Object[]> getUserProjects(Long userId);
 
 
 //	@Query(value = "SELECT * FROM EMS.alloc where  EMS.alloc.user_user_id = ?1 and EMS.alloc.end_date < ?3 or EMS.alloc.start_date > ?1", nativeQuery = true)
