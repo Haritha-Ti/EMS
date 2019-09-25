@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.DepartmentModel;
+import com.EMS.model.ProjectModel;
 import com.EMS.model.UserModel;
 
 
@@ -34,6 +35,9 @@ public interface ProjectAllocationService {
 	
 	AllocationModel findById(Long id);
 	public List<AllocationModel> getAllocationListonDate(long projectId, LocalDate startDate, LocalDate endDate);
+	public Integer getUserrole(Long userId);
+	public List<Long> getUserAllocatedProjects(Long userId);
+	
 
 
 	

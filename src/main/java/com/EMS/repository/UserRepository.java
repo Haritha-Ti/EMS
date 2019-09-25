@@ -74,4 +74,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 
 	@Query("SELECT u FROM UserModel u WHERE u.role in(2,3,4,5) order by firstName")
 	List<UserModel> getAllUsers();
+
+	@Query(value = "SELECT role_role_id FROM user where user.user_id = ?1",nativeQuery = true)
+	Integer getUserRole(Long userId);
 }

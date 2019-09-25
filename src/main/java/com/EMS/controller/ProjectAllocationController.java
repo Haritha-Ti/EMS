@@ -672,4 +672,118 @@ public class ProjectAllocationController {
 		return jsonDataRes;
 
 	}
+	
+	
+//	getting list of projects based on user
+	
+	@PostMapping(value = "/getUserAllocatedProjects")
+	public ObjectNode getUserAllocatedProjects(@RequestBody ObjectNode requestdata,HttpServletResponse httpstatus) {
+		ObjectNode jsonData = objectMapper.createObjectNode();
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		try {
+			
+			Long userId=requestdata.get("userId").asLong();
+			System.out.println("userId : "+userId);
+			Integer roleid=projectAllocation.getUserrole(userId);
+			System.out.println("roleId : "+roleid);
+			
+			//Method invocation for getting user list
+			List<UserModel> userList = projectAllocation.getUserList();
+			//Method invocation for getting department list
+			List<DepartmentModel> departmentList = projectAllocation.getDepartmentList();
+			//Method invocation for getting project list
+			List<ProjectModel> projectList=new ArrayList<ProjectModel>();
+			if(roleid==1) {
+				projectList = projectService.getProjectList();
+			}else if(roleid==2) {
+				
+				List<Long> projectIdsList=projectAllocation.getUserAllocatedProjects(userId);
+				System.out.println("size : "+projectIdsList.size());
+				for(Object projectid : projectIdsList) {
+					System.out.println("1");
+					String value=projectid.toString();
+					System.out.println("value : "+value);
+					Long projectId=Long.parseLong(value);
+					System.out.println("project Id : "+projectId);
+					ProjectModel projectdata=projectService.getProjectId(projectId);
+					projectList.add(projectdata);
+				}
+			}
+				
+
+			ArrayNode jsonArray = objectMapper.createArrayNode();
+			ArrayNode jsonProjectArray = objectMapper.createArrayNode();
+			ArrayNode jsonDepartmentArray = objectMapper.createArrayNode();
+
+			// Add user list to json object
+			if (!(userList).isEmpty() && userList.size() > 0) {
+				for (UserModel user : userList) {
+					ObjectNode jsonObject = objectMapper.createObjectNode();
+					jsonObject.put("userId", user.getUserId());
+					jsonObject.put("firstName", user.getFirstName());
+					jsonObject.put("lastName", user.getLastName());
+					jsonObject.put("role", user.getRole().getroleId());
+					DepartmentModel departmentModel = user.getDepartment();
+					ObjectNode depNode = objectMapper.createObjectNode();
+					depNode.put("departmentId",departmentModel.getDepartmentId());
+					depNode.put("departmentName", departmentModel.getdepartmentName());
+
+					jsonObject.set("department", depNode);
+					
+					
+					LocalDate now=LocalDate.now();
+					int quarter = 0;
+					int monthNumber = now.getMonthValue();
+					int year = now.getYear();
+
+					if (monthNumber >= 1 && monthNumber <= 3)
+						quarter = 1;
+					else if (monthNumber >= 4 && monthNumber <= 6)
+						quarter = 2;
+					else if (monthNumber >= 7 && monthNumber <= 9)
+						quarter = 3;
+					else if (monthNumber >= 10 && monthNumber <= 12)
+						quarter = 4;
+					ObjectNode leaveBalanceNode = attendanceService.getLeavebalanceData(user.getUserId(), quarter, year);
+					jsonObject.set("leaveBalance", leaveBalanceNode);
+					jsonArray.add(jsonObject);
+				}
+				jsonData.set("userList", jsonArray);
+				
+			}
+
+			// Add project list to json object
+			if (!(projectList).isEmpty() && projectList.size() > 0) {
+				for (ProjectModel project : projectList) {
+					ObjectNode jsonObject = objectMapper.createObjectNode();
+					jsonObject.put("projectId", project.getProjectId());
+					jsonObject.put("projectName", project.getProjectName());
+					jsonProjectArray.add(jsonObject);
+				}
+				jsonData.set("projectList", jsonProjectArray);
+			}
+			
+			// Add department list to json object
+			if (!(departmentList).isEmpty() && departmentList.size() > 0) {
+				for (DepartmentModel department : departmentList) {
+					ObjectNode jsonObject = objectMapper.createObjectNode();
+					jsonObject.put("departmentId", department.getDepartmentId());
+					jsonObject.put("departmentName", department.getdepartmentName());
+					jsonDepartmentArray.add(jsonObject);
+				}
+				jsonData.set("departmentList", jsonDepartmentArray);
+			}
+			
+			
+			jsonDataRes.set("data", jsonData);
+			jsonDataRes.put("status", "success");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "success");
+		} catch (Exception e) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+		return jsonDataRes;
+	}
 }

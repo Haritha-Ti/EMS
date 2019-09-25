@@ -171,5 +171,18 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 		return projList;
 	}
 
+	@Override
+	public Integer getUserrole(Long userId) {
+		Integer role=userRepository.getUserRole(userId);
+		return role;
+	}
+
+	@Override
+	public List<Long> getUserAllocatedProjects(Long userId) {
+		List<Long> projectIdList = projectAllocationRepository.getUserProjects(userId);
+		return projectIdList;
+	}
+
+
 
 }
