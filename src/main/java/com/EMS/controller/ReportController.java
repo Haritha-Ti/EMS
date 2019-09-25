@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.EMS.dto.Taskdetails;
 import com.EMS.model.ApprovalTimeTrackReportModel;
 import com.EMS.model.ExportProjectTaskReportModel;
-
+import com.EMS.model.ProjectModel;
 import com.EMS.service.ProjectAllocationService;
 import com.EMS.service.ProjectExportService;
 import com.EMS.service.ReportService;
@@ -663,5 +663,150 @@ public class ReportController {
 
 		}
 		return jsonDataRes;
+	}
+	
+	
+	@PostMapping("/getApprovalTimeLogReportByUser")
+	public JSONObject getApprovalTimeLogReportByUser(@RequestBody JSONObject requestData) {
+		JSONArray approvalReport = new JSONArray();
+		try {
+			String date1 = (String) requestData.get("startDate");
+			String date2 = (String) requestData.get("endDate");
+			Long  userId= Long.parseLong(requestData.get("userId").toString());
+			Integer roleid=projectAllocationService.getUserrole(userId);
+			System.out.println("roleId : "+roleid);
+			
+			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date startDate = null, endDate = null;
+			if (!date1.isEmpty()) {
+				startDate = outputFormat.parse(date1);
+			}
+			if (!date2.isEmpty()) {
+				endDate = outputFormat.parse(date2);
+			}
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(startDate);
+			int startdateIndex = cal.get(Calendar.DAY_OF_MONTH);
+			int startmonthIndex = (cal.get(Calendar.MONTH) + 1);
+			int startyearIndex = cal.get(Calendar.YEAR);
+			
+			cal.setTime(endDate);
+			int enddateIndex = cal.get(Calendar.DAY_OF_MONTH);
+			int endmonthIndex = (cal.get(Calendar.MONTH) + 1);
+			int endyearIndex = cal.get(Calendar.YEAR);
+			
+			int startDateOfMonth=startdateIndex;
+			int endDateOfMonth=enddateIndex;
+			int month=startmonthIndex-1;
+			int endMonth=endmonthIndex;
+			List<String> projectnames=new ArrayList<String>();
+			List<Object[]> projectIdsList=projectAllocationService.getUserAllocatedProjects(userId);
+			System.out.println("size : "+projectIdsList.size());
+			for(Object[] projectid : projectIdsList) {
+				System.out.println("project "+projectid);
+				ProjectModel projectobj=new ProjectModel();
+				projectobj.setProjectId(Long.parseLong(projectid[1].toString()));
+				System.out.println("project Id : "+projectobj.getProjectId());
+				projectobj.setProjectName(projectid[0].toString());
+				projectnames.add(projectobj.getProjectName());
+			}
+			
+			Map billableHourMap = new HashMap();
+			List projectList = new ArrayList();
+			for(int i=startmonthIndex;i<=endmonthIndex;i++) {
+
+			if(endmonthIndex>i) {//Multiple Month
+				System.out.println("Multiple Month");
+				if(i==startmonthIndex)
+					startDateOfMonth = startdateIndex;
+				else
+					startDateOfMonth = 1;
+				endDateOfMonth = 31;
+				month++;
+			}
+			else {
+				if(i==startmonthIndex) {//Within One Month
+					System.out.println("Within One Month");
+					startDateOfMonth=startdateIndex; 
+					endDateOfMonth=enddateIndex;
+					month = startmonthIndex;
+				}
+				else {//Multiple Month - Last Month
+					System.out.println("Multiple Month -Last Month");
+					startDateOfMonth=1; 
+					endDateOfMonth=enddateIndex;
+					month = endMonth;
+				}
+			}
+			
+				List<ApprovalTimeTrackReportModel> data = reportServiceImpl.getApprovalStatusReport(startDate,endDate,
+						startDateOfMonth,endDateOfMonth,month,startyearIndex);
+				JSONObject jsonData = new JSONObject();
+				for(ApprovalTimeTrackReportModel obj : data) {
+
+					if(projectList.contains(obj.getProjectName())) {
+						for(int k = 0; k < approvalReport.size(); k++)
+						{
+							JSONObject objects = (JSONObject) approvalReport.get(k);
+							
+				     		if(objects.get("projectName").equals(obj.getProjectName())) {
+									double hr = (double) objects.get("BillableHours");
+									hr += obj.getBillableHours();
+									objects.remove("BillableHours");
+									objects.put("BillableHours", hr);
+								}			
+						}
+					}
+					else {
+					
+						
+						if(roleid==1) {
+							jsonData = new JSONObject();
+							billableHourMap.put(obj.getProjectName(),obj.getBillableHours()!=null ? obj.getBillableHours() : 0);
+							if(!projectList.contains(obj.getProjectName()))
+								projectList.add(obj.getProjectName());
+							
+							jsonData.put("projectName", obj.getProjectName());
+							jsonData.put("BillableHours", obj.getBillableHours()!=null ? obj.getBillableHours() : 0);
+							jsonData.put("LoggedHours", obj.getLoggedHours()!=null ? obj.getLoggedHours() : 0);
+							approvalReport.add(jsonData);
+							
+						}else if((roleid==2)||(roleid==4)||(roleid==5)) {
+							
+						
+							
+							jsonData = new JSONObject();
+							billableHourMap.put(obj.getProjectName(),obj.getBillableHours()!=null ? obj.getBillableHours() : 0);
+							if(!projectList.contains(obj.getProjectName()))
+								projectList.add(obj.getProjectName());
+							if(projectnames.contains(obj.getProjectName())) {
+							
+							jsonData.put("projectName", obj.getProjectName());
+							jsonData.put("BillableHours", obj.getBillableHours()!=null ? obj.getBillableHours() : 0);
+							jsonData.put("LoggedHours", obj.getLoggedHours()!=null ? obj.getLoggedHours() : 0);
+							approvalReport.add(jsonData);
+							
+							}
+						}
+							
+					}
+				}
+			}		
+			JSONObject dataNode = new JSONObject();
+			dataNode.put("approvalReport", approvalReport);
+
+			JSONObject node = new JSONObject();
+			node.put("status", "success");
+			node.put("data", dataNode);
+			return node;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			JSONObject node = new JSONObject();
+			node.put("status", "failure");
+			node.put("message",  "failed. " + e);
+			return node;
+		}
+		
 	}
 }
