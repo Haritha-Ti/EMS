@@ -1241,6 +1241,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	    Date approved_date = null;
 		if(!approvedData.isEmpty() && approvedData.size()>0) {
 	    if(approvedData.get(0).getApproved_date() != null)
+
 	    	{
 				approved_date = approvedData.get(0).getApproved_date();
 			}
@@ -1953,14 +1954,15 @@ return userListObject;
 				level1.setForwarded_date(dateobj);
 				level1.setStatus(status);
 				//System.out.println("Current_Date"+dateobj);
-				level1.setApproved_date(endDate);
+			     level1.setApproved_date(endDate);
 				UserModel user = userService.getUserDetailsById(userId);
 				ProjectModel project = projectService.getProjectId(projectId);
 				level2.setProject(project);
 				level2.setProjectType(item.getProjectType());
 				level2.setTasktrack_level1_Id(level1);
 				level2.setStatus(status);
-				level2.setForwarded_date(yesterday);
+
+				//level2.setForwarded_date(yesterday);
 				level2.setMonth(intMonth);
 				level2.setYear(yearIndex);
 				for (int i = 0; i < diffInDays - 1; i++) {
