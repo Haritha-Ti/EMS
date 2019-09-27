@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import jdk.nashorn.internal.ir.ObjectNode;
+
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1239,7 +1239,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	    calendar.setTime(endDate);
 	    calendar.add(Calendar.DATE, -1);
 	    Date yesterday = calendar.getTime();
-		
+		Date fdate = new Date();
 			if (approvedData != null && approvedData.size() > 0) {
 				
 				if(flagExist == 0)
@@ -1248,7 +1248,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					
 					TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 					TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
-					level2.setForwarded_date(yesterday);
+					level2.setForwarded_date(fdate);
 					UserModel user = userService.getUserDetailsById(userId);
 					ProjectModel project = projectService.getProjectId(projectId);
 					finance.setProject(project);
@@ -1395,9 +1395,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		cal.setTime(startDate);
 		int monthIndex = (cal.get(Calendar.MONTH) + 1);
 		int yearIndex = cal.get(Calendar.YEAR);
+		int flagExist = 0;
 	List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,monthIndex,yearIndex,projectId);
 	JSONObject userListObject = new JSONObject();
 
+	List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId,monthIndex,yearIndex,projectId);
+	if(!data.isEmpty()) {
+		
+		flagExist = 1;
+		
+	}
 	
 	
 	int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
@@ -1416,15 +1423,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
     calendar.setTime(endDate);
     calendar.add(Calendar.DATE, -1);
     Date yesterday = calendar.getTime();
+    Date fdate = new Date();
 	
 		if (approvedData != null && approvedData.size() > 0) {
 			
+			if(flagExist == 0)
+			{
 			
 			for (TaskTrackApproval item : approvedData) {
 				TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 				TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
 				//level1.setForwarded_date(yesterday);
-				level1.setForwarded_finance(yesterday);
+				level1.setForwarded_finance(fdate);
 				UserModel user = userService.getUserDetailsById(userId);
 				ProjectModel project = projectService.getProjectId(projectId);
 				finance.setProject(project);
@@ -1500,7 +1510,55 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				finance.setUser(user);
 				cal.setTime(startDate);
 				taskTrackFinanceRepository.save(finance);
-			}					
+			}	
+		}
+			else {
+				
+				for(TaskTrackApprovalFinance eachdata : data ) {
+					if(eachdata.getStatus().equalsIgnoreCase("HM")) {
+						for (TaskTrackApproval item : approvedData) {
+							for(int i= 14 ; i < 31 ; i++) {
+								 if(i==14)
+									eachdata.setDay15(item.getDay15());
+								else if(i==15)
+									eachdata.setDay16(item.getDay16());
+								else if(i==16)
+									eachdata.setDay17(item.getDay17());
+								else if(i==17)
+									eachdata.setDay18(item.getDay18());
+								else if(i==18)
+									eachdata.setDay19(item.getDay19());
+								else if(i==19)
+									eachdata.setDay20(item.getDay20());
+								else if(i==20)
+									eachdata.setDay21(item.getDay21());
+								else if(i==21)
+									eachdata.setDay22(item.getDay22());
+								else if(i==22)
+									eachdata.setDay23(item.getDay23());
+								else if(i==23)
+									eachdata.setDay24(item.getDay24());
+								else if(i==24)
+									eachdata.setDay25(item.getDay25());
+								else if(i==25)
+									eachdata.setDay26(item.getDay26());
+								else if(i==26)
+									eachdata.setDay27(item.getDay27());
+								else if(i==27)
+									eachdata.setDay28(item.getDay28());
+								else if(i==28)
+									eachdata.setDay29(item.getDay29());
+								else if(i==29)
+									eachdata.setDay30(item.getDay30());
+								else if(i==30)
+									eachdata.setDay31(item.getDay31());
+						
+						 taskTrackFinanceRepository.save(eachdata);
+				}
+						}
+					}
+				}
+			}
 		}
 		
 
@@ -1760,6 +1818,7 @@ return userListObject;
 	    calendar.setTime(endDate);
 	    calendar.add(Calendar.DATE, -1);
 	    Date yesterday = calendar.getTime();
+	    Date dateobj = new Date();
 	    int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 		List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,intMonth,yearIndex,projectId);
 	   int fflag = 0;
@@ -1779,7 +1838,8 @@ return userListObject;
 				if(fflag == 1) {
 				TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
 				TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
-				level1.setForwarded_date(endDate);
+				level1.setForwarded_date(dateobj);
+				System.out.println("Current_Date"+dateobj);
 				//level1.setApproved_date(endDate);
 				UserModel user = userService.getUserDetailsById(userId);
 				ProjectModel project = projectService.getProjectId(projectId);
