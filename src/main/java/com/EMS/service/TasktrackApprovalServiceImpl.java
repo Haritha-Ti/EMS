@@ -1202,7 +1202,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public JSONObject getApproveddatalevel2toFinance(Long userId, int monthIndex, int yearIndex, Long projectId) {
+	public JSONObject getApproveddatalevel2toFinance(Long userId,Long logUser, int monthIndex, int yearIndex, Long projectId) {
 		// TODO Auto-generated method stub
 		
 			//Calendar cal = Calendar.getInstance();
@@ -1213,7 +1213,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			JSONObject userListObject = new JSONObject();
 			JSONObject testValidation = new JSONObject();        
 			
-			testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, userId);
+			testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, logUser);
 		
 			if((boolean) testValidation.get("data")) {
 			
@@ -1239,12 +1239,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	   
 	    System.out.println("-------------------------------------"+c.getTime()); 
 	    Date approved_date = null;
-		if(approvedData != null && approvedData.size()>0) {
+		if(!approvedData.isEmpty() && approvedData.size()>0) {
 	    if(approvedData.get(0).getApproved_date() != null)
-	     {
-			approved_date = approvedData.get(0).getApproved_date();
-	     }
+	    	{
+				approved_date = approvedData.get(0).getApproved_date();
+			}
+	    else
+			{
+				userListObject.put("data", "failed");
+				userListObject.put("status", "success");
+				userListObject.put("message", "Approved date not found");
+				return userListObject;
+			}
 		}
+
 		Date firstday_ofmonth = c.getTime();
 		int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
 		int diffInDays = totaldays;
@@ -1255,13 +1263,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		String status = "";
 		int halforfull = 0;
 		if(diffInDayss >= 15) {
-			
+
 			status = "HM";
 			halforfull = 1;
 			diffInDays = 15;
 		}
 		else if(diffInDays <= diffInDayss ) {
-			
+
 			status = "FM";
 			halforfull = 1;
 		}
@@ -1275,8 +1283,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		 */
 		
 		Date fdate = new Date();
-			if (approvedData != null && approvedData.size() > 0) {
-				
+			if (approvedData != null && approvedData.size() > 0)
+			{
+
 				if(flagExist == 0)
 				{
 				for (TaskTrackApprovalLevel2 item : approvedData) {
@@ -1422,7 +1431,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("status", "success");
 			userListObject.put("message", "forwarded to finance");
 			}
-			else {
+			else
+			{
 				userListObject.put("data", "failed");
 				userListObject.put("status", "success");
 				userListObject.put("message", testValidation.get("message"));
@@ -1432,7 +1442,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public JSONObject getApproveddatalevel1toFinance(Long userId, int monthIndex, int  yearIndex, Long projectId) {
+	public JSONObject getApproveddatalevel1toFinance(Long userId,Long logUser, int monthIndex, int  yearIndex, Long projectId) {
 		// TODO Auto-generated method stub
 		/*
 		 * Calendar cal = Calendar.getInstance(); cal.setTime(startDate); int monthIndex
@@ -1441,7 +1451,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		
 		JSONObject testValidation = new JSONObject();        
 		
-		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, userId);
+		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, logUser);
 		JSONObject userListObject = new JSONObject();
 		if((boolean) testValidation.get("data")) {
 		int flagExist = 0;
@@ -1464,12 +1474,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
     System.out.println("-------------------------------------"+c.getTime());
     Date approved_date = null;
-	if(approvedData != null && approvedData.size()>0) {
-    if(approvedData.get(0).getApproved_date() != null)
-     {
-		approved_date = approvedData.get(0).getApproved_date();
-     }
+	if(approvedData != null && approvedData.size()>0)
+	{
+		if(approvedData.get(0).getApproved_date() != null)
+		 {
+			approved_date = approvedData.get(0).getApproved_date();
+		 }
 	}
+
+
 	Date firstday_ofmonth = c.getTime();
 	int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
 	int diffInDays = totaldays;
@@ -1879,7 +1892,7 @@ return userListObject;
 	}
 
 	@Override
-	public ObjectNode saveLevel2FromLevel1(Long projectId, Long userId, Date startDate, Date endDate) {
+	public ObjectNode saveLevel2FromLevel1(Long projectId, Long userId,Long logUser, Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
 		
 		TaskTrackApprovalLevel2 tta2 = new TaskTrackApprovalLevel2();
@@ -1917,7 +1930,7 @@ return userListObject;
 		  }
 		 
 	    JSONObject testValidation = new JSONObject();       
-	    testValidation = checkPreviousTimeSheetsareClosed(intMonth, yearIndex, projectId, userId);
+	    testValidation = checkPreviousTimeSheetsareClosed(intMonth, yearIndex, projectId, logUser);
 	    if((boolean) testValidation.get("data")) {
 		List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,intMonth,yearIndex,projectId);
 	   int fflag = 0;
@@ -1940,14 +1953,14 @@ return userListObject;
 				level1.setForwarded_date(dateobj);
 				level1.setStatus(status);
 				//System.out.println("Current_Date"+dateobj);
-				//level1.setApproved_date(endDate);
+				level1.setApproved_date(endDate);
 				UserModel user = userService.getUserDetailsById(userId);
 				ProjectModel project = projectService.getProjectId(projectId);
 				level2.setProject(project);
 				level2.setProjectType(item.getProjectType());
 				level2.setTasktrack_level1_Id(level1);
-				//level2.setStatus(status);
-				//level2.setForwarded_date(yesterday);
+				level2.setStatus(status);
+				level2.setForwarded_date(yesterday);
 				level2.setMonth(intMonth);
 				level2.setYear(yearIndex);
 				for (int i = 0; i < diffInDays - 1; i++) {

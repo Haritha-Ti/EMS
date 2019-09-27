@@ -1903,6 +1903,7 @@ public class TasktrackController {
 
 		Long projectId = null ;
 		Long userId=null;
+		Long logUser=null;
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
 			projectId = Long.valueOf(requestdata.get("projectId").toString());
@@ -1910,6 +1911,10 @@ public class TasktrackController {
 		if (requestdata.get("userId") != null && requestdata.get("userId") != "") {
 			userId = Long.valueOf(requestdata.get("userId").toString());
 		}
+		if (requestdata.get("updatedBy") != null && requestdata.get("updatedBy") != "") {
+			logUser = Long.valueOf(requestdata.get("updatedBy").toString());
+		}
+
 		String date1 = (String) requestdata.get("startDate");
 		String date2 = (String) requestdata.get("endDate");
 
@@ -1922,7 +1927,7 @@ public class TasktrackController {
 			endDate = outputFormat.parse(date2);
 		}
 		try {
-			jsonDataRes   = tasktrackApprovalService.saveLevel2FromLevel1(projectId,userId,startDate,endDate);
+			jsonDataRes   = tasktrackApprovalService.saveLevel2FromLevel1(projectId,userId,logUser,startDate,endDate);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "successfully saved. ");
@@ -2713,7 +2718,7 @@ public class TasktrackController {
 		JSONObject approvalJsonDataLevel2 = new JSONObject();
 		try {
 			// Obtain the data from request data
-			Long billableId =null,nonbillableId=null,beachId=null,overtimeId=null,projectId=null,userId=null,updatedBy=null;
+			Long billableId =null,nonbillableId=null,beachId=null,overtimeId=null,projectId=null,userId=null,logUser=null,updatedBy=null;
 			//Integer year = Integer.parseInt((String)requestdata.get("year"));
 			//Integer month = (Integer) requestdata.get("month");
 			
@@ -2723,14 +2728,17 @@ public class TasktrackController {
 			if (requestdata.get("userId") != null && requestdata.get("userId") != "") {
 				userId = Long.valueOf(requestdata.get("userId").toString());
 			}
+			if (requestdata.get("logUser") != null && requestdata.get("logUser") != "") {
+				logUser = Long.valueOf(requestdata.get("logUser").toString());
+			}
 			//String date1 = "";
 			//String date2 = "";
 			int monthIndex = 0;
 			int yearIndex = 0;
-			if (requestdata.get("monthIndex") != null && requestdata.get("monthIndex") != "" 
-					&& requestdata.get("yearIndex") != null && requestdata.get("yearIndex") != "") {
-			  monthIndex =  (int) requestdata.get("monthIndex");
-			  yearIndex =  (int) requestdata.get("yearIndex");
+			if (requestdata.get("month") != null && requestdata.get("month") != ""
+					&& requestdata.get("year") != null && requestdata.get("year") != "") {
+			  monthIndex =  (int) requestdata.get("month");
+			  yearIndex =  (int) requestdata.get("year");
 			}
 			
 			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -2738,12 +2746,12 @@ public class TasktrackController {
 			/*
 			 * if (!date1.isEmpty()) { startDate = outputFormat.parse(date1); } if
 			 * (!date2.isEmpty()) { endDate = outputFormat.parse(date2); }
-			 */
+			 *
 			/*
 			 * Calendar cal1 = Calendar.getInstance(); cal1.setTime(startDate); int month =
 			 * (cal1.get(Calendar.MONTH) + 1); int year = cal1.get(Calendar.YEAR);
 			 */
-			jsonDataRes = tasktrackApprovalService.getApproveddatalevel2toFinance(userId, monthIndex, yearIndex,projectId);
+			jsonDataRes = tasktrackApprovalService.getApproveddatalevel2toFinance(userId,logUser, monthIndex, yearIndex,projectId);
 			
 
 			
@@ -2771,7 +2779,7 @@ public class TasktrackController {
 		JSONObject approvalJsonDataLevel2 = new JSONObject();
 		try {
 			// Obtain the data from request data
-			Long billableId =null,nonbillableId=null,beachId=null,overtimeId=null,projectId=null,userId=null,updatedBy=null;
+			Long billableId =null,nonbillableId=null,beachId=null,overtimeId=null,projectId=null,userId=null,updatedBy=null,logUser=null;
 			//Integer year = Integer.parseInt((String)requestdata.get("year"));
 			//Integer month = (Integer) requestdata.get("month");
 			
@@ -2780,6 +2788,9 @@ public class TasktrackController {
 			}
 			if (requestdata.get("userId") != null && requestdata.get("userId") != "") {
 				userId = Long.valueOf(requestdata.get("userId").toString());
+			}
+			if (requestdata.get("logUser") != null && requestdata.get("logUser") != "") {
+				logUser = Long.valueOf(requestdata.get("logUser").toString());
 			}
 			/*
 			 * String date1 = ""; String date2 = "";
@@ -2802,8 +2813,7 @@ public class TasktrackController {
 			 * Calendar cal1 = Calendar.getInstance(); cal1.setTime(startDate); int month =
 			 * (cal1.get(Calendar.MONTH) + 1); int year = cal1.get(Calendar.YEAR);
 			 */
-			jsonDataRes = tasktrackApprovalService.getApproveddatalevel1toFinance(userId, monthIndex, yearIndex,projectId);
-			
+
 
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
