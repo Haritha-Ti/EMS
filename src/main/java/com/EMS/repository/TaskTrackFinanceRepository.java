@@ -1,6 +1,9 @@
 package com.EMS.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.EMS.model.TaskTrackApprovalFinance;
 import com.EMS.model.TaskTrackApprovalLevel2;
@@ -9,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackApprovalFinance, Long>{
+
 
     @Query(value = "SELECT user_user_id as id,first_name,last_name, sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4,"+
             "sum(COALESCE(day5,0)) as day5,sum(COALESCE(day6,0)) as day6,sum(COALESCE(day7,0)) as day7,sum(COALESCE(day8,0)) as day8,sum(COALESCE(day9,0)) as day9," +
@@ -39,5 +43,9 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
             "sum(COALESCE(day30,0)) as day30,sum(COALESCE(day31,0)) as day31 FROM tasktrack_approval_finance ta  inner join project p ON p.project_id = ta.project_project_id inner join user u ON u.user_id = ta.user_user_id where " +
             "month=?1 and year=?2 and user_user_id=?3 and project_project_id=?4  and ta.project_type in('Billable','Overtime') group by project_project_id",nativeQuery = true)
     List<Object[]> getFinanceDataByUserAndProject( Integer monthIndex, Integer yearIndex, Long userId,Long projectId);
+
+	@Query("SELECT  f FROM TaskTrackApprovalFinance f where f.user.userId = ?1 and f.month = ?2 and f.year =?3 and f.project.projectId = ?4")
+	List<TaskTrackApprovalFinance> getDatas(Long userId, int monthIndex, int yearIndex, Long projectId);
+
 
 }

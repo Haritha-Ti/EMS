@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -34,8 +35,9 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	@Query("SELECT s FROM AllocationModel s WHERE s.user.userId = ?1")
 	List<AllocationModel> findByUserId(long userId);
 
+	//# Updated by Rinu 26-09-2019
 	@Query(value = "SELECT s FROM AllocationModel s WHERE s.user.userId =:userId and s.startDate <:date2 and s.endDate >:date1 order by user.firstName")
-	List<AllocationModel> findUsers(long userId, Date date1, Date date2);
+	List<AllocationModel> findUsers(@Param("userId")long userId,@Param("date1") Date date1,@Param("date2") Date date2);
 
 	@Query("SELECT s.allocId FROM AllocationModel s WHERE s.user.userId = ?2 and s.project.projectId = ?1")
 	Long getAllocationId(long projectId, long userId);

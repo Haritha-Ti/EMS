@@ -85,6 +85,9 @@ public interface TimeTrackApprovalJPARepository extends JpaRepository<TaskTrackA
 
     @Query(value = "SELECT s.forwarded_date FROM tasktrack_approval s WHERE s.month = ?3 and s.year = ?4 and s.project_project_id = ?1 and s.user_user_id = ?2 LIMIT 1 ", nativeQuery = true)
     List<Object> getForwardedDate(Long projectId, Long userId, int intMonth,int year);
+   
+    @Query(value = "SELECT s.forwarded_date,s.forwarded_finance FROM tasktrack_approval s WHERE s.month = ?3 and s.year = ?4 and s.project_project_id = ?1 and s.user_user_id = ?2 LIMIT 1 ", nativeQuery = true)
+	List<Object[]> getForwardedDates(Long projectId, Long userId, int intMonth, int yearIndex);
 
 
 }

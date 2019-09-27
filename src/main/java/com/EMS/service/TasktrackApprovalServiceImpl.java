@@ -1207,13 +1207,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			cal.setTime(startDate);
 			int monthIndex = (cal.get(Calendar.MONTH) + 1);
 			int yearIndex = cal.get(Calendar.YEAR);
+			int flagExist = 0;
 		List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,monthIndex,yearIndex,projectId);
-		JSONObject userListObject = new JSONObject();
-
-		if(approvedData != null) {
-			//System.out.println("Datas Available");
+		
+		List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId,monthIndex,yearIndex,projectId);
+		if(!data.isEmpty()) {
+			
+			flagExist = 1;
+			
 		}
 		
+		JSONObject userListObject = new JSONObject();
+
+		/*
+		 * if(approvedData != null) { //System.out.println("Datas Available"); }
+		 */
 		int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 		String status = "";
 		if(diffInDays == 15) {
@@ -1234,7 +1242,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		
 			if (approvedData != null && approvedData.size() > 0) {
 				
-				
+				if(flagExist == 0)
+				{
 				for (TaskTrackApprovalLevel2 item : approvedData) {
 					
 					TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
@@ -1315,7 +1324,63 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					finance.setUser(user);
 					cal.setTime(startDate);
 					taskTrackFinanceRepository.save(finance);
-				}					
+				}	
+			}
+				else {
+	
+						
+						for(TaskTrackApprovalFinance eachdata : data ) {
+							
+							
+							if(eachdata.getStatus().equalsIgnoreCase("HM")) {
+								
+								
+								for (TaskTrackApprovalLevel2 item : approvedData) {
+									
+									for(int i= 14 ; i < 31 ; i++) {
+												 if(i==14)
+													eachdata.setDay15(item.getDay15());
+												else if(i==15)
+													eachdata.setDay16(item.getDay16());
+												else if(i==16)
+													eachdata.setDay17(item.getDay17());
+												else if(i==17)
+													eachdata.setDay18(item.getDay18());
+												else if(i==18)
+													eachdata.setDay19(item.getDay19());
+												else if(i==19)
+													eachdata.setDay20(item.getDay20());
+												else if(i==20)
+													eachdata.setDay21(item.getDay21());
+												else if(i==21)
+													eachdata.setDay22(item.getDay22());
+												else if(i==22)
+													eachdata.setDay23(item.getDay23());
+												else if(i==23)
+													eachdata.setDay24(item.getDay24());
+												else if(i==24)
+													eachdata.setDay25(item.getDay25());
+												else if(i==25)
+													eachdata.setDay26(item.getDay26());
+												else if(i==26)
+													eachdata.setDay27(item.getDay27());
+												else if(i==27)
+													eachdata.setDay28(item.getDay28());
+												else if(i==28)
+													eachdata.setDay29(item.getDay29());
+												else if(i==29)
+													eachdata.setDay30(item.getDay30());
+												else if(i==30)
+													eachdata.setDay31(item.getDay31());
+										
+										 taskTrackFinanceRepository.save(eachdata);
+								}
+								}
+							}							
+						}
+					
+					
+				}
 			}
 			
 
@@ -1358,7 +1423,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			for (TaskTrackApproval item : approvedData) {
 				TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 				TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
-				level1.setForwarded_date(yesterday);
+				//level1.setForwarded_date(yesterday);
+				level1.setForwarded_finance(yesterday);
 				UserModel user = userService.getUserDetailsById(userId);
 				ProjectModel project = projectService.getProjectId(projectId);
 				finance.setProject(project);
@@ -1708,8 +1774,9 @@ return userListObject;
     		  if(approvedData.get(0).getApproved_date().compareTo(approvedData.get(0).getForwarded_date())> 0)
     		  fflag = 2 ;
     	  }	 
-    	  if(fflag == 1) {
+    	  
 			for (TaskTrackApproval item : approvedData) {
+				if(fflag == 1) {
 				TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
 				TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
 				level1.setForwarded_date(endDate);
@@ -1723,7 +1790,7 @@ return userListObject;
 				//level2.setForwarded_date(yesterday);
 				level2.setMonth(intMonth);
 				level2.setYear(yearIndex);
-				for (int i = 0; i < diffInDays; i++) {
+				for (int i = 0; i < diffInDays - 1; i++) {
 					if(i==0)
 						level2.setDay1(item.getDay1());
 					else if(i==1)
@@ -1792,16 +1859,16 @@ return userListObject;
 				tta2 = timeTrackApprovalLevel2.save(level2);
 			
 			}	
-      }
+      
     	  else if(fflag == 2) {
     		 
     		 List<TaskTrackApprovalLevel2> level2data = timeTrackApprovalLevel2.getApprovedData(userId, intMonth, yearIndex, projectId);
     		  
     		 if (level2data != null && level2data.size() > 0) {		
     			 
-    			 for(TaskTrackApprovalLevel2 item:level2data) {
+    			 for(TaskTrackApprovalLevel2 item1:level2data) {
     				 
-    				Date previous_forwardedDate =  item.getTasktrack_level1_Id().getForwarded_date();
+    				Date previous_forwardedDate =  item1.getTasktrack_level1_Id().getForwarded_date();
     				
     				Calendar caldays = Calendar.getInstance();
     				caldays.setTime(previous_forwardedDate);
@@ -1813,270 +1880,271 @@ return userListObject;
          		if(item.getProjectType().equalsIgnoreCase("Billable"))	{
     				for (int i = daypf; i < dayf; i++) {
     					if(i==1)
-    						item.setDay1(item.getDay1());
+    						item1.setDay1(item.getDay1());
     					else if(i==2)
-    						item.setDay2(item.getDay2());
+    						item1.setDay2(item.getDay2());
     					else if(i==3)
-    						item.setDay3(item.getDay3());
+    						item1.setDay3(item.getDay3());
     					else if(i==4)
-    						item.setDay4(item.getDay4());
+    						item1.setDay4(item.getDay4());
     					else if(i==5)
-    						item.setDay5(item.getDay5());
+    						item1.setDay5(item.getDay5());
     					else if(i==6)
-    						item.setDay6(item.getDay6());
+    						item1.setDay6(item.getDay6());
     					else if(i==7)
-    						item.setDay7(item.getDay7());
+    						item1.setDay7(item.getDay7());
     					else if(i==8)
-    						item.setDay8(item.getDay8());
+    						item1.setDay8(item.getDay8());
     					else if(i==9)
-    						item.setDay9(item.getDay9());
+    						item1.setDay9(item.getDay9());
     					else if(i==10)
-    						item.setDay10(item.getDay10());
+    						item1.setDay10(item.getDay10());
     					else if(i==11)
-    						item.setDay11(item.getDay11());
+    						item1.setDay11(item.getDay11());
     					else if(i==12)
-    						item.setDay12(item.getDay12());
+    						item1.setDay12(item.getDay12());
     					else if(i==13)
-    						item.setDay13(item.getDay13());
+    						item1.setDay13(item.getDay13());
     					else if(i==14)
-    						item.setDay14(item.getDay14());
+    						item1.setDay14(item.getDay14());
     					else if(i==15)
-    						item.setDay15(item.getDay15());
+    						item1.setDay15(item.getDay15());
     					else if(i==16)
-    						item.setDay16(item.getDay16());
+    						item1.setDay16(item.getDay16());
     					else if(i==17)
-    						item.setDay17(item.getDay17());
+    						item1.setDay17(item.getDay17());
     					else if(i==18)
-    						item.setDay18(item.getDay18());
+    						item1.setDay18(item.getDay18());
     					else if(i==19)
-    						item.setDay19(item.getDay19());
+    						item1.setDay19(item.getDay19());
     					else if(i==20)
-    						item.setDay20(item.getDay20());
+    						item1.setDay20(item.getDay20());
     					else if(i==21)
-    						item.setDay21(item.getDay21());
+    						item1.setDay21(item.getDay21());
     					else if(i==22)
-    						item.setDay22(item.getDay22());
+    						item1.setDay22(item.getDay22());
     					else if(i==23)
-    						item.setDay23(item.getDay23());
+    						item1.setDay23(item.getDay23());
     					else if(i==24)
-    						item.setDay24(item.getDay24());
+    						item1.setDay24(item.getDay24());
     					else if(i==25)
-    						item.setDay25(item.getDay25());
+    						item1.setDay25(item.getDay25());
     					else if(i==26)
-    						item.setDay26(item.getDay26());
+    						item1.setDay26(item.getDay26());
     					else if(i==27)
-    						item.setDay27(item.getDay27());
+    						item1.setDay27(item.getDay27());
     					else if(i==28)
-    						item.setDay28(item.getDay28());
+    						item1.setDay28(item.getDay28());
     					else if(i==29)
-    						item.setDay29(item.getDay29());
+    						item1.setDay29(item.getDay29());
     					else if(i==30)
-    						item.setDay30(item.getDay30());
+    						item1.setDay30(item.getDay30());
     					else if(i==31)
-    						item.setDay31(item.getDay31());
-    					tta2 = timeTrackApprovalLevel2.save(item);
+    						item1.setDay31(item.getDay31());
+    					tta2 = timeTrackApprovalLevel2.save(item1);
     				}
     			 }
+    			 
          		if(item.getProjectType().equalsIgnoreCase("Non-Billable"))	{
     				for (int i = daypf; i < dayf; i++) {
     					if(i==1)
-    						item.setDay1(item.getDay1());
+    						item1.setDay1(item.getDay1());
     					else if(i==2)
-    						item.setDay2(item.getDay2());
+    						item1.setDay2(item.getDay2());
     					else if(i==3)
-    						item.setDay3(item.getDay3());
+    						item1.setDay3(item.getDay3());
     					else if(i==4)
-    						item.setDay4(item.getDay4());
+    						item1.setDay4(item.getDay4());
     					else if(i==5)
-    						item.setDay5(item.getDay5());
+    						item1.setDay5(item.getDay5());
     					else if(i==6)
-    						item.setDay6(item.getDay6());
+    						item1.setDay6(item.getDay6());
     					else if(i==7)
-    						item.setDay7(item.getDay7());
+    						item1.setDay7(item.getDay7());
     					else if(i==8)
-    						item.setDay8(item.getDay8());
+    						item1.setDay8(item.getDay8());
     					else if(i==9)
-    						item.setDay9(item.getDay9());
+    						item1.setDay9(item.getDay9());
     					else if(i==10)
-    						item.setDay10(item.getDay10());
+    						item1.setDay10(item.getDay10());
     					else if(i==11)
-    						item.setDay11(item.getDay11());
+    						item1.setDay11(item.getDay11());
     					else if(i==12)
-    						item.setDay12(item.getDay12());
+    						item1.setDay12(item.getDay12());
     					else if(i==13)
-    						item.setDay13(item.getDay13());
+    						item1.setDay13(item.getDay13());
     					else if(i==14)
-    						item.setDay14(item.getDay14());
+    						item1.setDay14(item.getDay14());
     					else if(i==15)
-    						item.setDay15(item.getDay15());
+    						item1.setDay15(item.getDay15());
     					else if(i==16)
-    						item.setDay16(item.getDay16());
+    						item1.setDay16(item.getDay16());
     					else if(i==17)
-    						item.setDay17(item.getDay17());
+    						item1.setDay17(item.getDay17());
     					else if(i==18)
-    						item.setDay18(item.getDay18());
+    						item1.setDay18(item.getDay18());
     					else if(i==19)
-    						item.setDay19(item.getDay19());
+    						item1.setDay19(item.getDay19());
     					else if(i==20)
-    						item.setDay20(item.getDay20());
+    						item1.setDay20(item.getDay20());
     					else if(i==21)
-    						item.setDay21(item.getDay21());
+    						item1.setDay21(item.getDay21());
     					else if(i==22)
-    						item.setDay22(item.getDay22());
+    						item1.setDay22(item.getDay22());
     					else if(i==23)
-    						item.setDay23(item.getDay23());
+    						item1.setDay23(item.getDay23());
     					else if(i==24)
-    						item.setDay24(item.getDay24());
+    						item1.setDay24(item.getDay24());
     					else if(i==25)
-    						item.setDay25(item.getDay25());
+    						item1.setDay25(item.getDay25());
     					else if(i==26)
-    						item.setDay26(item.getDay26());
+    						item1.setDay26(item.getDay26());
     					else if(i==27)
-    						item.setDay27(item.getDay27());
+    						item1.setDay27(item.getDay27());
     					else if(i==28)
-    						item.setDay28(item.getDay28());
+    						item1.setDay28(item.getDay28());
     					else if(i==29)
-    						item.setDay29(item.getDay29());
+    						item1.setDay29(item.getDay29());
     					else if(i==30)
-    						item.setDay30(item.getDay30());
+    						item1.setDay30(item.getDay30());
     					else if(i==31)
-    						item.setDay31(item.getDay31());
-    					tta2 = timeTrackApprovalLevel2.save(item);
+    						item1.setDay31(item.getDay31());
+    					tta2 = timeTrackApprovalLevel2.save(item1);
     				}
     			 }
          		if(item.getProjectType().equalsIgnoreCase("Beach"))	{
     				for (int i = daypf; i < dayf; i++) {
     					if(i==1)
-    						item.setDay1(item.getDay1());
+    						item1.setDay1(item.getDay1());
     					else if(i==2)
-    						item.setDay2(item.getDay2());
+    						item1.setDay2(item.getDay2());
     					else if(i==3)
-    						item.setDay3(item.getDay3());
+    						item1.setDay3(item.getDay3());
     					else if(i==4)
-    						item.setDay4(item.getDay4());
+    						item1.setDay4(item.getDay4());
     					else if(i==5)
-    						item.setDay5(item.getDay5());
+    						item1.setDay5(item.getDay5());
     					else if(i==6)
-    						item.setDay6(item.getDay6());
+    						item1.setDay6(item.getDay6());
     					else if(i==7)
-    						item.setDay7(item.getDay7());
+    						item1.setDay7(item.getDay7());
     					else if(i==8)
-    						item.setDay8(item.getDay8());
+    						item1.setDay8(item.getDay8());
     					else if(i==9)
-    						item.setDay9(item.getDay9());
+    						item1.setDay9(item.getDay9());
     					else if(i==10)
-    						item.setDay10(item.getDay10());
+    						item1.setDay10(item.getDay10());
     					else if(i==11)
-    						item.setDay11(item.getDay11());
+    						item1.setDay11(item.getDay11());
     					else if(i==12)
-    						item.setDay12(item.getDay12());
+    						item1.setDay12(item.getDay12());
     					else if(i==13)
-    						item.setDay13(item.getDay13());
+    						item1.setDay13(item.getDay13());
     					else if(i==14)
-    						item.setDay14(item.getDay14());
+    						item1.setDay14(item.getDay14());
     					else if(i==15)
-    						item.setDay15(item.getDay15());
+    						item1.setDay15(item.getDay15());
     					else if(i==16)
-    						item.setDay16(item.getDay16());
+    						item1.setDay16(item.getDay16());
     					else if(i==17)
-    						item.setDay17(item.getDay17());
+    						item1.setDay17(item.getDay17());
     					else if(i==18)
-    						item.setDay18(item.getDay18());
+    						item1.setDay18(item.getDay18());
     					else if(i==19)
-    						item.setDay19(item.getDay19());
+    						item1.setDay19(item.getDay19());
     					else if(i==20)
-    						item.setDay20(item.getDay20());
+    						item1.setDay20(item.getDay20());
     					else if(i==21)
-    						item.setDay21(item.getDay21());
+    						item1.setDay21(item.getDay21());
     					else if(i==22)
-    						item.setDay22(item.getDay22());
+    						item1.setDay22(item.getDay22());
     					else if(i==23)
-    						item.setDay23(item.getDay23());
+    						item1.setDay23(item.getDay23());
     					else if(i==24)
-    						item.setDay24(item.getDay24());
+    						item1.setDay24(item.getDay24());
     					else if(i==25)
-    						item.setDay25(item.getDay25());
+    						item1.setDay25(item.getDay25());
     					else if(i==26)
-    						item.setDay26(item.getDay26());
+    						item1.setDay26(item.getDay26());
     					else if(i==27)
-    						item.setDay27(item.getDay27());
+    						item1.setDay27(item.getDay27());
     					else if(i==28)
-    						item.setDay28(item.getDay28());
+    						item1.setDay28(item.getDay28());
     					else if(i==29)
-    						item.setDay29(item.getDay29());
+    						item1.setDay29(item.getDay29());
     					else if(i==30)
-    						item.setDay30(item.getDay30());
+    						item1.setDay30(item.getDay30());
     					else if(i==31)
-    						item.setDay31(item.getDay31());
-    					tta2 = timeTrackApprovalLevel2.save(item);
+    						item1.setDay31(item.getDay31());
+    					tta2 = timeTrackApprovalLevel2.save(item1);
     				}
     			 }
          		if(item.getProjectType().equalsIgnoreCase("Overtime"))	{
     				for (int i = daypf; i < dayf; i++) {
     					if(i==1)
-    						item.setDay1(item.getDay1());
+    						item1.setDay1(item.getDay1());
     					else if(i==2)
-    						item.setDay2(item.getDay2());
+    						item1.setDay2(item.getDay2());
     					else if(i==3)
-    						item.setDay3(item.getDay3());
+    						item1.setDay3(item.getDay3());
     					else if(i==4)
-    						item.setDay4(item.getDay4());
+    						item1.setDay4(item.getDay4());
     					else if(i==5)
-    						item.setDay5(item.getDay5());
+    						item1.setDay5(item.getDay5());
     					else if(i==6)
-    						item.setDay6(item.getDay6());
+    						item1.setDay6(item.getDay6());
     					else if(i==7)
-    						item.setDay7(item.getDay7());
+    						item1.setDay7(item.getDay7());
     					else if(i==8)
-    						item.setDay8(item.getDay8());
+    						item1.setDay8(item.getDay8());
     					else if(i==9)
-    						item.setDay9(item.getDay9());
+    						item1.setDay9(item.getDay9());
     					else if(i==10)
-    						item.setDay10(item.getDay10());
+    						item1.setDay10(item.getDay10());
     					else if(i==11)
-    						item.setDay11(item.getDay11());
+    						item1.setDay11(item.getDay11());
     					else if(i==12)
-    						item.setDay12(item.getDay12());
+    						item1.setDay12(item.getDay12());
     					else if(i==13)
-    						item.setDay13(item.getDay13());
+    						item1.setDay13(item.getDay13());
     					else if(i==14)
-    						item.setDay14(item.getDay14());
+    						item1.setDay14(item.getDay14());
     					else if(i==15)
-    						item.setDay15(item.getDay15());
+    						item1.setDay15(item.getDay15());
     					else if(i==16)
-    						item.setDay16(item.getDay16());
+    						item1.setDay16(item.getDay16());
     					else if(i==17)
-    						item.setDay17(item.getDay17());
+    						item1.setDay17(item.getDay17());
     					else if(i==18)
-    						item.setDay18(item.getDay18());
+    						item1.setDay18(item.getDay18());
     					else if(i==19)
-    						item.setDay19(item.getDay19());
+    						item1.setDay19(item.getDay19());
     					else if(i==20)
-    						item.setDay20(item.getDay20());
+    						item1.setDay20(item.getDay20());
     					else if(i==21)
-    						item.setDay21(item.getDay21());
+    						item1.setDay21(item.getDay21());
     					else if(i==22)
-    						item.setDay22(item.getDay22());
+    						item1.setDay22(item.getDay22());
     					else if(i==23)
-    						item.setDay23(item.getDay23());
+    						item1.setDay23(item.getDay23());
     					else if(i==24)
-    						item.setDay24(item.getDay24());
+    						item1.setDay24(item.getDay24());
     					else if(i==25)
-    						item.setDay25(item.getDay25());
+    						item1.setDay25(item.getDay25());
     					else if(i==26)
-    						item.setDay26(item.getDay26());
+    						item1.setDay26(item.getDay26());
     					else if(i==27)
-    						item.setDay27(item.getDay27());
+    						item1.setDay27(item.getDay27());
     					else if(i==28)
-    						item.setDay28(item.getDay28());
+    						item1.setDay28(item.getDay28());
     					else if(i==29)
-    						item.setDay29(item.getDay29());
+    						item1.setDay29(item.getDay29());
     					else if(i==30)
-    						item.setDay30(item.getDay30());
+    						item1.setDay30(item.getDay30());
     					else if(i==31)
-    						item.setDay31(item.getDay31());
+    						item1.setDay31(item.getDay31());
     					
-    					tta2 = timeTrackApprovalLevel2.save(item);
+    					tta2 = timeTrackApprovalLevel2.save(item1);
     				}
     			 }
          		
@@ -2087,8 +2155,13 @@ return userListObject;
     	  }
 		}
 
+
+
+      }
+
 		return tta2;
 	}
+
 
 	public ArrayList<JSONObject>  getFinanceDataByProject(int month, int year, Long projectId) {
 
@@ -2211,5 +2284,25 @@ return userListObject;
 
 		return resultData;
 	}
+
+
+	@Override
+	public List<Object[]> getForwardedDates(Long projectId, Long userId, int intMonth, int yearIndex) {
+		// TODO Auto-generated method stub
+		return timeTrackApprovalJPARepository.getForwardedDates(projectId, userId, intMonth,yearIndex);
+	}
+
+	@Override
+	public List<TaskTrackApprovalLevel2> getUserIdByProjectAndDateForLevel2(Long projectId, Date startDate, Date endDate) {
+		// TODO Auto-generated method stub
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startDate);
+		int intMonth = 0,intday = 0;
+		intMonth = (cal.get(Calendar.MONTH) + 1);
+		int yearIndex = cal.get(Calendar.YEAR);
+		return timeTrackApprovalLevel2.getUserIdByProjectAndDateForLevel2(projectId,intMonth,yearIndex);
+	}
+
+	
 
 }

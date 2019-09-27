@@ -44,7 +44,16 @@ public class TaskTrackApproval  {
 	
 	private Date approved_date;
 	
+	private Date forwarded_finance;
 	
+	
+	
+	public Date getForwarded_finance() {
+		return forwarded_finance;
+	}
+	public void setForwarded_finance(Date forwarded_finance) {
+		this.forwarded_finance = forwarded_finance;
+	}
 	public Date getApproved_date() {
 		return approved_date;
 	}
