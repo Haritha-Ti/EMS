@@ -698,20 +698,26 @@ public class TasktrackController {
 				 }
 				 
 					
-				  List<Object> level1 = tasktrackApprovalService.getForwardedDate(projectId,userId,intMonth,yearIndex);
+				  List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId,userId,intMonth,yearIndex);
 				  if(!level1.isEmpty()) {
-					  
 					 // System.out.println("forwarded_date"+level1.get(0));
-					  if(level1.get(0) != null) {
-						  
-						  Date fdate = (Date) level1.get(0);
-						  frowardedDate = df.format(fdate);
-						 //System.out.println("frowardedDate___________"+frowardedDate);
-					  }
-					  else {
-						
-						  frowardedDate = ""; 
-					  }
+					 if(level1 != null) {
+						for(Object[] fl : level1) {
+							if(fl != null)
+							{ 
+								if(fl[0] != null) {
+								Date fdate = (Date) fl[0];
+							  frowardedDate = df.format(fdate);
+								}
+								if(fl[1] != null) {
+								Date fdates = (Date) fl[1];
+							  frowardedDateLevel2 = df.format(fdates);
+								}
+							}
+						}
+					 }	  						 //System.out.println("frowardedDate___________"+frowardedDate);
+ 
+
 				 }
 				
 				jsonDataProjectDetails.put("forwarded_date",frowardedDate);
@@ -2839,12 +2845,13 @@ public class TasktrackController {
 				endDate = outputFormat.parse(date2);
 			}
 
-			List<Object[]> userIdList = null;
+			List<TaskTrackApprovalLevel2> userIdList = null;
 			
 			
 			if (startDate != null && endDate != null ) {
 				//userIdList = projectAllocationService.getUserIdByProject(projectId);
-				userIdList = projectAllocationService.getUserIdByProjectAndDate(projectId,startDate,endDate);
+				//userIdList = projectAllocationService.getUserIdByProjectAndDate(projectId,startDate,endDate);
+				userIdList = tasktrackApprovalService.getUserIdByProjectAndDateForLevel2(projectId,startDate,endDate);
 				getUserDataForReportLevel(userIdList, startDate, endDate, jsonDataRes, timeTrackJSONData, loggedJsonArray,billableJsonArray,projectId);
 			}
 			
@@ -2860,15 +2867,15 @@ public class TasktrackController {
 
 		return jsonDataRes;
 	}
-	private void getUserDataForReportLevel(List<Object[]> userIdList, Date startDate, Date endDate, JSONObject jsonDataRes,
+	private void getUserDataForReportLevel(List<TaskTrackApprovalLevel2> userIdList, Date startDate, Date endDate, JSONObject jsonDataRes,
 			List<JSONObject> timeTrackJSONData, List<JSONObject> loggedJsonArray,List<JSONObject> billableJsonArray,Long projectId) {
 		
 		JSONObject resultData = new JSONObject();
 		List<JSONObject> timeTrackJsonData = new ArrayList<>();
 		List<JSONObject> approvalJsonData = new ArrayList<>();
-		for (Object userItem : userIdList) {
+		for (TaskTrackApprovalLevel2 userItem : userIdList) {
 
-			Long id = (Long) userItem;
+			Long id =  userItem.getUser().getUserId();
 			List<Object[]> userList = null;
 			Boolean isExist = tasktrackApprovalService.checkIsUserExists(id);
 			//Data From Time track
