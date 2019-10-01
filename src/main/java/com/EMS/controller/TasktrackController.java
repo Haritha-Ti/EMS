@@ -2786,10 +2786,10 @@ public class TasktrackController {
 			 */
 			int monthIndex = 0;
 			int yearIndex = 0;
-			if (requestdata.get("monthIndex") != null && requestdata.get("monthIndex") != "" 
-					&& requestdata.get("yearIndex") != null && requestdata.get("yearIndex") != "") {
-				monthIndex = (int) requestdata.get("monthIndex");
-				yearIndex = (int) requestdata.get("yearIndex");
+			if (requestdata.get("month") != null && requestdata.get("month") != "" 
+					&& requestdata.get("year") != null && requestdata.get("year") != "") {
+				monthIndex = (int) requestdata.get("month");
+				yearIndex = (int) requestdata.get("year");
 			}
 			
 			/*

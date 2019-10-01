@@ -1889,12 +1889,32 @@ return userListObject;
 		intMonth = (cal.get(Calendar.MONTH) + 1);
 		int yearIndex = cal.get(Calendar.YEAR);
 		intday = cal.get(Calendar.DAY_OF_MONTH);
+		
+		Calendar c = Calendar.getInstance();
+		c.setTime(endDate);
+		int day = 0;		
+		day = c.get(Calendar.DAY_OF_MONTH);
+		 int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
+		System.out.println("total days"+totaldays);
 		Calendar calendar = Calendar.getInstance();
 	    calendar.setTime(endDate);
 	    calendar.add(Calendar.DATE, -1);
 	    Date yesterday = calendar.getTime();
+	    
 	    Date dateobj = new Date();
+	    String status = "";
 	    int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+		
+		  if(day >= 15 && day < totaldays) {
+		 
+		  status = "HM"; 
+		  
+		  } else if(day >= totaldays){
+			  
+			  status = "FM";
+			  
+		  }
+		 
 	    JSONObject testValidation = new JSONObject();       
 	    testValidation = checkPreviousTimeSheetsareClosed(intMonth, yearIndex, projectId, userId);
 	    if((boolean) testValidation.get("data")) {
@@ -1917,7 +1937,8 @@ return userListObject;
 				TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
 				TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
 				level1.setForwarded_date(dateobj);
-				System.out.println("Current_Date"+dateobj);
+				level1.setStatus(status);
+				//System.out.println("Current_Date"+dateobj);
 				//level1.setApproved_date(endDate);
 				UserModel user = userService.getUserDetailsById(userId);
 				ProjectModel project = projectService.getProjectId(projectId);
