@@ -2562,6 +2562,7 @@ return userListObject;
 
 		jsonDataRes.put("data", status);
 		jsonDataRes.put("status", "success");
+		jsonDataRes.put("message", message);
 		jsonDataRes.put("month", month);
 		jsonDataRes.put("year", year);
 
