@@ -1450,19 +1450,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId,monthIndex,yearIndex,projectId);
 	if(!data.isEmpty()) {
-		
+
 		flagExist = 1;
-		
+
 	}
-	
-	
+
+
 
 	Calendar c = Calendar.getInstance();   // this takes current date
 	c.set(Calendar.MONTH, monthIndex-1); // set the month
 	c.set(Calendar.YEAR, yearIndex);
     c.set(Calendar.DAY_OF_MONTH, 1);
-   
-    System.out.println("-------------------------------------"+c.getTime()); 
+
+    System.out.println("-------------------------------------"+c.getTime());
     Date approved_date = null;
 	if(approvedData != null && approvedData.size()>0) {
     if(approvedData.get(0).getApproved_date() != null)
@@ -1480,23 +1480,23 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	String status = "";
 	int halforfull = 0;
 	if(diffInDayss >= 15) {
-		
+
 		status = "HM";
 		halforfull = 1;
 		diffInDays = 15;
 	}
 	else if(diffInDays <= diffInDayss ) {
-		
+
 		status = "FM";
 		halforfull = 1;
 	}
     Date fdate = new Date();
-	
+
 		if (approvedData != null && approvedData.size() > 0) {
-			
+
 			if(flagExist == 0)
 			{
-			
+
 			for (TaskTrackApproval item : approvedData) {
 				TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 				TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
@@ -1577,10 +1577,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				finance.setUser(user);
 				//cal.setTime(startDate);
 				taskTrackFinanceRepository.save(finance);
-			}	
+			}
 		}
 			else {
-				
+
 				for(TaskTrackApprovalFinance eachdata : data ) {
 					if(eachdata.getStatus().equalsIgnoreCase("HM")) {
 						for (TaskTrackApproval item : approvedData) {
@@ -1619,7 +1619,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									eachdata.setDay30(item.getDay30());
 								else if(i==30)
 									eachdata.setDay31(item.getDay31());
-						
+
 						 taskTrackFinanceRepository.save(eachdata);
 				}
 						}
@@ -1627,6 +1627,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 			}
 		}
+
 		userListObject.put("data", "success");
 		userListObject.put("status", "success");
 		userListObject.put("message", "forwarded to finance");
@@ -2486,6 +2487,8 @@ return userListObject;
 		Integer prevMonth = calendar.get(Calendar.MONTH);
 		Integer prevMonthYear = calendar.get(Calendar.YEAR);
 		Long approverrowcount = null;
+		System.out.println("prevMonth "+prevMonth);
+		System.out.println("prevMonth "+prevMonthYear);
 
 			if(role == 2)
 			{
@@ -2499,17 +2502,23 @@ return userListObject;
 						{
 							message="No pending logs found";
 							status=true;
+							month =prevMonth;
+							year = prevMonthYear;
 						}
 						else
 						{
-							message="Pending full month logs found";
+							message="Pending previous full month logs found";
 							status=false;
+							month =prevMonth;
+							year = prevMonthYear;
 						}
 					}
 					else
 					{
-						message="Pending half month logs found";
+						message="Pending previous half month logs found";
 						status=false;
+						month =prevMonth;
+						year = prevMonthYear;
 					}
 				}
 				else
@@ -2520,18 +2529,24 @@ return userListObject;
 						{
 							message="No pending logs found";
 							status=true;
+							month =prevMonth;
+							year = prevMonthYear;
 						}
 						else
 						{
-							message="Pending full month logs found";
+							message="Pending previous full month logs found";
 							status=false;
+							month =prevMonth;
+							year = prevMonthYear;
 						}
 
 					}
 					else
 					{
-						message="Pending half month logs found";
+						message="Pending previous half month logs found";
 						status=false;
+						month =prevMonth;
+						year = prevMonthYear;
 					}
 
 				}
@@ -2545,17 +2560,23 @@ return userListObject;
 					{
 						message="No pending logs found";
 						status=true;
+						month =prevMonth;
+						year = prevMonthYear;
 					}
 					else
 					{
-						message="Pending full month logs found";
+						message="Pending previous full month logs found";
 						status=false;
+						month =prevMonth;
+						year = prevMonthYear;
 					}
 				}
 				else
 				{
-					message="Pending half month logs found";
+					message="Pending previous half month logs found";
 					status=false;
+					month =prevMonth;
+					year = prevMonthYear;
 				}
 
 			}
@@ -2563,6 +2584,8 @@ return userListObject;
 		jsonDataRes.put("data", status);
 		jsonDataRes.put("status", "success");
 		jsonDataRes.put("message", message);
+		jsonDataRes.put("month", month);
+		jsonDataRes.put("year", year);
 
 		return jsonDataRes;
 	}
@@ -2642,8 +2665,6 @@ return userListObject;
 		jsonDataRes.put("message", message);
 
 		return jsonDataRes;
-
-
 
 	}
 
