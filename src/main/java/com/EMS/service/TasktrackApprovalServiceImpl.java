@@ -1200,13 +1200,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public JSONObject getApproveddatalevel2toFinance(Long userId, Date startDate, Date endDate, Long projectId) {
+	public JSONObject getApproveddatalevel2toFinance(Long userId, int monthIndex, int yearIndex, Long projectId) {
 		// TODO Auto-generated method stub
 		
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			int monthIndex = (cal.get(Calendar.MONTH) + 1);
-			int yearIndex = cal.get(Calendar.YEAR);
+			//Calendar cal = Calendar.getInstance();
+			//cal.setTime(startDate);
+			//int monthIndex = (cal.get(Calendar.MONTH) + 1);
+			//int yearIndex = cal.get(Calendar.YEAR);
 			int flagExist = 0;
 		List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,monthIndex,yearIndex,projectId);
 		
@@ -1222,23 +1222,49 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		/*
 		 * if(approvedData != null) { //System.out.println("Datas Available"); }
 		 */
-		int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+		
+		Calendar c = Calendar.getInstance();   // this takes current date
+		c.set(Calendar.MONTH, monthIndex-1); // set the month
+		c.set(Calendar.YEAR, yearIndex);
+	    c.set(Calendar.DAY_OF_MONTH, 1);
+	   
+	    System.out.println("-------------------------------------"+c.getTime()); 
+	    Date approved_date = null;
+		if(approvedData != null && approvedData.size()>0) {
+	    if(approvedData.get(0).getApproved_date() != null)
+	     {
+			approved_date = approvedData.get(0).getApproved_date();
+	     }
+		}
+		Date firstday_ofmonth = c.getTime();
+		int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
+		int diffInDays = totaldays;
+		System.out.println("TotalDays----------------->"+totaldays);
+		System.out.println("FirstDay of month"+firstday_ofmonth);
+		//int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+		int diffInDayss  = (int)((approved_date.getTime() - firstday_ofmonth.getTime()) / (1000 * 60 * 60 * 24)) + 1  ;
 		String status = "";
-		if(diffInDays == 15) {
+		int halforfull = 0;
+		if(diffInDayss >= 15) {
 			
 			status = "HM";
-			
+			halforfull = 1;
+			diffInDays = 15;
 		}
-		else if(diffInDays <= 31) {
+		else if(diffInDays <= diffInDayss ) {
 			
 			status = "FM";
+			halforfull = 1;
 		}
+		//int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 		
-		int intMonth = 0,intday = 0;
-		Calendar calendar = Calendar.getInstance();
-	    calendar.setTime(endDate);
-	    calendar.add(Calendar.DATE, -1);
-	    Date yesterday = calendar.getTime();
+		
+		/*
+		 * int intMonth = 0,intday = 0; Calendar calendar = Calendar.getInstance();
+		 * calendar.setTime(endDate); calendar.add(Calendar.DATE, -1); Date yesterday =
+		 * calendar.getTime();
+		 */
+		
 		Date fdate = new Date();
 			if (approvedData != null && approvedData.size() > 0) {
 				
@@ -1249,6 +1275,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 					TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
 					level2.setForwarded_date(fdate);
+					level2.setStatus(status);
 					UserModel user = userService.getUserDetailsById(userId);
 					ProjectModel project = projectService.getProjectId(projectId);
 					finance.setProject(project);
@@ -1322,7 +1349,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					finance.setDay31(item.getDay31());
 					}
 					finance.setUser(user);
-					cal.setTime(startDate);
+					//cal.setTime(startDate);
 					taskTrackFinanceRepository.save(finance);
 				}	
 			}
@@ -1389,12 +1416,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public JSONObject getApproveddatalevel1toFinance(Long userId, Date startDate, Date endDate, Long projectId) {
+	public JSONObject getApproveddatalevel1toFinance(Long userId, int monthIndex, int  yearIndex, Long projectId) {
 		// TODO Auto-generated method stub
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(startDate);
-		int monthIndex = (cal.get(Calendar.MONTH) + 1);
-		int yearIndex = cal.get(Calendar.YEAR);
+		/*
+		 * Calendar cal = Calendar.getInstance(); cal.setTime(startDate); int monthIndex
+		 * = (cal.get(Calendar.MONTH) + 1); int yearIndex = cal.get(Calendar.YEAR);
+		 */
 		int flagExist = 0;
 	List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,monthIndex,yearIndex,projectId);
 	JSONObject userListObject = new JSONObject();
@@ -1407,22 +1434,40 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 	
 	
-	int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-	int intMonth = 0,intday = 0;
+
+	Calendar c = Calendar.getInstance();   // this takes current date
+	c.set(Calendar.MONTH, monthIndex-1); // set the month
+	c.set(Calendar.YEAR, yearIndex);
+    c.set(Calendar.DAY_OF_MONTH, 1);
+   
+    System.out.println("-------------------------------------"+c.getTime()); 
+    Date approved_date = null;
+	if(approvedData != null && approvedData.size()>0) {
+    if(approvedData.get(0).getApproved_date() != null)
+     {
+		approved_date = approvedData.get(0).getApproved_date();
+     }
+	}
+	Date firstday_ofmonth = c.getTime();
+	int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
+	int diffInDays = totaldays;
+	System.out.println("TotalDays----------------->"+totaldays);
+	System.out.println("FirstDay of month"+firstday_ofmonth);
+	//int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+	int diffInDayss  = (int)((approved_date.getTime() - firstday_ofmonth.getTime()) / (1000 * 60 * 60 * 24)) + 1  ;
 	String status = "";
-	if(diffInDays == 15) {
+	int halforfull = 0;
+	if(diffInDayss >= 15) {
 		
 		status = "HM";
-		
+		halforfull = 1;
+		diffInDays = 15;
 	}
-	else if(diffInDays > 15){
+	else if(diffInDays <= diffInDayss ) {
 		
 		status = "FM";
+		halforfull = 1;
 	}
-	Calendar calendar = Calendar.getInstance();
-    calendar.setTime(endDate);
-    calendar.add(Calendar.DATE, -1);
-    Date yesterday = calendar.getTime();
     Date fdate = new Date();
 	
 		if (approvedData != null && approvedData.size() > 0) {
@@ -1508,7 +1553,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				finance.setDay31(item.getDay31());
 				}
 				finance.setUser(user);
-				cal.setTime(startDate);
+				//cal.setTime(startDate);
 				taskTrackFinanceRepository.save(finance);
 			}	
 		}

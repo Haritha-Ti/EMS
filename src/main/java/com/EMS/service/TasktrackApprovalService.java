@@ -49,9 +49,9 @@ public interface TasktrackApprovalService {
 
 	void saveLevel3(TaskTrackApprovalFinance taskTrackApproval);
 
-	JSONObject getApproveddatalevel2toFinance(Long userId, Date startDate, Date endDate, Long projectId);
+	JSONObject getApproveddatalevel2toFinance(Long userId, int mothIndex,  int yearIndex, Long projectId);
 
-	JSONObject getApproveddatalevel1toFinance(Long userId, Date startDate, Date endDate, Long projectId);
+	JSONObject getApproveddatalevel1toFinance(Long userId, int monthIndex, int yearIndex, Long projectId);
 
 	List<JSONObject> getTimeTrackUserTaskDetailsLevel2(Long id, Date startDate, Date endDate, List<Object[]> userList,
 			List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArray, List<JSONObject> timeTrackJSONData,
