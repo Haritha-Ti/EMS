@@ -230,7 +230,7 @@ public class LoginController {
 				UserModel userdata = login_service.adduser(user);
 				if (userdata == null) {
 					responseflag = 1;
-					responsedata.put("message", "user record insertion failed");
+					responsedata.put("message", "User record insertion failed");
 				}
 				else {
 
@@ -327,7 +327,7 @@ public class LoginController {
 							else {
 								responseflag = 1;
 								responsedata.put("message",
-										"user technology insertion failed due to missing technology value");
+										"User technology insertion failed due to missing technology value");
 							}
 							usertech.setUser(userdata);
 							usertech.setExperience(node.get("experience").asDouble());
@@ -354,7 +354,7 @@ public class LoginController {
 
 			if (responseflag == 0) {
 				responsedata.put("status", "success");
-				responsedata.put("message", "record insertion completed");
+				responsedata.put("message", "User added successfully");
 				responsedata.put("code", servletresponse.getStatus());
 			} else {
 				responsedata.put("status", "Failed");
@@ -613,7 +613,7 @@ public class LoginController {
 								usertech.setTechnology(technology);
 							else {
 								responseData.put("message",
-										"user technology insertion failed due to missing technology value");
+										"User technology insertion failed due to missing technology value");
 							}
 							usertech.setUser(userModel);
 							usertech.setExperience(node.get("experience").asDouble());
@@ -625,13 +625,13 @@ public class LoginController {
 				}
 				
 			
-				responseData.put("message", "Updated successfully");
+				responseData.put("message", "User updated successfully");
 
 				
 				
 			}
 			else {
-				responseData.put("message", "user not exist");
+				responseData.put("message", "User does not exist");
 			}
 			responseData.put("status", "success");
 			responseData.put("code", httpstatus.getStatus());
@@ -772,13 +772,13 @@ public class LoginController {
 				}
 
 
-				responseData.put("message", "Updated successfully");
+				responseData.put("message", "User updated successfully");
 
 
 
 			}
 			else {
-				responseData.put("message", "user not exist");
+				responseData.put("message", "User not exist");
 			}
 			responseData.put("status", "success");
 			responseData.put("code", httpstatus.getStatus());

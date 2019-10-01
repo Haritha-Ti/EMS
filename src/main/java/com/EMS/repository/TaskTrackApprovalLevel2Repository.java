@@ -12,7 +12,7 @@ import com.EMS.model.TaskTrackApprovalLevel2;
 public interface TaskTrackApprovalLevel2Repository extends JpaRepository<TaskTrackApprovalLevel2, Long>{
 
 	@Query("SELECT a FROM TaskTrackApprovalLevel2 a where a.user.userId = ?1 and a.month = ?2 and a.year = ?3 and a.project.projectId = ?4 ")
-	List<TaskTrackApprovalLevel2> getApprovedData(Long userId, int monthIndex, int yearIndex, Long projectId);
+	List<TaskTrackApprovalLevel2> getApprovedData(Long userId, int  monthIndex, int yearIndex, Long projectId);
 
 	@Query("SELECT a FROM TaskTrackApprovalLevel2 a where a.user.userId = ?1 and a.month = ?3 and a.year = ?4 and a.project.projectId = ?2 ")
 	List<TaskTrackApprovalLevel2> getUserListForApproval(Long id, Long projectId, Integer monthIndex, Integer yearIndex);

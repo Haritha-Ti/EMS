@@ -2723,27 +2723,27 @@ public class TasktrackController {
 			if (requestdata.get("userId") != null && requestdata.get("userId") != "") {
 				userId = Long.valueOf(requestdata.get("userId").toString());
 			}
-			String date1 = "";
-			String date2 = "";
-			if (requestdata.get("startDate") != null && requestdata.get("startDate") != "" 
-					&& requestdata.get("endDate") != null && requestdata.get("endDate") != "") {
-			 date1 = (String) requestdata.get("startDate");
-			 date2 = (String) requestdata.get("endDate");
+			//String date1 = "";
+			//String date2 = "";
+			int monthIndex = 0;
+			int yearIndex = 0;
+			if (requestdata.get("monthIndex") != null && requestdata.get("monthIndex") != "" 
+					&& requestdata.get("yearIndex") != null && requestdata.get("yearIndex") != "") {
+			  monthIndex =  (int) requestdata.get("monthIndex");
+			  yearIndex =  (int) requestdata.get("yearIndex");
 			}
 			
 			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date startDate = null, endDate = null;
-			if (!date1.isEmpty()) {
-				startDate = outputFormat.parse(date1);
-			}
-			if (!date2.isEmpty()) {
-				endDate = outputFormat.parse(date2);
-			}
-			Calendar cal1 = Calendar.getInstance();
-			cal1.setTime(startDate);
-			int month = (cal1.get(Calendar.MONTH) + 1);
-			int year = cal1.get(Calendar.YEAR);
-			approvalJsonDataLevel2 = tasktrackApprovalService.getApproveddatalevel2toFinance(userId, startDate, endDate,projectId);
+			/*
+			 * if (!date1.isEmpty()) { startDate = outputFormat.parse(date1); } if
+			 * (!date2.isEmpty()) { endDate = outputFormat.parse(date2); }
+			 */
+			/*
+			 * Calendar cal1 = Calendar.getInstance(); cal1.setTime(startDate); int month =
+			 * (cal1.get(Calendar.MONTH) + 1); int year = cal1.get(Calendar.YEAR);
+			 */
+			approvalJsonDataLevel2 = tasktrackApprovalService.getApproveddatalevel2toFinance(userId, monthIndex, yearIndex,projectId);
 			
 
 			jsonDataRes.put("status", "success");
@@ -2783,27 +2783,28 @@ public class TasktrackController {
 			if (requestdata.get("userId") != null && requestdata.get("userId") != "") {
 				userId = Long.valueOf(requestdata.get("userId").toString());
 			}
-			String date1 = "";
-			String date2 = "";
-			if (requestdata.get("startDate") != null && requestdata.get("startDate") != "" 
-					&& requestdata.get("endDate") != null && requestdata.get("endDate") != "") {
-			 date1 = (String) requestdata.get("startDate");
-			 date2 = (String) requestdata.get("endDate");
+			/*
+			 * String date1 = ""; String date2 = "";
+			 */
+			int monthIndex = 0;
+			int yearIndex = 0;
+			if (requestdata.get("monthIndex") != null && requestdata.get("monthIndex") != "" 
+					&& requestdata.get("yearIndex") != null && requestdata.get("yearIndex") != "") {
+				monthIndex = (int) requestdata.get("monthIndex");
+				yearIndex = (int) requestdata.get("yearIndex");
 			}
 			
-			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-			Date startDate = null, endDate = null;
-			if (!date1.isEmpty()) {
-				startDate = outputFormat.parse(date1);
-			}
-			if (!date2.isEmpty()) {
-				endDate = outputFormat.parse(date2);
-			}
-			Calendar cal1 = Calendar.getInstance();
-			cal1.setTime(startDate);
-			int month = (cal1.get(Calendar.MONTH) + 1);
-			int year = cal1.get(Calendar.YEAR);
-			approvalJsonDataLevel2 = tasktrackApprovalService.getApproveddatalevel1toFinance(userId, startDate, endDate,projectId);
+			/*
+			 * SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd"); Date
+			 * startDate = null, endDate = null; if (!date1.isEmpty()) { startDate =
+			 * outputFormat.parse(date1); } if (!date2.isEmpty()) { endDate =
+			 * outputFormat.parse(date2); }
+			 */
+			/*
+			 * Calendar cal1 = Calendar.getInstance(); cal1.setTime(startDate); int month =
+			 * (cal1.get(Calendar.MONTH) + 1); int year = cal1.get(Calendar.YEAR);
+			 */
+			approvalJsonDataLevel2 = tasktrackApprovalService.getApproveddatalevel1toFinance(userId, monthIndex, yearIndex,projectId);
 			
 
 			jsonDataRes.put("status", "success");
