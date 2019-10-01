@@ -47,5 +47,15 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
 	@Query("SELECT  f FROM TaskTrackApprovalFinance f where f.user.userId = ?1 and f.month = ?2 and f.year =?3 and f.project.projectId = ?4")
 	List<TaskTrackApprovalFinance> getDatas(Long userId, int monthIndex, int yearIndex, Long projectId);
 
+    @Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval_finance WHERE month=?1 and  year=?2 and project_project_id=?3",nativeQuery = true)
+    Long getCountOfRowsHM(int month,int year,Long projectId);
+
+    @Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval_finance WHERE month=?1 and  year=?2 and project_project_id=?3 and status='FM'",nativeQuery = true)
+    Long getCountOfRowsFM(int month,int year,Long projectId);
+
+    @Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval_finance WHERE month=?1 and  year=?2 and project_project_id=?3 and user_user_id=?4",nativeQuery = true)
+    Long getCountOfRowsHMByUser(int month,int year,Long projectId,Long userId);
+
+
 
 }

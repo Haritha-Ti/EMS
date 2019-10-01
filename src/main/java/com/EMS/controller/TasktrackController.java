@@ -2956,4 +2956,105 @@ public class TasktrackController {
 
 		return jsonDataRes;
 	}
+
+	@PostMapping("/pendingLogCheck")
+	public JSONObject checkPreviousTimeSheetsareClosed(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) throws ParseException {
+
+		JSONObject jsonDataRes = new JSONObject();
+		Long projectId = null;
+		Long userId = null;
+		int month = 0;
+		int year =0;
+
+		try {
+
+			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
+				projectId = requestdata.get("projectId").asLong();
+			}
+
+			if (requestdata.get("userId") != null && requestdata.get("userId").asText() != "") {
+				userId = requestdata.get("userId").asLong();
+			}
+
+			if (requestdata.get("month") != null && requestdata.get("month").asText() != "") {
+				month = Integer.parseInt(requestdata.get("month").toString());
+			}
+
+			if (requestdata.get("year") != null && requestdata.get("year").asText() != "") {
+				year = Integer.parseInt(requestdata.get("year").toString());
+			}
+
+
+			String message = "";
+
+				if (month!= 0 && year!= 0 && projectId != null && userId != null) {
+
+					jsonDataRes =	 tasktrackApprovalService.checkPreviousTimeSheetsareClosed(month, year, projectId,userId);
+
+				}
+
+			jsonDataRes.put("code", httpstatus.getStatus());
+		} catch (Exception e) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+
+		return jsonDataRes;
+	}
+
+	@PostMapping("/halfCycleCheck")
+	public JSONObject halfCycleCheck(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) throws ParseException {
+
+		JSONObject jsonDataRes = new JSONObject();
+		Long projectId = null;
+		Long approverId = null;
+		Long userId = null;
+		Date  curDate = null;
+
+		try {
+
+			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
+				projectId = requestdata.get("projectId").asLong();
+			}
+
+			if (requestdata.get("userId") != null && requestdata.get("userId").asText() != "") {
+				userId = requestdata.get("userId").asLong();
+			}
+			if (requestdata.get("approverId") != null && requestdata.get("approverId").asText() != "") {
+				approverId = requestdata.get("approverId").asLong();
+			}
+
+			/*if (requestdata.get("month") != null && requestdata.get("month").asText() != "") {
+				month = Integer.parseInt(requestdata.get("month").toString());
+			}
+
+			if (requestdata.get("year") != null && requestdata.get("year").asText() != "") {
+				year = Integer.parseInt(requestdata.get("year").toString());
+			}*/
+			if(requestdata.get("currentDate") !=null && requestdata.get("currentDate").asText() != "")
+			{
+				SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+				  curDate =outputFormat.parse(requestdata.get("currentDate").asText());
+
+			}
+
+
+
+			if (projectId != null &&  userId !=null && approverId != null ) {
+
+				jsonDataRes =	 tasktrackApprovalService.halfCycleCheck(projectId, userId,approverId,curDate);
+
+
+			}
+
+			jsonDataRes.put("code", httpstatus.getStatus());
+		} catch (Exception e) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+
+		return jsonDataRes;
+	}
 }

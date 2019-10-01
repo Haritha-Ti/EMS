@@ -1,16 +1,15 @@
 package com.EMS.service;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.*;
 import java.time.YearMonth;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 
+import com.EMS.repository.*;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +25,6 @@ import com.EMS.model.TaskTrackApprovalFinance;
 import com.EMS.model.TaskTrackApprovalLevel2;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
-import com.EMS.repository.ProjectReportsRepository;
-import com.EMS.repository.TaskRepository;
-import com.EMS.repository.TasktrackRepository;
-import com.EMS.repository.TimeTrackApprovalJPARepository;
-import com.EMS.repository.TaskTrackApprovalLevel2Repository;
-import com.EMS.repository.TaskTrackFinanceRepository;
-import com.EMS.repository.TimeTrackApprovalRepository;
-import com.EMS.repository.UserRepository;
 import com.EMS.repository.TaskTrackFinanceRepository;
 
 @Service
@@ -70,6 +61,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Autowired
 	ProjectService projectService;
 
+	@Autowired
+	ProjectAllocationRepository projectAllocationRepository;
+
+	@Autowired
+	ProjectRepository projectRepository;
 	
 	@Override
 	public Boolean checkIsUserExists(Long id) {
@@ -2363,6 +2359,183 @@ return userListObject;
 		return timeTrackApprovalLevel2.getUserIdByProjectAndDateForLevel2(projectId,intMonth,yearIndex);
 	}
 
-	
+	public JSONObject checkPreviousTimeSheetsareClosed(int month, int year, Long projectId, Long userId){
+
+		UserModel user =  userRepository.getOne(userId);
+		JSONObject jsonDataRes = new JSONObject();
+		String message=null;
+		Boolean status=true;
+
+		Long role = user.getRole().getroleId();
+		//int prevmonth = month-1;
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(year, month, 1);
+		calendar.add(Calendar.MONTH, -1);
+		int lastday = calendar.getActualMaximum(Calendar.DATE);
+		calendar.set(Calendar.DATE, lastday);
+		Date lastDate = calendar.getTime();
+		Integer prevMonth = calendar.get(Calendar.MONTH);
+		Integer prevMonthYear = calendar.get(Calendar.YEAR);
+		Long approverrowcount = null;
+
+			if(role == 2)
+			{
+				ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+				approverrowcount = timeTrackApprovalJPARepository.getCountOfRows(prevMonth, prevMonthYear, projectId);
+				if(projectData.getOnsite_lead()==null)
+				{
+					if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth,prevMonthYear,projectId))
+					{
+						if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth,prevMonthYear,projectId))
+						{
+							message="No pending logs found";
+							status=true;
+						}
+						else
+						{
+							message="Pending full month logs found";
+							status=false;
+						}
+					}
+					else
+					{
+						message="Pending half month logs found";
+						status=false;
+					}
+				}
+				else
+				{
+					if(approverrowcount == timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth,prevMonthYear,projectId))
+					{
+						if(approverrowcount == timeTrackApprovalLevel2.getCountOfRowsFM(prevMonth,prevMonthYear,projectId))
+						{
+							message="No pending logs found";
+							status=true;
+						}
+						else
+						{
+							message="Pending full month logs found";
+							status=false;
+						}
+
+					}
+					else
+					{
+						message="Pending half month logs found";
+						status=false;
+					}
+
+				}
+			}
+			else if(role == 7 )
+			{
+				approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth,prevMonthYear,projectId);
+				if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth,prevMonthYear,projectId))
+				{
+					if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth,prevMonthYear,projectId))
+					{
+						message="No pending logs found";
+						status=true;
+					}
+					else
+					{
+						message="Pending full month logs found";
+						status=false;
+					}
+				}
+				else
+				{
+					message="Pending half month logs found";
+					status=false;
+				}
+
+			}
+
+		jsonDataRes.put("data", status);
+		jsonDataRes.put("status", "success");
+		jsonDataRes.put("message", message);
+
+		return jsonDataRes;
+	}
+
+	public JSONObject halfCycleCheck(Long projectId,Long userId,Long approverId,Date curDate) {
+
+		JSONObject jsonDataRes = new JSONObject();
+		UserModel user =  userRepository.getOne(approverId);
+		String message=null;
+		Boolean status=true;
+		Long approverrowcount = null;
+
+		Long role = user.getRole().getroleId();
+		DateFormat df;
+		df = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(curDate);
+		int day=calendar.get(Calendar.DAY_OF_MONTH);
+		int month = calendar.get(Calendar.MONTH);
+		int year = calendar.get(Calendar.YEAR);
+		if(day>15)
+		{
+
+			if(role == 2)
+			{
+				ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+				approverrowcount = timeTrackApprovalJPARepository.getCountOfRowsByUser(month, year, projectId,userId);
+				if(projectData.getOnsite_lead()==null)
+				{
+					if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month,year,projectId,userId))
+					{
+							message="No pending logs found";
+							status=true;
+					}
+					else
+					{
+						message="Pending half month logs found";
+						status=false;
+					}
+				}
+				else
+				{
+					if(approverrowcount == timeTrackApprovalLevel2.getCountOfRowsHMByUser(month,year,projectId,userId))
+					{
+							message="No pending logs found";
+							status=true;
+					}
+					else
+					{
+						message="Pending half month logs found";
+						status=false;
+					}
+
+				}
+			}
+			else if(role == 7 )
+			{
+				approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHMByUser(month,year,projectId,userId);
+				if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month,year,projectId,userId))
+				{
+						message="No pending logs found";
+						status=true;
+				}
+				else
+				{
+					message="Pending half month logs found";
+					status=false;
+				}
+
+			}
+
+		}
+		//List<AllocationModel> =
+
+		jsonDataRes.put("data", status);
+		jsonDataRes.put("status", "success");
+		jsonDataRes.put("message", message);
+
+		return jsonDataRes;
+
+
+
+	}
 
 }

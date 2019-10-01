@@ -1,5 +1,6 @@
 package com.EMS.service;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,5 +81,7 @@ public interface TasktrackApprovalService {
 	public ArrayList<JSONObject> getFinanceDataByUserAndProject(int month, int year,Long userId, Long projectId);
 
 
+	JSONObject checkPreviousTimeSheetsareClosed(int month, int year, Long projectId, Long userId);
+	JSONObject halfCycleCheck(Long projectId, Long userId, Long approverId, Date curDate);
 }
 

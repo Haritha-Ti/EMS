@@ -89,5 +89,14 @@ public interface TimeTrackApprovalJPARepository extends JpaRepository<TaskTrackA
     @Query(value = "SELECT s.forwarded_date,s.forwarded_finance FROM tasktrack_approval s WHERE s.month = ?3 and s.year = ?4 and s.project_project_id = ?1 and s.user_user_id = ?2 LIMIT 1 ", nativeQuery = true)
 	List<Object[]> getForwardedDates(Long projectId, Long userId, int intMonth, int yearIndex);
 
+    @Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval WHERE month=?1 and  year=?2 and project_project_id=?3 ",nativeQuery = true)
+    Long getCountOfRows(int month,int year,Long projectId);
+
+    @Query("SELECT a FROM TaskTrackApproval a  where a.project.projectId = ?1 and a.month = ?2 and a.year = ?3 and a.projectType = 'Billable' ")
+    TaskTrackApproval getDataForCheckingForwardedToLevel2(Long projectId, int intMonth, int yearIndex);
+
+    @Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval WHERE month=?1 and  year=?2 and project_project_id=?3 and user_user_id=?4",nativeQuery = true)
+    Long getCountOfRowsByUser(int month,int year,Long projectId,Long userId);
+
 
 }
