@@ -1244,6 +1244,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	     {
 			approved_date = approvedData.get(0).getApproved_date();
 	     }
+	    else
+	    {
+	    	userListObject.put("data", "failed");
+			userListObject.put("status", "success");
+			userListObject.put("message", "Approved date not found");
+			return userListObject;
+	    }
 		}
 		Date firstday_ofmonth = c.getTime();
 		int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -1940,13 +1947,13 @@ return userListObject;
 				level1.setForwarded_date(dateobj);
 				level1.setStatus(status);
 				//System.out.println("Current_Date"+dateobj);
-				//level1.setApproved_date(endDate);
+			     level1.setApproved_date(endDate);
 				UserModel user = userService.getUserDetailsById(userId);
 				ProjectModel project = projectService.getProjectId(projectId);
 				level2.setProject(project);
 				level2.setProjectType(item.getProjectType());
 				level2.setTasktrack_level1_Id(level1);
-				//level2.setStatus(status);
+				level2.setStatus(status);
 				//level2.setForwarded_date(yesterday);
 				level2.setMonth(intMonth);
 				level2.setYear(yearIndex);

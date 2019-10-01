@@ -2185,6 +2185,7 @@ public class TasktrackController {
 				if(billableId!=null) {
 					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(billableId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
+					taskTrackApproval.setApproved_date(endDate);
 					if(taskTrackApproval!=null) {
 
 						for (int i = 0; i < diffInDays; i++) {
@@ -2315,6 +2316,7 @@ public class TasktrackController {
 				
 
 					taskTrackApproval.setUpdatedBy(updatedBy);
+					taskTrackApproval.setApproved_date(endDate);
 					if(taskTrackApproval!=null) {
 
 						for (int i = 0; i < diffInDays; i++) {
@@ -2447,6 +2449,7 @@ public class TasktrackController {
 				if(beachId!=null) {
 					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(beachId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
+					taskTrackApproval.setApproved_date(endDate);
 					if(taskTrackApproval!=null) {
 
 						for (int i = 0; i < diffInDays; i++) {
@@ -2575,6 +2578,7 @@ public class TasktrackController {
 				if(overtimeId!=null) {
 					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(overtimeId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
+					taskTrackApproval.setApproved_date(endDate);
 					if(taskTrackApproval!=null) {
 
 						for (int i = 0; i < diffInDays; i++) {
