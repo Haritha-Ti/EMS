@@ -1922,7 +1922,7 @@ public class TasktrackController {
 			endDate = outputFormat.parse(date2);
 		}
 		try {
-			 TaskTrackApprovalLevel2  task = tasktrackApprovalService.saveLevel2FromLevel1(projectId,userId,startDate,endDate);
+			jsonDataRes   = tasktrackApprovalService.saveLevel2FromLevel1(projectId,userId,startDate,endDate);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "successfully saved. ");
@@ -2706,10 +2706,10 @@ public class TasktrackController {
 	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping("/saveApprovedHoursforFinanceFromLevel2")
-	public ObjectNode saveApprovedHoursforFinance(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
+	public JSONObject saveApprovedHoursforFinance(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
 
 		
-		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		JSONObject jsonDataRes =  new JSONObject();
 		JSONObject approvalJsonDataLevel2 = new JSONObject();
 		try {
 			// Obtain the data from request data
@@ -2743,12 +2743,10 @@ public class TasktrackController {
 			 * Calendar cal1 = Calendar.getInstance(); cal1.setTime(startDate); int month =
 			 * (cal1.get(Calendar.MONTH) + 1); int year = cal1.get(Calendar.YEAR);
 			 */
-			approvalJsonDataLevel2 = tasktrackApprovalService.getApproveddatalevel2toFinance(userId, monthIndex, yearIndex,projectId);
+			jsonDataRes = tasktrackApprovalService.getApproveddatalevel2toFinance(userId, monthIndex, yearIndex,projectId);
 			
 
-			jsonDataRes.put("status", "success");
-			jsonDataRes.put("code", httpstatus.getStatus());
-			jsonDataRes.put("message", "successfully saved. ");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");
@@ -2766,10 +2764,10 @@ public class TasktrackController {
 	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping("/saveApprovedHoursforFinanceFromLevel1")
-	public ObjectNode saveApprovedHoursforFinanceFromLevel1(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
+	public JSONObject saveApprovedHoursforFinanceFromLevel1(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
 
 		
-		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		JSONObject jsonDataRes = new JSONObject();
 		JSONObject approvalJsonDataLevel2 = new JSONObject();
 		try {
 			// Obtain the data from request data
@@ -2804,7 +2802,7 @@ public class TasktrackController {
 			 * Calendar cal1 = Calendar.getInstance(); cal1.setTime(startDate); int month =
 			 * (cal1.get(Calendar.MONTH) + 1); int year = cal1.get(Calendar.YEAR);
 			 */
-			approvalJsonDataLevel2 = tasktrackApprovalService.getApproveddatalevel1toFinance(userId, monthIndex, yearIndex,projectId);
+			jsonDataRes = tasktrackApprovalService.getApproveddatalevel1toFinance(userId, monthIndex, yearIndex,projectId);
 			
 
 			jsonDataRes.put("status", "success");
