@@ -26,6 +26,8 @@ import com.EMS.model.TaskTrackApprovalLevel2;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
 import com.EMS.repository.TaskTrackFinanceRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
@@ -66,6 +68,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	@Autowired
 	ProjectRepository projectRepository;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	
 	@Override
 	public Boolean checkIsUserExists(Long id) {
@@ -1204,6 +1210,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			//int monthIndex = (cal.get(Calendar.MONTH) + 1);
 			//int yearIndex = cal.get(Calendar.YEAR);
 			int flagExist = 0;
+			JSONObject userListObject = new JSONObject();
+			JSONObject testValidation = new JSONObject();        
+			
+			testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, userId);
+		
+			if((boolean) testValidation.get("data")) {
+			
 		List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,monthIndex,yearIndex,projectId);
 		
 		List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId,monthIndex,yearIndex,projectId);
@@ -1213,7 +1226,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			
 		}
 		
-		JSONObject userListObject = new JSONObject();
+		
 
 		/*
 		 * if(approvedData != null) { //System.out.println("Datas Available"); }
@@ -1405,8 +1418,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					
 				}
 			}
-			
-
+			userListObject.put("data", "success");
+			userListObject.put("status", "success");
+			userListObject.put("message", "forwarded to finance");
+			}
+			else {
+				userListObject.put("data", "failed");
+				userListObject.put("status", "success");
+				userListObject.put("message", testValidation.get("message"));
+			}
 	
 	return userListObject;
 	}
@@ -1418,9 +1438,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		 * Calendar cal = Calendar.getInstance(); cal.setTime(startDate); int monthIndex
 		 * = (cal.get(Calendar.MONTH) + 1); int yearIndex = cal.get(Calendar.YEAR);
 		 */
+		
+		JSONObject testValidation = new JSONObject();        
+		
+		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, userId);
+		JSONObject userListObject = new JSONObject();
+		if((boolean) testValidation.get("data")) {
 		int flagExist = 0;
 	List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,monthIndex,yearIndex,projectId);
-	JSONObject userListObject = new JSONObject();
+	
 
 	List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId,monthIndex,yearIndex,projectId);
 	if(!data.isEmpty()) {
@@ -1601,8 +1627,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 			}
 		}
-		
-
+		userListObject.put("data", "success");
+		userListObject.put("status", "success");
+		userListObject.put("message", "forwarded to finance");
+		}
+		else {
+			userListObject.put("data", "failed");
+			userListObject.put("status", "success");
+			userListObject.put("message", testValidation.get("message"));
+		}
 
 return userListObject;
 	}
@@ -1845,11 +1878,12 @@ return userListObject;
 	}
 
 	@Override
-	public TaskTrackApprovalLevel2 saveLevel2FromLevel1(Long projectId, Long userId, Date startDate, Date endDate) {
+	public ObjectNode saveLevel2FromLevel1(Long projectId, Long userId, Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
 		
 		TaskTrackApprovalLevel2 tta2 = new TaskTrackApprovalLevel2();
 		Calendar cal = Calendar.getInstance();
+		ObjectNode response = objectMapper.createObjectNode();
 		cal.setTime(startDate);
 		int intMonth = 0,intday = 0;
 		intMonth = (cal.get(Calendar.MONTH) + 1);
@@ -1861,6 +1895,9 @@ return userListObject;
 	    Date yesterday = calendar.getTime();
 	    Date dateobj = new Date();
 	    int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+	    JSONObject testValidation = new JSONObject();       
+	    testValidation = checkPreviousTimeSheetsareClosed(intMonth, yearIndex, projectId, userId);
+	    if((boolean) testValidation.get("data")) {
 		List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,intMonth,yearIndex,projectId);
 	   int fflag = 0;
 	//   int eflag = 0;
@@ -2256,11 +2293,17 @@ return userListObject;
     	  }
 		}
 
-
-
       }
-
-		return tta2;
+      response.put("data", "");
+  	  response.put("status", "success");
+      response.put("message", "forwarded to level2");
+      }
+	    else {
+	    	response.put("data", "");
+	    	response.put("status", "failed");
+	        response.put("message", (String)testValidation.get("message"));
+	    }
+		return response;
 	}
 
 

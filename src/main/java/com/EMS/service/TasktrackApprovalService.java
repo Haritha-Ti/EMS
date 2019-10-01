@@ -17,6 +17,7 @@ import com.EMS.model.TaskTrackApprovalFinance;
 import com.EMS.model.TaskTrackApprovalLevel2;
 import com.EMS.model.Tasktrack;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface TasktrackApprovalService {
 
@@ -62,7 +63,7 @@ public interface TasktrackApprovalService {
 
 	List<Object> getForwardedDateLevel2(Long projectId, Long userId, int intMonth,int year);
 
-	TaskTrackApprovalLevel2 saveLevel2FromLevel1(Long projectId, Long userId, Date startDate, Date endDate);
+	ObjectNode saveLevel2FromLevel1(Long projectId, Long userId, Date startDate, Date endDate);
 
 	List<Object[]> getForwardedDates(Long projectId, Long userId, int intMonth, int yearIndex);
 
