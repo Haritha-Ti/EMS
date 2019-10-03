@@ -767,6 +767,8 @@ public class TasktrackController {
 
 		
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		
+		ObjectNode ids = objectMapper.createObjectNode();
 
 		try {
 			// Obtain the data from request data
@@ -826,6 +828,14 @@ public class TasktrackController {
 			if (requestdata.get("overtime") != null && requestdata.get("overtime")!= "") {
 				overtimeArray = (HashMap<String, Object>) requestdata.get("overtime");
 			}
+			
+			Long billable_id = null;
+			Long nonbillable_id = null;
+			Long beach_id = null;
+			Long overtime_id = null;
+			
+			
+			
 			
 			if(billableArray.size()>0) {//Billable
 
@@ -948,7 +958,8 @@ public class TasktrackController {
 							}					
 							cal.add(Calendar.DATE, 1);				
 						}				
-						tasktrackApprovalService.updateData(taskTrackApproval);				
+						tasktrackApprovalService.updateData(taskTrackApproval);	
+						billable_id = taskTrackApproval.getId();
 					}
 				}
 				else {
@@ -1070,7 +1081,10 @@ public class TasktrackController {
 						cal.add(Calendar.DATE, 1);				
 					}				
 
-					tasktrackApprovalService.save(taskTrackApproval);
+					TaskTrackApproval billable = tasktrackApprovalService.save(taskTrackApproval);
+					 billable_id = billable.getId();
+					
+					
 				}
 			}
 
@@ -1200,7 +1214,8 @@ public class TasktrackController {
 							}					
 							cal.add(Calendar.DATE, 1);				
 						}				
-						tasktrackApprovalService.updateData(taskTrackApproval);				
+						tasktrackApprovalService.updateData(taskTrackApproval);	
+						nonbillable_id = taskTrackApproval.getId();
 					}
 				}
 				else {
@@ -1321,7 +1336,9 @@ public class TasktrackController {
 						cal.add(Calendar.DATE, 1);				
 					}				
 
-					tasktrackApprovalService.save(taskTrackApproval);
+					TaskTrackApproval nonbillable = tasktrackApprovalService.save(taskTrackApproval);
+					 nonbillable_id = nonbillable.getId();
+					
 				}
 
 
@@ -1452,7 +1469,8 @@ public class TasktrackController {
 							}					
 							cal.add(Calendar.DATE, 1);				
 						}				
-						tasktrackApprovalService.updateData(taskTrackApproval);				
+						tasktrackApprovalService.updateData(taskTrackApproval);	
+						beach_id = taskTrackApproval.getId();
 					}
 				}
 				else {
@@ -1574,7 +1592,9 @@ public class TasktrackController {
 						cal.add(Calendar.DATE, 1);				
 					}				
 
-					tasktrackApprovalService.save(taskTrackApproval);
+					TaskTrackApproval beach = tasktrackApprovalService.save(taskTrackApproval);
+					 beach_id = beach.getId();
+					
 				}
 			}
 			/*****************************************************************************************/
@@ -1700,7 +1720,8 @@ public class TasktrackController {
 							}					
 							cal.add(Calendar.DATE, 1);				
 						}				
-						tasktrackApprovalService.updateData(taskTrackApproval);				
+						tasktrackApprovalService.updateData(taskTrackApproval);		
+						overtime_id = taskTrackApproval.getId();
 					}
 				}
 				else {
@@ -1822,12 +1843,19 @@ public class TasktrackController {
 						cal.add(Calendar.DATE, 1);				
 					}				
 
-					tasktrackApprovalService.save(taskTrackApproval);
+					TaskTrackApproval overtime = tasktrackApprovalService.save(taskTrackApproval);
+					 overtime_id = overtime.getId();
+					
 				}
 			}
+			 ids.put("billableId", billable_id);
+			 ids.put("nonBillableId", nonbillable_id);
+			 ids.put("beachId", beach_id);
+			 ids.put("overtimeId", overtime_id);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "successfully saved. ");
+			jsonDataRes.set("ids",ids);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");
