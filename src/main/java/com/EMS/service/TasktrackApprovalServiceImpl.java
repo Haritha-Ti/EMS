@@ -1307,7 +1307,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					finance.setStatus(status);
 					finance.setMonth(monthIndex);
 					finance.setYear(yearIndex);
-					for (int i = 0; i < diffInDays; i++) {
+					finance.setDay1(item.getDay1());
+					finance.setDay2(item.getDay2());
+					finance.setDay3(item.getDay3());
+					finance.setDay4(item.getDay4());
+					finance.setDay5(item.getDay5());
+					finance.setDay6(item.getDay6());
+					finance.setDay7(item.getDay7());
+					finance.setDay8(item.getDay8());
+					finance.setDay9(item.getDay9());
+					finance.setDay10(item.getDay10());
+					finance.setDay11(item.getDay11());
+					finance.setDay12(item.getDay12());
+					finance.setDay13(item.getDay13());
+					finance.setDay14(item.getDay14());
+					finance.setDay15(item.getDay15());
+					/*for (int i = 0; i < diffInDays; i++) {
 						if(i==0)
 					finance.setDay1(item.getDay1());
 						else if(i==1)
@@ -1370,7 +1385,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					finance.setDay30(item.getDay30());
 						else if(i==30)
 					finance.setDay31(item.getDay31());
-					}
+					}*/
 					finance.setUser(user);
 					//cal.setTime(startDate);
 					taskTrackFinanceRepository.save(finance);
@@ -1386,11 +1401,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								
 								
 								for (TaskTrackApprovalLevel2 item : approvedData) {
-									
-									for(int i= 14 ; i < 31 ; i++) {
-												 if(i==14)
-													eachdata.setDay15(item.getDay15());
-												else if(i==15)
+
+
+									for(int i= 15 ; i < totaldays ; i++) {
+
+												 if(i==15)
 													eachdata.setDay16(item.getDay16());
 												else if(i==16)
 													eachdata.setDay17(item.getDay17());
@@ -1423,8 +1438,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 												else if(i==30)
 													eachdata.setDay31(item.getDay31());
 										
-										 taskTrackFinanceRepository.save(eachdata);
+
 								}
+									taskTrackFinanceRepository.save(eachdata);
 								}
 							}							
 						}
@@ -1528,7 +1544,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				finance.setStatus(status);
 				finance.setMonth(monthIndex);
 				finance.setYear(yearIndex);
-				for (int i = 0; i < diffInDays; i++) {
+				finance.setDay1(item.getDay1());
+				finance.setDay2(item.getDay2());
+				finance.setDay3(item.getDay3());
+				finance.setDay4(item.getDay4());
+				finance.setDay5(item.getDay5());
+				finance.setDay6(item.getDay6());
+				finance.setDay7(item.getDay7());
+				finance.setDay8(item.getDay8());
+				finance.setDay9(item.getDay9());
+				finance.setDay10(item.getDay10());
+				finance.setDay11(item.getDay11());
+				finance.setDay12(item.getDay12());
+				finance.setDay13(item.getDay13());
+				finance.setDay14(item.getDay14());
+				finance.setDay15(item.getDay15());
+				/*for (int i = 0; i < diffInDays; i++) {
 					if(i==0)
 				finance.setDay1(item.getDay1());
 					else if(i==1)
@@ -1591,7 +1622,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				finance.setDay30(item.getDay30());
 					else if(i==30)
 				finance.setDay31(item.getDay31());
-				}
+				}*/
 				finance.setUser(user);
 				//cal.setTime(startDate);
 				taskTrackFinanceRepository.save(finance);
@@ -1602,10 +1633,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				for(TaskTrackApprovalFinance eachdata : data ) {
 					if(eachdata.getStatus().equalsIgnoreCase("HM")) {
 						for (TaskTrackApproval item : approvedData) {
-							for(int i= 14 ; i < 31 ; i++) {
-								 if(i==14)
-									eachdata.setDay15(item.getDay15());
-								else if(i==15)
+							for(int i= 15 ; i < totaldays ; i++) {
+
+								 if(i==15)
 									eachdata.setDay16(item.getDay16());
 								else if(i==16)
 									eachdata.setDay17(item.getDay17());
@@ -1638,8 +1668,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								else if(i==30)
 									eachdata.setDay31(item.getDay31());
 
-						 taskTrackFinanceRepository.save(eachdata);
-				}
+
+							}
+							taskTrackFinanceRepository.save(eachdata);
 						}
 					}
 				}
