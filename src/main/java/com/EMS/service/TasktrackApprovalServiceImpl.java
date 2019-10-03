@@ -1304,7 +1304,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					finance.setProject(project);
 					finance.setProjectType(item.getProjectType());
 					finance.setApprover_level2(level2);
-					finance.setStatus(status);
+					finance.setStatus("HM");
 					finance.setMonth(monthIndex);
 					finance.setYear(yearIndex);
 					finance.setDay1(item.getDay1());
@@ -1437,7 +1437,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 													eachdata.setDay30(item.getDay30());
 												else if(i==30)
 													eachdata.setDay31(item.getDay31());
-										
+												 eachdata.setStatus("FM");
 
 								}
 									taskTrackFinanceRepository.save(eachdata);
@@ -1541,7 +1541,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				finance.setProject(project);
 				finance.setProjectType(item.getProjectType());
 				finance.setApprover_level1(level1);
-				finance.setStatus(status);
+				finance.setStatus("HM");
 				finance.setMonth(monthIndex);
 				finance.setYear(yearIndex);
 				finance.setDay1(item.getDay1());
@@ -1667,7 +1667,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									eachdata.setDay30(item.getDay30());
 								else if(i==30)
 									eachdata.setDay31(item.getDay31());
-
+								 eachdata.setStatus("FM");
 
 							}
 							taskTrackFinanceRepository.save(eachdata);
