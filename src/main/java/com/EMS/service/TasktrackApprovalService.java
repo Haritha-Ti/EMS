@@ -37,7 +37,7 @@ public interface TasktrackApprovalService {
 	
 	public TaskTrackApproval updateData(TaskTrackApproval taskTrackApproval);
 	
-	public void save(TaskTrackApproval taskTrackApproval);
+	public TaskTrackApproval save(TaskTrackApproval taskTrackApproval);
 
 	TaskTrackApprovalLevel2 findById2(Long billableId);
 

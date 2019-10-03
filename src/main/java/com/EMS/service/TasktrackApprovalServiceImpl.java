@@ -82,7 +82,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Override
 	public List<JSONObject> getTimeTrackUserTaskDetails(Long id, Date startDate, Date endDate, List<Object[]> userList,
 			List<JSONObject> loggedJsonArray,List<JSONObject> billableJsonArray,List<JSONObject> timeTrackJSONData, Boolean isExist,Long projectId) {
-			List<JSONObject> billableJsonArrayUp;
 		if (isExist) {
 			JSONObject userListObject = new JSONObject();
             
@@ -142,14 +141,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				
 				List<TaskTrackApproval> approvalUserList =getUserListForApproval(id,projectId,monthIndex,yearIndex);
 				billableJsonArray = new ArrayList<>();
-				billableJsonArrayUp=new ArrayList<>();
 
 				
 				diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 				intMonth = 0;
 				intday = 0;
 				Double hours = 0.0;
-				Hashtable<String,Double> overTimeData=new Hashtable<String, Double>();
 					if (approvalUserList != null && approvalUserList.size() > 0) {
 						JSONObject jsonObject = new JSONObject();
 						
@@ -227,33 +224,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								hours=(Double)item.getDay31();
 							
 							name = (String) item.getFirstName() + " " + item.getLastName();
-
-							if(item.getProjectType().equals("Billable"))
-							{
+							
+							if(item.getProjectType().equals("Billable")) {
 								jsonObject = new JSONObject();
 								jsonObject.put(vl, hours);
-								billableJsonArrayUp.add(jsonObject);
-							}
-
-							if(item.getProjectType().equals("Overtime"))
-							{
-								JSONObject jsonObj=new JSONObject();
-								jsonObject = billableJsonArrayUp.get(i);
-								Double billable= (Double) jsonObject.get(vl);
-								Double totalTime = billable+hours;
-								jsonObj.put(vl,totalTime);
-								billableJsonArray.add(jsonObj);
+								billableJsonArray.add(jsonObject);
 							}
 
 							cal.add(Calendar.DATE, 1);
 							
 							}
-
-						}
-
+						}					
 					}
-					else
-						{
+					else {
 						cal.setTime(startDate);
 						for (int i = 0; i < diffInDays; i++) {
 							
@@ -1016,8 +999,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 	
 	@Override
-	 public void save(TaskTrackApproval taskTrackApproval) {
-		timeTrackApprovalJPARepository.save(taskTrackApproval);		
+	 public TaskTrackApproval save(TaskTrackApproval taskTrackApproval) {
+		return timeTrackApprovalJPARepository.save(taskTrackApproval);		
 	}
 
 	@Override
@@ -1711,7 +1694,6 @@ return userListObject;
 	public List<JSONObject> getTimeTrackUserTaskDetailsLevel2(Long id, Date startDate, Date endDate,
 			List<Object[]> userList, List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArray,
 			List<JSONObject> timeTrackJSONData, Boolean isExist, Long projectId) {
-		List<JSONObject> billableJsonArrayUp;
 		// TODO Auto-generated method stub
 		if (isExist) {
 			JSONObject userListObject = new JSONObject();
@@ -1772,13 +1754,13 @@ return userListObject;
 				
 				List<TaskTrackApprovalLevel2> approvalUserList =getUserListForApprovalLevel2(id,projectId,monthIndex,yearIndex);
 				billableJsonArray = new ArrayList<>();
-				billableJsonArrayUp = new ArrayList<>();
 
 				
 				diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 				intMonth = 0;
 				intday = 0;
 				Double hours = 0.0;
+				
 					if (approvalUserList != null && approvalUserList.size() > 0) {
 						JSONObject jsonObject = new JSONObject();
 						
@@ -1857,20 +1839,13 @@ return userListObject;
 							
 							name = (String) item.getFirstName() + " " + item.getLastName();
 							
+							
+							
 							if(item.getProjectType().equals("Billable")) {
 								jsonObject = new JSONObject();
 								jsonObject.put(vl, hours);
-								billableJsonArrayUp.add(jsonObject);
+								billableJsonArray.add(jsonObject);
 							}
-								if(item.getProjectType().equals("Overtime"))
-								{
-									JSONObject jsonObj=new JSONObject();
-									jsonObject = billableJsonArrayUp.get(i);
-									Double billable= (Double) jsonObject.get(vl);
-									Double totalTime = billable+hours;
-									jsonObj.put(vl,totalTime);
-									billableJsonArray.add(jsonObj);
-								}
 
 							cal.add(Calendar.DATE, 1);
 							
@@ -1962,11 +1937,18 @@ return userListObject;
 		TaskTrackApprovalLevel2 tta2 = new TaskTrackApprovalLevel2();
 		Calendar cal = Calendar.getInstance();
 		ObjectNode response = objectMapper.createObjectNode();
+		ObjectNode ids = objectMapper.createObjectNode();
 		cal.setTime(startDate);
 		int intMonth = 0,intday = 0;
 		intMonth = (cal.get(Calendar.MONTH) + 1);
 		int yearIndex = cal.get(Calendar.YEAR);
 		intday = cal.get(Calendar.DAY_OF_MONTH);
+		
+		Long billable_id = null;
+		Long nonbillable_id = null;
+		Long beach_id = null;
+		Long overtime_id = null;
+		
 		
 		Date current_date = new Date();
 		Calendar current = Calendar.getInstance();
@@ -2100,8 +2082,22 @@ return userListObject;
 				}
 				level2.setUser(user);
 				cal.setTime(startDate);
-				tta2 = timeTrackApprovalLevel2.save(level2);
-			
+				tta2 = timeTrackApprovalLevel2.save(level2);		
+				if(tta2.getProjectType().equalsIgnoreCase("Billable")){
+					billable_id = tta2.getId();
+				}
+				else if(tta2.getProjectType().equalsIgnoreCase("Non-Billable")) {
+					nonbillable_id = tta2.getId();
+				}
+				
+               else if(tta2.getProjectType().equalsIgnoreCase("Beach")) {
+					
+            	   beach_id = tta2.getId();
+				}
+               else if(tta2.getProjectType().equalsIgnoreCase("Overtime")) {
+					
+            	   overtime_id = tta2.getId();
+				}
 			}	
       
     	  else if(fflag == 2) {
@@ -2400,9 +2396,15 @@ return userListObject;
 		}
 
       }
+    
+      ids.put("billable_id", billable_id);
+      ids.put("nonbillable_id", nonbillable_id);
+      ids.put("beach_id", beach_id);
+      ids.put("overtime_id", overtime_id);
       response.put("data", "");
   	  response.put("status", "success");
       response.put("message", "forwarded to level2");
+      response.set("ids", ids);
       }
 	    else {
 	    	response.put("data", "");
@@ -2571,7 +2573,8 @@ return userListObject;
 		Integer prevMonth = calendar.get(Calendar.MONTH);
 		Integer prevMonthYear = calendar.get(Calendar.YEAR);
 		Long approverrowcount = null;
-
+		System.out.println("prevMonth "+prevMonth);
+		System.out.println("prevMonth "+prevMonthYear);
 
 			if(role == 2)
 			{
