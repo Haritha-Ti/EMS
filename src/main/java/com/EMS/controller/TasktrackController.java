@@ -3024,7 +3024,7 @@ public class TasktrackController {
 		Long projectId = null;
 		Long approverId = null;
 		Long userId = null;
-		Date  curDate = null;
+		Date  endDate = null;
 
 		try {
 
@@ -3046,10 +3046,10 @@ public class TasktrackController {
 			if (requestdata.get("year") != null && requestdata.get("year").asText() != "") {
 				year = Integer.parseInt(requestdata.get("year").toString());
 			}*/
-			if(requestdata.get("currentDate") !=null && requestdata.get("currentDate").asText() != "")
+			if(requestdata.get("endDate") !=null && requestdata.get("endDate").asText() != "")
 			{
 				SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-				  curDate =outputFormat.parse(requestdata.get("currentDate").asText());
+				  endDate =outputFormat.parse(requestdata.get("endDate").asText());
 
 			}
 
@@ -3057,7 +3057,7 @@ public class TasktrackController {
 
 			if (projectId != null &&  userId !=null && approverId != null ) {
 
-				jsonDataRes =	 tasktrackApprovalService.halfCycleCheck(projectId, userId,approverId,curDate);
+				jsonDataRes =	 tasktrackApprovalService.halfCycleCheck(projectId, userId,approverId,endDate);
 
 
 			}
