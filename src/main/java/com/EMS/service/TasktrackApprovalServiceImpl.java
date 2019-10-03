@@ -2640,7 +2640,7 @@ return userListObject;
 		return jsonDataRes;
 	}
 
-	public JSONObject halfCycleCheck(Long projectId,Long userId,Long approverId,Date curDate) {
+	public JSONObject halfCycleCheck(Long projectId,Long userId,Long approverId,Date endDate) {
 
 		JSONObject jsonDataRes = new JSONObject();
 		UserModel user =  userRepository.getOne(approverId);
@@ -2652,19 +2652,22 @@ return userListObject;
 		DateFormat df;
 		df = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(curDate);
+		calendar.setTime(endDate);
 		int day=calendar.get(Calendar.DAY_OF_MONTH);
-		int month = calendar.get(Calendar.MONTH);
+		int month = (calendar.get(Calendar.MONTH)+1);
 		int year = calendar.get(Calendar.YEAR);
+
 		if(day>15)
 		{
 
 			if(role == 2)
 			{
+
 				ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 				approverrowcount = timeTrackApprovalJPARepository.getCountOfRowsByUser(month, year, projectId,userId);
 				if(projectData.getOnsite_lead()==null)
 				{
+
 					if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month,year,projectId,userId))
 					{
 							message="No pending logs found";
@@ -2678,6 +2681,7 @@ return userListObject;
 				}
 				else
 				{
+
 					if(approverrowcount == timeTrackApprovalLevel2.getCountOfRowsHMByUser(month,year,projectId,userId))
 					{
 							message="No pending logs found";
@@ -2693,6 +2697,7 @@ return userListObject;
 			}
 			else if(role == 7 )
 			{
+
 				approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHMByUser(month,year,projectId,userId);
 				if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month,year,projectId,userId))
 				{
