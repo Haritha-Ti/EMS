@@ -1940,12 +1940,19 @@ return userListObject;
 		int yearIndex = cal.get(Calendar.YEAR);
 		intday = cal.get(Calendar.DAY_OF_MONTH);
 		
+		Date current_date = new Date();
+		Calendar current = Calendar.getInstance();
+		current.setTime(current_date);
+		int intCurrentMonth = 0;
+		intCurrentMonth = (current.get(Calendar.MONTH) + 1);
+		//System.out.println("currentMonth ------------------------------------>"+(current.get(Calendar.MONTH) + 1));
+		
 		Calendar c = Calendar.getInstance();
 		c.setTime(endDate);
 		int day = 0;		
 		day = c.get(Calendar.DAY_OF_MONTH);
 		 int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
-		System.out.println("total days"+totaldays);
+		//System.out.println("total days"+totaldays);
 		Calendar calendar = Calendar.getInstance();
 	    calendar.setTime(endDate);
 	    calendar.add(Calendar.DATE, -1);
@@ -1954,16 +1961,16 @@ return userListObject;
 	    Date dateobj = new Date();
 	    String status = "";
 	    int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-		
-		  if(day >= 15 && day < totaldays) {
-		 
-		  status = "HM"; 
-		  
-		  } else if(day >= totaldays){
-			  
-			  status = "FM";
-			  
-		  }
+	    
+        if(intCurrentMonth > intMonth ) {
+			
+        	diffInDays = diffInDays + 1;
+        	 status = "FM";
+		}
+        else {
+        	
+        	status = "HM";
+        }
 		 
 	    JSONObject testValidation = new JSONObject();       
 	    testValidation = checkPreviousTimeSheetsareClosed(intMonth, yearIndex, projectId, logUser);
@@ -1981,12 +1988,11 @@ return userListObject;
     		  if(approvedData.get(0).getApproved_date().compareTo(approvedData.get(0).getForwarded_date())> 0)
     		  fflag = 2 ;
     	  }	 
-    	  
 			for (TaskTrackApproval item : approvedData) {
 				if(fflag == 1) {
 				TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
 				TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
-				level1.setForwarded_date(dateobj);
+				level1.setForwarded_date(endDate);
 				level1.setStatus(status);
 				//System.out.println("Current_Date"+dateobj);
 			     level1.setApproved_date(endDate);
