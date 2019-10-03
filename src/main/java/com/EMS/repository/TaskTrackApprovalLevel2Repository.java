@@ -32,7 +32,7 @@ public interface TaskTrackApprovalLevel2Repository extends JpaRepository<TaskTra
 	@Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval_level2 WHERE month=?1 and  year=?2 and  project_project_id=?3",nativeQuery = true)
 	Long getCountOfRowsHM(int month,int year,Long projectId);
 
-	@Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval_level2 WHERE month=?1 and  year=?2 and  project_project_id=?3 status='FM'",nativeQuery = true)
+	@Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval_level2 WHERE month=?1 and  year=?2 and  project_project_id=?3 and status='FM'",nativeQuery = true)
 	Long getCountOfRowsFM(int month,int year,Long projectId);
 
 	@Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval_level2 WHERE month=?1 and  year=?2 and  project_project_id=?3 and user_user_id=?4",nativeQuery = true)

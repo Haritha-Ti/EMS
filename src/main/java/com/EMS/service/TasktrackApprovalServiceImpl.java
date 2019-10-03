@@ -1254,13 +1254,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 		}
 
-		Date firstday_ofmonth = c.getTime();
+				Date firstday_ofmonth = c.getTime();
+
 		int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
 		int diffInDays = totaldays;
 		System.out.println("TotalDays----------------->"+totaldays);
 		System.out.println("FirstDay of month"+firstday_ofmonth);
 		//int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-		int diffInDayss  = (int)((approved_date.getTime() - firstday_ofmonth.getTime()) / (1000 * 60 * 60 * 24)) + 1  ;
+		long diffInDayss  = ((approved_date.getTime() - firstday_ofmonth.getTime())+1 )   ;
+		long dayDifferences=1+diffInDayss;
+		System.out.println("TotalDays Rinu ----------------->"+dayDifferences);
+
 		String status = "";
 		int halforfull = 0;
 		if(diffInDayss >= 15) {
@@ -1276,7 +1280,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		//int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 		
-		
+
 		/*
 		 * int intMonth = 0,intday = 0; Calendar calendar = Calendar.getInstance();
 		 * calendar.setTime(endDate); calendar.add(Calendar.DATE, -1); Date yesterday =
