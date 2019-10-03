@@ -2807,18 +2807,19 @@ public class TasktrackController {
 				yearIndex = (int) requestdata.get("year");
 			}
 			
+			
 			/*
 			 * SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd"); Date
 			 * startDate = null, endDate = null; if (!date1.isEmpty()) { startDate =
 			 * outputFormat.parse(date1); } if (!date2.isEmpty()) { endDate =
 			 * outputFormat.parse(date2); }
-			 */
-			/*
+			 * 
+			 * 
 			 * Calendar cal1 = Calendar.getInstance(); cal1.setTime(startDate); int month =
 			 * (cal1.get(Calendar.MONTH) + 1); int year = cal1.get(Calendar.YEAR);
+			 * 
 			 */
-
-
+			jsonDataRes = tasktrackApprovalService.getApproveddatalevel1toFinance(userId,logUser, monthIndex, yearIndex,projectId);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "successfully saved. ");
