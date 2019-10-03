@@ -14,7 +14,7 @@ import java.util.List;
 public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackApprovalFinance, Long>{
 
 
-    @Query(value = "SELECT user_user_id as id,first_name,last_name,ta.status, sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4,"+
+    @Query(value = "SELECT user_user_id as id,first_name,last_name, sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4,"+
             "sum(COALESCE(day5,0)) as day5,sum(COALESCE(day6,0)) as day6,sum(COALESCE(day7,0)) as day7,sum(COALESCE(day8,0)) as day8,sum(COALESCE(day9,0)) as day9," +
             "sum(COALESCE(day10,0)) as day10,sum(COALESCE(day11,0)) as day11,sum(COALESCE(day12,0)) as day12,sum(COALESCE(day13,0)) as day13,sum(COALESCE(day14,0)) as day14," +
             "sum(COALESCE(day15,0)) as day15,sum(COALESCE(day16,0)) as day16,sum(COALESCE(day17,0)) as day17,sum(COALESCE(day18,0)) as day18,sum(COALESCE(day19,0)) as day19," +
@@ -24,7 +24,7 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
             "month=?1 and year=?2 and project_project_id=?3 and project_type in('Billable','Overtime') group by user_user_id",nativeQuery = true)
     List<Object[]> getFinanceDataByProject(Integer monthIndex, Integer yearIndex, Long projectId);
 
-    @Query(value = "SELECT project_project_id as id,project_name,ta.status, sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4," +
+    @Query(value = "SELECT project_project_id as id,project_name, sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4," +
             "sum(COALESCE(day5,0)) as day5,sum(COALESCE(day6,0)) as day6,sum(COALESCE(day7,0)) as day7,sum(COALESCE(day8,0)) as day8,sum(COALESCE(day9,0)) as day9," +
             "sum(COALESCE(day10,0)) as day10,sum(COALESCE(day11,0)) as day11,sum(COALESCE(day12,0)) as day12,sum(COALESCE(day13,0)) as day13,sum(COALESCE(day14,0)) as day14," +
             "sum(COALESCE(day15,0)) as day15,sum(COALESCE(day16,0)) as day16,sum(COALESCE(day17,0)) as day17,sum(COALESCE(day18,0)) as day18,sum(COALESCE(day19,0)) as day19," +
@@ -34,7 +34,7 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
             "month=?1 and year=?2 and user_user_id=?3 and ta.project_type in('Billable','Overtime') group by project_project_id",nativeQuery = true)
     List<Object[]> getFinanceDataByUser( Integer monthIndex, Integer yearIndex, Long userId);
 
-    @Query(value = "SELECT project_project_id as projectid,project_name,user_user_id as userid,first_name,last_name,ta.status sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4," +
+    @Query(value = "SELECT project_project_id as projectid,project_name,user_user_id as userid,first_name,last_name, sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4," +
             "sum(COALESCE(day5,0)) as day5,sum(COALESCE(day6,0)) as day6,sum(COALESCE(day7,0)) as day7,sum(COALESCE(day8,0)) as day8,sum(COALESCE(day9,0)) as day9," +
             "sum(COALESCE(day10,0)) as day10,sum(COALESCE(day11,0)) as day11,sum(COALESCE(day12,0)) as day12,sum(COALESCE(day13,0)) as day13,sum(COALESCE(day14,0)) as day14," +
             "sum(COALESCE(day15,0)) as day15,sum(COALESCE(day16,0)) as day16,sum(COALESCE(day17,0)) as day17,sum(COALESCE(day18,0)) as day18,sum(COALESCE(day19,0)) as day19," +
