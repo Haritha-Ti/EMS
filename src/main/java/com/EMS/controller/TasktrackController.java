@@ -2855,9 +2855,9 @@ public class TasktrackController {
 			 * 
 			 */
 			jsonDataRes = tasktrackApprovalService.getApproveddatalevel1toFinance(userId,logUser, monthIndex, yearIndex,projectId);
-			jsonDataRes.put("status", "success");
-			jsonDataRes.put("code", httpstatus.getStatus());
-			jsonDataRes.put("message", "successfully saved. ");
+			//jsonDataRes.put("status", "success");
+			//jsonDataRes.put("code", httpstatus.getStatus());
+			//jsonDataRes.put("message", "successfully saved. ");
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");

@@ -85,7 +85,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Override
 	public List<JSONObject> getTimeTrackUserTaskDetails(Long id, Date startDate, Date endDate, List<Object[]> userList,
 
-														List<JSONObject> loggedJsonArray,List<JSONObject> billableJsonArrayLogged,List<JSONObject> timeTrackJSONData, Boolean isExist,Long projectId) {
+		List<JSONObject> loggedJsonArray,List<JSONObject> billableJsonArrayLogged,List<JSONObject> timeTrackJSONData, Boolean isExist,Long projectId) {
 		List<JSONObject> billableJsonArray;
 		List<JSONObject> overTimeArray;
 		if (isExist) {
@@ -146,22 +146,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			int yearIndex = cal.get(Calendar.YEAR);
 
 			List<TaskTrackApproval> approvalUserList =getUserListForApproval(id,projectId,monthIndex,yearIndex);
+			
+			overTimeArray=new ArrayList<>();
 			billableJsonArray = new ArrayList<>();
 			billableJsonArrayLogged=new ArrayList<>();
-			overTimeArray=new ArrayList<>();
-
 
 			diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 			intMonth = 0;
 			intday = 0;
 			Double hours = 0.0;
-			if (approvalUserList != null && approvalUserList.size() > 0) {
+			if (approvalUserList != null && approvalUserList.size() > 0) 
+			{
 				JSONObject jsonObject = new JSONObject();
-
+				
 
 				for (TaskTrackApproval item : approvalUserList) {
 					cal.setTime(startDate);
-
 
 
 					for (int i = 0; i < diffInDays; i++)
@@ -237,7 +237,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						name = (String) item.getFirstName() + " " + item.getLastName();
 
-						if(item.getProjectType().equals("Billable")) {
+						if(item.getProjectType().equals("Billable")) 
+						{
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							billableJsonArrayLogged.add(jsonObject);
@@ -259,9 +260,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 
 					/*-------------------------*/
+					
 
-					if(!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty())
+					if(!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty() && billableJsonArray.size()<diffInDays)
 					{
+						//System.out.println("OT : "+overTimeArray);
+					//	System.out.println("BL : "+billableJsonArray);
+					//	System.out.println("OTS : "+overTimeArray.size());
+						//System.out.println("BLS : "+billableJsonArray.size());
+						
 						cal.setTime(startDate);
 						for (int i = 0; i < diffInDays; i++)
 						{
@@ -299,11 +306,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 					}
 					/*-------------------------*/
+					//System.out.println("Data 0: "+billableJsonArray);
+					//System.out.println("Data 0: "+billableJsonArray.size());
+
 
 				}
-
-
-
 
 			}
 			else {
@@ -1790,7 +1797,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 					}
 				}
-			}
+			
 			
 			String displyDay=null;
 			String mon;
@@ -1806,12 +1813,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 			
 			//return 15 if mhalf month
-			if(status.equals("HM"))
+			
+			if(status!=null && status.equals("HM"))
 			{
 				
 				displyDay=yearIndex+"-"+mon+"-15";
 			}
-			else if(status.equals("FM")) // return month end if  Full Month
+			else if(status!=null  && status.equals("FM")) // return month end if  Full Month
 			{
 				displyDay=yearIndex+"-"+mon+"-"+totaldays;
 			}
@@ -1821,6 +1829,32 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("message", "forwarded to finance");
 			userListObject.put("forwadedDate",displyDay);
 			userListObject.put("buttonStatus", status);
+			}//---Rinu--//
+			else // no data found
+			{
+				String displyDay=null;
+				String mon;
+				
+				//adding 0 before month if it is less than 10th month
+				if(monthIndex<10)
+				{
+					mon="0"+monthIndex;
+				}
+				else
+				{
+					mon=""+monthIndex;
+				}
+				
+				displyDay=yearIndex+"-"+mon+"-15";
+				
+				userListObject.put("data", "failed");
+				userListObject.put("status", "success");
+				userListObject.put("message", "No Data Found in Approval section!!");
+				userListObject.put("forwadedDate",displyDay);
+				userListObject.put("buttonStatus", status);
+				return userListObject;
+				
+			}
 		}
 		else 
 		{
