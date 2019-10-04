@@ -83,6 +83,6 @@ public interface TasktrackApprovalService {
 
 
 	JSONObject checkPreviousTimeSheetsareClosed(int month, int year, Long projectId, Long userId);
-	JSONObject halfCycleCheck(Long projectId, Long userId, Long approverId, Date endDate);
+	JSONObject halfCycleCheck(Long projectId, Long userId, Long approverId, Date endDate) throws ParseException;
 }
 

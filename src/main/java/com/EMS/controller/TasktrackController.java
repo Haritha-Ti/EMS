@@ -2146,6 +2146,7 @@ public class TasktrackController {
 		
 
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		ObjectNode ids = objectMapper.createObjectNode();
 
 		try {
 			// Obtain the data from request data
@@ -2724,14 +2725,20 @@ public class TasktrackController {
 					}
 				}
 			}
+			ids.put("billableId", billableId);
+			ids.put("nonBillableId", nonbillableId);
+			ids.put("beachId", beachId);
+			ids.put("overtimeId", overtimeId);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "successfully saved. ");
+			jsonDataRes.set("ids", ids);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "failed. " + e);
+			jsonDataRes.set("ids", ids);
 		}
 		return jsonDataRes;
 	}

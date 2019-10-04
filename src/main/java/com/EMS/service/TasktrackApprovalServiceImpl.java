@@ -5,6 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ValueRange;
 import java.util.*;
 import java.time.YearMonth;
 
@@ -246,7 +249,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							overTimeArray.add(jsonObject);
-							
+
 
 						}
 
@@ -1274,16 +1277,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public JSONObject getApproveddatalevel2toFinance(Long userId,Long logUser, int monthIndex, int yearIndex, Long projectId) {
 		// TODO Auto-generated method stub
 
-		//Calendar cal = Calendar.getInstance();
-		//cal.setTime(startDate);
-		//int monthIndex = (cal.get(Calendar.MONTH) + 1);
-		//int yearIndex = cal.get(Calendar.YEAR);
 		int flagExist = 0;
 		JSONObject userListObject = new JSONObject();
 		JSONObject testValidation = new JSONObject();
 
 		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, logUser);
-
+		String status = null;
 		if((boolean) testValidation.get("data")) {
 
 			List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,monthIndex,yearIndex,projectId);
@@ -1295,85 +1294,27 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			}
 
-
-
-			/*
-			 * if(approvedData != null) { //System.out.println("Datas Available"); }
-			 */
-
-			Calendar c = Calendar.getInstance();   // this takes current date
-			c.set(Calendar.MONTH, monthIndex-1); // set the month
-			c.set(Calendar.YEAR, yearIndex);
-			c.set(Calendar.DAY_OF_MONTH, 1);
-
-			System.out.println("-------------------------------------"+c.getTime());
-			Date approved_date = null;
-			if(!approvedData.isEmpty() && approvedData.size()>0) {
-				if(approvedData.get(0).getApproved_date() != null)
-
-				{
-					approved_date = approvedData.get(0).getApproved_date();
-				}
-				else
-				{
-					userListObject.put("data", "failed");
-					userListObject.put("status", "success");
-					userListObject.put("message", "Approved date not found");
-					return userListObject;
-				}
-			}
-
-			Date firstday_ofmonth = c.getTime();
-
-			int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
-			int diffInDays = totaldays;
-			System.out.println("TotalDays----------------->"+totaldays);
-			System.out.println("FirstDay of month"+firstday_ofmonth);
-			//int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			long diffInDayss  = ((approved_date.getTime() - firstday_ofmonth.getTime())+1 )   ;
-			long dayDifferences=1+diffInDayss;
-			System.out.println("TotalDays Rinu ----------------->"+dayDifferences);
-
-			String status = "";
-			int halforfull = 0;
-			if(diffInDayss >= 15) {
-
-				status = "HM";
-				halforfull = 1;
-				diffInDays = 15;
-			}
-			else if(diffInDays <= diffInDayss ) {
-
-				status = "FM";
-				halforfull = 1;
-			}
-			//int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-
-
-			/*
-			 * int intMonth = 0,intday = 0; Calendar calendar = Calendar.getInstance();
-			 * calendar.setTime(endDate); calendar.add(Calendar.DATE, -1); Date yesterday =
-			 * calendar.getTime();
-			 */
-
+			YearMonth yearMonthObject = YearMonth.of(yearIndex, monthIndex);
+			int totaldays = yearMonthObject.lengthOfMonth();
 			Date fdate = new Date();
 			if (approvedData != null && approvedData.size() > 0)
 			{
 
 				if(flagExist == 0)
 				{
+					status="HM";
 					for (TaskTrackApprovalLevel2 item : approvedData) {
 
 						TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 						TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
 						level2.setForwarded_date(fdate);
-						level2.setStatus(status);
+						//level2.setStatus("");
 						UserModel user = userService.getUserDetailsById(userId);
 						ProjectModel project = projectService.getProjectId(projectId);
 						finance.setProject(project);
 						finance.setProjectType(item.getProjectType());
 						finance.setApprover_level2(level2);
-						finance.setStatus("HM");
+						finance.setStatus(status);
 						finance.setMonth(monthIndex);
 						finance.setYear(yearIndex);
 						finance.setDay1(item.getDay1());
@@ -1391,70 +1332,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						finance.setDay13(item.getDay13());
 						finance.setDay14(item.getDay14());
 						finance.setDay15(item.getDay15());
-					/*for (int i = 0; i < diffInDays; i++) {
-						if(i==0)
-					finance.setDay1(item.getDay1());
-						else if(i==1)
-					finance.setDay2(item.getDay2());
-						else if(i==2)
-					finance.setDay3(item.getDay3());
-						else if(i==3)
-					finance.setDay4(item.getDay4());
-						else if(i==4)
-					finance.setDay5(item.getDay5());
-						else if(i==5)
-					finance.setDay6(item.getDay6());
-						else if(i==6)
-					finance.setDay7(item.getDay7());
-						else if(i==7)
-					finance.setDay8(item.getDay8());
-						else if(i==8)
-					finance.setDay9(item.getDay9());
-						else if(i==9)
-					finance.setDay10(item.getDay10());
-						else if(i==10)
-					finance.setDay11(item.getDay11());
-						else if(i==11)
-					finance.setDay12(item.getDay12());
-						else if(i==12)
-					finance.setDay13(item.getDay13());
-						else if(i==13)
-					finance.setDay14(item.getDay14());
-						else if(i==14)
-					finance.setDay15(item.getDay15());
-						else if(i==15)
-					finance.setDay16(item.getDay16());
-						else if(i==16)
-					finance.setDay17(item.getDay17());
-						else if(i==17)
-					finance.setDay18(item.getDay18());
-						else if(i==18)
-					finance.setDay19(item.getDay19());
-						else if(i==19)
-					finance.setDay20(item.getDay20());
-						else if(i==20)
-					finance.setDay21(item.getDay21());
-						else if(i==21)
-					finance.setDay22(item.getDay22());
-						else if(i==22)
-					finance.setDay23(item.getDay23());
-						else if(i==23)
-					finance.setDay24(item.getDay24());
-						else if(i==24)
-					finance.setDay25(item.getDay25());
-						else if(i==25)
-					finance.setDay26(item.getDay26());
-						else if(i==26)
-					finance.setDay27(item.getDay27());
-						else if(i==27)
-					finance.setDay28(item.getDay28());
-						else if(i==28)
-					finance.setDay29(item.getDay29());
-						else if(i==29)
-					finance.setDay30(item.getDay30());
-						else if(i==30)
-					finance.setDay31(item.getDay31());
-					}*/
 						finance.setUser(user);
 						//cal.setTime(startDate);
 						taskTrackFinanceRepository.save(finance);
@@ -1462,7 +1339,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 				else {
 
-
+					status ="FM";
 					for(TaskTrackApprovalFinance eachdata : data ) {
 
 
@@ -1472,42 +1349,165 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							for (TaskTrackApprovalLevel2 item : approvedData) {
 
 
-								for(int i= 15 ; i < totaldays ; i++) {
+								if(eachdata.getProjectType().equalsIgnoreCase("Non-Billable") && item.getProjectType().equalsIgnoreCase("Non-Billable")) {
 
-									if(i==15)
-										eachdata.setDay16(item.getDay16());
-									else if(i==16)
-										eachdata.setDay17(item.getDay17());
-									else if(i==17)
-										eachdata.setDay18(item.getDay18());
-									else if(i==18)
-										eachdata.setDay19(item.getDay19());
-									else if(i==19)
-										eachdata.setDay20(item.getDay20());
-									else if(i==20)
-										eachdata.setDay21(item.getDay21());
-									else if(i==21)
-										eachdata.setDay22(item.getDay22());
-									else if(i==22)
-										eachdata.setDay23(item.getDay23());
-									else if(i==23)
-										eachdata.setDay24(item.getDay24());
-									else if(i==24)
-										eachdata.setDay25(item.getDay25());
-									else if(i==25)
-										eachdata.setDay26(item.getDay26());
-									else if(i==26)
-										eachdata.setDay27(item.getDay27());
-									else if(i==27)
-										eachdata.setDay28(item.getDay28());
-									else if(i==28)
-										eachdata.setDay29(item.getDay29());
-									else if(i==29)
-										eachdata.setDay30(item.getDay30());
-									else if(i==30)
-										eachdata.setDay31(item.getDay31());
-									eachdata.setStatus("FM");
+									for (int i = 15; i < totaldays; i++) {
 
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+
+									}
+								}
+								if(eachdata.getProjectType().equalsIgnoreCase("Billable") && item.getProjectType().equalsIgnoreCase("Billable")) {
+
+									for (int i = 15; i < totaldays; i++) {
+
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+
+									}
+								}
+								if(eachdata.getProjectType().equalsIgnoreCase("Overtime") && item.getProjectType().equalsIgnoreCase("Overtime")) {
+
+									for (int i = 15; i < totaldays; i++) {
+
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+
+									}
+								}
+								if(eachdata.getProjectType().equalsIgnoreCase("Beach") && item.getProjectType().equalsIgnoreCase("Beach")) {
+
+									for (int i = 15; i < totaldays; i++) {
+
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+
+									}
 								}
 								taskTrackFinanceRepository.save(eachdata);
 							}
@@ -1520,12 +1520,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("data", "success");
 			userListObject.put("status", "success");
 			userListObject.put("message", "forwarded to finance");
+			userListObject.put("buttonStatus", status);
 		}
 		else
 		{
 			userListObject.put("data", "failed");
 			userListObject.put("status", "success");
 			userListObject.put("message", testValidation.get("message"));
+			userListObject.put("buttonStatus", status);
 		}
 
 		return userListObject;
@@ -1534,13 +1536,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Override
 	public JSONObject getApproveddatalevel1toFinance(Long userId,Long logUser, int monthIndex, int  yearIndex, Long projectId) {
 		// TODO Auto-generated method stub
-		/*
-		 * Calendar cal = Calendar.getInstance(); cal.setTime(startDate); int monthIndex
-		 * = (cal.get(Calendar.MONTH) + 1); int yearIndex = cal.get(Calendar.YEAR);
-		 */
 
 		JSONObject testValidation = new JSONObject();
-
+		String status = null;
 		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, logUser);
 		JSONObject userListObject = new JSONObject();
 		if((boolean) testValidation.get("data")) {
@@ -1555,50 +1553,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			}
 
-
-
-			Calendar c = Calendar.getInstance();   // this takes current date
-			c.set(Calendar.MONTH, monthIndex-1); // set the month
-			c.set(Calendar.YEAR, yearIndex);
-			c.set(Calendar.DAY_OF_MONTH, 1);
-
-			System.out.println("-------------------------------------"+c.getTime());
-			Date approved_date = null;
-			if(approvedData != null && approvedData.size()>0)
-			{
-				if(approvedData.get(0).getApproved_date() != null)
-				{
-					approved_date = approvedData.get(0).getApproved_date();
-				}
-			}
-
-
-			Date firstday_ofmonth = c.getTime();
-			int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
-			int diffInDays = totaldays;
-			System.out.println("TotalDays----------------->"+totaldays);
-			System.out.println("FirstDay of month"+firstday_ofmonth);
-			//int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int diffInDayss  = (int)((approved_date.getTime() - firstday_ofmonth.getTime()) / (1000 * 60 * 60 * 24)) + 1  ;
-			String status = "";
-			int halforfull = 0;
-			if(diffInDayss >= 15) {
-
-				status = "HM";
-				halforfull = 1;
-				diffInDays = 15;
-			}
-			else if(diffInDays <= diffInDayss ) {
-
-				status = "FM";
-				halforfull = 1;
-			}
+			YearMonth yearMonthObject = YearMonth.of(yearIndex, monthIndex);
+			int totaldays = yearMonthObject.lengthOfMonth();
 			Date fdate = new Date();
 
 			if (approvedData != null && approvedData.size() > 0) {
 
 				if(flagExist == 0)
 				{
+					status = "HM";
 
 					for (TaskTrackApproval item : approvedData) {
 						TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
@@ -1610,7 +1573,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						finance.setProject(project);
 						finance.setProjectType(item.getProjectType());
 						finance.setApprover_level1(level1);
-						finance.setStatus("HM");
+						finance.setStatus(status);
 						finance.setMonth(monthIndex);
 						finance.setYear(yearIndex);
 						finance.setDay1(item.getDay1());
@@ -1628,116 +1591,177 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						finance.setDay13(item.getDay13());
 						finance.setDay14(item.getDay14());
 						finance.setDay15(item.getDay15());
-				/*for (int i = 0; i < diffInDays; i++) {
-					if(i==0)
-				finance.setDay1(item.getDay1());
-					else if(i==1)
-				finance.setDay2(item.getDay2());
-					else if(i==2)
-				finance.setDay3(item.getDay3());
-					else if(i==3)
-				finance.setDay4(item.getDay4());
-					else if(i==4)
-				finance.setDay5(item.getDay5());
-					else if(i==5)
-				finance.setDay6(item.getDay6());
-					else if(i==6)
-				finance.setDay7(item.getDay7());
-					else if(i==7)
-				finance.setDay8(item.getDay8());
-					else if(i==8)
-				finance.setDay9(item.getDay9());
-					else if(i==9)
-				finance.setDay10(item.getDay10());
-					else if(i==10)
-				finance.setDay11(item.getDay11());
-					else if(i==11)
-				finance.setDay12(item.getDay12());
-					else if(i==12)
-				finance.setDay13(item.getDay13());
-					else if(i==13)
-				finance.setDay14(item.getDay14());
-					else if(i==14)
-				finance.setDay15(item.getDay15());
-					else if(i==15)
-				finance.setDay16(item.getDay16());
-					else if(i==16)
-				finance.setDay17(item.getDay17());
-					else if(i==17)
-				finance.setDay18(item.getDay18());
-					else if(i==18)
-				finance.setDay19(item.getDay19());
-					else if(i==19)
-				finance.setDay20(item.getDay20());
-					else if(i==20)
-				finance.setDay21(item.getDay21());
-					else if(i==21)
-				finance.setDay22(item.getDay22());
-					else if(i==22)
-				finance.setDay23(item.getDay23());
-					else if(i==23)
-				finance.setDay24(item.getDay24());
-					else if(i==24)
-				finance.setDay25(item.getDay25());
-					else if(i==25)
-				finance.setDay26(item.getDay26());
-					else if(i==26)
-				finance.setDay27(item.getDay27());
-					else if(i==27)
-				finance.setDay28(item.getDay28());
-					else if(i==28)
-				finance.setDay29(item.getDay29());
-					else if(i==29)
-				finance.setDay30(item.getDay30());
-					else if(i==30)
-				finance.setDay31(item.getDay31());
-				}*/
 						finance.setUser(user);
 						//cal.setTime(startDate);
 						taskTrackFinanceRepository.save(finance);
 					}
 				}
 				else {
+					status = "FM";
 
 					for(TaskTrackApprovalFinance eachdata : data ) {
 						if(eachdata.getStatus().equalsIgnoreCase("HM")) {
+
 							for (TaskTrackApproval item : approvedData) {
-								for(int i= 15 ; i < totaldays ; i++) {
+								if(eachdata.getProjectType().equalsIgnoreCase("Non-Billable") && item.getProjectType().equalsIgnoreCase("Non-Billable")) {
 
-									if(i==15)
-										eachdata.setDay16(item.getDay16());
-									else if(i==16)
-										eachdata.setDay17(item.getDay17());
-									else if(i==17)
-										eachdata.setDay18(item.getDay18());
-									else if(i==18)
-										eachdata.setDay19(item.getDay19());
-									else if(i==19)
-										eachdata.setDay20(item.getDay20());
-									else if(i==20)
-										eachdata.setDay21(item.getDay21());
-									else if(i==21)
-										eachdata.setDay22(item.getDay22());
-									else if(i==22)
-										eachdata.setDay23(item.getDay23());
-									else if(i==23)
-										eachdata.setDay24(item.getDay24());
-									else if(i==24)
-										eachdata.setDay25(item.getDay25());
-									else if(i==25)
-										eachdata.setDay26(item.getDay26());
-									else if(i==26)
-										eachdata.setDay27(item.getDay27());
-									else if(i==27)
-										eachdata.setDay28(item.getDay28());
-									else if(i==28)
-										eachdata.setDay29(item.getDay29());
-									else if(i==29)
-										eachdata.setDay30(item.getDay30());
-									else if(i==30)
-										eachdata.setDay31(item.getDay31());
-									eachdata.setStatus("FM");
+									for (int i = 15; i < totaldays; i++) {
 
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+
+									}
+								}
+								if(eachdata.getProjectType().equalsIgnoreCase("Billable") && item.getProjectType().equalsIgnoreCase("Billable")) {
+
+									for (int i = 15; i < totaldays; i++) {
+
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+
+									}
+								}
+								if(eachdata.getProjectType().equalsIgnoreCase("Overtime") && item.getProjectType().equalsIgnoreCase("Overtime")) {
+
+									for (int i = 15; i < totaldays; i++) {
+
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+
+									}
+								}
+								if(eachdata.getProjectType().equalsIgnoreCase("Beach") && item.getProjectType().equalsIgnoreCase("Beach")) {
+
+									for (int i = 15; i < totaldays; i++) {
+
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+
+									}
 								}
 								taskTrackFinanceRepository.save(eachdata);
 							}
@@ -1749,11 +1773,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("data", "success");
 			userListObject.put("status", "success");
 			userListObject.put("message", "forwarded to finance");
+			userListObject.put("buttonStatus", status);
 		}
 		else {
 			userListObject.put("data", "failed");
 			userListObject.put("status", "success");
 			userListObject.put("message", testValidation.get("message"));
+			userListObject.put("buttonStatus", status);
 		}
 
 		return userListObject;
@@ -2251,7 +2277,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								int dayf = 0; int daypf = 0;
 								daypf = cal.get(Calendar.DAY_OF_MONTH);
 								dayf = caldayss.get(Calendar.DAY_OF_MONTH);
-								if(item.getProjectType().equalsIgnoreCase("Billable"))	{
+								if(item.getProjectType().equalsIgnoreCase("Billable") && item1.getProjectType().equalsIgnoreCase("Billable"))	{
 									for (int i = daypf; i < dayf; i++) {
 										if(i==1)
 											item1.setDay1(item.getDay1());
@@ -2316,10 +2342,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if(i==31)
 											item1.setDay31(item.getDay31());
 										tta2 = timeTrackApprovalLevel2.save(item1);
+										billable_id = tta2.getId();
 									}
 								}
 
-								if(item.getProjectType().equalsIgnoreCase("Non-Billable"))	{
+								if(item.getProjectType().equalsIgnoreCase("Non-Billable") && item1.getProjectType().equalsIgnoreCase("Non-Billable"))	{
 									for (int i = daypf; i < dayf; i++) {
 										if(i==1)
 											item1.setDay1(item.getDay1());
@@ -2384,9 +2411,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if(i==31)
 											item1.setDay31(item.getDay31());
 										tta2 = timeTrackApprovalLevel2.save(item1);
+										nonbillable_id = tta2.getId();
 									}
 								}
-								if(item.getProjectType().equalsIgnoreCase("Beach"))	{
+								if(item.getProjectType().equalsIgnoreCase("Beach") && item1.getProjectType().equalsIgnoreCase("Beach"))	{
 									for (int i = daypf; i < dayf; i++) {
 										if(i==1)
 											item1.setDay1(item.getDay1());
@@ -2451,9 +2479,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if(i==31)
 											item1.setDay31(item.getDay31());
 										tta2 = timeTrackApprovalLevel2.save(item1);
+										beach_id = tta2.getId();
 									}
 								}
-								if(item.getProjectType().equalsIgnoreCase("Overtime"))	{
+								if(item.getProjectType().equalsIgnoreCase("Overtime") && item1.getProjectType().equalsIgnoreCase("Overtime"))	{
 									for (int i = daypf; i < dayf; i++) {
 										if(i==1)
 											item1.setDay1(item.getDay1());
@@ -2519,6 +2548,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 											item1.setDay31(item.getDay31());
 
 										tta2 = timeTrackApprovalLevel2.save(item1);
+										overtime_id = tta2.getId();
 									}
 								}
 
@@ -2570,6 +2600,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			node.put("userId",item[0]);
 			node.put("firstName",item[1]);
 			node.put("lastName",item[2]);
+			node.put("status",item[3]);
 			for(int i=1;i<=daysInMonth;i++)
 			{
 				String j;
@@ -2580,7 +2611,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					j =String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year+"-"+intmonth+"-"+j,item[i+2]);
+				billableNode.put(year+"-"+intmonth+"-"+j,item[i+3]);
 				billableArray.add(billableNode);
 			}
 			node.put("billable",billableArray);
@@ -2609,6 +2640,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			List<JSONObject> billableArray = new ArrayList<>();
 			node.put("projectId",item[0]);
 			node.put("projectName",item[1]);
+			node.put("status",item[2]);
 			for(int i=1;i<=daysInMonth;i++)
 			{
 				String j;
@@ -2619,7 +2651,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					j =String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year+"-"+intmonth+"-"+j,item[i+1]);
+				billableNode.put(year+"-"+intmonth+"-"+j,item[i+2]);
 				billableArray.add(billableNode);
 			}
 			node.put("billable",billableArray);
@@ -2651,6 +2683,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			node.put("userId",item[2]);
 			node.put("firstName",item[3]);
 			node.put("lastName",item[4]);
+			node.put("status",item[5]);
 			for(int i=1;i<=daysInMonth;i++)
 			{
 				String j;
@@ -2661,7 +2694,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					j =String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year+"-"+intmonth+"-"+j,item[i+4]);
+				billableNode.put(year+"-"+intmonth+"-"+j,item[i+5]);
 				billableArray.add(billableNode);
 			}
 			node.put("billable",billableArray);
@@ -2689,9 +2722,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return timeTrackApprovalLevel2.getUserIdByProjectAndDateForLevel2(projectId,intMonth,yearIndex);
 	}
 
-	public JSONObject checkPreviousTimeSheetsareClosed(int month, int year, Long projectId, Long userId){
+	public JSONObject checkPreviousTimeSheetsareClosed(int month, int year, Long projectId, Long approverId){
 
-		UserModel user =  userRepository.getOne(userId);
+		UserModel user =  userRepository.getOne(approverId);
 		JSONObject jsonDataRes = new JSONObject();
 		String message=null;
 		Boolean status=true;
@@ -2707,110 +2740,133 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Integer prevMonth = calendar.get(Calendar.MONTH);
 		Integer prevMonthYear = calendar.get(Calendar.YEAR);
 		Long approverrowcount = null;
-		System.out.println("prevMonth "+prevMonth);
-		System.out.println("prevMonth "+prevMonthYear);
+		String fromdate = prevMonthYear+"-"+((prevMonth < 10) ? "0" + prevMonth : "" + prevMonth) +"-01";
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
+		LocalDate date = LocalDate.parse(fromdate, dateFormat);
+		ValueRange range = date.range(ChronoField.DAY_OF_MONTH);
+		Long max = range.getMaximum();
+		String todate = String.format("%s-%s-%d", prevMonthYear, prevMonth, max);
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate =null;
+		Date endDate = null;
 
-		if(role == 2)
-		{
-			ProjectModel projectData = projectRepository.getProjectDetails(projectId);
-			approverrowcount = timeTrackApprovalJPARepository.getCountOfRows(prevMonth, prevMonthYear, projectId);
-			if(projectData.getOnsite_lead()==null)
+		try {
+			 startDate = outputFormat.parse(fromdate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		try {
+			 endDate = outputFormat.parse(todate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		int allocated = tasktrackRepository.checkprojectallocated(projectId, startDate, endDate);
+		if(allocated>0) {
+			int expectedRows = allocated * 4;
+			if (role == 2)
 			{
-				if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth,prevMonthYear,projectId))
+				ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+				approverrowcount = timeTrackApprovalJPARepository.getCountOfRows(prevMonth, prevMonthYear, projectId);
+				if(expectedRows ==approverrowcount)
 				{
-					if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth,prevMonthYear,projectId))
-					{
-						message="No pending logs found";
-						status=true;
-						month =prevMonth;
-						year = prevMonthYear;
+					if (projectData.getOnsite_lead() == null) {
+						if (expectedRows == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth, prevMonthYear, projectId))
+						{
+							if (expectedRows == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth, prevMonthYear, projectId))
+							{
+								message = "No pending logs found";
+								status = true;
+
+							}
+							else
+							{
+								message = "Pending previous full month logs found";
+								status = false;
+							}
+						}
+						else
+						{
+							message = "Pending previous half month logs found";
+							status = false;
+						}
 					}
 					else
 					{
-						message="Pending previous full month logs found";
-						status=false;
-						month =prevMonth;
-						year = prevMonthYear;
+						if (expectedRows == timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth, prevMonthYear, projectId))
+						{
+							if (expectedRows == timeTrackApprovalLevel2.getCountOfRowsFM(prevMonth, prevMonthYear, projectId))
+							{
+								message = "No pending logs found";
+								status = true;
+							}
+							else
+							{
+								message = "Pending previous full month logs found";
+								status = false;
+							}
+						}
+						else
+						{
+							message = "Pending previous half month logs found";
+							status = false;
+						}
+
 					}
 				}
 				else
 				{
-					message="Pending previous half month logs found";
-					status=false;
-					month =prevMonth;
-					year = prevMonthYear;
+					message = "Pending previous month log approval found";
+					status = false;
 				}
 			}
-			else
+			else if (role == 7)
 			{
-				if(approverrowcount == timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth,prevMonthYear,projectId))
+				approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth, prevMonthYear, projectId);
+				if (expectedRows == approverrowcount)
 				{
-					if(approverrowcount == timeTrackApprovalLevel2.getCountOfRowsFM(prevMonth,prevMonthYear,projectId))
+					if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth, prevMonthYear, projectId))
 					{
-						message="No pending logs found";
-						status=true;
-						month =prevMonth;
-						year = prevMonthYear;
+						if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth, prevMonthYear, projectId))
+						{
+							message = "No pending logs found";
+							status = true;
+						}
+						else
+						{
+							message = "Pending previous full month logs found";
+							status = false;
+						}
 					}
 					else
 					{
-						message="Pending previous full month logs found";
-						status=false;
-						month =prevMonth;
-						year = prevMonthYear;
+						message = "Pending previous half month logs found";
+						status = false;
 					}
 
 				}
 				else
 				{
-					message="Pending previous half month logs found";
-					status=false;
-					month =prevMonth;
-					year = prevMonthYear;
+					message = "Pending previous month log approval found";
+					status = false;
 				}
-
 			}
 		}
-		else if(role == 7 )
-		{
-			approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth,prevMonthYear,projectId);
-			if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth,prevMonthYear,projectId))
-			{
-				if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth,prevMonthYear,projectId))
-				{
-					message="No pending logs found";
-					status=true;
-					month =prevMonth;
-					year = prevMonthYear;
-				}
-				else
-				{
-					message="Pending previous full month logs found";
-					status=false;
-					month =prevMonth;
-					year = prevMonthYear;
-				}
-			}
-			else
-			{
-				message="Pending previous half month logs found";
-				status=false;
-				month =prevMonth;
-				year = prevMonthYear;
-			}
+		else{
+			message = "No pending logs found";
+			status = true;
 
 		}
 
 		jsonDataRes.put("data", status);
 		jsonDataRes.put("status", "success");
 		jsonDataRes.put("message", message);
-		jsonDataRes.put("month", month);
-		jsonDataRes.put("year", year);
+		jsonDataRes.put("month", prevMonth);
+		jsonDataRes.put("year", prevMonthYear);
 
 		return jsonDataRes;
 	}
 
-	public JSONObject halfCycleCheck(Long projectId,Long userId,Long approverId,Date endDate) {
+	public JSONObject halfCycleCheck(Long projectId,Long userId,Long approverId,Date endDate) throws ParseException {
 
 		JSONObject jsonDataRes = new JSONObject();
 		UserModel user =  userRepository.getOne(approverId);
@@ -2826,61 +2882,97 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		int day=calendar.get(Calendar.DAY_OF_MONTH);
 		int month = (calendar.get(Calendar.MONTH)+1);
 		int year = calendar.get(Calendar.YEAR);
+		String fromdate = year+"-"+((month < 10) ? "0" + month : "" + month) +"-01";
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date startdDate = outputFormat.parse(fromdate);
+		List<Tasktrack> logData = tasktrackRepository.getByDate(startdDate,endDate,userId);
+		String financeStatus = "";
 
 		if(day>15)
 		{
+			if(!logData.isEmpty()) {
 
-			if(role == 2)
-			{
+				if (role == 2) {
 
-				ProjectModel projectData = projectRepository.getProjectDetails(projectId);
-				approverrowcount = timeTrackApprovalJPARepository.getCountOfRowsByUser(month, year, projectId,userId);
-				if(projectData.getOnsite_lead()==null)
-				{
+					ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+					approverrowcount = timeTrackApprovalJPARepository.getCountOfRowsByUser(month, year, projectId, userId);
+					if (projectData.getOnsite_lead() == null) {
 
-					if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month,year,projectId,userId))
-					{
-						message="No pending logs found";
-						status=true;
+						if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year, projectId, userId))
+						{
+
+							if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year, projectId, userId))
+							{
+								financeStatus = "FM";
+								message = "No pending logs found";
+								status = true;
+							}
+							else
+							{
+								financeStatus = "HM";
+								message = "Pending full month logs found ";
+								status = true;
+							}
+						}
+						else
+						{
+							financeStatus = "";
+							message = "Pending half month logs found";
+							status = false;
+						}
 					}
 					else
 					{
-						message="Pending half month logs found";
-						status=false;
+						if (approverrowcount == timeTrackApprovalLevel2.getCountOfRowsHMByUser(month, year, projectId, userId))
+						{
+							financeStatus = "";
+							message = "No pending logs found";
+							status = true;
+						}
+						else
+						{
+							financeStatus = "";
+							message = "Pending half month logs found";
+							status = false;
+						}
+
 					}
 				}
-				else
+				else if (role == 7)
 				{
 
-					if(approverrowcount == timeTrackApprovalLevel2.getCountOfRowsHMByUser(month,year,projectId,userId))
+					approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHMByUser(month, year, projectId, userId);
+					if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year, projectId, userId))
 					{
-						message="No pending logs found";
-						status=true;
+						if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year, projectId, userId))
+						{
+							financeStatus = "FM";
+							message = "No pending logs found";
+							status = true;
+						}
+						else
+						{
+							financeStatus = "HM";
+							message = "Pending full month logs found ";
+							status = true;
+						}
 					}
 					else
 					{
-						message="Pending half month logs found";
-						status=false;
+						financeStatus = "";
+						message = "Pending half month logs found";
+						status = false;
 					}
 
 				}
 			}
-			else if(role == 7 )
+			else
 			{
-
-				approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHMByUser(month,year,projectId,userId);
-				if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month,year,projectId,userId))
-				{
-					message="No pending logs found";
-					status=true;
-				}
-				else
-				{
-					message="Pending half month logs found";
-					status=false;
-				}
-
+				financeStatus = "";
+				message = "Pending half month logs found";
+				status = false;
 			}
+
 
 		}
 		//List<AllocationModel> =
@@ -2888,6 +2980,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		jsonDataRes.put("data", status);
 		jsonDataRes.put("status", "success");
 		jsonDataRes.put("message", message);
+		jsonDataRes.put("financeStatus", financeStatus);
 
 		return jsonDataRes;
 
