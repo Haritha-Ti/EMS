@@ -1515,9 +1515,33 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 				}
 			}
+			String displyDay=null;
+			String mon;
+			
+			//adding 0 before month if it is less than 10th month
+			if(monthIndex<10)
+			{
+				mon="0"+monthIndex;
+			}
+			else
+			{
+				mon=""+monthIndex;
+			}
+			
+			//return 15 if mhalf month
+			if(status.equals("HM"))
+			{
+				
+				displyDay=yearIndex+"-"+mon+"-15";
+			}
+			else if(status.equals("FM")) // return month end if  Full Month
+			{
+				displyDay=yearIndex+"-"+mon+"-"+totaldays;
+			}
 			userListObject.put("data", "success");
 			userListObject.put("status", "success");
 			userListObject.put("message", "forwarded to finance");
+			userListObject.put("forwadedDate",displyDay);
 			userListObject.put("buttonStatus", status);
 		}
 		else
@@ -1767,13 +1791,39 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 				}
 			}
+			
+			String displyDay=null;
+			String mon;
+			
+			//adding 0 before month if it is less than 10th month
+			if(monthIndex<10)
+			{
+				mon="0"+monthIndex;
+			}
+			else
+			{
+				mon=""+monthIndex;
+			}
+			
+			//return 15 if mhalf month
+			if(status.equals("HM"))
+			{
+				
+				displyDay=yearIndex+"-"+mon+"-15";
+			}
+			else if(status.equals("FM")) // return month end if  Full Month
+			{
+				displyDay=yearIndex+"-"+mon+"-"+totaldays;
+			}
 
 			userListObject.put("data", "success");
 			userListObject.put("status", "success");
 			userListObject.put("message", "forwarded to finance");
+			userListObject.put("forwadedDate",displyDay);
 			userListObject.put("buttonStatus", status);
 		}
-		else {
+		else 
+		{
 			userListObject.put("data", "failed");
 			userListObject.put("status", "success");
 			userListObject.put("message", testValidation.get("message"));
@@ -2138,6 +2188,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		else {
 
 			status = "HM";
+			endDate = yesterday;
 		}
 
 		JSONObject testValidation = new JSONObject();
@@ -2560,6 +2611,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			}
 
+			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 			ids.put("billable_id", billable_id);
 			ids.put("nonbillable_id", nonbillable_id);
 			ids.put("beach_id", beach_id);
@@ -2567,6 +2619,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			response.put("data", "");
 			response.put("status", "success");
 			response.put("message", "forwarded to level2");
+			response.put("forwardedDate",(outputFormat.format(endDate)).toString());
 			response.set("ids", ids);
 		}
 		else {
