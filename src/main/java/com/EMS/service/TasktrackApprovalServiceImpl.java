@@ -285,8 +285,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							}
 
 
-
-
 							jsonOverTime = overTimeArray.get(i);
 							if(jsonOverTime.get(vl)!=null)
 							{
@@ -2146,18 +2144,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		testValidation = checkPreviousTimeSheetsareClosed(intMonth, yearIndex, projectId, logUser);
 		if((boolean) testValidation.get("data")) {
 			List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,intMonth,yearIndex,projectId);
-			int fflag = 0;
+			int fflag = 1;
 			//   int eflag = 0;
 
 
 			if (approvedData.size() > 0) {
-				if(approvedData.get(0).getForwarded_date() == null) {
-					fflag = 1;
+				
+				if(!timeTrackApprovalLevel2.getApprovedData(userId, intMonth, yearIndex, projectId).isEmpty())
+				{
+					fflag=2;
 				}
-				else if(approvedData.get(0).getApproved_date() != null && approvedData.get(0).getForwarded_date() != null) {
-					if(approvedData.get(0).getApproved_date().compareTo(approvedData.get(0).getForwarded_date())> 0)
-						fflag = 2 ;
-				}
+				
 				for (TaskTrackApproval item : approvedData) {
 					if(fflag == 1) {
 						TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
@@ -2891,16 +2888,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if(day>15)
 		{
 			if(!logData.isEmpty()) {
-
 				if (role == 2) {
-
+						
 					ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 					approverrowcount = timeTrackApprovalJPARepository.getCountOfRowsByUser(month, year, projectId, userId);
+					
 					if (projectData.getOnsite_lead() == null) {
 
-						if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year, projectId, userId))
+						if(approverrowcount==0)
 						{
-
+							financeStatus = "";
+							message = "Log not approved yet";
+							status = false;
+						}
+						else if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year, projectId, userId))
+						{
+							
 							if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year, projectId, userId))
 							{
 								financeStatus = "FM";
@@ -2944,7 +2947,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHMByUser(month, year, projectId, userId);
 					if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year, projectId, userId))
 					{
-						if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year, projectId, userId))
+						if(approverrowcount==0)
+						{
+							financeStatus = "";
+							message = "Log not approved yet";
+							status = false;
+						}
+						else if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year, projectId, userId))
 						{
 							financeStatus = "FM";
 							message = "No pending logs found";
@@ -2986,4 +2995,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	}
 
+
+	
 }
