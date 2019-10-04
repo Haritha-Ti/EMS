@@ -2149,12 +2149,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 
 			if (approvedData.size() > 0) {
-				
+
 				if(!timeTrackApprovalLevel2.getApprovedData(userId, intMonth, yearIndex, projectId).isEmpty())
 				{
 					fflag=2;
 				}
-				
+
+
 				for (TaskTrackApproval item : approvedData) {
 					if(fflag == 1) {
 						TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
@@ -2546,6 +2547,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 										tta2 = timeTrackApprovalLevel2.save(item1);
 										overtime_id = tta2.getId();
+										//System.out.println("Overtime"+overtime_id);
 									}
 								}
 
