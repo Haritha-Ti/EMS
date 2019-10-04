@@ -2146,18 +2146,23 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		testValidation = checkPreviousTimeSheetsareClosed(intMonth, yearIndex, projectId, logUser);
 		if((boolean) testValidation.get("data")) {
 			List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,intMonth,yearIndex,projectId);
-			int fflag = 0;
+			int fflag = 1;
 			//   int eflag = 0;
 
 
 			if (approvedData.size() > 0) {
-				if(approvedData.get(0).getForwarded_date() == null) {
+
+				if(!timeTrackApprovalLevel2.getApprovedData(userId, intMonth, yearIndex, projectId).isEmpty())
+				{
+					fflag=2;
+				}
+				/*if(approvedData.get(0).getForwarded_date() == null) {
 					fflag = 1;
 				}
 				else if(approvedData.get(0).getApproved_date() != null && approvedData.get(0).getForwarded_date() != null) {
 					if(approvedData.get(0).getApproved_date().compareTo(approvedData.get(0).getForwarded_date())> 0)
 						fflag = 2 ;
-				}
+				}*/
 				for (TaskTrackApproval item : approvedData) {
 					if(fflag == 1) {
 						TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
@@ -2549,6 +2554,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 										tta2 = timeTrackApprovalLevel2.save(item1);
 										overtime_id = tta2.getId();
+										//System.out.println("Overtime"+overtime_id);
 									}
 								}
 
