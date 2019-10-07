@@ -11,8 +11,8 @@
 	</parent>
 	
 	<groupId>com.timetrack.ti</groupId>
-	<artifactId>Timetracker</artifactId>
-	<version>0.0.9</version>
+	<artifactId>TimetrackerStaging-versionDemo01</artifactId>
+	<version>0.0.20</version>
 	<name>Timetracker</name>
 	<description>Demo project for Spring Boot</description>
 

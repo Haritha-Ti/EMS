@@ -2051,7 +2051,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					/*-------------------------*/
 
-					if(!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty())
+					if(!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty() &&billableJsonArray.size()<diffInDays )
 					{
 						cal.setTime(startDate);
 						for (int i = 0; i < diffInDays; i++)
