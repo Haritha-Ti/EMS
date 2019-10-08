@@ -258,12 +258,12 @@ public class PulseReportController {
 
 			Sheet sheet1        = workrbook.createSheet("Billable");
 			String nameofReport1   = "PROJECT APPROVAL REPORT";
-			List <ExportApprovalReportModel>exportData = timeTrackApprovalRepository.getApprovalReportData(monthIndex,yearIndex);
+			List <ExportApprovalReportModel>exportData = timeTrackApprovalRepository.getApprovalReportDataFinance(monthIndex,yearIndex);
 			projectExportService.exportAllReport(exportData,workrbook,sheet1,colNames,nameofReport1);
 
 			Sheet sheet2 = workrbook.createSheet("Non-billable");
 			String nameofReport2   = "PROJECT NON-BILLABLE  REPORT";
-			List <ExportApprovalReportModel>exportData1 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
+			List <ExportApprovalReportModel>exportData1 = timeTrackApprovalRepository.getNonApprovalReportDataFinance(monthIndex,yearIndex);
 			projectExportService.exportAllReport(exportData1,workrbook,sheet2,colNames,nameofReport2);
 
 			Sheet sheet3 = workrbook.createSheet("Beach");
@@ -318,12 +318,12 @@ public class PulseReportController {
 
 			Sheet sheet1        = workrbook.createSheet("Billable");
 			String nameofReport1   = "PROJECT APPROVAL REPORT";
-			List <ExportApprovalReportModel>exportData = timeTrackApprovalRepository.getApprovalReportData(monthIndex,yearIndex);
+			List <ExportApprovalReportModel>exportData = timeTrackApprovalRepository.getApprovalReportDataFinance(monthIndex,yearIndex);
 			projectExportService.exportAllReport(exportData,workrbook,sheet1,colNames,nameofReport1);
 
 			Sheet sheet2 = workrbook.createSheet("Non-billable");
 			String nameofReport2   = "PROJECT NON-BILLABLE  REPORT";
-			List <ExportApprovalReportModel>exportData1 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
+			List <ExportApprovalReportModel>exportData1 = timeTrackApprovalRepository.getNonApprovalReportDataFinance(monthIndex,yearIndex);
 			projectExportService.exportAllReport(exportData1,workrbook,sheet2,colNames,nameofReport2);
 
 			Sheet sheet3 = workrbook.createSheet("Beach");

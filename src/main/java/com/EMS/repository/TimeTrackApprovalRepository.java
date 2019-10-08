@@ -3,17 +3,11 @@ package com.EMS.repository;
 import java.util.Date;
 import java.util.List;
 
+import com.EMS.model.*;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.EMS.model.BenchProjectReportModel;
-import com.EMS.model.ExportApprovalReportModel;
-import com.EMS.model.ExportProjectTaskReportModel;
-import com.EMS.model.ProjectModel;
-import com.EMS.model.ProjectReportModel;
-import com.EMS.model.TaskTrackApproval;
-import com.EMS.model.TaskTrackApprovalLevel2;
 import com.EMS.utility.ApprovalReportRowMapper;
 import com.EMS.utility.ApprovalTimeTrackReportRowMapper;
 import com.EMS.utility.BenchReportRowMapper;
@@ -54,6 +48,28 @@ public class TimeTrackApprovalRepository extends DbConnectionUtility {
 		return list;
 	}
 	public List<ExportApprovalReportModel> getNonApprovalReportData (Integer monthIndex,Integer yearIndex){
+
+		List<ExportApprovalReportModel> list = null;
+
+		String sql = "SELECT u.user_id as id,u.last_name as LastName,u.first_name as FirstName,p.project_name AS ProjectName,sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4,sum(COALESCE(day5,0)) as day5,sum(COALESCE(day6,0)) as day6,sum(COALESCE(day7,0)) as day7,sum(COALESCE(day8,0)) as day8,sum(COALESCE(day9,0)) as day9,sum(COALESCE(day10,0)) as day10,sum(COALESCE(day11,0)) as day11,sum(COALESCE(day12,0)) as day12,sum(COALESCE(day13,0)) as day13,sum(COALESCE(day14,0)) as day14,sum(COALESCE(day15,0)) as day15,sum(COALESCE(day16,0)) as day16,sum(COALESCE(day17,0)) as day17,sum(COALESCE(day18,0)) as day18,sum(COALESCE(day19,0)) as day19,sum(COALESCE(day20,0)) as day20,sum(COALESCE(day21,0)) as day21,sum(COALESCE(day22,0)) as day22 ,sum(COALESCE(day23,0)) as day23,sum(COALESCE(day24,0)) as day24,sum(COALESCE(day25,0)) as day25,sum(COALESCE(day26,0)) as day26,sum(COALESCE(day27,0)) as day27,sum(COALESCE(day28,0)) as day28,sum(COALESCE(day29,0)) as day29,sum(COALESCE(day30,0)) as day30,sum(COALESCE(day31,0)) as day31 " +
+				" FROM tasktrack_approval_finance ta LEFT JOIN `user` u ON u.user_id = ta.user_user_id LEFT JOIN project p ON p.project_id = ta.project_project_id WHERE  p.is_billable=1 and ta.month=? AND ta.year=?  AND ta.project_type in('Non-Billable') group by 1,2,3,4 order by 4";
+		list = jdbcTemplate.query(sql, new ApprovalReportRowMapper(), new Object[] {monthIndex,yearIndex});
+
+		return list;
+	}
+
+
+	public List<ExportApprovalReportModel> getApprovalReportDataFinance (Integer monthIndex,Integer yearIndex){
+
+		List<ExportApprovalReportModel> list = null;
+
+		String sql = "SELECT u.user_id as id,u.last_name as LastName,u.first_name as FirstName,p.project_name AS ProjectName,sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4,sum(COALESCE(day5,0)) as day5,sum(COALESCE(day6,0)) as day6,sum(COALESCE(day7,0)) as day7,sum(COALESCE(day8,0)) as day8,sum(COALESCE(day9,0)) as day9,sum(COALESCE(day10,0)) as day10,sum(COALESCE(day11,0)) as day11,sum(COALESCE(day12,0)) as day12,sum(COALESCE(day13,0)) as day13,sum(COALESCE(day14,0)) as day14,sum(COALESCE(day15,0)) as day15,sum(COALESCE(day16,0)) as day16,sum(COALESCE(day17,0)) as day17,sum(COALESCE(day18,0)) as day18,sum(COALESCE(day19,0)) as day19,sum(COALESCE(day20,0)) as day20,sum(COALESCE(day21,0)) as day21,sum(COALESCE(day22,0)) as day22 ,sum(COALESCE(day23,0)) as day23,sum(COALESCE(day24,0)) as day24,sum(COALESCE(day25,0)) as day25,sum(COALESCE(day26,0)) as day26,sum(COALESCE(day27,0)) as day27,sum(COALESCE(day28,0)) as day28,sum(COALESCE(day29,0)) as day29,sum(COALESCE(day30,0)) as day30,sum(COALESCE(day31,0)) as day31 " +
+				" FROM tasktrack_approval_finance ta LEFT JOIN `user` u ON u.user_id = ta.user_user_id LEFT JOIN project p ON p.project_id = ta.project_project_id WHERE  p.is_billable=1 and ta.month=? AND ta.year=?  AND ta.project_type in('Billable','Overtime') group by 1,2,3,4 order by 4";
+		list = jdbcTemplate.query(sql, new ApprovalReportRowMapper(), new Object[] {monthIndex,yearIndex});
+
+		return list;
+	}
+	public List<ExportApprovalReportModel> getNonApprovalReportDataFinance (Integer monthIndex,Integer yearIndex){
 
 		List<ExportApprovalReportModel> list = null;
 
