@@ -1572,7 +1572,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		}
 
 		//Adding filter menu in column headers
-		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 2));
+		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
 
 
 	}
@@ -1695,7 +1695,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		}
 
 		//Adding filter menu in column headers
-		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 2));
+		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
 	}
 
 	public void exportFinanceDataByUserAndProject(Workbook workbook,Sheet sheet,String reportName,Integer month,Integer year,Long userId,Long projectId) throws Exception{
@@ -1815,7 +1815,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		}
 
 		//Adding filter menu in column headers
-		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 2));
+		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
 
 	}
 
