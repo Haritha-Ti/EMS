@@ -60,5 +60,56 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
     Long getCountOfRowsFMByUser(int month,int year,Long projectId,Long userId);
 
 
+  /*********Report **********/
+
+  @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
+          "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
+          "sum(COALESCE(day15,0))+sum(COALESCE(day16,0))+sum(COALESCE(day17,0))+sum(COALESCE(day18,0))+sum(COALESCE(day19,0))+sum(COALESCE(day20,0))+sum(COALESCE(day21,0))+" +
+          "sum(COALESCE(day22,0))+sum(COALESCE(day23,0))+sum(COALESCE(day24,0))+sum(COALESCE(day25,0))+sum(COALESCE(day26,0))+sum(COALESCE(day27,0))+sum(COALESCE(day28,0))+" +
+          "sum(COALESCE(day29,0))+sum(COALESCE(day30,0))+sum(COALESCE(day31,0))) as totalhour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Billable','Overtime','Non-Billable')",nativeQuery = true)
+  List<Object[]> getTimeTrackApprovalDataByUserId(Integer monthIndex,Integer yearIndex,Long id);
+
+    @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
+            "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
+            "sum(COALESCE(day15,0))) as totalhour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Billable','Overtime','Non-Billable')",nativeQuery = true)
+    List<Object[]> getTimeTrackApprovalDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id);
+
+    @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
+            "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
+            "sum(COALESCE(day15,0))+sum(COALESCE(day16,0))+sum(COALESCE(day17,0))+sum(COALESCE(day18,0))+sum(COALESCE(day19,0))+sum(COALESCE(day20,0))+sum(COALESCE(day21,0))+" +
+            "sum(COALESCE(day22,0))+sum(COALESCE(day23,0))+sum(COALESCE(day24,0))+sum(COALESCE(day25,0))+sum(COALESCE(day26,0))+sum(COALESCE(day27,0))+sum(COALESCE(day28,0))+" +
+            "sum(COALESCE(day29,0))+sum(COALESCE(day30,0))+sum(COALESCE(day31,0))) as billablehour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Billable')",nativeQuery = true)
+    List<Object[]> getBillableDataByUserId(Integer monthIndex,Integer yearIndex,Long id);
+
+    @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
+            "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
+            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Billable')",nativeQuery = true)
+    List<Object[]> getBillableDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id);
+
+    @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
+            "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
+            "sum(COALESCE(day15,0))+sum(COALESCE(day16,0))+sum(COALESCE(day17,0))+sum(COALESCE(day18,0))+sum(COALESCE(day19,0))+sum(COALESCE(day20,0))+sum(COALESCE(day21,0))+" +
+            "sum(COALESCE(day22,0))+sum(COALESCE(day23,0))+sum(COALESCE(day24,0))+sum(COALESCE(day25,0))+sum(COALESCE(day26,0))+sum(COALESCE(day27,0))+sum(COALESCE(day28,0))+" +
+            "sum(COALESCE(day29,0))+sum(COALESCE(day30,0))+sum(COALESCE(day31,0))) as billablehour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Non-Billable')",nativeQuery = true)
+    List<Object[]> getNonBillableDataByUserId(Integer monthIndex,Integer yearIndex,Long id);
+
+    @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
+            "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
+            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Non-Billable')",nativeQuery = true)
+    List<Object[]> getNonBillableDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id);
+
+    @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
+            "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
+            "sum(COALESCE(day15,0))+sum(COALESCE(day16,0))+sum(COALESCE(day17,0))+sum(COALESCE(day18,0))+sum(COALESCE(day19,0))+sum(COALESCE(day20,0))+sum(COALESCE(day21,0))+" +
+            "sum(COALESCE(day22,0))+sum(COALESCE(day23,0))+sum(COALESCE(day24,0))+sum(COALESCE(day25,0))+sum(COALESCE(day26,0))+sum(COALESCE(day27,0))+sum(COALESCE(day28,0))+" +
+            "sum(COALESCE(day29,0))+sum(COALESCE(day30,0))+sum(COALESCE(day31,0))) as billablehour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Overtime')",nativeQuery = true)
+    List<Object[]> getOvertimeDataByUserId(Integer monthIndex,Integer yearIndex,Long id);
+
+    @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
+            "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
+            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Overtime')",nativeQuery = true)
+    List<Object[]> getOvertimeDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id);
+
+
 
 }
