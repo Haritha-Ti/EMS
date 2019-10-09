@@ -26,4 +26,7 @@ public interface ProjectExportService {
 
 	public void exportSummaryReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, String reportType, Date startDate, Date endDate) throws Exception;
 
+	public void exportVacationReport(Workbook workrbook, Sheet sheet4, ArrayList<String> colNames, String nameofReport4,
+			int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate);
+
 }
