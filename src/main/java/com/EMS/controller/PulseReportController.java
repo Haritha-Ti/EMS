@@ -271,6 +271,13 @@ public class PulseReportController {
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
 			projectExportService.exportBenchReport(workrbook,sheet3,colNames,nameofReport3,monthIndex,yearIndex,reportType,startDate,endDate);
 
+			
+			Sheet sheet4 = workrbook.createSheet("Vacation");
+			String nameofReport4   = "VACATION REPORT";
+			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
+			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate);
+			
+			
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			response.setHeader("Content-Disposition", "filename=\"" + sheetName+".xlsx" + "\"");
@@ -331,6 +338,11 @@ public class PulseReportController {
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
 			projectExportService.exportBenchReport(workrbook,sheet3,colNames,nameofReport3,monthIndex,yearIndex,reportType,startDate,endDate);
 
+			Sheet sheet4 = workrbook.createSheet("Vacation");
+			String nameofReport4   = "VACATION REPORT";
+			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
+			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate);
+			
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			response.setHeader("Content-Disposition", "filename=\"" + sheetName+".xlsx" + "\"");
