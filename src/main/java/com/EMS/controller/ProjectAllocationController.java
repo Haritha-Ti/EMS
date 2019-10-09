@@ -63,7 +63,8 @@ public class ProjectAllocationController {
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
 			//Method invocation for getting user list
-			List<UserModel> userList = projectAllocation.getUserList();
+			//List<UserModel> userList = projectAllocation.getUserList();
+			List<UserModel> userList = projectAllocation.getUserLists();
 			//Method invocation for getting department list
 			List<DepartmentModel> departmentList = projectAllocation.getDepartmentList();
 			//Method invocation for getting project list

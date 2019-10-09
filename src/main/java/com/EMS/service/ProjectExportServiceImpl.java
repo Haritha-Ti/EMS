@@ -1090,7 +1090,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	@Override
 	public void exportSummaryReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate) throws Exception {
 
-		String[] headers = new String[7];
+		String[] headers = new String[8];
 		//headers[0] = "User Id";
 		headers[0] = "Last Name";
 		headers[1] = "First Name";
@@ -1099,7 +1099,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		headers[3] = "Non-Billable";
 		headers[4] = "Overtime";
 		headers[5] = "Beach";
-		headers[6] = "Total";
+		headers[6] = "Vacation";
+		headers[7] = "Total";
 		int dayCount = colNames.size();
 		//int weekDays = 0;
 		int working_days =0;
@@ -1275,8 +1276,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			}
 
 
-			totalHour = billableHour+nonBillableHour+overtimeHour+benchHour;
-			Listdata.add(new Object[]{id,firstName,lastName,billableHour,nonBillableHour,overtimeHour,benchHour,totalHour});
+			totalHour = billableHour+nonBillableHour+overtimeHour+benchHour+leaveHours;
+			Listdata.add(new Object[]{id,firstName,lastName,billableHour,nonBillableHour,overtimeHour,benchHour,leaveHours,totalHour});
 
 		}
 
@@ -1368,6 +1369,9 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellValue((double) summary[7]);
 			cell.setCellStyle(borderedCellStyle);
 
+			cell = row.createCell(7);
+			cell.setCellValue((double) summary[8]);
+			cell.setCellStyle(borderedCellStyle);
 
 
 		}
@@ -1566,4 +1570,198 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		sheet.setAutoFilter(new CellRangeAddress(2,rowNum , 0, 4));
 	}
 
+
+
+	public void exportVacationReport(Workbook workrbook, Sheet sheet4, ArrayList<String> colNames, String nameofReport4,
+			int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate) {
+		// TODO Auto-generated method stub
+		String[] headers = new String[3];
+		//headers[0] = "User Id";
+		headers[0] = "Last Name";
+		headers[1] = "First Name";
+		headers[2] = "Vacation Hour";
+		
+		int working_days =0;
+		int holidays =0;
+		int fullDayLeaveDays =0;
+		int halfDayLeaveDays =0;
+		double totalWorkingHours =0.0;
+		double totalWorkedHours =0.0;
+		double leaveHours =0.0;
+		double total_vacation_hours = 0.0;
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar c = Calendar.getInstance();
+		c.setTime(startDate);
+		c.add(Calendar.DATE, 14);  // number of days to add
+		Date end_date = c.getTime();
+
+		double vacationHour = 0.0;
+		double total_hours =0.0;
+		List<Object[]> userList = userRepository.getUserList(startDate,endDate);
+		List<Object[]> Listdata = new ArrayList<>();
+		
+		for(Object[] item : userList) {
+			Long id                  = ((BigInteger) item[0]).longValue();
+			String firstName         = (String)item[1];
+			String lastName          = (String) item[2];
+			Date joiningDate         = (Date) item[3];
+			Date terminationDate     = (Date) item[4];
+
+
+			List<Object[]> loggedData;
+		
+		if(reportType == "monthly") {
+			
+			loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id);
+			working_days = calculateWorkingDays(startDate,endDate);
+			holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,endDate);
+			fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,endDate);
+			halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,startDate,endDate);
+			if((startDate.compareTo(joiningDate) < 0)){
+				working_days = calculateWorkingDays(joiningDate,endDate);
+				holidays = holidayRepository.getNationalHolidayListsByMonth(joiningDate,endDate);
+				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,joiningDate,endDate);
+				halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,endDate);	
+			}
+			if(terminationDate !=null){
+				if((terminationDate.compareTo(endDate) < 0)){
+					working_days = calculateWorkingDays(startDate,terminationDate);
+					holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,terminationDate);
+					fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,terminationDate);
+					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,startDate,terminationDate);
+				}
+			}
+
+		}
+		else {
+			 loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id);
+				working_days = calculateWorkingDays(startDate,end_date);
+				holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,end_date);
+				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,end_date);
+				halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,startDate,end_date);
+				if((startDate.compareTo(joiningDate) < 0)){
+					working_days = calculateWorkingDays(joiningDate,end_date);
+					holidays = holidayRepository.getNationalHolidayListsByMonth(joiningDate,end_date);
+					fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,joiningDate,end_date);
+					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,end_date);
+				}
+				if(terminationDate !=null){
+					if((terminationDate.compareTo(end_date) < 0)){
+						working_days = calculateWorkingDays(startDate,terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,terminationDate);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,startDate,terminationDate);
+					}
+				}
+		}
+		
+		totalWorkingHours = (working_days-holidays)*8;
+		leaveHours = (fullDayLeaveDays*8)+(halfDayLeaveDays*4);
+		//System.out.println("Holidays----------------------->"+holidays);
+		//System.out.println("fulldayleaves----------------------->"+fullDayLeaveDays);
+		//totalWorkedHours = totalWorkingHours -leaveHours;
+		total_vacation_hours = (fullDayLeaveDays*8)+(halfDayLeaveDays*4);
+		totalWorkedHours = totalWorkingHours - total_vacation_hours;
+		
+		
+			/*
+			 * for(Object[] items : loggedData) {
+			 * 
+			 * if(items[1] != null) { double userHour = (double)items[1]; vactaionHour =
+			 * totalWorkedHours-userHour; if(vactaionHour<0.0) { vactaionHour = 0.0; }
+			 * 
+			 * } else { vactaionHour = totalWorkedHours;
+			 * 
+			 * }
+			 * 
+			 * }
+			 */
+		Listdata.add(new Object[]{id,firstName,lastName,total_vacation_hours});
+		//System.out.println("Listdata------------------------------>"+Listdata.size());
+		}
+		//Removing grids
+				sheet4.setDisplayGridlines(false);
+				//Freezing columns and rows from scrooling
+				sheet4.createFreezePane(0,3);
+
+				//Bordered Cell Style
+				CellStyle borderedCellStyle = workrbook.createCellStyle();
+				borderedCellStyle.setBorderLeft(BorderStyle.THIN);
+				borderedCellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+				borderedCellStyle.setBorderRight(BorderStyle.THIN);
+				borderedCellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+				borderedCellStyle.setBorderTop(BorderStyle.THIN);
+				borderedCellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+				borderedCellStyle.setBorderBottom(BorderStyle.THIN);
+				borderedCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+
+				//Title Cell Style
+				CellStyle titleCellStyle = workrbook.createCellStyle();
+				//titleCellStyle.setFont((org.apache.poi.ss.usermodel.Font) headerFont);
+
+				Row titleRow = sheet4.createRow(0);
+				Cell titleCell = titleRow.createCell(0);
+				titleCell.setCellValue(nameofReport4);
+				titleCell.setCellStyle(titleCellStyle);
+
+				titleRow = sheet4.createRow(1);
+				titleCell = titleRow.createCell(1);
+				titleCell.setCellValue("");
+
+				XSSFFont font = (XSSFFont) workrbook.createFont();
+				font.setFontName("Liberation Sans");
+				font.setFontHeightInPoints((short)10);
+				font.setBold(true);
+
+				// Header Cell Style
+				CellStyle headerCellStyle = workrbook.createCellStyle();
+				headerCellStyle.cloneStyleFrom(borderedCellStyle);
+				headerCellStyle.setBorderTop(BorderStyle.THICK);
+				headerCellStyle.setFont(font);
+
+				Row headerRow = sheet4.createRow(2);
+				int widthInChars = 50;
+				sheet4.setColumnWidth(4, widthInChars);
+				for (int i = 0; i < headers.length; i++) {
+					Cell cell = headerRow.createCell(i);
+					cell.setCellValue(headers[i]);
+					cell.setCellStyle(headerCellStyle);
+				}
+
+				// Create Other rows and cells with contacts data
+				int rowNum = 3;
+				ExportApprovalReportModel totalSummary = new ExportApprovalReportModel();
+				for (Object[] summary : Listdata) {
+					Row row = sheet4.createRow(rowNum++);
+
+					/*Cell cell = row.createCell(0);
+					cell.setCellValue((Long) summary[0]);
+					cell.setCellStyle(borderedCellStyle);*/
+
+					Cell cell = row.createCell(0);
+					cell.setCellValue((String) summary[2]);
+					cell.setCellStyle(borderedCellStyle);
+
+					cell = row.createCell(1);
+					cell.setCellValue((String) summary[1]);
+					cell.setCellStyle(borderedCellStyle);
+
+					cell = row.createCell(2);
+					cell.setCellValue((double) summary[3]);
+					cell.setCellStyle(borderedCellStyle);
+
+
+				}
+
+				// Resize all columns to fit the content size
+				for (int i = 0; i < headers.length; i++) {
+					sheet4.autoSizeColumn(i);
+				}
+
+				//Adding filter menu in column headers
+				sheet4.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 2));
 	}
+
+}
+

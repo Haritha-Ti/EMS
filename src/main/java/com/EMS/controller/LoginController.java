@@ -659,7 +659,8 @@ public class LoginController {
 		try {
 
 			Long userId  = requestdata.get("userId").asLong();
-			UserModel user = userService.getUserDetailsById(userId);
+			//UserModel user = userService.getUserDetailsById(userId);
+			UserModel user = userService.getUserdetailsbyId(userId);
 			if ( user != null) {
 				user.setFirstName(requestdata.get("firstName").asText());
 				user.setLastName(requestdata.get("lastName").asText());
