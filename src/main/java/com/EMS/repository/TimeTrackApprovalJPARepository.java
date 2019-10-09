@@ -98,5 +98,14 @@ public interface TimeTrackApprovalJPARepository extends JpaRepository<TaskTrackA
     @Query(value = "SELECT count(*) as totalrow FROM tasktrack_approval WHERE month=?1 and  year=?2 and project_project_id=?3 and user_user_id=?4",nativeQuery = true)
     Long getCountOfRowsByUser(int month,int year,Long projectId,Long userId);
 
+    @Query(value = "SELECT  approved_date FROM tasktrack_approval WHERE month=?1 and  year=?2 and project_project_id=?3 and user_user_id=?4 and project_type = 'Billable'",nativeQuery = true)
+	Object[] getapprovedDates(int month, int year, Long projectId, Long userId);
+
+    @Query(value = "SELECT distinct(status) FROM tasktrack_approval_finance WHERE month=?1 and  year=?2 and project_project_id=?3 and user_user_id=?4",nativeQuery = true)
+	Object[] getapprovedStatus(Integer month, Integer year, Long projectId, Long userId);
+
+    @Query("SELECT  s FROM TaskTrackApproval s  WHERE s.month=?1 and  s.year=?2 and s.project.projectId =?3 and s.user.userId=?4 and s.projectType = 'Billable'")
+	TaskTrackApproval getapprovedDates2(int intMonth, int yearIndex, Long projectId, Long userId);
+
 
 }

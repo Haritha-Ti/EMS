@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ValueRange;
@@ -55,6 +56,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.EMS.repository.TasktrackRepository;
+import com.EMS.repository.TimeTrackApprovalJPARepository;
 @RestController
 @RequestMapping(value = { "/tasktrack" })
 public class TasktrackController {
@@ -84,6 +86,9 @@ public class TasktrackController {
 	
 	@Autowired
 	TaskTrackApprovalLevel2Repository taskTrackApprovalLevel2Repository;
+	
+	@Autowired
+	TimeTrackApprovalJPARepository timeTrackApprovalJPARepository;
 
 	@PostMapping(value = "/getTaskDetails")
 	public JsonNode getByDate(@RequestBody Taskdetails requestdata) {
@@ -770,6 +775,8 @@ public class TasktrackController {
 		
 		ObjectNode ids = objectMapper.createObjectNode();
 
+		boolean timesheet_button = false;
+		
 		try {
 			// Obtain the data from request data
 			Long billableId =null,nonbillableId=null,beachId=null,overtimeId=null,projectId=null,userId=null,updatedBy=null;
@@ -1848,6 +1855,99 @@ public class TasktrackController {
 					
 				}
 			}
+			
+			// adding approved date drishya
+			
+			int approved_dayindex = 0;
+			Object[] forward_status = timeTrackApprovalJPARepository.getapprovedStatus(month, year, projectId, userId);
+			//Object[] prev_approvedDate = timeTrackApprovalJPARepository.getapprovedDates(month, year, projectId, userId);
+	
+            YearMonth yearMonthObject = YearMonth.of(year, month);
+			int totaldays = yearMonthObject.lengthOfMonth();
+
+            Calendar cal =   Calendar.getInstance();
+           	cal.setTime(endDate);
+             approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
+             if(forward_status.length != 0) {
+             if((approved_dayindex >= 15) && (((String) forward_status[0]).equalsIgnoreCase(""))) {
+					
+					timesheet_button = true;
+				}
+				else if((approved_dayindex >= totaldays) && (((String) forward_status[0]).equalsIgnoreCase("HM"))) {
+					
+					timesheet_button = true;
+				}
+             }
+             else {
+            	 
+            	 if((approved_dayindex >= 15)) {
+  					
+  					timesheet_button = true;
+  				}
+  				else if((approved_dayindex >= totaldays)) {
+  					
+  					timesheet_button = true;
+  				}
+             }
+            
+       
+		
+
+			//
+			
+             boolean approve_button = true;
+ 			boolean forward_button = false;
+ 			
+ 		TaskTrackApproval forward_approved =  timeTrackApprovalJPARepository.getapprovedDates2(month,year, projectId, userId);
+
+ 			if(forward_approved != null) {
+ 				System.out.println("Forwarded---------------"+forward_approved.getApproved_date());
+ 				System.out.println("approve---------------"+forward_approved.getForwarded_date());
+ 				if(forward_approved.getForwarded_date() != null) {
+ 					System.out.println(" 1------------------------->");				
+ 					 Calendar cl = Calendar.getInstance();
+ 					    // passing month-1 because 0-->jan, 1-->feb... 11-->dec
+ 					 cl.set(year, month - 1, 1);
+ 					 cl.set(Calendar.DATE, cl.getActualMaximum(Calendar.DATE));
+ 					 Date monthend_date = cl.getTime();
+ 					 Date forwarded_date = (Date) forward_approved.getApproved_date();
+ 					 
+ 					  DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+ 		                String forwarded_date_s = dateFormat.format(forwarded_date);  
+ 		                String monthend_date_s = dateFormat.format(monthend_date);  
+ 					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
+ 					 
+ 					System.out.println("Month end------------------>"+monthend_date);
+ 					if (forwarded_date.after(monthend_date) ) {
+ 						
+ 						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
+ 						approve_button = false;
+ 					}
+ 					else if(forwarded_date_s.equals(monthend_date_s)) {
+ 						System.out.println("approve_button equals of month end ------------------------->");
+ 						approve_button = false;
+ 					}
+ 				}	
+ 				else {
+ 					
+ 					if(forward_approved.getApproved_date() != null) {
+ 						
+ 						forward_button = true; 
+ 					}
+ 				}
+ 			
+ 				if(forward_approved.getApproved_date() != null && forward_approved.getForwarded_date() != null) {
+ 					
+ 					Date approved_date  = (Date) forward_approved.getApproved_date();
+ 					 Date forwarded_date = (Date) forward_approved.getForwarded_date();
+ 					if (forwarded_date.before(approved_date)) {
+ 						System.out.println("forward button ------------------------->"+forward_button);
+ 						forward_button = true;
+ 					}
+ 				}
+ 			
+ 			}
+			
 			 ids.put("billableId", billable_id);
 			 ids.put("nonBillableId", nonbillable_id);
 			 ids.put("beachId", beach_id);
@@ -1856,11 +1956,16 @@ public class TasktrackController {
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "successfully saved. ");
 			jsonDataRes.set("ids",ids);
+			jsonDataRes.put("timesheet_button", timesheet_button);
+			jsonDataRes.put("approve_button", approve_button);
+			jsonDataRes.put("forward_button", forward_button);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "failed. " + e);
+			jsonDataRes.put("timesheet_button", timesheet_button);
+			
 		}
 		return jsonDataRes;
 	}
@@ -1956,14 +2061,16 @@ public class TasktrackController {
 		}
 		try {
 			jsonDataRes   = tasktrackApprovalService.saveLevel2FromLevel1(projectId,userId,logUser,startDate,endDate);
-			jsonDataRes.put("status", "success");
-			jsonDataRes.put("code", httpstatus.getStatus());
-			jsonDataRes.put("message", "successfully saved. ");
+			/*
+			 * jsonDataRes.put("status", "success"); jsonDataRes.put("code",
+			 * httpstatus.getStatus()); jsonDataRes.put("message", "successfully saved. ");
+			 */
 		} catch (Exception e) {
 			e.printStackTrace();
-			jsonDataRes.put("status", "failure");
-			jsonDataRes.put("code", httpstatus.getStatus());
-			jsonDataRes.put("message", "failed. " + e);
+			/*
+			 * jsonDataRes.put("status", "failure"); jsonDataRes.put("code",
+			 * httpstatus.getStatus()); jsonDataRes.put("message", "failed. " + e);
+			 */
 		}
 		return jsonDataRes;
 	}
@@ -2147,7 +2254,7 @@ public class TasktrackController {
 
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		ObjectNode ids = objectMapper.createObjectNode();
-
+		boolean timesheet_button = false;
 		try {
 			// Obtain the data from request data
 			Long billableId =null,nonbillableId=null,beachId=null,overtimeId=null,projectId=null,userId=null,updatedBy=null;
@@ -2725,6 +2832,49 @@ public class TasktrackController {
 					}
 				}
 			}
+			
+			
+			int approved_dayindex = 0;
+			int prev_approved_date = 0;
+			Date prev_approved_date_date = null;
+			Object[] forward_status = timeTrackApprovalJPARepository.getapprovedStatus(month, year, projectId, userId);
+			
+			
+            YearMonth yearMonthObject = YearMonth.of(year, month);
+			int totaldays = yearMonthObject.lengthOfMonth();
+
+            Calendar cal =   Calendar.getInstance();
+           	cal.setTime(endDate);
+             approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
+             
+           
+            
+             System.out.println("approved_dayindex"+approved_dayindex);
+             System.out.println("totaldays"+totaldays);
+             if(forward_status.length != 0) {
+             if((approved_dayindex >= 15) && (((String) forward_status[0]).equalsIgnoreCase(""))) {
+					
+					timesheet_button = true;
+				}
+				else if((approved_dayindex >= totaldays) && (((String) forward_status[0]).equalsIgnoreCase("HM"))) {
+					
+					timesheet_button = true;
+				}
+             }
+             else {
+            	
+            	 if((approved_dayindex >= 15)) {
+ 					
+ 					timesheet_button = true;
+ 				}
+ 				else if((approved_dayindex >= totaldays)) {
+ 					
+ 					timesheet_button = true;
+ 				}
+            	 
+             }
+            
+       
 			ids.put("billableId", billableId);
 			ids.put("nonBillableId", nonbillableId);
 			ids.put("beachId", beachId);
@@ -2733,12 +2883,14 @@ public class TasktrackController {
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "successfully saved. ");
 			jsonDataRes.set("ids", ids);
+			jsonDataRes.put("timesheet_button", timesheet_button);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "failed. " + e);
 			jsonDataRes.set("ids", ids);
+			jsonDataRes.put("timesheet_button", timesheet_button);
 		}
 		return jsonDataRes;
 	}
