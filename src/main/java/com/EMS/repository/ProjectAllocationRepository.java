@@ -53,7 +53,7 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	List<Object[]> getUserIdByProject(Long projectId);
 
 	//@Query("select u.user.userId from AllocationModel u where u.project.projectId = ?1 and ((u.startDate between ?2 and ?3) OR (u.endDate between ?2 and ?3)) and u.user.active = true and u.active = true")
-	@Query("select u.user.userId from AllocationModel u where u.project.projectId = ?1 and u.startDate <=?3 and u.endDate >=?2  and u.user.active = true and u.active = true")
+	@Query("select u.user.userId from AllocationModel u where u.project.projectId = ?1 and u.startDate <=?3 and u.endDate >=?2 and u.active = true")
 	List<Object[]> getUserIdByProjectAndDate(Long projectId,Date startDate, Date endDate);
 
 	@Query(value = "SELECT DISTINCT(tasktrack.project_project_id),project.project_name FROM tasktrack JOIN project ON project.project_id = tasktrack.project_project_id where (tasktrack.date <=?3 and tasktrack.date >=?2 ) and (tasktrack.user_user_id =?1) and project.is_billable=1",nativeQuery = true)

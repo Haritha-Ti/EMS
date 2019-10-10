@@ -44,6 +44,8 @@ public interface LoginService {
 	Boolean checkExistanceOfUserIdInTermination(Long userId);
 
 	void updateUserTerm(String terminationType, Date date3, long userId);
+
+	public EmployeeContractors getContractor(long contractorId);
 	
 
 }

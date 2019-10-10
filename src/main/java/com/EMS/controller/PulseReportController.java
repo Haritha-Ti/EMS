@@ -271,6 +271,13 @@ public class PulseReportController {
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
 			projectExportService.exportBenchReport(workrbook,sheet3,colNames,nameofReport3,monthIndex,yearIndex,reportType,startDate,endDate);
 
+			
+			Sheet sheet4 = workrbook.createSheet("Vacation");
+			String nameofReport4   = "VACATION REPORT";
+			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
+			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate);
+			
+			
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			response.setHeader("Content-Disposition", "filename=\"" + sheetName+".xlsx" + "\"");
@@ -330,6 +337,56 @@ public class PulseReportController {
 			String nameofReport3   = "BENCH PROJECT REPORT";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
 			projectExportService.exportBenchReport(workrbook,sheet3,colNames,nameofReport3,monthIndex,yearIndex,reportType,startDate,endDate);
+
+			Sheet sheet4 = workrbook.createSheet("Vacation");
+			String nameofReport4   = "VACATION REPORT";
+			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
+			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate);
+			
+			response.setContentType("application/vnd.ms-excel");
+			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+			response.setHeader("Content-Disposition", "filename=\"" + sheetName+".xlsx" + "\"");
+			workrbook.write(response.getOutputStream());
+			workrbook.close();
+		}
+		else if(reportName.equalsIgnoreCase("leaveReport")) {
+
+			Date startDate = null, endDate = null;
+			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+			if (!startdate.isEmpty()) {
+				startDate = outputFormat.parse(startdate);
+			}
+			if (!enddate.isEmpty()) {
+				endDate = outputFormat.parse(enddate);
+			}
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(startDate);
+
+			String[] monthName = {"January", "February","March", "April", "May", "June",
+					"July","August", "September", "October", "November", "December"};
+			String month = monthName[cal.get(Calendar.MONTH)];
+
+			int monthIndex = (cal.get(Calendar.MONTH) + 1);
+			int yearIndex = cal.get(Calendar.YEAR);
+
+			int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+			String sheetName = month+"-Leave"+" "+yearIndex;
+			//String reportType = "midmonth";
+
+			ArrayList<String> colNames = new ArrayList<String>();
+
+			for(int i=1;i<=15;i++) {
+				colNames.add(yearIndex+"-"+month+"-"+(i<10? "0"+i : i));
+			}
+
+
+			Workbook workrbook = new XSSFWorkbook();
+
+			Sheet sheet = workrbook.createSheet("Leave");
+			String nameofReport   = "LEAVE REPORT";
+			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
+			projectExportService.exportLeaveReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,startDate,endDate);
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");

@@ -36,7 +36,7 @@ public interface ProjectAllocationService {
 	public List<AllocationModel> getAllocationListonDate(long projectId, LocalDate startDate, LocalDate endDate);
 
 
-	
+    List<UserModel> getUserLists();
 }
 
 

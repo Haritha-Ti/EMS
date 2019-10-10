@@ -3,12 +3,7 @@ package com.EMS.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.EMS.model.ClientModel;
-import com.EMS.model.ContractModel;
-import com.EMS.model.DepartmentModel;
-import com.EMS.model.ProjectModel;
-import com.EMS.model.Resources;
-import com.EMS.model.UserModel;
+import com.EMS.model.*;
 
 public interface ProjectService {
 
@@ -69,9 +64,7 @@ public interface ProjectService {
 
 		String getProjectName(Long projectId);
 
-
-
-
+		List<EmployeeContractors> getEmployeeContractorsList();
 
 	
 }

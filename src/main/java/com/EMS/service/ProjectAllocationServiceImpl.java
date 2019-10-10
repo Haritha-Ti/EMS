@@ -172,4 +172,11 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 	}
 
 
+	@Override
+	public List<UserModel> getUserLists() {
+		List<UserModel> userList = userRepository.getUserLists();
+		return userList;
+	}
+
+
 }

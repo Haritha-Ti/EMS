@@ -15,6 +15,7 @@ import com.EMS.repository.RoleRepository;
 import com.EMS.repository.TechnologyRepository;
 import com.EMS.repository.UserRepository;
 import com.EMS.repository.UserTerminationRepository;
+import com.EMS.repository.EmployeeContractorsRepository;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -36,6 +37,9 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	UserTerminationRepository userTerminationRepository;
+
+	@Autowired
+	EmployeeContractorsRepository employeeContractorsRepository;
 
 
 //	 Implementation for authenticating user with role
@@ -193,6 +197,14 @@ public class LoginServiceImpl implements LoginService {
 
 		}
 
+	}
+
+	//method for finding contractor by Id
+	@Override
+	public EmployeeContractors getContractor(long contractorId) {
+
+		EmployeeContractors contractor=employeeContractorsRepository.getOne(contractorId);
+		return contractor;
 	}
 	
 
