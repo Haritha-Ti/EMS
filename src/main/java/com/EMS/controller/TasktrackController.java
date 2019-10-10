@@ -1918,13 +1918,14 @@ public class TasktrackController {
  					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
  					 
  					System.out.println("Month end------------------>"+monthend_date);
- 					if (forwarded_date.after(monthend_date) ) {
- 						
- 						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
+ 					
+ 					 if(forwarded_date_s.equals(monthend_date_s)) {
+ 						System.out.println("approve_button equals of month end ------------------------->");
  						approve_button = false;
  					}
- 					else if(forwarded_date_s.equals(monthend_date_s)) {
- 						System.out.println("approve_button equals of month end ------------------------->");
+ 					 else if (forwarded_date.after(monthend_date) ) {
+ 						
+ 						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
  						approve_button = false;
  					}
  				}	

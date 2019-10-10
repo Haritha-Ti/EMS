@@ -40,6 +40,9 @@ public interface TaskTrackApprovalLevel2Repository extends JpaRepository<TaskTra
 
 	@Query(value = "SELECT distinct(approved_date) FROM tasktrack_approval_level2 WHERE month=?1 and  year=?2 and  project_project_id=?3 and user_user_id=?4",nativeQuery = true)
 	Object[] getapprovedDates(int month, int year, Long projectId, Long userId);
+
+	@Query("SELECT  s FROM TaskTrackApprovalLevel2 s  WHERE s.month=?1 and  s.year=?2 and s.project.projectId =?3 and s.user.userId=?4 and s.projectType = 'Billable'")
+	TaskTrackApprovalLevel2 getapprovedDates2(int month, int year, Long projectId, Long userId);
 	
 	
 

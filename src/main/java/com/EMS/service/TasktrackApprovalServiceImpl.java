@@ -2787,14 +2787,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		                String monthend_date_s = dateFormat.format(monthend_date);  
 					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
 					System.out.println("Month end------------------>"+monthend_date);
-					if (forwarded_date.after(monthend_date) ) {
+					 if(forwarded_date_s.equals(monthend_date_s)) {
+ 						approve_button = false;
+ 					}
+					 else if (forwarded_date.after(monthend_date) ) {
  						
  						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
  						approve_button = false;
  					}
- 					else if(forwarded_date_s.equals(monthend_date_s)) {
- 						approve_button = false;
- 					}
+ 					
 				}	
                else {
  					
@@ -3261,14 +3262,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				 					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
 				 					 
 				 					System.out.println("Month end------------------>"+monthend_date);
-				 					if (forwarded_date.after(monthend_date) ) {
+				 					 if(forwarded_date_s.equals(monthend_date_s)) {
+				 						approve_button = false;
+				 					}
+				 					 else if (forwarded_date.after(monthend_date) ) {
 				 						
 				 						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
 				 						approve_button = false;
 				 					}
-				 					else if(forwarded_date_s.equals(monthend_date_s)) {
-				 						approve_button = false;
-				 					}
+				 					
 				 				}	
 				 				else {
 				 					
@@ -3348,7 +3350,38 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
                     	}
 					 }
 					
-					 
+					 TaskTrackApprovalLevel2	 forward_approved =  timeTrackApprovalLevel2.getapprovedDates2(month,year, projectId, userId);
+						if(forward_approved != null) {
+							
+							if(forward_approved.getForwarded_date() != null) {
+			 					System.out.println(" 1------------------------->");				
+			 					 Calendar cl = Calendar.getInstance();
+			 					    // passing month-1 because 0-->jan, 1-->feb... 11-->dec
+			 					 cl.set(year, month - 1, 1);
+			 					 cl.set(Calendar.DATE, cl.getActualMaximum(Calendar.DATE));
+			 					 Date monthend_date = cl.getTime();
+			 					 Date forwarded_date = (Date) forward_approved.getApproved_date();
+			 					 
+			 					  DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+			 		                String forwarded_date_s = dateFormat.format(forwarded_date);  
+			 		                String monthend_date_s = dateFormat.format(monthend_date);  
+			 					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
+			 					 
+			 					System.out.println("Month end------------------>"+monthend_date);
+			 					
+			 					 if(forwarded_date_s.equals(monthend_date_s)) {
+			 						approve_button = false;
+			 					}
+			 					 else if (forwarded_date.after(monthend_date) ) {
+			 						
+			 						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
+			 						approve_button = false;
+			 					}
+			 					
+			 				}	
+							
+							
+						}	
 					
 					 
 					
