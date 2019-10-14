@@ -9,6 +9,16 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ValueRange;
 import java.util.*;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import java.time.YearMonth;
 
 
@@ -20,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.EMS.model.ActivityLog;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.Task;
@@ -29,6 +40,7 @@ import com.EMS.model.TaskTrackApprovalLevel2;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
 import com.EMS.repository.TaskTrackFinanceRepository;
+import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -75,7 +87,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	private ProjectRepository project_repositary;
 
+	@Autowired ActivityLogRepository activitylogrepository;
+	
 	@Override
 	public Boolean checkIsUserExists(Long id) {
 		Boolean exist = tasktrackRepository.existsByUser(id);
@@ -3143,6 +3159,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		boolean timesheet_button = false;
 		boolean approve_button = true;
 		boolean forward_button = false;
+		String approved_till_date = "";
 		Long role = user.getRole().getroleId();
 		DateFormat df;
 		df = new SimpleDateFormat("yyyy-MM-dd");
@@ -3244,7 +3261,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			 			
 				 		TaskTrackApproval forward_approved =  timeTrackApprovalJPARepository.getapprovedDates2(month,year, projectId, userId);
 
+				 		 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
 				 			if(forward_approved != null) {
+				 				
+				 				
+
+			 					if(forward_approved.getApproved_date() != null) {
+			 						
+ 
+			 		                 approved_till_date = dateFormat.format(forward_approved.getApproved_date()); 	
+			 					}
+			 					
 				 				System.out.println("Forwarded---------------"+forward_approved.getApproved_date());
 				 				System.out.println("approve---------------"+forward_approved.getForwarded_date());
 				 				if(forward_approved.getForwarded_date() != null) {
@@ -3256,12 +3283,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				 					 Date monthend_date = cl.getTime();
 				 					 Date forwarded_date = (Date) forward_approved.getApproved_date();
 				 					 
-				 					  DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+				 					 
 				 		                String forwarded_date_s = dateFormat.format(forwarded_date);  
 				 		                String monthend_date_s = dateFormat.format(monthend_date);  
 				 					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
 				 					 
 				 					System.out.println("Month end------------------>"+monthend_date);
+				 					
+				 					
+				 					
+				 					
 				 					 if(forwarded_date_s.equals(monthend_date_s)) {
 				 						approve_button = false;
 				 					}
@@ -3290,6 +3321,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				 					}
 				 				}
 				 			
+				 				
+				 				
+				 				
 				 			}
                     
 					
@@ -3353,6 +3387,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					 TaskTrackApprovalLevel2	 forward_approved =  timeTrackApprovalLevel2.getapprovedDates2(month,year, projectId, userId);
 						if(forward_approved != null) {
 							
+							 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+							if(forward_approved.getApproved_date() != null) {
+		 						
+								
+		 		                 approved_till_date = dateFormat.format(forward_approved.getApproved_date()); 	
+		 					}
+		 			
+							
 							if(forward_approved.getForwarded_date() != null) {
 			 					System.out.println(" 1------------------------->");				
 			 					 Calendar cl = Calendar.getInstance();
@@ -3362,7 +3404,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			 					 Date monthend_date = cl.getTime();
 			 					 Date forwarded_date = (Date) forward_approved.getApproved_date();
 			 					 
-			 					  DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
 			 		                String forwarded_date_s = dateFormat.format(forwarded_date);  
 			 		                String monthend_date_s = dateFormat.format(monthend_date);  
 			 					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
@@ -3413,11 +3454,2237 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		jsonDataRes.put("timesheet_button", timesheet_button);
 		jsonDataRes.put("approve_button",approve_button);
 		jsonDataRes.put("forward_button",forward_button);
+		jsonDataRes.put("approved_till_date",approved_till_date);
 
 		return jsonDataRes;
 
 	}
 
+	@Override
+	public Object[] getFinanceStatusOfCurrentProject(Long projectId, Long userId, int intMonth, int yearIndex) {
+		// TODO Auto-generated method stub
+		return taskTrackFinanceRepository.getFinanceStatusOfCurrentProject(projectId,userId,intMonth,yearIndex);
+	}
 
+	@Override
+	public ObjectNode reApproveDatasofLevel1(Long projectId, Long userId, int month, int year,HashMap<String, Object> billableArray,HashMap<String, Object> nonbillableArray,HashMap<String, Object> beachArray,HashMap<String, Object> overtimeArray,Long billableId,Long nonbillableId,Long overtimeId,Long beachId,Long logUser) {
+		// TODO Auto-generated method stub
+		System.out.println("------"+projectId+"----"+userId+"------"+month+"---------"+year);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		double hours =0;
+		Date from_date = null;
+		Date to_date = null;
+		String message = "successfully saved";
+		// find approved date and forwarded date to decide editable columns
+		List<Object[]> dates = timeTrackApprovalJPARepository.getForwardedDates(projectId, userId, month, year);
+		System.out.println("outside data size greater-----------------------------"+dates.size());
+		try {
+		if(dates.size() > 0) {
+			System.out.println("inside data size greater-----------------------------");
+			for(Object[] date : dates) {
+			if((date[2] != null && date[1] != null) || (date[0] != null && date[2] != null)) {
+			// if forwarded nd approved dates not null	
+				System.out.println("inside  both forwarded finance  and aproved datesr-----------------------------");
+				Date approved_Date = (Date) date[2];
+				Date forwarded_Date = null;
+				if(date[0] != null)
+				{
+					 forwarded_Date = (Date) date[0];
+				}
+				else if(date[1] != null) {
+					
+					forwarded_Date = (Date) date[1];
+				}
+				from_date = forwarded_Date;
+				to_date = approved_Date;
+				Calendar approved = Calendar.getInstance();
+				approved.setTime(approved_Date);
+				Calendar frowarded = Calendar.getInstance();
+				frowarded.setTime(forwarded_Date);
+				int forwardeddate =  frowarded.get(Calendar.DAY_OF_MONTH);
+				int approveddate = approved.get(Calendar.DAY_OF_MONTH);
+				System.out.println("approved_Date-------------------------"+approveddate+"forwardeddate----------------"+forwardeddate);
+				if(approveddate > forwardeddate) {
+					
+					System.out.println("approved greater than forwarded------------>");
+						
+					if(billableId!=null) {
+						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);	
+						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							System.out.println("dates--------->"+dateString);
+							if(billableArray.get(dateString)!=null) {						
+								hours = Double.valueOf(billableArray.get(dateString).toString());	
+								if(i==1) {
+									taskTrackApproval.setDay1(hours);
+								}
+								else if(i==2) {
+									taskTrackApproval.setDay2(hours);
+								}
+								else if(i==3) {
+									taskTrackApproval.setDay3(hours);
+								}
+								else if(i==4) {
+									taskTrackApproval.setDay4(hours);
+								}
+								else if(i==5) {
+									taskTrackApproval.setDay5(hours);
+								}
+								else if(i==6) {
+									taskTrackApproval.setDay6(hours);
+								}
+								else if(i==7) {
+									taskTrackApproval.setDay7(hours);
+								}
+								else if(i==8) {
+									taskTrackApproval.setDay8(hours);
+								}
+								else if(i==9) {
+									taskTrackApproval.setDay9(hours);
+								}
+								else if(i==10) {
+									taskTrackApproval.setDay10(hours);
+								}
+								else if(i==11) {
+									taskTrackApproval.setDay11(hours);
+								}
+								else if(i==12) {
+									taskTrackApproval.setDay12(hours);
+								}
+								else if(i==13) {
+									taskTrackApproval.setDay13(hours);
+								}
+								else if(i==14) {
+									taskTrackApproval.setDay14(hours);
+								}
+								else if(i==15) {
+									taskTrackApproval.setDay15(hours);
+								}
+								else if(i==16) {
+									taskTrackApproval.setDay16(hours);
+								}
+								else if(i==17) {
+									taskTrackApproval.setDay17(hours);
+								}
+								else if(i==18) {
+									taskTrackApproval.setDay18(hours);
+								}
+								else if(i==19) {
+									taskTrackApproval.setDay19(hours);
+								}
+								else if(i==20) {
+									taskTrackApproval.setDay20(hours);
+								}
+								else if(i==21) {
+									taskTrackApproval.setDay21(hours);
+								}
+								else if(i==22) {
+									taskTrackApproval.setDay22(hours);
+								}
+								else if(i==23) {
+									taskTrackApproval.setDay23(hours);
+								}
+								else if(i==24) {
+									taskTrackApproval.setDay24(hours);
+								}
+								else if(i==25) {
+									taskTrackApproval.setDay25(hours);
+								}
+								else if(i==26) {
+									taskTrackApproval.setDay26(hours);
+								}
+								else if(i==27) {
+									taskTrackApproval.setDay27(hours);
+								}
+								else if(i==28) {
+									taskTrackApproval.setDay28(hours);
+								}
+								else if(i==29) {
+									taskTrackApproval.setDay29(hours);
+								}
+								else if(i==30) {
+									taskTrackApproval.setDay30(hours);
+								}
+								else if(i==31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateData(taskTrackApproval);	
+					}	
+					if(nonbillableId!=null) {
+						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);	
+						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if(nonbillableArray.get(dateString)!=null) {						
+								hours = Double.valueOf(nonbillableArray.get(dateString).toString());	
+								if(i==1) {
+									taskTrackApproval.setDay1(hours);
+								}
+								else if(i==2) {
+									taskTrackApproval.setDay2(hours);
+								}
+								else if(i==3) {
+									taskTrackApproval.setDay3(hours);
+								}
+								else if(i==4) {
+									taskTrackApproval.setDay4(hours);
+								}
+								else if(i==5) {
+									taskTrackApproval.setDay5(hours);
+								}
+								else if(i==6) {
+									taskTrackApproval.setDay6(hours);
+								}
+								else if(i==7) {
+									taskTrackApproval.setDay7(hours);
+								}
+								else if(i==8) {
+									taskTrackApproval.setDay8(hours);
+								}
+								else if(i==9) {
+									taskTrackApproval.setDay9(hours);
+								}
+								else if(i==10) {
+									taskTrackApproval.setDay10(hours);
+								}
+								else if(i==11) {
+									taskTrackApproval.setDay11(hours);
+								}
+								else if(i==12) {
+									taskTrackApproval.setDay12(hours);
+								}
+								else if(i==13) {
+									taskTrackApproval.setDay13(hours);
+								}
+								else if(i==14) {
+									taskTrackApproval.setDay14(hours);
+								}
+								else if(i==15) {
+									taskTrackApproval.setDay15(hours);
+								}
+								else if(i==16) {
+									taskTrackApproval.setDay16(hours);
+								}
+								else if(i==17) {
+									taskTrackApproval.setDay17(hours);
+								}
+								else if(i==18) {
+									taskTrackApproval.setDay18(hours);
+								}
+								else if(i==19) {
+									taskTrackApproval.setDay19(hours);
+								}
+								else if(i==20) {
+									taskTrackApproval.setDay20(hours);
+								}
+								else if(i==21) {
+									taskTrackApproval.setDay21(hours);
+								}
+								else if(i==22) {
+									taskTrackApproval.setDay22(hours);
+								}
+								else if(i==23) {
+									taskTrackApproval.setDay23(hours);
+								}
+								else if(i==24) {
+									taskTrackApproval.setDay24(hours);
+								}
+								else if(i==25) {
+									taskTrackApproval.setDay25(hours);
+								}
+								else if(i==26) {
+									taskTrackApproval.setDay26(hours);
+								}
+								else if(i==27) {
+									taskTrackApproval.setDay27(hours);
+								}
+								else if(i==28) {
+									taskTrackApproval.setDay28(hours);
+								}
+								else if(i==29) {
+									taskTrackApproval.setDay29(hours);
+								}
+								else if(i==30) {
+									taskTrackApproval.setDay30(hours);
+								}
+								else if(i==31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateData(taskTrackApproval);	
+					}
+					if(overtimeId!=null) {
+						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);	
+						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if(overtimeArray.get(dateString)!=null) {						
+								hours = Double.valueOf(overtimeArray.get(dateString).toString());	
+								if(i==1) {
+									taskTrackApproval.setDay1(hours);
+								}
+								else if(i==2) {
+									taskTrackApproval.setDay2(hours);
+								}
+								else if(i==3) {
+									taskTrackApproval.setDay3(hours);
+								}
+								else if(i==4) {
+									taskTrackApproval.setDay4(hours);
+								}
+								else if(i==5) {
+									taskTrackApproval.setDay5(hours);
+								}
+								else if(i==6) {
+									taskTrackApproval.setDay6(hours);
+								}
+								else if(i==7) {
+									taskTrackApproval.setDay7(hours);
+								}
+								else if(i==8) {
+									taskTrackApproval.setDay8(hours);
+								}
+								else if(i==9) {
+									taskTrackApproval.setDay9(hours);
+								}
+								else if(i==10) {
+									taskTrackApproval.setDay10(hours);
+								}
+								else if(i==11) {
+									taskTrackApproval.setDay11(hours);
+								}
+								else if(i==12) {
+									taskTrackApproval.setDay12(hours);
+								}
+								else if(i==13) {
+									taskTrackApproval.setDay13(hours);
+								}
+								else if(i==14) {
+									taskTrackApproval.setDay14(hours);
+								}
+								else if(i==15) {
+									taskTrackApproval.setDay15(hours);
+								}
+								else if(i==16) {
+									taskTrackApproval.setDay16(hours);
+								}
+								else if(i==17) {
+									taskTrackApproval.setDay17(hours);
+								}
+								else if(i==18) {
+									taskTrackApproval.setDay18(hours);
+								}
+								else if(i==19) {
+									taskTrackApproval.setDay19(hours);
+								}
+								else if(i==20) {
+									taskTrackApproval.setDay20(hours);
+								}
+								else if(i==21) {
+									taskTrackApproval.setDay21(hours);
+								}
+								else if(i==22) {
+									taskTrackApproval.setDay22(hours);
+								}
+								else if(i==23) {
+									taskTrackApproval.setDay23(hours);
+								}
+								else if(i==24) {
+									taskTrackApproval.setDay24(hours);
+								}
+								else if(i==25) {
+									taskTrackApproval.setDay25(hours);
+								}
+								else if(i==26) {
+									taskTrackApproval.setDay26(hours);
+								}
+								else if(i==27) {
+									taskTrackApproval.setDay27(hours);
+								}
+								else if(i==28) {
+									taskTrackApproval.setDay28(hours);
+								}
+								else if(i==29) {
+									taskTrackApproval.setDay29(hours);
+								}
+								else if(i==30) {
+									taskTrackApproval.setDay30(hours);
+								}
+								else if(i==31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateData(taskTrackApproval);	
+					}
+					if(beachId!=null) {
+						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);	
+						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if(beachArray.get(dateString)!=null) {						
+								hours = Double.valueOf(beachArray.get(dateString).toString());	
+								if(i==1) {
+									taskTrackApproval.setDay1(hours);
+								}
+								else if(i==2) {
+									taskTrackApproval.setDay2(hours);
+								}
+								else if(i==3) {
+									taskTrackApproval.setDay3(hours);
+								}
+								else if(i==4) {
+									taskTrackApproval.setDay4(hours);
+								}
+								else if(i==5) {
+									taskTrackApproval.setDay5(hours);
+								}
+								else if(i==6) {
+									taskTrackApproval.setDay6(hours);
+								}
+								else if(i==7) {
+									taskTrackApproval.setDay7(hours);
+								}
+								else if(i==8) {
+									taskTrackApproval.setDay8(hours);
+								}
+								else if(i==9) {
+									taskTrackApproval.setDay9(hours);
+								}
+								else if(i==10) {
+									taskTrackApproval.setDay10(hours);
+								}
+								else if(i==11) {
+									taskTrackApproval.setDay11(hours);
+								}
+								else if(i==12) {
+									taskTrackApproval.setDay12(hours);
+								}
+								else if(i==13) {
+									taskTrackApproval.setDay13(hours);
+								}
+								else if(i==14) {
+									taskTrackApproval.setDay14(hours);
+								}
+								else if(i==15) {
+									taskTrackApproval.setDay15(hours);
+								}
+								else if(i==16) {
+									taskTrackApproval.setDay16(hours);
+								}
+								else if(i==17) {
+									taskTrackApproval.setDay17(hours);
+								}
+								else if(i==18) {
+									taskTrackApproval.setDay18(hours);
+								}
+								else if(i==19) {
+									taskTrackApproval.setDay19(hours);
+								}
+								else if(i==20) {
+									taskTrackApproval.setDay20(hours);
+								}
+								else if(i==21) {
+									taskTrackApproval.setDay21(hours);
+								}
+								else if(i==22) {
+									taskTrackApproval.setDay22(hours);
+								}
+								else if(i==23) {
+									taskTrackApproval.setDay23(hours);
+								}
+								else if(i==24) {
+									taskTrackApproval.setDay24(hours);
+								}
+								else if(i==25) {
+									taskTrackApproval.setDay25(hours);
+								}
+								else if(i==26) {
+									taskTrackApproval.setDay26(hours);
+								}
+								else if(i==27) {
+									taskTrackApproval.setDay27(hours);
+								}
+								else if(i==28) {
+									taskTrackApproval.setDay28(hours);
+								}
+								else if(i==29) {
+									taskTrackApproval.setDay29(hours);
+								}
+								else if(i==30) {
+									taskTrackApproval.setDay30(hours);
+								}
+								else if(i==31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateData(taskTrackApproval);	
+					}
+					
+				}
+				
+			}
+			
+			else if(date[2] != null) {
+				System.out.println("inside  aproved datesr only-----------------------------");
+				Date approved_Date = (Date) date[2];	
+				from_date = new SimpleDateFormat("dd-MM-yyyy").parse( "01-"+month+"-"+year); 
+				to_date = approved_Date;
+				Calendar approved = Calendar.getInstance();
+				approved.setTime(approved_Date);
+				int approveddate = approved.get(Calendar.DAY_OF_MONTH);
+				// approved date not null 
+				if(billableId!= null) {
+					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);	
+					for(int i = 1 ; i < approveddate ; i++ ) {
+						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+								+ ((i < 10) ? "0" + i : "" + i);
+						System.out.println("----------"+dateString);
+						if(billableArray.get(dateString)!=null) {						
+							hours = Double.valueOf(billableArray.get(dateString).toString());	
+						if(i==1) {
+							taskTrackApproval.setDay1(hours);
+						}
+						else if(i==2) {
+							taskTrackApproval.setDay2(hours);
+						}
+						else if(i==3) {
+							taskTrackApproval.setDay3(hours);
+						}
+						else if(i==4) {
+							taskTrackApproval.setDay4(hours);
+						}
+						else if(i==5) {
+							taskTrackApproval.setDay5(hours);
+						}
+						else if(i==6) {
+							taskTrackApproval.setDay6(hours);
+						}
+						else if(i==7) {
+							taskTrackApproval.setDay7(hours);
+						}
+						else if(i==8) {
+							taskTrackApproval.setDay8(hours);
+						}
+						else if(i==9) {
+							taskTrackApproval.setDay9(hours);
+						}
+						else if(i==10) {
+							taskTrackApproval.setDay10(hours);
+						}
+						else if(i==11) {
+							taskTrackApproval.setDay11(hours);
+						}
+						else if(i==12) {
+							taskTrackApproval.setDay12(hours);
+						}
+						else if(i==13) {
+							taskTrackApproval.setDay13(hours);
+						}
+						else if(i==14) {
+							taskTrackApproval.setDay14(hours);
+						}
+						else if(i==15) {
+							taskTrackApproval.setDay15(hours);
+						}
+						else if(i==16) {
+							taskTrackApproval.setDay16(hours);
+						}
+						else if(i==17) {
+							taskTrackApproval.setDay17(hours);
+						}
+						else if(i==18) {
+							taskTrackApproval.setDay18(hours);
+						}
+						else if(i==19) {
+							taskTrackApproval.setDay19(hours);
+						}
+						else if(i==20) {
+							taskTrackApproval.setDay20(hours);
+						}
+						else if(i==21) {
+							taskTrackApproval.setDay21(hours);
+						}
+						else if(i==22) {
+							taskTrackApproval.setDay22(hours);
+						}
+						else if(i==23) {
+							taskTrackApproval.setDay23(hours);
+						}
+						else if(i==24) {
+							taskTrackApproval.setDay24(hours);
+						}
+						else if(i==25) {
+							taskTrackApproval.setDay25(hours);
+						}
+						else if(i==26) {
+							taskTrackApproval.setDay26(hours);
+						}
+						else if(i==27) {
+							taskTrackApproval.setDay27(hours);
+						}
+						else if(i==28) {
+							taskTrackApproval.setDay28(hours);
+						}
+						else if(i==29) {
+							taskTrackApproval.setDay29(hours);
+						}
+						else if(i==30) {
+							taskTrackApproval.setDay30(hours);
+						}
+						else if(i==31) {
+							taskTrackApproval.setDay31(hours);
+						}
+						}
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);	
+				}	
+				if(nonbillableId!=null) {
+					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);	
+					for(int i = 1 ; i < approveddate ; i++ ) {
+						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+								+ ((i < 10) ? "0" + i : "" + i);
+						if(nonbillableArray.get(dateString)!=null) {						
+							hours = Double.valueOf(nonbillableArray.get(dateString).toString());	
+							if(i==1) {
+								taskTrackApproval.setDay1(hours);
+							}
+							else if(i==2) {
+								taskTrackApproval.setDay2(hours);
+							}
+							else if(i==3) {
+								taskTrackApproval.setDay3(hours);
+							}
+							else if(i==4) {
+								taskTrackApproval.setDay4(hours);
+							}
+							else if(i==5) {
+								taskTrackApproval.setDay5(hours);
+							}
+							else if(i==6) {
+								taskTrackApproval.setDay6(hours);
+							}
+							else if(i==7) {
+								taskTrackApproval.setDay7(hours);
+							}
+							else if(i==8) {
+								taskTrackApproval.setDay8(hours);
+							}
+							else if(i==9) {
+								taskTrackApproval.setDay9(hours);
+							}
+							else if(i==10) {
+								taskTrackApproval.setDay10(hours);
+							}
+							else if(i==11) {
+								taskTrackApproval.setDay11(hours);
+							}
+							else if(i==12) {
+								taskTrackApproval.setDay12(hours);
+							}
+							else if(i==13) {
+								taskTrackApproval.setDay13(hours);
+							}
+							else if(i==14) {
+								taskTrackApproval.setDay14(hours);
+							}
+							else if(i==15) {
+								taskTrackApproval.setDay15(hours);
+							}
+							else if(i==16) {
+								taskTrackApproval.setDay16(hours);
+							}
+							else if(i==17) {
+								taskTrackApproval.setDay17(hours);
+							}
+							else if(i==18) {
+								taskTrackApproval.setDay18(hours);
+							}
+							else if(i==19) {
+								taskTrackApproval.setDay19(hours);
+							}
+							else if(i==20) {
+								taskTrackApproval.setDay20(hours);
+							}
+							else if(i==21) {
+								taskTrackApproval.setDay21(hours);
+							}
+							else if(i==22) {
+								taskTrackApproval.setDay22(hours);
+							}
+							else if(i==23) {
+								taskTrackApproval.setDay23(hours);
+							}
+							else if(i==24) {
+								taskTrackApproval.setDay24(hours);
+							}
+							else if(i==25) {
+								taskTrackApproval.setDay25(hours);
+							}
+							else if(i==26) {
+								taskTrackApproval.setDay26(hours);
+							}
+							else if(i==27) {
+								taskTrackApproval.setDay27(hours);
+							}
+							else if(i==28) {
+								taskTrackApproval.setDay28(hours);
+							}
+							else if(i==29) {
+								taskTrackApproval.setDay29(hours);
+							}
+							else if(i==30) {
+								taskTrackApproval.setDay30(hours);
+							}
+							else if(i==31) {
+								taskTrackApproval.setDay31(hours);
+							}
+						}
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);	
+				}
+				if(overtimeId!=null) {
+					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);	
+					for(int i = 1 ; i < approveddate ; i++ ) {
+						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+								+ ((i < 10) ? "0" + i : "" + i);
+						if(overtimeArray.get(dateString)!=null) {						
+							hours = Double.valueOf(overtimeArray.get(dateString).toString());	
+							if(i==1) {
+								taskTrackApproval.setDay1(hours);
+							}
+							else if(i==2) {
+								taskTrackApproval.setDay2(hours);
+							}
+							else if(i==3) {
+								taskTrackApproval.setDay3(hours);
+							}
+							else if(i==4) {
+								taskTrackApproval.setDay4(hours);
+							}
+							else if(i==5) {
+								taskTrackApproval.setDay5(hours);
+							}
+							else if(i==6) {
+								taskTrackApproval.setDay6(hours);
+							}
+							else if(i==7) {
+								taskTrackApproval.setDay7(hours);
+							}
+							else if(i==8) {
+								taskTrackApproval.setDay8(hours);
+							}
+							else if(i==9) {
+								taskTrackApproval.setDay9(hours);
+							}
+							else if(i==10) {
+								taskTrackApproval.setDay10(hours);
+							}
+							else if(i==11) {
+								taskTrackApproval.setDay11(hours);
+							}
+							else if(i==12) {
+								taskTrackApproval.setDay12(hours);
+							}
+							else if(i==13) {
+								taskTrackApproval.setDay13(hours);
+							}
+							else if(i==14) {
+								taskTrackApproval.setDay14(hours);
+							}
+							else if(i==15) {
+								taskTrackApproval.setDay15(hours);
+							}
+							else if(i==16) {
+								taskTrackApproval.setDay16(hours);
+							}
+							else if(i==17) {
+								taskTrackApproval.setDay17(hours);
+							}
+							else if(i==18) {
+								taskTrackApproval.setDay18(hours);
+							}
+							else if(i==19) {
+								taskTrackApproval.setDay19(hours);
+							}
+							else if(i==20) {
+								taskTrackApproval.setDay20(hours);
+							}
+							else if(i==21) {
+								taskTrackApproval.setDay21(hours);
+							}
+							else if(i==22) {
+								taskTrackApproval.setDay22(hours);
+							}
+							else if(i==23) {
+								taskTrackApproval.setDay23(hours);
+							}
+							else if(i==24) {
+								taskTrackApproval.setDay24(hours);
+							}
+							else if(i==25) {
+								taskTrackApproval.setDay25(hours);
+							}
+							else if(i==26) {
+								taskTrackApproval.setDay26(hours);
+							}
+							else if(i==27) {
+								taskTrackApproval.setDay27(hours);
+							}
+							else if(i==28) {
+								taskTrackApproval.setDay28(hours);
+							}
+							else if(i==29) {
+								taskTrackApproval.setDay29(hours);
+							}
+							else if(i==30) {
+								taskTrackApproval.setDay30(hours);
+							}
+							else if(i==31) {
+								taskTrackApproval.setDay31(hours);
+							}
+						}
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);	
+					
+				}
+				if(beachId!=null) {
+					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);	
+					for(int i = 1 ; i < approveddate ; i++ ) {
+						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+								+ ((i < 10) ? "0" + i : "" + i);
+						if(beachArray.get(dateString)!=null) {						
+							hours = Double.valueOf(beachArray.get(dateString).toString());	
+							if(i==1) {
+								taskTrackApproval.setDay1(hours);
+							}
+							else if(i==2) {
+								taskTrackApproval.setDay2(hours);
+							}
+							else if(i==3) {
+								taskTrackApproval.setDay3(hours);
+							}
+							else if(i==4) {
+								taskTrackApproval.setDay4(hours);
+							}
+							else if(i==5) {
+								taskTrackApproval.setDay5(hours);
+							}
+							else if(i==6) {
+								taskTrackApproval.setDay6(hours);
+							}
+							else if(i==7) {
+								taskTrackApproval.setDay7(hours);
+							}
+							else if(i==8) {
+								taskTrackApproval.setDay8(hours);
+							}
+							else if(i==9) {
+								taskTrackApproval.setDay9(hours);
+							}
+							else if(i==10) {
+								taskTrackApproval.setDay10(hours);
+							}
+							else if(i==11) {
+								taskTrackApproval.setDay11(hours);
+							}
+							else if(i==12) {
+								taskTrackApproval.setDay12(hours);
+							}
+							else if(i==13) {
+								taskTrackApproval.setDay13(hours);
+							}
+							else if(i==14) {
+								taskTrackApproval.setDay14(hours);
+							}
+							else if(i==15) {
+								taskTrackApproval.setDay15(hours);
+							}
+							else if(i==16) {
+								taskTrackApproval.setDay16(hours);
+							}
+							else if(i==17) {
+								taskTrackApproval.setDay17(hours);
+							}
+							else if(i==18) {
+								taskTrackApproval.setDay18(hours);
+							}
+							else if(i==19) {
+								taskTrackApproval.setDay19(hours);
+							}
+							else if(i==20) {
+								taskTrackApproval.setDay20(hours);
+							}
+							else if(i==21) {
+								taskTrackApproval.setDay21(hours);
+							}
+							else if(i==22) {
+								taskTrackApproval.setDay22(hours);
+							}
+							else if(i==23) {
+								taskTrackApproval.setDay23(hours);
+							}
+							else if(i==24) {
+								taskTrackApproval.setDay24(hours);
+							}
+							else if(i==25) {
+								taskTrackApproval.setDay25(hours);
+							}
+							else if(i==26) {
+								taskTrackApproval.setDay26(hours);
+							}
+							else if(i==27) {
+								taskTrackApproval.setDay27(hours);
+							}
+							else if(i==28) {
+								taskTrackApproval.setDay28(hours);
+							}
+							else if(i==29) {
+								taskTrackApproval.setDay29(hours);
+							}
+							else if(i==30) {
+								taskTrackApproval.setDay30(hours);
+							}
+							else if(i==31) {
+								taskTrackApproval.setDay31(hours);
+							}
+						}
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);	
+				}
+				
+			}
+			else {
+				message = "Not yet approved";
+				
+			}
+			
+			}
+			
+		}
+		
+		// data insertion to activity log
+		Date current = new Date();
+		ActivityLog activity = new ActivityLog();
+		activity.setAction("Reapproved time sheet");
+		UserModel user = userRepository.getActiveUser(logUser);
+		UserModel user2 =  userRepository.getActiveUser(userId);
+		activity.setUser(user2);
+		activity.setAction_by(user);
+		activity.setAction_on(current);
+		activity.setFrom_date(from_date);
+		activity.setTo_date(to_date);
+		activity.setMonth(month);
+		ProjectModel project = project_repositary.getOne(projectId);
+		activity.setProject(project);
+		activity.setYear(year);
+		activitylogrepository.save(activity);
+		
+		jsonDataRes.put("status", "success");
+		//jsonDataRes.put("code", httpstatus.getStatus());
+		jsonDataRes.put("message", message);
+		}catch(Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "failure");
+			//jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+
+		return jsonDataRes;
+	}
+
+	@Override
+	public ObjectNode reApproveDatasofLevel2(Long projectId, Long userId, Integer month, Integer year,
+			HashMap<String, Object> billableArray, HashMap<String, Object> nonbillableArray,
+			HashMap<String, Object> beachArray, HashMap<String, Object> overtimeArray, Long billableId,
+			Long nonbillableId, Long overtimeId, Long beachId, Long logUser) {
+		// TODO Auto-generated method stub
+		int month1= month;
+		int year1 = year;
+		
+		System.out.println("------"+projectId+"----"+userId+"------"+month+"---------"+year);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		double hours =0;
+		Date from_date = null;
+		Date to_date = null;
+		String message = "successfully saved";
+		// find approved date and forwarded date to decide editable columns
+		TaskTrackApprovalLevel2 dates = timeTrackApprovalLevel2.getapprovedDates2(month1, year1,projectId, userId);
+		//System.out.println("outside data size greater-----------------------------"+dates.size());
+		try {
+		if(dates != null) {
+			System.out.println("inside data size greater-----------------------------");		
+			if(dates.getApproved_date() != null && dates.getForwarded_date() != null) {
+			// if forwarded nd approved dates not null	
+				System.out.println("inside  both forwarded finance  and aproved datesr-----------------------------");
+				Date approved_Date = (Date) dates.getApproved_date();
+				Date forwarded_Date = null;
+	
+				forwarded_Date = (Date) dates.getForwarded_date();
+				
+				from_date = forwarded_Date;
+				to_date = approved_Date;
+				Calendar approved = Calendar.getInstance();
+				approved.setTime(approved_Date);
+				Calendar frowarded = Calendar.getInstance();
+				frowarded.setTime(forwarded_Date);
+				int forwardeddate =  frowarded.get(Calendar.DAY_OF_MONTH);
+				int approveddate = approved.get(Calendar.DAY_OF_MONTH);
+				System.out.println("approved_Date-------------------------"+approveddate+"forwardeddate----------------"+forwardeddate);
+				if(approveddate > forwardeddate) {
+					
+					System.out.println("approved greater than forwarded------------>");
+						
+					if(billableId!=null) {
+						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(billableId);	
+						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							System.out.println("dates--------->"+dateString);
+							if(billableArray.get(dateString)!=null) {						
+								hours = Double.valueOf(billableArray.get(dateString).toString());	
+								if(i==1) {
+									taskTrackApproval.setDay1(hours);
+								}
+								else if(i==2) {
+									taskTrackApproval.setDay2(hours);
+								}
+								else if(i==3) {
+									taskTrackApproval.setDay3(hours);
+								}
+								else if(i==4) {
+									taskTrackApproval.setDay4(hours);
+								}
+								else if(i==5) {
+									taskTrackApproval.setDay5(hours);
+								}
+								else if(i==6) {
+									taskTrackApproval.setDay6(hours);
+								}
+								else if(i==7) {
+									taskTrackApproval.setDay7(hours);
+								}
+								else if(i==8) {
+									taskTrackApproval.setDay8(hours);
+								}
+								else if(i==9) {
+									taskTrackApproval.setDay9(hours);
+								}
+								else if(i==10) {
+									taskTrackApproval.setDay10(hours);
+								}
+								else if(i==11) {
+									taskTrackApproval.setDay11(hours);
+								}
+								else if(i==12) {
+									taskTrackApproval.setDay12(hours);
+								}
+								else if(i==13) {
+									taskTrackApproval.setDay13(hours);
+								}
+								else if(i==14) {
+									taskTrackApproval.setDay14(hours);
+								}
+								else if(i==15) {
+									taskTrackApproval.setDay15(hours);
+								}
+								else if(i==16) {
+									taskTrackApproval.setDay16(hours);
+								}
+								else if(i==17) {
+									taskTrackApproval.setDay17(hours);
+								}
+								else if(i==18) {
+									taskTrackApproval.setDay18(hours);
+								}
+								else if(i==19) {
+									taskTrackApproval.setDay19(hours);
+								}
+								else if(i==20) {
+									taskTrackApproval.setDay20(hours);
+								}
+								else if(i==21) {
+									taskTrackApproval.setDay21(hours);
+								}
+								else if(i==22) {
+									taskTrackApproval.setDay22(hours);
+								}
+								else if(i==23) {
+									taskTrackApproval.setDay23(hours);
+								}
+								else if(i==24) {
+									taskTrackApproval.setDay24(hours);
+								}
+								else if(i==25) {
+									taskTrackApproval.setDay25(hours);
+								}
+								else if(i==26) {
+									taskTrackApproval.setDay26(hours);
+								}
+								else if(i==27) {
+									taskTrackApproval.setDay27(hours);
+								}
+								else if(i==28) {
+									taskTrackApproval.setDay28(hours);
+								}
+								else if(i==29) {
+									taskTrackApproval.setDay29(hours);
+								}
+								else if(i==30) {
+									taskTrackApproval.setDay30(hours);
+								}
+								else if(i==31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateDatas(taskTrackApproval);	
+					}	
+					if(nonbillableId!=null) {
+						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(nonbillableId);	
+						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if(nonbillableArray.get(dateString)!=null) {						
+								hours = Double.valueOf(nonbillableArray.get(dateString).toString());	
+								if(i==1) {
+									taskTrackApproval.setDay1(hours);
+								}
+								else if(i==2) {
+									taskTrackApproval.setDay2(hours);
+								}
+								else if(i==3) {
+									taskTrackApproval.setDay3(hours);
+								}
+								else if(i==4) {
+									taskTrackApproval.setDay4(hours);
+								}
+								else if(i==5) {
+									taskTrackApproval.setDay5(hours);
+								}
+								else if(i==6) {
+									taskTrackApproval.setDay6(hours);
+								}
+								else if(i==7) {
+									taskTrackApproval.setDay7(hours);
+								}
+								else if(i==8) {
+									taskTrackApproval.setDay8(hours);
+								}
+								else if(i==9) {
+									taskTrackApproval.setDay9(hours);
+								}
+								else if(i==10) {
+									taskTrackApproval.setDay10(hours);
+								}
+								else if(i==11) {
+									taskTrackApproval.setDay11(hours);
+								}
+								else if(i==12) {
+									taskTrackApproval.setDay12(hours);
+								}
+								else if(i==13) {
+									taskTrackApproval.setDay13(hours);
+								}
+								else if(i==14) {
+									taskTrackApproval.setDay14(hours);
+								}
+								else if(i==15) {
+									taskTrackApproval.setDay15(hours);
+								}
+								else if(i==16) {
+									taskTrackApproval.setDay16(hours);
+								}
+								else if(i==17) {
+									taskTrackApproval.setDay17(hours);
+								}
+								else if(i==18) {
+									taskTrackApproval.setDay18(hours);
+								}
+								else if(i==19) {
+									taskTrackApproval.setDay19(hours);
+								}
+								else if(i==20) {
+									taskTrackApproval.setDay20(hours);
+								}
+								else if(i==21) {
+									taskTrackApproval.setDay21(hours);
+								}
+								else if(i==22) {
+									taskTrackApproval.setDay22(hours);
+								}
+								else if(i==23) {
+									taskTrackApproval.setDay23(hours);
+								}
+								else if(i==24) {
+									taskTrackApproval.setDay24(hours);
+								}
+								else if(i==25) {
+									taskTrackApproval.setDay25(hours);
+								}
+								else if(i==26) {
+									taskTrackApproval.setDay26(hours);
+								}
+								else if(i==27) {
+									taskTrackApproval.setDay27(hours);
+								}
+								else if(i==28) {
+									taskTrackApproval.setDay28(hours);
+								}
+								else if(i==29) {
+									taskTrackApproval.setDay29(hours);
+								}
+								else if(i==30) {
+									taskTrackApproval.setDay30(hours);
+								}
+								else if(i==31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateDatas(taskTrackApproval);	
+					}
+					if(overtimeId!=null) {
+						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(overtimeId);	
+						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if(overtimeArray.get(dateString)!=null) {						
+								hours = Double.valueOf(overtimeArray.get(dateString).toString());	
+								if(i==1) {
+									taskTrackApproval.setDay1(hours);
+								}
+								else if(i==2) {
+									taskTrackApproval.setDay2(hours);
+								}
+								else if(i==3) {
+									taskTrackApproval.setDay3(hours);
+								}
+								else if(i==4) {
+									taskTrackApproval.setDay4(hours);
+								}
+								else if(i==5) {
+									taskTrackApproval.setDay5(hours);
+								}
+								else if(i==6) {
+									taskTrackApproval.setDay6(hours);
+								}
+								else if(i==7) {
+									taskTrackApproval.setDay7(hours);
+								}
+								else if(i==8) {
+									taskTrackApproval.setDay8(hours);
+								}
+								else if(i==9) {
+									taskTrackApproval.setDay9(hours);
+								}
+								else if(i==10) {
+									taskTrackApproval.setDay10(hours);
+								}
+								else if(i==11) {
+									taskTrackApproval.setDay11(hours);
+								}
+								else if(i==12) {
+									taskTrackApproval.setDay12(hours);
+								}
+								else if(i==13) {
+									taskTrackApproval.setDay13(hours);
+								}
+								else if(i==14) {
+									taskTrackApproval.setDay14(hours);
+								}
+								else if(i==15) {
+									taskTrackApproval.setDay15(hours);
+								}
+								else if(i==16) {
+									taskTrackApproval.setDay16(hours);
+								}
+								else if(i==17) {
+									taskTrackApproval.setDay17(hours);
+								}
+								else if(i==18) {
+									taskTrackApproval.setDay18(hours);
+								}
+								else if(i==19) {
+									taskTrackApproval.setDay19(hours);
+								}
+								else if(i==20) {
+									taskTrackApproval.setDay20(hours);
+								}
+								else if(i==21) {
+									taskTrackApproval.setDay21(hours);
+								}
+								else if(i==22) {
+									taskTrackApproval.setDay22(hours);
+								}
+								else if(i==23) {
+									taskTrackApproval.setDay23(hours);
+								}
+								else if(i==24) {
+									taskTrackApproval.setDay24(hours);
+								}
+								else if(i==25) {
+									taskTrackApproval.setDay25(hours);
+								}
+								else if(i==26) {
+									taskTrackApproval.setDay26(hours);
+								}
+								else if(i==27) {
+									taskTrackApproval.setDay27(hours);
+								}
+								else if(i==28) {
+									taskTrackApproval.setDay28(hours);
+								}
+								else if(i==29) {
+									taskTrackApproval.setDay29(hours);
+								}
+								else if(i==30) {
+									taskTrackApproval.setDay30(hours);
+								}
+								else if(i==31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateDatas(taskTrackApproval);	
+					}
+					if(beachId!=null) {
+						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(beachId);	
+						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if(beachArray.get(dateString)!=null) {						
+								hours = Double.valueOf(beachArray.get(dateString).toString());	
+								if(i==1) {
+									taskTrackApproval.setDay1(hours);
+								}
+								else if(i==2) {
+									taskTrackApproval.setDay2(hours);
+								}
+								else if(i==3) {
+									taskTrackApproval.setDay3(hours);
+								}
+								else if(i==4) {
+									taskTrackApproval.setDay4(hours);
+								}
+								else if(i==5) {
+									taskTrackApproval.setDay5(hours);
+								}
+								else if(i==6) {
+									taskTrackApproval.setDay6(hours);
+								}
+								else if(i==7) {
+									taskTrackApproval.setDay7(hours);
+								}
+								else if(i==8) {
+									taskTrackApproval.setDay8(hours);
+								}
+								else if(i==9) {
+									taskTrackApproval.setDay9(hours);
+								}
+								else if(i==10) {
+									taskTrackApproval.setDay10(hours);
+								}
+								else if(i==11) {
+									taskTrackApproval.setDay11(hours);
+								}
+								else if(i==12) {
+									taskTrackApproval.setDay12(hours);
+								}
+								else if(i==13) {
+									taskTrackApproval.setDay13(hours);
+								}
+								else if(i==14) {
+									taskTrackApproval.setDay14(hours);
+								}
+								else if(i==15) {
+									taskTrackApproval.setDay15(hours);
+								}
+								else if(i==16) {
+									taskTrackApproval.setDay16(hours);
+								}
+								else if(i==17) {
+									taskTrackApproval.setDay17(hours);
+								}
+								else if(i==18) {
+									taskTrackApproval.setDay18(hours);
+								}
+								else if(i==19) {
+									taskTrackApproval.setDay19(hours);
+								}
+								else if(i==20) {
+									taskTrackApproval.setDay20(hours);
+								}
+								else if(i==21) {
+									taskTrackApproval.setDay21(hours);
+								}
+								else if(i==22) {
+									taskTrackApproval.setDay22(hours);
+								}
+								else if(i==23) {
+									taskTrackApproval.setDay23(hours);
+								}
+								else if(i==24) {
+									taskTrackApproval.setDay24(hours);
+								}
+								else if(i==25) {
+									taskTrackApproval.setDay25(hours);
+								}
+								else if(i==26) {
+									taskTrackApproval.setDay26(hours);
+								}
+								else if(i==27) {
+									taskTrackApproval.setDay27(hours);
+								}
+								else if(i==28) {
+									taskTrackApproval.setDay28(hours);
+								}
+								else if(i==29) {
+									taskTrackApproval.setDay29(hours);
+								}
+								else if(i==30) {
+									taskTrackApproval.setDay30(hours);
+								}
+								else if(i==31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateDatas(taskTrackApproval);	
+					}
+					
+				}
+				
+			}
+			
+			else if(dates.getApproved_date() != null) {
+				System.out.println("inside  aproved datesr only-----------------------------");
+				Date approved_Date = (Date) dates.getApproved_date();	
+				from_date = new SimpleDateFormat("dd-MM-yyyy").parse( "01-"+month+"-"+year); 
+				to_date = approved_Date;
+				Calendar approved = Calendar.getInstance();
+				approved.setTime(approved_Date);
+				int approveddate = approved.get(Calendar.DAY_OF_MONTH);
+				// approved date not null 
+				if(billableId!= null) {
+					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(billableId);	
+					for(int i = 1 ; i < approveddate ; i++ ) {
+						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+								+ ((i < 10) ? "0" + i : "" + i);
+						System.out.println("----------"+dateString);
+						if(billableArray.get(dateString)!=null) {						
+							hours = Double.valueOf(billableArray.get(dateString).toString());	
+						if(i==1) {
+							taskTrackApproval.setDay1(hours);
+						}
+						else if(i==2) {
+							taskTrackApproval.setDay2(hours);
+						}
+						else if(i==3) {
+							taskTrackApproval.setDay3(hours);
+						}
+						else if(i==4) {
+							taskTrackApproval.setDay4(hours);
+						}
+						else if(i==5) {
+							taskTrackApproval.setDay5(hours);
+						}
+						else if(i==6) {
+							taskTrackApproval.setDay6(hours);
+						}
+						else if(i==7) {
+							taskTrackApproval.setDay7(hours);
+						}
+						else if(i==8) {
+							taskTrackApproval.setDay8(hours);
+						}
+						else if(i==9) {
+							taskTrackApproval.setDay9(hours);
+						}
+						else if(i==10) {
+							taskTrackApproval.setDay10(hours);
+						}
+						else if(i==11) {
+							taskTrackApproval.setDay11(hours);
+						}
+						else if(i==12) {
+							taskTrackApproval.setDay12(hours);
+						}
+						else if(i==13) {
+							taskTrackApproval.setDay13(hours);
+						}
+						else if(i==14) {
+							taskTrackApproval.setDay14(hours);
+						}
+						else if(i==15) {
+							taskTrackApproval.setDay15(hours);
+						}
+						else if(i==16) {
+							taskTrackApproval.setDay16(hours);
+						}
+						else if(i==17) {
+							taskTrackApproval.setDay17(hours);
+						}
+						else if(i==18) {
+							taskTrackApproval.setDay18(hours);
+						}
+						else if(i==19) {
+							taskTrackApproval.setDay19(hours);
+						}
+						else if(i==20) {
+							taskTrackApproval.setDay20(hours);
+						}
+						else if(i==21) {
+							taskTrackApproval.setDay21(hours);
+						}
+						else if(i==22) {
+							taskTrackApproval.setDay22(hours);
+						}
+						else if(i==23) {
+							taskTrackApproval.setDay23(hours);
+						}
+						else if(i==24) {
+							taskTrackApproval.setDay24(hours);
+						}
+						else if(i==25) {
+							taskTrackApproval.setDay25(hours);
+						}
+						else if(i==26) {
+							taskTrackApproval.setDay26(hours);
+						}
+						else if(i==27) {
+							taskTrackApproval.setDay27(hours);
+						}
+						else if(i==28) {
+							taskTrackApproval.setDay28(hours);
+						}
+						else if(i==29) {
+							taskTrackApproval.setDay29(hours);
+						}
+						else if(i==30) {
+							taskTrackApproval.setDay30(hours);
+						}
+						else if(i==31) {
+							taskTrackApproval.setDay31(hours);
+						}
+						}
+					}
+					tasktrackApprovalService.updateDatas(taskTrackApproval);	
+				}	
+				if(nonbillableId!=null) {
+					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(nonbillableId);	
+					for(int i = 1 ; i < approveddate ; i++ ) {
+						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+								+ ((i < 10) ? "0" + i : "" + i);
+						if(nonbillableArray.get(dateString)!=null) {						
+							hours = Double.valueOf(nonbillableArray.get(dateString).toString());	
+							if(i==1) {
+								taskTrackApproval.setDay1(hours);
+							}
+							else if(i==2) {
+								taskTrackApproval.setDay2(hours);
+							}
+							else if(i==3) {
+								taskTrackApproval.setDay3(hours);
+							}
+							else if(i==4) {
+								taskTrackApproval.setDay4(hours);
+							}
+							else if(i==5) {
+								taskTrackApproval.setDay5(hours);
+							}
+							else if(i==6) {
+								taskTrackApproval.setDay6(hours);
+							}
+							else if(i==7) {
+								taskTrackApproval.setDay7(hours);
+							}
+							else if(i==8) {
+								taskTrackApproval.setDay8(hours);
+							}
+							else if(i==9) {
+								taskTrackApproval.setDay9(hours);
+							}
+							else if(i==10) {
+								taskTrackApproval.setDay10(hours);
+							}
+							else if(i==11) {
+								taskTrackApproval.setDay11(hours);
+							}
+							else if(i==12) {
+								taskTrackApproval.setDay12(hours);
+							}
+							else if(i==13) {
+								taskTrackApproval.setDay13(hours);
+							}
+							else if(i==14) {
+								taskTrackApproval.setDay14(hours);
+							}
+							else if(i==15) {
+								taskTrackApproval.setDay15(hours);
+							}
+							else if(i==16) {
+								taskTrackApproval.setDay16(hours);
+							}
+							else if(i==17) {
+								taskTrackApproval.setDay17(hours);
+							}
+							else if(i==18) {
+								taskTrackApproval.setDay18(hours);
+							}
+							else if(i==19) {
+								taskTrackApproval.setDay19(hours);
+							}
+							else if(i==20) {
+								taskTrackApproval.setDay20(hours);
+							}
+							else if(i==21) {
+								taskTrackApproval.setDay21(hours);
+							}
+							else if(i==22) {
+								taskTrackApproval.setDay22(hours);
+							}
+							else if(i==23) {
+								taskTrackApproval.setDay23(hours);
+							}
+							else if(i==24) {
+								taskTrackApproval.setDay24(hours);
+							}
+							else if(i==25) {
+								taskTrackApproval.setDay25(hours);
+							}
+							else if(i==26) {
+								taskTrackApproval.setDay26(hours);
+							}
+							else if(i==27) {
+								taskTrackApproval.setDay27(hours);
+							}
+							else if(i==28) {
+								taskTrackApproval.setDay28(hours);
+							}
+							else if(i==29) {
+								taskTrackApproval.setDay29(hours);
+							}
+							else if(i==30) {
+								taskTrackApproval.setDay30(hours);
+							}
+							else if(i==31) {
+								taskTrackApproval.setDay31(hours);
+							}
+						}
+					}
+					tasktrackApprovalService.updateDatas(taskTrackApproval);	
+				}
+				if(overtimeId!=null) {
+					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(overtimeId);	
+					for(int i = 1 ; i < approveddate ; i++ ) {
+						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+								+ ((i < 10) ? "0" + i : "" + i);
+						if(overtimeArray.get(dateString)!=null) {						
+							hours = Double.valueOf(overtimeArray.get(dateString).toString());	
+							if(i==1) {
+								taskTrackApproval.setDay1(hours);
+							}
+							else if(i==2) {
+								taskTrackApproval.setDay2(hours);
+							}
+							else if(i==3) {
+								taskTrackApproval.setDay3(hours);
+							}
+							else if(i==4) {
+								taskTrackApproval.setDay4(hours);
+							}
+							else if(i==5) {
+								taskTrackApproval.setDay5(hours);
+							}
+							else if(i==6) {
+								taskTrackApproval.setDay6(hours);
+							}
+							else if(i==7) {
+								taskTrackApproval.setDay7(hours);
+							}
+							else if(i==8) {
+								taskTrackApproval.setDay8(hours);
+							}
+							else if(i==9) {
+								taskTrackApproval.setDay9(hours);
+							}
+							else if(i==10) {
+								taskTrackApproval.setDay10(hours);
+							}
+							else if(i==11) {
+								taskTrackApproval.setDay11(hours);
+							}
+							else if(i==12) {
+								taskTrackApproval.setDay12(hours);
+							}
+							else if(i==13) {
+								taskTrackApproval.setDay13(hours);
+							}
+							else if(i==14) {
+								taskTrackApproval.setDay14(hours);
+							}
+							else if(i==15) {
+								taskTrackApproval.setDay15(hours);
+							}
+							else if(i==16) {
+								taskTrackApproval.setDay16(hours);
+							}
+							else if(i==17) {
+								taskTrackApproval.setDay17(hours);
+							}
+							else if(i==18) {
+								taskTrackApproval.setDay18(hours);
+							}
+							else if(i==19) {
+								taskTrackApproval.setDay19(hours);
+							}
+							else if(i==20) {
+								taskTrackApproval.setDay20(hours);
+							}
+							else if(i==21) {
+								taskTrackApproval.setDay21(hours);
+							}
+							else if(i==22) {
+								taskTrackApproval.setDay22(hours);
+							}
+							else if(i==23) {
+								taskTrackApproval.setDay23(hours);
+							}
+							else if(i==24) {
+								taskTrackApproval.setDay24(hours);
+							}
+							else if(i==25) {
+								taskTrackApproval.setDay25(hours);
+							}
+							else if(i==26) {
+								taskTrackApproval.setDay26(hours);
+							}
+							else if(i==27) {
+								taskTrackApproval.setDay27(hours);
+							}
+							else if(i==28) {
+								taskTrackApproval.setDay28(hours);
+							}
+							else if(i==29) {
+								taskTrackApproval.setDay29(hours);
+							}
+							else if(i==30) {
+								taskTrackApproval.setDay30(hours);
+							}
+							else if(i==31) {
+								taskTrackApproval.setDay31(hours);
+							}
+						}
+					}
+					tasktrackApprovalService.updateDatas(taskTrackApproval);	
+					
+				}
+				if(beachId!=null) {
+					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(beachId);	
+					for(int i = 1 ; i < approveddate ; i++ ) {
+						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+								+ ((i < 10) ? "0" + i : "" + i);
+						if(beachArray.get(dateString)!=null) {						
+							hours = Double.valueOf(beachArray.get(dateString).toString());	
+							if(i==1) {
+								taskTrackApproval.setDay1(hours);
+							}
+							else if(i==2) {
+								taskTrackApproval.setDay2(hours);
+							}
+							else if(i==3) {
+								taskTrackApproval.setDay3(hours);
+							}
+							else if(i==4) {
+								taskTrackApproval.setDay4(hours);
+							}
+							else if(i==5) {
+								taskTrackApproval.setDay5(hours);
+							}
+							else if(i==6) {
+								taskTrackApproval.setDay6(hours);
+							}
+							else if(i==7) {
+								taskTrackApproval.setDay7(hours);
+							}
+							else if(i==8) {
+								taskTrackApproval.setDay8(hours);
+							}
+							else if(i==9) {
+								taskTrackApproval.setDay9(hours);
+							}
+							else if(i==10) {
+								taskTrackApproval.setDay10(hours);
+							}
+							else if(i==11) {
+								taskTrackApproval.setDay11(hours);
+							}
+							else if(i==12) {
+								taskTrackApproval.setDay12(hours);
+							}
+							else if(i==13) {
+								taskTrackApproval.setDay13(hours);
+							}
+							else if(i==14) {
+								taskTrackApproval.setDay14(hours);
+							}
+							else if(i==15) {
+								taskTrackApproval.setDay15(hours);
+							}
+							else if(i==16) {
+								taskTrackApproval.setDay16(hours);
+							}
+							else if(i==17) {
+								taskTrackApproval.setDay17(hours);
+							}
+							else if(i==18) {
+								taskTrackApproval.setDay18(hours);
+							}
+							else if(i==19) {
+								taskTrackApproval.setDay19(hours);
+							}
+							else if(i==20) {
+								taskTrackApproval.setDay20(hours);
+							}
+							else if(i==21) {
+								taskTrackApproval.setDay21(hours);
+							}
+							else if(i==22) {
+								taskTrackApproval.setDay22(hours);
+							}
+							else if(i==23) {
+								taskTrackApproval.setDay23(hours);
+							}
+							else if(i==24) {
+								taskTrackApproval.setDay24(hours);
+							}
+							else if(i==25) {
+								taskTrackApproval.setDay25(hours);
+							}
+							else if(i==26) {
+								taskTrackApproval.setDay26(hours);
+							}
+							else if(i==27) {
+								taskTrackApproval.setDay27(hours);
+							}
+							else if(i==28) {
+								taskTrackApproval.setDay28(hours);
+							}
+							else if(i==29) {
+								taskTrackApproval.setDay29(hours);
+							}
+							else if(i==30) {
+								taskTrackApproval.setDay30(hours);
+							}
+							else if(i==31) {
+								taskTrackApproval.setDay31(hours);
+							}
+						}
+					}
+					tasktrackApprovalService.updateDatas(taskTrackApproval);	
+				}
+				
+			}
+			else {
+				message = "Not yet approved";
+				
+			}
+			
+		
+			
+		}
+		
+		// data insertion to activity log
+		Date current = new Date();
+		ActivityLog activity = new ActivityLog();
+		activity.setAction("Reapproved time sheet");
+		UserModel user = userRepository.getActiveUser(logUser);
+		UserModel user2 =  userRepository.getActiveUser(userId);
+		activity.setUser(user2);
+		activity.setAction_by(user);
+		activity.setAction_on(current);
+		activity.setFrom_date(from_date);
+		activity.setTo_date(to_date);
+		activity.setMonth(month);
+		ProjectModel project = project_repositary.getOne(projectId);
+		activity.setProject(project);
+		activity.setYear(year);
+		activitylogrepository.save(activity);
+		
+		jsonDataRes.put("status", "success");
+		//jsonDataRes.put("code", httpstatus.getStatus());
+		jsonDataRes.put("message", message);
+		}catch(Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "failure");
+			//jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+		return jsonDataRes;
+	}
+
+	@Override
+	public ObjectNode mailRejectTimesheetDetailstoLevel1andClear(Long projectId, Long userId, Long month, Long year,String message) {
+		// TODO Auto-generated method stub
+		
+		int month1 = month.intValue();
+		int year1 = year.intValue();
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		//1.clear recently added data.
+		List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,month1,year1,projectId);
+		TaskTrackApproval forwardtolevel2 = timeTrackApprovalJPARepository.getapprovedDates2(month1, year1, projectId, userId);
+		TaskTrackApprovalLevel2 dates = timeTrackApprovalLevel2.getapprovedDates2(month1, year1,projectId, userId);
+		
+		if(forwardtolevel2 != null && dates != null) {
+		
+			if(dates.getApproved_date() != null && forwardtolevel2.getForwarded_date() != null) {
+			if(dates.getApproved_date().before(forwardtolevel2.getForwarded_date())) {
+			
+			//do clear the rejected datas
+			Calendar approved = Calendar.getInstance();
+		    approved.setTime(dates.getApproved_date());
+		    int approved_date = approved.get(Calendar.DAY_OF_MONTH);
+		    
+		    Calendar forwarded_level1 = Calendar.getInstance();
+		    forwarded_level1.setTime(forwardtolevel2.getForwarded_date());
+		    int forwarded = forwarded_level1.get(Calendar.DAY_OF_MONTH);
+		    System.out.println("forwarded-------------->"+forwarded+"approved----------->"+approved_date);
+		  
+		    if(approvedData.size() > 0) {
+		    for(TaskTrackApprovalLevel2 data: approvedData) {	
+		    	System.out.println("Here-------------------------------------------->1");
+		    	TaskTrackApprovalLevel2 taskTrackApproval = timeTrackApprovalLevel2.getOne(data.getId());
+		    		for(int i = approved_date+1; i<= forwarded ; i++) {
+		    			
+		    			if(i==1) {
+							taskTrackApproval.setDay1(null);
+						}
+						else if(i==2) {
+							taskTrackApproval.setDay2(null);
+						}
+						else if(i==3) {
+							taskTrackApproval.setDay3(null);
+						}
+						else if(i==4) {
+							taskTrackApproval.setDay4(null);
+						}
+						else if(i==5) {
+							taskTrackApproval.setDay5(null);
+						}
+						else if(i==6) {
+							taskTrackApproval.setDay6(null);
+						}
+						else if(i==7) {
+							taskTrackApproval.setDay7(null);
+						}
+						else if(i==8) {
+							taskTrackApproval.setDay8(null);
+						}
+						else if(i==9) {
+							taskTrackApproval.setDay9(null);
+						}
+						else if(i==10) {
+							taskTrackApproval.setDay10(null);
+						}
+						else if(i==11) {
+							taskTrackApproval.setDay11(null);
+						}
+						else if(i==12) {
+							taskTrackApproval.setDay12(null);
+						}
+						else if(i==13) {
+							taskTrackApproval.setDay13(null);
+						}
+						else if(i==14) {
+							taskTrackApproval.setDay14(null);
+						}
+						else if(i==15) {
+							taskTrackApproval.setDay15(null);
+						}
+						else if(i==16) {
+							taskTrackApproval.setDay16(null);
+						}
+						else if(i==17) {
+							taskTrackApproval.setDay17(null);
+						}
+						else if(i==18) {
+							taskTrackApproval.setDay18(null);
+						}
+						else if(i==19) {
+							taskTrackApproval.setDay19(null);
+						}
+						else if(i==20) {
+							taskTrackApproval.setDay20(null);
+						}
+						else if(i==21) {
+							taskTrackApproval.setDay21(null);
+						}
+						else if(i==22) {
+							taskTrackApproval.setDay22(null);
+						}
+						else if(i==23) {
+							taskTrackApproval.setDay23(null);
+						}
+						else if(i==24) {
+							taskTrackApproval.setDay24(null);
+						}
+						else if(i==25) {
+							taskTrackApproval.setDay25(null);
+						}
+						else if(i==26) {
+							taskTrackApproval.setDay26(null);
+						}
+						else if(i==27) {
+							taskTrackApproval.setDay27(null);
+						}
+						else if(i==28) {
+							taskTrackApproval.setDay28(null);
+						}
+						else if(i==29) {
+							taskTrackApproval.setDay29(null);
+						}
+						else if(i==30) {
+							taskTrackApproval.setDay30(null);
+						}
+						else if(i==31) {
+							taskTrackApproval.setDay31(null);
+						}
+		    			
+		    		}
+
+		    		tasktrackApprovalService.updateDatas(taskTrackApproval);	
+		    }
+			}
+		    jsonDataRes.put("status", "success");
+  			//jsonDataRes.put("code", httpstatus.getStatus());
+  			jsonDataRes.put("message", "Cleared Data");
+		}
+			
+          else {
+        	  jsonDataRes.put("status", "failure");
+  			//jsonDataRes.put("code", httpstatus.getStatus());
+  			jsonDataRes.put("message", "failed. " + "Cannot Reject data");
+			// set cannot reject data
+		   }
+		}
+         else if(dates.getApproved_date() == null && forwardtolevel2.getForwarded_date() != null) {
+        	 System.out.println("Here-------------------------------------------->2");	
+        	 Calendar forwarded_level1 = Calendar.getInstance();
+ 		    forwarded_level1.setTime(forwardtolevel2.getForwarded_date());
+ 		    int forwarded = forwarded_level1.get(Calendar.DAY_OF_MONTH);
+ 		  
+ 		  
+ 		    if(approvedData.size() > 0) {
+ 		    	System.out.println("Here-------------------------------------------->3");
+ 		    for(TaskTrackApprovalLevel2 data: approvedData) {		    		
+ 		    	TaskTrackApprovalLevel2 taskTrackApproval = timeTrackApprovalLevel2.getOne(data.getId());
+ 		    		for(int i = 1; i< forwarded ; i++) {
+ 		    			
+ 		    			if(i==1) {
+ 							taskTrackApproval.setDay1(null);
+ 						}
+ 						else if(i==2) {
+ 							taskTrackApproval.setDay2(null);
+ 						}
+ 						else if(i==3) {
+ 							taskTrackApproval.setDay3(null);
+ 						}
+ 						else if(i==4) {
+ 							taskTrackApproval.setDay4(null);
+ 						}
+ 						else if(i==5) {
+ 							taskTrackApproval.setDay5(null);
+ 						}
+ 						else if(i==6) {
+ 							taskTrackApproval.setDay6(null);
+ 						}
+ 						else if(i==7) {
+ 							taskTrackApproval.setDay7(null);
+ 						}
+ 						else if(i==8) {
+ 							taskTrackApproval.setDay8(null);
+ 						}
+ 						else if(i==9) {
+ 							taskTrackApproval.setDay9(null);
+ 						}
+ 						else if(i==10) {
+ 							taskTrackApproval.setDay10(null);
+ 						}
+ 						else if(i==11) {
+ 							taskTrackApproval.setDay11(null);
+ 						}
+ 						else if(i==12) {
+ 							taskTrackApproval.setDay12(null);
+ 						}
+ 						else if(i==13) {
+ 							taskTrackApproval.setDay13(null);
+ 						}
+ 						else if(i==14) {
+ 							taskTrackApproval.setDay14(null);
+ 						}
+ 						else if(i==15) {
+ 							taskTrackApproval.setDay15(null);
+ 						}
+ 						else if(i==16) {
+ 							taskTrackApproval.setDay16(null);
+ 						}
+ 						else if(i==17) {
+ 							taskTrackApproval.setDay17(null);
+ 						}
+ 						else if(i==18) {
+ 							taskTrackApproval.setDay18(null);
+ 						}
+ 						else if(i==19) {
+ 							taskTrackApproval.setDay19(null);
+ 						}
+ 						else if(i==20) {
+ 							taskTrackApproval.setDay20(null);
+ 						}
+ 						else if(i==21) {
+ 							taskTrackApproval.setDay21(null);
+ 						}
+ 						else if(i==22) {
+ 							taskTrackApproval.setDay22(null);
+ 						}
+ 						else if(i==23) {
+ 							taskTrackApproval.setDay23(null);
+ 						}
+ 						else if(i==24) {
+ 							taskTrackApproval.setDay24(null);
+ 						}
+ 						else if(i==25) {
+ 							taskTrackApproval.setDay25(null);
+ 						}
+ 						else if(i==26) {
+ 							taskTrackApproval.setDay26(null);
+ 						}
+ 						else if(i==27) {
+ 							taskTrackApproval.setDay27(null);
+ 						}
+ 						else if(i==28) {
+ 							taskTrackApproval.setDay28(null);
+ 						}
+ 						else if(i==29) {
+ 							taskTrackApproval.setDay29(null);
+ 						}
+ 						else if(i==30) {
+ 							taskTrackApproval.setDay30(null);
+ 						}
+ 						else if(i==31) {
+ 							taskTrackApproval.setDay31(null);
+ 						}
+ 		    			
+ 		    		}
+
+ 		    		tasktrackApprovalService.updateDatas(taskTrackApproval);	
+ 		    }
+ 			}
+ 		   jsonDataRes.put("status", "success");
+ 			//jsonDataRes.put("code", httpstatus.getStatus());
+ 			jsonDataRes.put("message", "Cleared Data");
+			}
+		}
+		
+		
+		
+		
+		//2.mail reject message to level1 approver.
+		ObjectNode mailtolevel1 = mailRejectMessageToLevel1(projectId,message);
+		
+		
+		return jsonDataRes;
+	}
+
+	public ObjectNode mailRejectMessageToLevel1(Long projectId,String message) {
+		
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		// find level1 approver 
+		
+		ProjectModel project = projectRepository.getProjectDetails(projectId);
+		
+		try {
+			String mail = sendMailTolevel1(message,project.getProjectOwner(),project.getOnsite_lead());
+			//System.out.println("------------>"+mail);
+			jsonDataRes.put("status", "success");
+  			//jsonDataRes.put("code", httpstatus.getStatus());
+  			jsonDataRes.put("message", "Cleared Data");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			jsonDataRes.put("status", "failed");
+  			//jsonDataRes.put("code", e.printStackTrace());
+  			jsonDataRes.put("message", "Mail sent successfully");
+		}
+		
+		
+		return jsonDataRes;
+	}
+
+
+	public String sendMailTolevel1(String messages, UserModel user,UserModel lead) throws AddressException, MessagingException{
+		
+		String subject = "Rejected Timesheet";
+		StringBuilder mailBody = new StringBuilder("Hi "+user.getFirstName()+" "+user.getLastName()+",");
+		mailBody.append("<br/><br/>The time sheet submitted recently has been rejected by level2 approver "+lead.getFirstName()+" "+lead.getLastName()+" please find the below comments from them:");
+		mailBody.append("<br/><br/>"+messages+"</a>");
+		//mailBody.append("<br/><br/>This link will expire in "+Constants.EMAIL_TOKEN_EXP_DUR+" minutes");
+		
+		String to = user.getEmail();
+        String from = "noreply@titechnologies.in";  
+        String host = "smtp.gmail.com"; 
+        final String username = "noreply@titechnologies.in";
+        final String password = "Noreply!@#";  
+        
+        System.out.println("TLS Email Start"); 
+        
+        Properties properties = System.getProperties();  
+          
+        // Setup mail server 
+        properties.setProperty("mail.smtp.host", host); 
+        // SSL Port 
+        properties.put("mail.smtp.port", "465");  
+        // enable authentication 
+        properties.put("mail.smtp.auth", "true");  
+        // SSL Factory 
+        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");   
+  
+        // creating Session instance referenced to  
+        // Authenticator object to pass in  
+        // Session.getInstance argument 
+        Session session = Session.getDefaultInstance(properties, 
+        new javax.mail.Authenticator() { 
+            // override the getPasswordAuthentication  
+            protected PasswordAuthentication  
+                    getPasswordAuthentication() { 
+                return new PasswordAuthentication(username, password); 
+            } 
+        }); 
+    
+
+	    // javax.mail.internet.MimeMessage class is mostly  
+	    // used for abstraction. 
+	    MimeMessage message = new MimeMessage(session);  
+	      
+	    // header field of the header. 
+	    message.setFrom(new InternetAddress(from)); 
+	    message.addRecipient(Message.RecipientType.TO,  
+	                          new InternetAddress(to)); 
+	    message.setSubject(subject); 
+	    // message.setText(mailBody);
+	    message.setContent(mailBody.toString(),"text/html");
+	  
+	    // Send message 
+	    Transport.send(message); 
+	    
+	    String msg = "Verification link has been successfully sent to your email \""+to+"\"";
+	    System.out.println(msg); 
+		return msg;
+	}
 	
 }

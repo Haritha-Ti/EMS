@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.EMS.dto.Taskdetails;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.Region;
 import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.TaskTrackApprovalFinance;
@@ -47,6 +49,7 @@ import com.EMS.repository.TaskRepository;
 import com.EMS.repository.TaskTrackApprovalLevel2Repository;
 import com.EMS.service.ProjectAllocationService;
 import com.EMS.service.ProjectService;
+import com.EMS.service.RegionService;
 import com.EMS.service.TasktrackApprovalService;
 import com.EMS.service.TasktrackService;
 import com.EMS.service.TasktrackServiceImpl;
@@ -89,6 +92,9 @@ public class TasktrackController {
 	
 	@Autowired
 	TimeTrackApprovalJPARepository timeTrackApprovalJPARepository;
+	
+	@Autowired
+	private RegionService regionservice;
 
 	@PostMapping(value = "/getTaskDetails")
 	public JsonNode getByDate(@RequestBody Taskdetails requestdata) {
@@ -625,12 +631,13 @@ public class TasktrackController {
 	public JSONObject getTaskTrackDataByUserId(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) throws ParseException {
 
 		JSONObject jsonDataRes = new JSONObject();
+		JSONObject jsonDataMessageDetails = new JSONObject();
 		JSONObject returnJsonData = new JSONObject();
 		List<JSONObject> timeTrackJSONData = new ArrayList<>();
 		List<JSONObject> approvalJSONData = new ArrayList<>();
 		List<JSONObject> jsonArray = new ArrayList<>();
 		Long userId=null,projectId = null;
-		
+		boolean flaglevel2 = true;
 		try {
 
 			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
@@ -670,21 +677,61 @@ public class TasktrackController {
 		
 				//System.out.println("Here____________________________");
 				if(projectdetails.getProjectOwner() != null)
+				{
 				jsonDataProjectDetails.put("approver_level_1",projectdetails.getProjectOwner().getUserId());
-				
+				}
 					
 				if(projectdetails.getOnsite_lead() != null)
-				jsonDataProjectDetails.put("approver_level_2",projectdetails.getOnsite_lead().getUserId());	
+				
+					{
+					System.out.println("------------------------------------------------1");
+					jsonDataProjectDetails.put("approver_level_2",projectdetails.getOnsite_lead().getUserId());	
+					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ "" +projectdetails.getOnsite_lead().getLastName());
+					}
 				else
-					jsonDataProjectDetails.put("approver_level_2","");	
+				{
+					System.out.println("------------------------------------------------2");
+					flaglevel2 = false;
+					jsonDataProjectDetails.put("approver_level_2","");
+					jsonDataMessageDetails.put("Level2_Approvar_Name", "");
+				}
 				//timeTrackJSONData.add(jsonDataProjectDetails);		
 				//TaskTrackApprovalLevel2 forwardeddate = taskTrackApprovalLevel2Repository.getForwardedDate(projectId,userId,intMonth);
 				int yearIndex = cal.get(Calendar.YEAR);
 				System.out.println("Month"+intMonth+"Year"+yearIndex);
 				String frowardedDate = "";
 				String frowardedDateLevel2 = "";
+				String finance_status_message = "Timesheet has been not yet submitted to finance";
+				String forwarded_ToLevel2_Status = "";
+				if(flaglevel2) {
+					forwarded_ToLevel2_Status = "Timesheet has been not yet forwarded to Level2";
+				}
 				 String pattern = "yyyy-MM-dd"; 
 				 DateFormat df = new SimpleDateFormat(pattern);
+				
+				 // getb finance status of the current project added on 11/10
+				
+				 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, intMonth, yearIndex);
+				 
+				 if(finance_status != null) {
+					 System.out.println("---------------------------------------0");
+					 if(finance_status.length > 0 ) {
+					 System.out.println("---------------------------------------1");
+						if(finance_status[0].equals("HM")) {
+							 System.out.println("---------------------------------------2");	
+							finance_status_message = "Submitted mid report";
+						}
+						else if(finance_status[0].equals("FM")) {
+							 System.out.println("---------------------------------------3");	
+							finance_status_message = "Submitted Final report";
+						}
+						
+					 }
+				 }
+				 jsonDataMessageDetails.put("Status",finance_status_message);
+				 //
+				 
+				 
 				
 				 List<Object> level2 = tasktrackApprovalService.getForwardedDateLevel2(projectId,userId,intMonth,yearIndex);
 				  
@@ -701,8 +748,7 @@ public class TasktrackController {
 						 frowardedDateLevel2 = ""; 
 					  }
 				 }
-				 
-					
+				 	  
 				  List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId,userId,intMonth,yearIndex);
 				  if(!level1.isEmpty()) {
 					 // System.out.println("forwarded_date"+level1.get(0));
@@ -713,6 +759,8 @@ public class TasktrackController {
 								if(fl[0] != null) {
 								Date fdate = (Date) fl[0];
 							  frowardedDate = df.format(fdate);
+							  System.out.println("---------------------------------------4");						  
+							  forwarded_ToLevel2_Status = "Data upto "+frowardedDate+"has been forwarded to Level2";
 								}
 								if(fl[1] != null) {
 								Date fdates = (Date) fl[1];
@@ -724,10 +772,11 @@ public class TasktrackController {
  
 
 				 }
-				
+				  jsonDataMessageDetails.put("Forwarded Status",forwarded_ToLevel2_Status);
 				jsonDataProjectDetails.put("forwarded_date",frowardedDate);
 				jsonDataProjectDetails.put("forwarded_date_finance",frowardedDateLevel2);
 			}
+			
 			
 			List<Object[]> userIdList = null;
 			Long count = null;
@@ -737,11 +786,15 @@ public class TasktrackController {
 				returnJsonData = getUserDataForApproval(userId, startDate, endDate, jsonDataRes, timeTrackJSONData,approvalJSONData, jsonArray,projectId);
 			}
 			
+			
+			
+			
 			jsonDataRes.put("data", returnJsonData);
 			jsonDataRes.put("details",jsonDataProjectDetails);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("message", "success. ");
 			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message_details", jsonDataMessageDetails);
 		} catch (Exception e) {
 			jsonDataRes.put("status", "failure");
 			jsonDataRes.put("code", httpstatus.getStatus());
@@ -776,6 +829,8 @@ public class TasktrackController {
 		ObjectNode ids = objectMapper.createObjectNode();
 
 		boolean timesheet_button = false;
+		
+		Date approved_till_date = null;
 		
 		try {
 			// Obtain the data from request data
@@ -967,6 +1022,7 @@ public class TasktrackController {
 						}				
 						tasktrackApprovalService.updateData(taskTrackApproval);	
 						billable_id = taskTrackApproval.getId();
+						approved_till_date = taskTrackApproval.getApproved_date();
 					}
 				}
 				else {
@@ -1090,6 +1146,7 @@ public class TasktrackController {
 
 					TaskTrackApproval billable = tasktrackApprovalService.save(taskTrackApproval);
 					 billable_id = billable.getId();
+					 approved_till_date = taskTrackApproval.getApproved_date();
 					
 					
 				}
@@ -1960,6 +2017,7 @@ public class TasktrackController {
 			jsonDataRes.put("timesheet_button", timesheet_button);
 			jsonDataRes.put("approve_button", approve_button);
 			jsonDataRes.put("forward_button", forward_button);
+			//jsonDataRes.put("approved_till_date", );
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");
@@ -2089,6 +2147,7 @@ public class TasktrackController {
 		JSONObject jsonDataRes = new JSONObject();
 		JSONObject returnJsonData = new JSONObject();
 		JSONObject returnJsonDatalevel2 = new JSONObject();
+		JSONObject jsonDataMessageDetails = new JSONObject();
 		List<JSONObject> timeTrackJSONData = new ArrayList<>();
 		List<JSONObject> approvalJSONData = new ArrayList<>();
 		List<JSONObject> jsonArray = new ArrayList<>();
@@ -2161,6 +2220,28 @@ public class TasktrackController {
 				 * System.out.println("ForwardedDates_________"+level1);
 				 */
 				
+				 // getb finance status of the current project added on 11/10
+					
+				 String finance_status_message = "Timesheet has been not yet submitted to finance";
+				 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, intMonth, yearIndex);
+				 
+				 if(finance_status != null) {
+					 
+					 if(finance_status.length > 0 ) {
+						
+						if(finance_status[0].equals("HM")) {
+							
+							finance_status_message = "Submitted mid report";
+						}
+						else if(finance_status[0].equals("FM")) {
+							
+							finance_status_message = "Submitted Final report";
+						}
+						
+					 }
+				 }
+				 jsonDataMessageDetails.put("Status",finance_status_message);
+				 //
 				  List<Object> level2 = tasktrackApprovalService.getForwardedDateLevel2(projectId,userId,intMonth,yearIndex);
 				  
 				  if(!level2.isEmpty()) {
@@ -2210,6 +2291,7 @@ public class TasktrackController {
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("message", "success. ");
 			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message_details", jsonDataMessageDetails);
 		} catch (Exception e) {
 			jsonDataRes.put("status", "failure");
 			jsonDataRes.put("code", httpstatus.getStatus());
@@ -3258,5 +3340,283 @@ public class TasktrackController {
 		}
 
 		return jsonDataRes;
+	}
+	
+	/**
+	 * @description reapproved datas save of level1
+	 */
+	@PostMapping("/reapprovelevel1")
+	public ObjectNode ReapproveDatasofLevel1(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
+		
+		
+		Long projectId = null ;
+		Long userId=null;
+		Long logUser=null;
+		Integer month = 0;
+		Integer year = 0;
+		Long billableId =null,nonbillableId=null,beachId=null,overtimeId=null,updatedBy=null;
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		 year = Integer.parseInt((String)requestdata.get("year"));
+		 month = (Integer) requestdata.get("month");
+		if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
+			projectId = Long.valueOf(requestdata.get("projectId").toString());
+		}
+		if (requestdata.get("userId") != null && requestdata.get("userId") != "") {
+			userId = Long.valueOf(requestdata.get("userId").toString());
+		}
+		if (requestdata.get("updatedBy") != null && requestdata.get("updatedBy") != "") {
+			logUser = Long.valueOf(requestdata.get("updatedBy").toString());
+		}
+		if (requestdata.get("billableId") != null && requestdata.get("billableId") != "") {
+			billableId = Long.valueOf(requestdata.get("billableId").toString());
+		}
+		if (requestdata.get("nonBillableId") != null && requestdata.get("nonBillableId") != "") {
+			nonbillableId = Long.valueOf(requestdata.get("nonBillableId").toString());
+		}
+		if (requestdata.get("beachId") != null && requestdata.get("beachId")!= "") {
+			beachId = Long.valueOf(requestdata.get("beachId").toString());
+		}
+		if (requestdata.get("overtimeId") != null && requestdata.get("overtimeId")!= "") {
+			overtimeId = Long.valueOf(requestdata.get("overtimeId").toString());
+		}
+	
+		HashMap<String, Object> billableArray = new JSONObject();
+		HashMap<String, Object> nonbillableArray = new JSONObject();
+		HashMap<String, Object> beachArray = new JSONObject();
+		HashMap<String, Object> overtimeArray = new JSONObject();
+
+		UserModel user = userService.getUserDetailsById(userId);
+		ProjectModel project = projectService.getProjectId(projectId);
+
+		if (requestdata.get("billable") != null && requestdata.get("billable")!= "") {
+			billableArray =(HashMap<String, Object>) (requestdata.get("billable"));
+		}
+		if (requestdata.get("nonBillable") != null && requestdata.get("nonBillable")!= "") {
+			nonbillableArray = (HashMap<String, Object>) requestdata.get("nonBillable");
+		}
+		if (requestdata.get("beach") != null && requestdata.get("beach")!= "") {
+			beachArray = (HashMap<String, Object>) requestdata.get("beach");
+		}
+		if (requestdata.get("overtime") != null && requestdata.get("overtime")!= "") {
+			overtimeArray = (HashMap<String, Object>) requestdata.get("overtime");
+		}
+		
+		try {
+			jsonDataRes   = tasktrackApprovalService.reApproveDatasofLevel1(projectId,userId,month,year,billableArray,nonbillableArray,beachArray,overtimeArray,billableId,nonbillableId,overtimeId,beachId,logUser);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		}
+		return jsonDataRes;
+		
+		
+	}
+	/**
+	 * @description reapproved datas save of level2
+	 */
+	@PostMapping("/reapprovelevel2")
+	public ObjectNode ReapproveDatasofLevel2(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
+		
+		
+		Long projectId = null ;
+		Long userId=null;
+		Long logUser=null;
+		Integer month = 0;
+		Integer year = 0;
+		Long billableId =null,nonbillableId=null,beachId=null,overtimeId=null,updatedBy=null;
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		 year = Integer.parseInt((String)requestdata.get("year"));
+		 month = (Integer) requestdata.get("month");
+		if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
+			projectId = Long.valueOf(requestdata.get("projectId").toString());
+		}
+		if (requestdata.get("userId") != null && requestdata.get("userId") != "") {
+			userId = Long.valueOf(requestdata.get("userId").toString());
+		}
+		if (requestdata.get("updatedBy") != null && requestdata.get("updatedBy") != "") {
+			logUser = Long.valueOf(requestdata.get("updatedBy").toString());
+		}
+		if (requestdata.get("billableId") != null && requestdata.get("billableId") != "") {
+			billableId = Long.valueOf(requestdata.get("billableId").toString());
+		}
+		if (requestdata.get("nonBillableId") != null && requestdata.get("nonBillableId") != "") {
+			nonbillableId = Long.valueOf(requestdata.get("nonBillableId").toString());
+		}
+		if (requestdata.get("beachId") != null && requestdata.get("beachId")!= "") {
+			beachId = Long.valueOf(requestdata.get("beachId").toString());
+		}
+		if (requestdata.get("overtimeId") != null && requestdata.get("overtimeId")!= "") {
+			overtimeId = Long.valueOf(requestdata.get("overtimeId").toString());
+		}
+	
+		HashMap<String, Object> billableArray = new JSONObject();
+		HashMap<String, Object> nonbillableArray = new JSONObject();
+		HashMap<String, Object> beachArray = new JSONObject();
+		HashMap<String, Object> overtimeArray = new JSONObject();
+
+		UserModel user = userService.getUserDetailsById(userId);
+		ProjectModel project = projectService.getProjectId(projectId);
+
+		if (requestdata.get("billable") != null && requestdata.get("billable")!= "") {
+			billableArray =(HashMap<String, Object>) (requestdata.get("billable"));
+		}
+		if (requestdata.get("nonBillable") != null && requestdata.get("nonBillable")!= "") {
+			nonbillableArray = (HashMap<String, Object>) requestdata.get("nonBillable");
+		}
+		if (requestdata.get("beach") != null && requestdata.get("beach")!= "") {
+			beachArray = (HashMap<String, Object>) requestdata.get("beach");
+		}
+		if (requestdata.get("overtime") != null && requestdata.get("overtime")!= "") {
+			overtimeArray = (HashMap<String, Object>) requestdata.get("overtime");
+		}
+		
+		try {
+			jsonDataRes   = tasktrackApprovalService.reApproveDatasofLevel2(projectId,userId,month,year,billableArray,nonbillableArray,beachArray,overtimeArray,billableId,nonbillableId,overtimeId,beachId,logUser);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		}
+		return jsonDataRes;
+		
+		
+	}
+	@PostMapping("/rejectTimesheet")
+	public ObjectNode rejectTimesheet(@RequestBody JSONObject requestdata,HttpServletResponse httpstatus) {
+		
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		
+		String message = null;
+		Long projectId = null ;
+		Long userId=null;
+		Long logUser=null;
+		Long month = null;
+		Long year = null;
+		if(requestdata.get("message")!= null) {
+			
+			message = (String) requestdata.get("message");
+		}
+		if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
+			projectId = Long.valueOf(requestdata.get("projectId").toString());
+		}
+		if (requestdata.get("userId") != null && requestdata.get("userId") != "") {
+			userId = Long.valueOf(requestdata.get("userId").toString());
+		}
+		if (requestdata.get("month") != null && requestdata.get("month") != "") {
+			month = Long.valueOf(requestdata.get("month").toString());
+		}
+		if (requestdata.get("year") != null && requestdata.get("year") != "") {
+			year = Long.valueOf(requestdata.get("year").toString());
+		}
+	
+		responsedata = tasktrackApprovalService.mailRejectTimesheetDetailstoLevel1andClear(projectId,userId,month,year,message);
+		
+		
+		
+		return responsedata;
+	}
+	
+	// add region
+	
+	@PostMapping(value = "/addRegion")
+	public ObjectNode addRegion(@RequestBody JSONObject requestdata,HttpServletResponse httpstatus) throws JSONException {
+		
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		String region_name = null;
+		String region_code = null ;
+		Long region_Id = null;
+		System.out.println("Here");
+		
+       if(requestdata.get("region_name") != null && requestdata.get("region_name") != "") {
+			
+    	   region_name = (String) requestdata.get("region_name");
+		}
+
+       if(requestdata.get("region_code") != null && requestdata.get("region_code") != "") {
+			
+    	   region_code = (String) requestdata.get("region_code");
+		}
+		
+       if(requestdata.get("region_Id") != null && requestdata.get("region_Id") != "") {
+			
+    	   region_Id = Long.valueOf( requestdata.get("region_Id").toString());
+		}
+       
+       if(region_Id == null) {
+       Region region = new Region();
+       region.setRegion_code(region_code);
+       region.setRegion_name(region_name);
+       region.setDeleted(false);
+       jsonDataRes = regionservice.saveRegion(region);
+       }
+       else {
+    	   jsonDataRes = regionservice.EditRegion(region_Id,region_code,region_name);
+    	   
+       }
+       
+       
+		return jsonDataRes;
+	}
+	// get region list
+	
+	@GetMapping("/getRegionList")
+	public ObjectNode getRegionList(HttpServletResponse httpstatus) {
+		
+		
+		ObjectNode node = objectMapper.createObjectNode();
+		ArrayNode userarray=objectMapper.createArrayNode();
+		
+		try {
+		List<Region> regions = regionservice.getlist();
+		
+		for(Region r : regions) {
+			
+			ObjectNode n = objectMapper.createObjectNode();
+			n.put("region_name", r.getRegion_name());
+			n.put("region_code", r.getRegion_code());
+			n.put("region_Id", r.getId());
+			userarray.add(n);
+		}
+		node.put("status", "success");
+		node.set("data", userarray);
+		}
+		catch(Exception e) {
+			node.put("status", "failed ");
+			node.set("data", null);
+		}
+		return node;
+		
+	}
+	@GetMapping("/getRegionList/{region_Id}")
+	public ObjectNode getRegion(@PathVariable("region_Id") Long region_Id,HttpServletResponse httpstatus) {
+		
+		ObjectNode node = objectMapper.createObjectNode();
+		ObjectNode data = objectMapper.createObjectNode();
+		
+		Region region = regionservice.getregion(region_Id);
+		
+		data.put("region_name", region.getRegion_name());
+		data.put("region_code", region.getRegion_code());
+		data.put("region_Id", region.getId());
+		
+		node.set("data", data);
+		return node;
+	}
+	@PutMapping("/deleteregion")
+	public ObjectNode deleteRegion(HttpServletResponse httpstatus,@RequestBody JSONObject requestdata) {
+		
+		ObjectNode node = objectMapper.createObjectNode();
+		
+		Long region_Id = null;
+		 if(requestdata.get("region_Id") != null && requestdata.get("region_Id") != "") {
+				
+	    	   region_Id = Long.valueOf( requestdata.get("region_Id").toString());
+			}
+		
+		node = regionservice.deleteRegion(region_Id);
+		
+		
+		return node;
 	}
 }

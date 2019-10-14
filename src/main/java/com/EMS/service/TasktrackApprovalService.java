@@ -3,6 +3,7 @@ package com.EMS.service;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -84,5 +85,16 @@ public interface TasktrackApprovalService {
 
 	JSONObject checkPreviousTimeSheetsareClosed(int month, int year, Long projectId, Long userId);
 	JSONObject halfCycleCheck(Long projectId, Long userId, Long approverId, Date endDate) throws ParseException;
+
+	Object[] getFinanceStatusOfCurrentProject(Long projectId, Long userId, int intMonth, int yearIndex);
+
+	ObjectNode reApproveDatasofLevel1(Long projectId, Long userId, int month, int year,HashMap<String, Object> billableArray,HashMap<String, Object> nonbillableArray,HashMap<String, Object> beachArray,HashMap<String, Object> overtimeArray,Long billableId,Long nonbillableId,Long overtimeId,Long beachId,Long logUser);
+
+	ObjectNode reApproveDatasofLevel2(Long projectId, Long userId, Integer month, Integer year,
+			HashMap<String, Object> billableArray, HashMap<String, Object> nonbillableArray,
+			HashMap<String, Object> beachArray, HashMap<String, Object> overtimeArray, Long billableId,
+			Long nonbillableId, Long overtimeId, Long beachId, Long logUser);
+
+	ObjectNode mailRejectTimesheetDetailstoLevel1andClear(Long projectId, Long userId, Long month, Long year,String message);
 }
 

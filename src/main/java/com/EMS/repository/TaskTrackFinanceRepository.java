@@ -110,6 +110,10 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
             "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance where user_user_id=?3 and month=?1 and year=?2 and project_type in('Overtime')",nativeQuery = true)
     List<Object[]> getOvertimeDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id);
 
+	
+	  @Query(value = " SELECT status FROM tasktrack_approval_finance where  project_project_id = ?1 and  user_user_id = ?2 and  month = ?3 and  year = ?4 " ,nativeQuery = true) 
+	  Object[] getFinanceStatusOfCurrentProject(Long projectId, Long userId, int intMonth,int yearIndex);
+	 
 
 
 }
