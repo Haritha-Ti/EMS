@@ -2,6 +2,7 @@ package com.EMS.service;
 
 import java.util.List;
 
+import com.EMS.model.HolidayModel;
 import com.EMS.model.Region;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -16,5 +17,7 @@ public interface RegionService {
 	Region getregion(Long region_Id);
 
 	ObjectNode deleteRegion(Long region_Id);
+
+	
 
 }

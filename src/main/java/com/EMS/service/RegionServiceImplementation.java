@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.model.HolidayModel;
 import com.EMS.model.Region;
+import com.EMS.repository.HolidayRepository;
 import com.EMS.repository.RegionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,6 +20,9 @@ public class RegionServiceImplementation implements RegionService {
 	private RegionRepository regionRepository;
 	
 	@Autowired ObjectMapper objectMapper;
+	
+	@Autowired
+	private HolidayRepository holidayrepository;
 	
 	
 	@Override
@@ -100,5 +105,6 @@ public class RegionServiceImplementation implements RegionService {
 		}
 		return responsedata;
 	}
+
 
 }
