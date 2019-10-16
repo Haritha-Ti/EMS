@@ -38,5 +38,8 @@ public interface ProjectExportService {
 	public void exportVacationReport(Workbook workrbook, Sheet sheet4, ArrayList<String> colNames, String nameofReport4,
 			int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate);
 
+	public void exportFinanceDataByMonthAndYear(Workbook workrbook, Sheet sheet, String nameofReport, int month,
+			int year);
+
 
 }

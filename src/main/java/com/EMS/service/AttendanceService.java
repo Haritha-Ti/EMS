@@ -61,4 +61,10 @@ public interface AttendanceService {
 
 	public Boolean isUserExist(Long userId);
 
+
+	public List<Object[]> getHolidayListByRegionId(Long region_Id, String month, String year);
+
+
+	public List<Object[]> getHolidayDetails(Long holiday_id);
+
 }

@@ -22,12 +22,15 @@ import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.repository.ProjectReportsRepository;
+import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.TaskRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.TimeTrackApprovalRepository;
 import com.EMS.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class TasktrackServiceImpl implements TasktrackService {
@@ -53,6 +56,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 	@Autowired
 	TimeTrackApprovalRepository timeTrackApprovalRepository;
+	
+	@Autowired 
+	ProjectRepository projectRepository;
 //	For Task track Model
 
 	@Override
@@ -433,5 +439,37 @@ public class TasktrackServiceImpl implements TasktrackService {
 		List<Object[]> projectList = taskRepository.getProjectListByUserAndDate(id, startDate, endDate);
 		return projectList;
 
+	}
+
+	@Override
+	public ObjectNode checkApproveLevel(Long project_Id, Long logUser) {
+		// TODO Auto-generated method stub
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+	try {
+		
+		Object[] project = projectRepository.getApproveLevelByprojecIdAndLeadsId(project_Id,logUser);
+		Object[] role = projectRepository.getRoleOftheLoguser(logUser);
+		String primary_role = null;
+	
+	if(project != null) {	
+		if(project[0] != null)
+		node.put("secondary_role",project[0].toString());
+		
+		if(role != null) {
+			primary_role = role[0].toString();
+		}
+	}
+          node.put("primary_role", primary_role);
+         responsedata.put("status", "success");
+  		responsedata.put("payload", "");   
+  		responsedata.set("data", node);
+	}
+	catch(Exception e) {
+		responsedata.put("status", "Failed");
+		responsedata.put("message", "Exception " + e);
+		responsedata.put("payload", "");
+	}
+		return responsedata;
 	}
 }

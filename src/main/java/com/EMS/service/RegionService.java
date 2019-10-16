@@ -18,6 +18,12 @@ public interface RegionService {
 
 	ObjectNode deleteRegion(Long region_Id);
 
+	ObjectNode saveHoliday(HolidayModel holiday);
+
+	ObjectNode EditHoliday(HolidayModel holiday);
+
+	ObjectNode deleteHoliday(Long holiday_Id);
+
 	
 
 }

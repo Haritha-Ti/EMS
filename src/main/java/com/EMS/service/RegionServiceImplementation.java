@@ -107,4 +107,74 @@ public class RegionServiceImplementation implements RegionService {
 	}
 
 
+	@Override
+	public ObjectNode saveHoliday(HolidayModel holiday) {
+		// TODO Auto-generated method stub
+     ObjectNode responsedata = objectMapper.createObjectNode();
+		
+		try {
+			HolidayModel holidays = holidayrepository.save(holiday);
+			holiday.setDeleted(false);
+			responsedata.put("status", "success");
+			responsedata.put("message", "holidays saved successfully");
+			responsedata.put("payload", "");
+		}
+		catch(Exception e) {
+			responsedata.put("status", "Failed");
+			responsedata.put("message", "Exception " + e);
+			responsedata.put("payload", "");	
+			
+		}
+		return responsedata;
+	}
+
+
+	@Override
+	public ObjectNode EditHoliday(HolidayModel holiday) {
+		// TODO Auto-generated method stub
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		try {
+		HolidayModel holidays = holidayrepository.getOne(holiday.getHolidayId());
+		holidays.setDate(holiday.getDate());
+		holidays.setDay(holiday.getDay());
+		holidays.setHolidayName(holiday.getHolidayName());
+		holidays.setHolidayType(holiday.getHolidayType());
+		holidays.setRegion_id(holiday.getRegion_id());
+		System.out.println("----------->"+holiday.getDate());
+		holidayrepository.save(holidays);
+		responsedata.put("status", "success");
+		responsedata.put("message", "holidays updated successfully");
+		responsedata.put("payload", "");
+		}
+		catch(Exception e){
+			responsedata.put("status", "Failed");
+			responsedata.put("message", "Exception " + e);
+			responsedata.put("payload", "");
+		}
+		
+		return responsedata;
+	}
+
+
+	@Override
+	public ObjectNode deleteHoliday(Long holiday_Id) {
+		// TODO Auto-generated method stub
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		try {
+		HolidayModel holiday = holidayrepository.getOne(holiday_Id);
+		holiday.setDeleted(true);
+		holidayrepository.save(holiday);
+		responsedata.put("status", "success");
+		responsedata.put("message", "holiday deleted successfully");
+		responsedata.put("payload", "");
+		}
+		catch(Exception e) {
+			responsedata.put("status", "Failed");
+			responsedata.put("message", "Exception " + e);
+			responsedata.put("payload", "");
+		}
+		return responsedata;
+	}
+
+
 }

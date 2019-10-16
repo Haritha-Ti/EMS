@@ -68,6 +68,8 @@ public class AttendanceController {
 				holidayNode.put("day", day);
 				holidayNode.put("holidayName", holidayName);
 				holidayNode.put("holidayType", holidayType);
+				holidayNode.put("region_id", item[5].toString());
+				holidayNode.put("region_name", item[6].toString());
 				jsonArray.add(holidayNode);
 
 			}
@@ -1063,6 +1065,113 @@ public class AttendanceController {
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "failed. " + e);
 		}
+		return jsonDataRes;
+
+	}
+	@PostMapping("/getHolidayListByRegionId")
+	public ObjectNode getHolidayListByRegionId(@RequestBody ObjectNode requestdata,HttpServletResponse httpstatus) {
+
+		ArrayNode jsonArray = objectMapper.createArrayNode();
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		Long region_Id = null;
+		String month = null;
+		String year = null;
+		System.out.println("month _________________"+month);
+		if (requestdata.get("region_Id") != null && requestdata.get("region_Id").asText() != "") {
+			region_Id = Long.valueOf(requestdata.get("region_Id").toString());
+			System.out.println("region_Id _________________"+region_Id);
+		}
+		
+		if (requestdata.get("month") != null && requestdata.get("month").asText() != "") {
+			month = requestdata.get("month").asText();
+			System.out.println("month _________________"+month);
+			long m =  Long.parseLong(month);
+			 
+			if(m < 10) {
+			
+				month = "0"+month;
+				
+			 }
+			
+		}
+		if (requestdata.get("year") != null && requestdata.get("year").asText() != "") {
+			year = requestdata.get("year").asText();
+		}
+		//System.out.println("region_Id _________________"+region_Id);
+		try {
+			List<Object[]> holidayList = attendanceService.getHolidayListByRegionId(region_Id,month,year);
+			System.out.println("holidayList : " + holidayList.size());
+//			ArrayNode node = objectMapper.convertValue(attendanceService.getHolidayList(), ArrayNode.class);
+			for (Object[] item : holidayList) {
+				ObjectNode holidayNode = objectMapper.createObjectNode();
+				String holidayId = item[1].toString();
+				String date = item[0].toString();
+				String day = item[2].toString();
+				String holidayName = item[3].toString();
+				String holidayType = item[4].toString();
+				holidayNode.put("holidayId", holidayId);
+				holidayNode.put("date", date);
+				holidayNode.put("day", day);
+				holidayNode.put("holidayName", holidayName);
+				holidayNode.put("holidayType", holidayType);
+				holidayNode.put("region_id", item[5].toString());
+				holidayNode.put("region_name", item[6].toString());
+				jsonArray.add(holidayNode);
+
+			}
+			jsonDataRes.set("data", jsonArray);
+			jsonDataRes.put("status", "success");
+			jsonDataRes.put("message", "success. ");
+			jsonDataRes.put("code", httpstatus.getStatus());
+
+		} catch (Exception e) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+
+		return jsonDataRes;
+
+	}
+	
+	@GetMapping("/getHolidayList/{holiday_id}")
+	public ObjectNode getHolidayList(HttpServletResponse httpstatus,@PathVariable("holiday_id") Long holiday_id) {
+
+		ArrayNode jsonArray = objectMapper.createArrayNode();
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			List<Object[]> holidayList = attendanceService.getHolidayDetails(holiday_id);
+			System.out.println("holidayList : " + holidayList.size());
+//			ArrayNode node = objectMapper.convertValue(attendanceService.getHolidayList(), ArrayNode.class);
+			for (Object[] item : holidayList) {
+				ObjectNode holidayNode = objectMapper.createObjectNode();
+				String holidayId = item[1].toString();
+				String date = item[0].toString();
+				String day = item[2].toString();
+				String holidayName = item[3].toString();
+				String holidayType = item[4].toString();
+				holidayNode.put("holidayId", holidayId);
+				holidayNode.put("date", date);
+				holidayNode.put("day", day);
+				holidayNode.put("holidayName", holidayName);
+				holidayNode.put("holidayType", holidayType);
+				holidayNode.put("region_id", item[5].toString());
+				holidayNode.put("region_name", item[6].toString());
+				jsonArray.add(holidayNode);
+
+			}
+			jsonDataRes.set("data", jsonArray);
+			jsonDataRes.put("status", "success");
+			jsonDataRes.put("message", "success. ");
+			jsonDataRes.put("code", httpstatus.getStatus());
+
+		} catch (Exception e) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+
 		return jsonDataRes;
 
 	}

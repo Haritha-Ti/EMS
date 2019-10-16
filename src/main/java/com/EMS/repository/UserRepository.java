@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 //	@Query("SELECT u FROM UserModel u WHERE u.userName=?1 AND u.active = true") 
 	UserModel getUserdetails(String userName, String password);
 
-	@Query("SELECT u FROM UserModel u WHERE u.role in (2,5)")//for getting user details with role as owner by providing role
+	@Query("SELECT u FROM UserModel u WHERE u.role in (2,5,8)")//for getting user details with role as owner by providing role
 	List<UserModel> getProjectOwners();
 
 	@Query("SELECT u FROM UserModel u WHERE u.role in(2,3,4,5) AND u.active = true order by firstName")
@@ -75,7 +75,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	@Query("SELECT u FROM UserModel u WHERE u.role NOT IN(1) order by firstName")
 	List<UserModel> getAllUsers();
 	
-	@Query("SELECT u FROM UserModel u WHERE u.role in (7)")
+	@Query("SELECT u FROM UserModel u WHERE u.role in (7,8)")
 	List<UserModel> getOnsiteLeads();
 
 	@Query("SELECT u FROM UserModel u WHERE u.role in(2,3,5) AND department_department_id in('1','2','3','4','8') AND u.active = true order by firstName")

@@ -730,6 +730,13 @@ public class ReportController {
 					projectExportService.exportFinanceDataByUserAndProject(workrbook,sheet,nameofReport,month,year,userId,projectId);
 
 				}
+				else if (month != 0 && year != 0 && projectId == null && userId == null) {
+					System.out.println("financeData=------------------>");
+					Sheet sheet = workrbook.createSheet(monthName+"-"+year);
+					String nameofReport   = "Report of "+monthName+ "-"+year;
+					projectExportService.exportFinanceDataByMonthAndYear(workrbook,sheet,nameofReport,month,year);
+
+				}
 				//outputdata.put(i, node);
 				//i = i + 1;
 

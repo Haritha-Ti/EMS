@@ -3222,6 +3222,14 @@ public class TasktrackController {
 					node1.add(node);
 
 				}
+				else if(month!= 0 && year!= 0 && projectId == null && userId == null) {
+					
+					resultData  = tasktrackApprovalService.getFinanceDataByMonthAndYear(month, year);
+					node.put("timeTracks",resultData);
+					node.put("month",month);
+					node.put("year",year);
+					node1.add(node);
+				}
 
 			}
 
@@ -3511,6 +3519,33 @@ public class TasktrackController {
 		responsedata = tasktrackApprovalService.mailRejectTimesheetDetailstoLevel1andClear(projectId,userId,month,year,message);
 		
 		
+		
+		return responsedata;
+	}
+	
+	/***
+	 * @des check if the role of joined approver in selected project is as level1 or level2 
+	 * @param requestdata
+	 * @param httpstatus
+	 * @return primary-role: joined_approver,secondary-role:level1approver/level2approver
+	 */
+	
+	@PostMapping("/checkApproveLevel")
+	public ObjectNode checkApproveLevel(@RequestBody JSONObject requestdata,HttpServletResponse httpstatus) {
+		
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		Long project_Id = null;
+		Long logUser = null;
+		
+		if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
+			project_Id = Long.valueOf(requestdata.get("projectId").toString());
+		}
+		if (requestdata.get("logUser") != null && requestdata.get("logUser") != "") {
+			logUser = Long.valueOf(requestdata.get("logUser").toString());
+		}
+		
+		
+		responsedata = tasktrackService.checkApproveLevel(project_Id,logUser);
 		
 		return responsedata;
 	}

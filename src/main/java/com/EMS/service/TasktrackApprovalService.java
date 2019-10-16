@@ -96,5 +96,7 @@ public interface TasktrackApprovalService {
 			Long nonbillableId, Long overtimeId, Long beachId, Long logUser);
 
 	ObjectNode mailRejectTimesheetDetailstoLevel1andClear(Long projectId, Long userId, Long month, Long year,String message);
+
+	ArrayList<JSONObject> getFinanceDataByMonthAndYear(int month, int year);
 }
 

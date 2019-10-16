@@ -2,6 +2,7 @@ package com.EMS.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -144,6 +145,101 @@ public class RegionController {
 			return node;
 		}
 
-	
-	
+		@PostMapping(value = "/addHoliday")
+		public ObjectNode addHoliday(@RequestBody JSONObject requestdata,HttpServletResponse httpstatus) throws JSONException {
+			
+			ObjectNode jsonDataRes = objectMapper.createObjectNode();
+			String holiday_name = null;
+			String holiday_type = null ;
+			Date holiday_date = null;
+			Long holiday_id = null;
+			String holiday_day = null;
+			Long region_id = null;
+			
+			System.out.println("Here");
+			
+	       if(requestdata.get("holiday_name") != null && requestdata.get("holiday_name") != "") {
+				
+	    	   holiday_name = (String) requestdata.get("holiday_name");
+			}
+
+	       if(requestdata.get("holiday_type") != null && requestdata.get("holiday_type") != "") {
+				
+	    	   holiday_type = (String) requestdata.get("holiday_type");
+			}
+			
+	       if(requestdata.get("holiday_id") != null && requestdata.get("holiday_id") != "") {
+				
+	    	   holiday_id = Long.valueOf( requestdata.get("holiday_id").toString());
+			}
+	       
+
+	       if(requestdata.get("region_id") != null && requestdata.get("region_id") != "") {
+				
+	    	   region_id = Long.valueOf( requestdata.get("region_id").toString());
+			}
+	       
+	       String date1 = (String) requestdata.get("holiday_date");
+			
+
+			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+			if (!date1.isEmpty()) {
+				try {
+					holiday_date = outputFormat.parse(date1);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				SimpleDateFormat simpleDateformat = new SimpleDateFormat("EEEE"); // the day of the week spelled out completely
+		        System.out.println(simpleDateformat.format(holiday_date));
+		        holiday_day =  simpleDateformat.format(holiday_date);
+			}
+	       
+	       
+	       if(holiday_id == null) {
+	       
+	    	   HolidayModel holiday = new HolidayModel();
+	    	   holiday.setDate(holiday_date);
+	    	   holiday.setHolidayType(holiday_type);
+	    	   holiday.setDay(holiday_day);
+	    	   holiday.setHolidayName(holiday_name);
+	    	 Region region =  regionservice.getregion(region_id);
+	    	   holiday.setRegion_id(region);
+	       jsonDataRes = regionservice.saveHoliday(holiday);
+	       }
+	       else {
+	    	   
+	    	   HolidayModel holiday = new HolidayModel();
+	    	   holiday.setDate(holiday_date);
+	    	   holiday.setHolidayType(holiday_type);
+	    	   holiday.setDay(holiday_day);
+	    	   holiday.setHolidayName(holiday_name);
+	    	 Region region =  regionservice.getregion(region_id);
+	    	   holiday.setRegion_id(region);
+	    	   holiday.setHolidayId(holiday_id);
+	    	   jsonDataRes = regionservice.EditHoliday(holiday);
+	    	   
+	       }
+	       
+	       
+			return jsonDataRes;
+		}
+		
+		
+		@PutMapping("/deleteHoliday")
+		public ObjectNode deleteHoliday(HttpServletResponse httpstatus,@RequestBody JSONObject requestdata) {
+			
+			ObjectNode node = objectMapper.createObjectNode();
+			
+			Long holiday_Id = null;
+			 if(requestdata.get("holiday_Id") != null && requestdata.get("holiday_Id") != "") {
+					
+				 holiday_Id = Long.valueOf( requestdata.get("holiday_Id").toString());
+				}
+			
+			node = regionservice.deleteHoliday(holiday_Id);
+			
+			
+			return node;
+		}
 }

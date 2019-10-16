@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -22,8 +23,20 @@ public class HolidayModel {
 	private String day;
 	private String holidayName;
 	private String holidayType;
+	@ManyToOne
+	private Region region_id;
+	
+	private boolean isDeleted;
 	
 	
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	public long getHolidayId() {
 		return holidayId;
 	}
@@ -62,6 +75,14 @@ public class HolidayModel {
 	
 	public void setHolidayType(String holidayType) {
 		this.holidayType = holidayType;
+	}
+
+	public Region getRegion_id() {
+		return region_id;
+	}
+
+	public void setRegion_id(Region region_id) {
+		this.region_id = region_id;
 	}
 	
 	

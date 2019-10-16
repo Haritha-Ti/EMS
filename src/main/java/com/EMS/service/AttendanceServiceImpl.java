@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
-import com.EMS.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.model.LeaveBalanceModel;
+import com.EMS.model.LeaveModel;
+import com.EMS.model.UserLeaveSummary;
 import com.EMS.repository.HolidayRepository;
 import com.EMS.repository.LeaveBalanceRepository;
 import com.EMS.repository.LeaveRepository;
@@ -248,5 +250,32 @@ public class AttendanceServiceImpl implements AttendanceService {
 			return true;
 		else
 			return false;
+	}
+
+
+	@Override
+	public List<Object[]> getHolidayListByRegionId(Long region_Id, String month, String year) {
+		// TODO Auto-generated method stub
+	
+		String monthyear = "";
+				
+		if(month != null && year != null && month != "" && year != "") {
+			monthyear = year+"-"+month;
+		}
+		if(year != "" && month == "" || year != null && month == null ) {
+			
+			monthyear = year+"-";
+		}
+		System.out.println(monthyear+"-------------------->");
+		List<Object[]> list = holidayRepository.getHolidayListByRegionId(region_Id,monthyear);
+		return list;
+	}
+
+
+	@Override
+	public List<Object[]> getHolidayDetails(Long holiday_id) {
+		// TODO Auto-generated method stub
+		List<Object[]> list = holidayRepository.getHolidayDetails(holiday_id);
+		return list;
 	}
 }

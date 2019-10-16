@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.EMS.model.ProjectModel;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 
@@ -36,5 +37,20 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 
 	@Query("SELECT s.projectName FROM ProjectModel s where s.projectId=?1")
 	String getProjectName(Long projectId);
+
+	@Query(value =" SELECT (CASE WHEN project.project_owner_user_id = ?2 " + 
+			" THEN 'level1'  " + 
+			" WHEN project.onsite_lead_user_id = ?2 " + 
+			" THEN 'level2' " + 
+			" ELSE 'not assigned this project' END) as secondary_role " + 
+			 " FROM pmstaging.project " + 
+			" WHERE  project.project_id = ?1",nativeQuery = true)
+	Object[] getApproveLevelByprojecIdAndLeadsId(Long project_Id, Long logUser);
+
+	@Query(value = "SELECT role.role_name " + 
+			" FROM pmstaging.user " + 
+			" INNER JOIN pmstaging.role on (role.role_id = user.role_role_id) " + 
+			" where user.user_id = ?1 ",nativeQuery = true)
+	Object[] getRoleOftheLoguser(Long logUser);
 
 }

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.EMS.model.Task;
 import com.EMS.model.TaskCategory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 	
@@ -51,5 +52,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	@Query("SELECT tasks FROM TaskCategory tasks where tasks.id = ?1")
 	TaskCategory findByTaskId(Long taskId);
+
+
+	
 }
 

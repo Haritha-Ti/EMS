@@ -13,6 +13,7 @@ import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.Tasktrack;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface TasktrackService {
 
@@ -51,6 +52,8 @@ public interface TasktrackService {
 	List<Object[]> getProjectListByUserAndDate(Long id, Date startDate, Date endDate);
 
 	List<Object[]> getUserTaskList(Long id, Date startDate, Date endDate, Long projectId);
+
+	ObjectNode checkApproveLevel(Long project_Id, Long logUser);
 		
 }
 
