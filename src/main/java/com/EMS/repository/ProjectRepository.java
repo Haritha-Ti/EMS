@@ -53,4 +53,8 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 			" where user.user_id = ?1 ",nativeQuery = true)
 	Object[] getRoleOftheLoguser(Long logUser);
 
+	
+	@Query(value = "SELECT count(*) FROM `project` where start_date<=?1 AND end_date>=?1 AND project_status=1",nativeQuery = true)
+	int getActiveProjects(String datestring);
+
 }

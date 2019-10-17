@@ -80,5 +80,8 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 
 	@Query("SELECT u FROM UserModel u WHERE u.role in(2,3,5) AND department_department_id in('1','2','3','4','8') AND u.active = true order by firstName")
 	List<UserModel> getUserLists();
+	
+	@Query(value="SELECT count(*) FROM user where active=1 AND termination_date IS NULL",nativeQuery=true)
+	int getAllActiveUsers(String datestring);
 
 }

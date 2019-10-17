@@ -72,6 +72,9 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	List<AllocationModel> getUserDataByProjectAndDate(Long projectId,Date startDate, Date endDate);
 //	@Query(value = "SELECT * FROM EMS.alloc where  EMS.alloc.user_user_id = ?1 and EMS.alloc.end_date < ?3 or EMS.alloc.start_date > ?1", nativeQuery = true)
 //	List<Alloc> findUsers(long userId, Date date1, Date date2);
+	
+	@Query(value="SELECT * FROM `allocation` as alloc Join project as pro ON alloc.project_project_id=pro.project_id where pro.project_category=2 AND alloc.start_date<=?1 AND alloc.end_date>=?1",nativeQuery=true)
+	List<AllocationModel> getBenchResources(String datestring);
 
 
 
