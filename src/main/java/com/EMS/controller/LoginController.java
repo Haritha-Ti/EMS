@@ -31,6 +31,7 @@ import com.EMS.repository.UserRepository;
 import com.EMS.security.jwt.JwtTokenProvider;
 import com.EMS.service.LoginService;
 import com.EMS.service.PageRuleService;
+import com.EMS.service.RegionService;
 import com.EMS.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,6 +66,9 @@ public class LoginController {
     
     @Autowired
     PasswordEncoder passwordEncoder;
+    
+    @Autowired
+	private RegionService regionservice;
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     
@@ -182,6 +186,30 @@ public class LoginController {
 			if (role != null)
 				user.setRole(role);
 
+			//region add 
+			
+			Long regionId = requestdata.get("regionId").asLong();
+			Region region = null;
+			if(regionId != null) {
+				
+				region = regionservice.getregion(regionId);
+			}
+			
+			if(region != null)
+				user.setRegion(region);
+			
+			
+			// add timezone
+			
+			Long timezoneId = requestdata.get("timezoneId").asLong();
+			TimeZoneModel zone = null;
+			if(timezoneId != null) {
+				
+				zone = regionservice.getZone(timezoneId);
+			}
+			if(zone != null)
+				user.setTimezone(zone);
+			
 			Long contractorId = requestdata.get("contractors").asLong();
 			EmployeeContractors contractor = null;
 			if ( contractorId != 0 )
@@ -695,6 +723,31 @@ public class LoginController {
 					contractor = login_service.getContractor(contractorId);
 				if (contractor != null)
 					user.setContractor(contractor);
+				
+				
+				//region add 
+				
+				Long regionId = requestdata.get("regionId").asLong();
+				Region region = null;
+				if(regionId != null) {
+					
+					region = regionservice.getregion(regionId);
+				}
+				
+				if(region != null)
+					user.setRegion(region);
+				
+				
+				// add timezone
+				
+				Long timezoneId = requestdata.get("timezoneId").asLong();
+				TimeZoneModel zone = null;
+				if(timezoneId != null) {
+					
+					zone = regionservice.getZone(timezoneId);
+				}
+				if(zone != null)
+					user.setTimezone(zone);
 
 				String dob = requestdata.get("dob").asText();
 				String joindate = requestdata.get("joiningDate").asText();

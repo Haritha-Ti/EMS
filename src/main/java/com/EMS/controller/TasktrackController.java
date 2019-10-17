@@ -684,7 +684,7 @@ public class TasktrackController {
 					{
 					System.out.println("------------------------------------------------1");
 					jsonDataProjectDetails.put("approver_level_2",projectdetails.getOnsite_lead().getUserId());	
-					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ "" +projectdetails.getOnsite_lead().getLastName());
+					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ " " +projectdetails.getOnsite_lead().getLastName());
 					}
 				else
 				{
@@ -770,7 +770,7 @@ public class TasktrackController {
  
 
 				 }
-				  jsonDataMessageDetails.put("Forwarded Status",forwarded_ToLevel2_Status);
+				  jsonDataMessageDetails.put("Forwarded_status",forwarded_ToLevel2_Status);
 				jsonDataProjectDetails.put("forwarded_date",frowardedDate);
 				jsonDataProjectDetails.put("forwarded_date_finance",frowardedDateLevel2);
 			}
@@ -895,7 +895,17 @@ public class TasktrackController {
 			Long overtime_id = null;
 			
 			
+			Date current_date = new Date();
+			Calendar current = Calendar.getInstance();
+			current.setTime(current_date);
+			int intCurrentMonth = 0;
+			intCurrentMonth = (current.get(Calendar.MONTH) + 1);
 			
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(endDate);
+			calendar.add(Calendar.DATE, -1);
+			Date yesterday = calendar.getTime();
 			
 			if(billableArray.size()>0) {//Billable
 
@@ -905,7 +915,14 @@ public class TasktrackController {
 				int intMonth = 0,intday = 0;
 				cal.setTime(startDate);
 				double hours =0;
-
+				intMonth = (cal.get(Calendar.MONTH) + 1);
+				
+				if(intMonth == intCurrentMonth ) {
+ 
+					endDate = yesterday;
+				}
+		
+				
 				if(billableId!=null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
@@ -914,7 +931,7 @@ public class TasktrackController {
 
 						for (int i = 0; i < diffInDays; i++) {
 
-							intMonth = (cal.get(Calendar.MONTH) + 1);
+							
 							intday = cal.get(Calendar.DAY_OF_MONTH);
 							String dateString = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
 									+ ((intday < 10) ? "0" + intday : "" + intday);
@@ -1160,7 +1177,12 @@ public class TasktrackController {
 				int intMonth = 0,intday = 0;
 				cal.setTime(startDate);
 				double hours =0;
-
+				intMonth = (cal.get(Calendar.MONTH) + 1);
+				if(intMonth == intCurrentMonth ) {
+					 
+					endDate = yesterday;
+				}
+				
 				if(nonbillableId!=null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);
 				
@@ -1170,7 +1192,7 @@ public class TasktrackController {
 
 						for (int i = 0; i < diffInDays; i++) {
 
-							intMonth = (cal.get(Calendar.MONTH) + 1);
+							
 							intday = cal.get(Calendar.DAY_OF_MONTH);
 							String dateString = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
 									+ ((intday < 10) ? "0" + intday : "" + intday);
@@ -1416,7 +1438,11 @@ public class TasktrackController {
 				int intMonth = 0,intday = 0;
 				cal.setTime(startDate);
 				double hours =0;
-
+				intMonth = (cal.get(Calendar.MONTH) + 1);
+				if(intMonth == intCurrentMonth ) {
+					 
+					endDate = yesterday;
+				}
 				if(beachId!=null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
@@ -1425,7 +1451,7 @@ public class TasktrackController {
 
 						for (int i = 0; i < diffInDays; i++) {
 
-							intMonth = (cal.get(Calendar.MONTH) + 1);
+							
 							intday = cal.get(Calendar.DAY_OF_MONTH);
 							String dateString = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
 									+ ((intday < 10) ? "0" + intday : "" + intday);
@@ -1669,7 +1695,11 @@ public class TasktrackController {
 				int intMonth = 0,intday = 0;
 				cal.setTime(startDate);
 				double hours =0;
-
+				intMonth = (cal.get(Calendar.MONTH) + 1);
+				if(intMonth == intCurrentMonth ) {
+					 
+					endDate = yesterday;
+				}
 				if(overtimeId!=null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
@@ -1678,7 +1708,7 @@ public class TasktrackController {
 
 						for (int i = 0; i < diffInDays; i++) {
 
-							intMonth = (cal.get(Calendar.MONTH) + 1);
+							
 							intday = cal.get(Calendar.DAY_OF_MONTH);
 							String dateString = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
 									+ ((intday < 10) ? "0" + intday : "" + intday);

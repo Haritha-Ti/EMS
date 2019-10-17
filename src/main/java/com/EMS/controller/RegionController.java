@@ -242,4 +242,34 @@ public class RegionController {
 			
 			return node;
 		}
+		
+		
+		@GetMapping("/getTimeZoneList")
+		public ObjectNode getTimeZoneList(HttpServletResponse httpstatus) {
+			
+			
+			ObjectNode node = objectMapper.createObjectNode();
+			ArrayNode userarray=objectMapper.createArrayNode();
+			
+			try {
+			List<Object[]> timezones = regionservice.getTimeZones();
+			
+			for(Object[] r : timezones) {
+				
+				ObjectNode n = objectMapper.createObjectNode();
+				n.put("timezone_name", r[1].toString());
+				n.put("timezone_code", r[0].toString());
+				n.put("timezone_Id", r[2].toString());
+				userarray.add(n);
+			}
+			node.put("status", "success");
+			node.set("data", userarray);
+			}
+			catch(Exception e) {
+				node.put("status", "failed ");
+				node.set("data", null);
+			}
+			return node;
+			
+		}
 }

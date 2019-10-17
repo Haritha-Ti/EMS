@@ -1,14 +1,18 @@
 package com.EMS.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.model.HolidayModel;
 import com.EMS.model.Region;
+import com.EMS.model.TimeZoneModel;
 import com.EMS.repository.HolidayRepository;
 import com.EMS.repository.RegionRepository;
+import com.EMS.repository.TimeZoneRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -23,6 +27,10 @@ public class RegionServiceImplementation implements RegionService {
 	
 	@Autowired
 	private HolidayRepository holidayrepository;
+	
+	
+	  @Autowired private TimeZoneRepository timezoneRepository;
+	 
 	
 	
 	@Override
@@ -176,5 +184,28 @@ public class RegionServiceImplementation implements RegionService {
 		return responsedata;
 	}
 
+
+	@Override
+	public List<Object[]> getTimeZones() {
+		// TODO Auto-generated method stub
+		return regionRepository.getListofTimezones();
+	}
+
+
+	@Override
+	public TimeZoneModel getZone(Long timezoneId) {
+		// TODO Auto-generated method stub
+		return timezoneRepository.getOne(timezoneId); 
+	}
+
+
+	@Override
+	public ArrayList<TimeZoneModel> getTimeZones1() {
+		// TODO Auto-generated method stub
+		return timezoneRepository.getTimeZones1();
+	}
+
+
+	
 
 }
