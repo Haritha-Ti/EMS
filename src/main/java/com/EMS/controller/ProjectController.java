@@ -26,10 +26,13 @@ import com.EMS.model.ClientModel;
 import com.EMS.model.ContractModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.Region;
 import com.EMS.model.Resources;
+import com.EMS.model.TimeZoneModel;
 import com.EMS.model.UserModel;
 import com.EMS.model.EmployeeContractors;
 import com.EMS.service.ProjectService;
+import com.EMS.service.RegionService;
 import com.EMS.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +52,9 @@ public class ProjectController {
 	@Autowired
 	private ObjectMapper objectMapper;
 	// api for creating new project
+	
+	@Autowired
+	private RegionService regionService;
 
 	@PostMapping("/createProject")
 	public JsonNode save_newproject(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) {
@@ -76,6 +82,7 @@ public class ProjectController {
 					project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
 				}
 			}
+			project.setProject_refId(requestdata.get("projectRefId").asLong());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
 			project.setProjectName(requestdata.get("projectName").asText());
 			project.setisBillable(requestdata.get("isBillable").asInt());
@@ -241,6 +248,8 @@ public class ProjectController {
 		// Json array for storing filtered data from two tables
 		ArrayNode onsitelead_array = objectMapper.createArrayNode();
 		ArrayNode userarray = objectMapper.createArrayNode();
+		ArrayNode regionarray = objectMapper.createArrayNode();
+		ArrayNode timezonearray = objectMapper.createArrayNode();
 		ArrayNode contract_array = objectMapper.createArrayNode();
 		ArrayNode department_array = objectMapper.createArrayNode();
 		ArrayNode project_array = objectMapper.createArrayNode();
@@ -305,6 +314,53 @@ public class ProjectController {
 				array.set("contractType", contract_array);
 			}
 
+			
+			//method for getting regions
+			ArrayList<Region> region = (ArrayList<Region>) regionService.getlist();
+			
+			if(region.isEmpty()) {
+				array.set("regions", regionarray);
+			}
+			
+			else {
+				Iterator<Region> itr = region.listIterator();
+				while(itr.hasNext()) {
+					ObjectNode object = objectMapper.createObjectNode();
+					
+					Region regions = itr.next();
+					object.put("region_name", regions.getRegion_name());
+					object.put("region_code", regions.getRegion_code());
+					object.put("region_Id", regions.getId());
+					regionarray.add(object);
+				}
+				array.set("regions", regionarray);
+			}
+			
+			
+			
+			//method for getting timezones
+			
+			ArrayList<TimeZoneModel> zone = regionService.getTimeZones1();
+			
+			if(zone.isEmpty()) {
+				array.set("timezones", timezonearray);
+			}
+			
+			else {
+				Iterator<TimeZoneModel> itr = zone.listIterator();
+				while(itr.hasNext()) {
+					ObjectNode object = objectMapper.createObjectNode();
+					
+					TimeZoneModel timezone = itr.next();
+					object.put("timezone_name", timezone.getTimezone_name());
+					object.put("timezone_code", timezone.getTimezone_code());
+					object.put("timezone_Id", timezone.getId());
+					regionarray.add(object);
+				}
+				array.set("timezones", timezonearray);
+			}
+			
+			
 			// Method invocation for getting users with role as owner
 						List<UserModel> users_owner = userservice.getprojectOwner();
 
@@ -527,7 +583,7 @@ public class ProjectController {
 					project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
 				}
 			}
-
+            project.setProject_refId(requestdata.get("projectRefId").asLong());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
 			project.setProjectDetails(requestdata.get("projectDetails").asText());
 			project.setProjectName(requestdata.get("projectName").asText());

@@ -2140,7 +2140,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			int year) {
 		// TODO Auto-generated method stub
 		YearMonth yearMonthObject = YearMonth.of(year, month);
-		System.out.println("year----------month"+year+month);
+		
 		int dayCount = yearMonthObject.lengthOfMonth();
 		int cols = dayCount+3;
 		String[] headers = new String[cols];
@@ -2235,15 +2235,15 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(1);
-			cell.setCellValue("project name");
+			cell.setCellValue(summary[4].toString());
 			cell.setCellStyle(borderedCellStyle);
 
 			for(int d=1;d<=dayCount;d++) {
 				
 				cell = row.createCell(d+1);
-				cell.setCellValue((double)summary[d+3]);
+				cell.setCellValue((double)summary[d+4]);
 				cell.setCellStyle(borderedCellStyle);
-				totalHour =totalHour+(double)summary[d+3];
+				totalHour =totalHour+(double)summary[d+4];
 			}
 			cell = row.createCell(dayCount+2);
 			cell.setCellValue(totalHour);

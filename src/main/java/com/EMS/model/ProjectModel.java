@@ -31,6 +31,8 @@ public class ProjectModel {
 	private int projectType,isPOC,projectStatus;
 	private String clientPointOfContact;
 	
+	private long project_refId;
+	
 	@ManyToOne
 	private ClientModel clientName;
 	
@@ -215,6 +217,20 @@ public class ProjectModel {
 
 	public void setOnsite_lead(UserModel onsite_lead) {
 		this.onsite_lead = onsite_lead;
+	}
+
+
+
+
+	public long getProject_refId() {
+		return project_refId;
+	}
+
+
+
+
+	public void setProject_refId(long project_refId) {
+		this.project_refId = project_refId;
 	}
 	
 

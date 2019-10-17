@@ -11,7 +11,7 @@ import com.EMS.model.HolidayModel;
 
 public interface HolidayRepository extends JpaRepository<HolidayModel, Long>{
 
-	@Query(value = "SELECT Date(holiday.`date`) as `date` ,holiday.holiday_id,holiday.day,holiday.holiday_name,holiday.holiday_type,region.id,region.region_name FROM holiday INNER JOIN region on (region.id = holiday.region_id_id)",nativeQuery = true)
+	@Query(value = "SELECT Date(holiday.`date`) as `date` ,holiday.holiday_id,holiday.day,holiday.holiday_name,holiday.holiday_type,region.id,region.region_name FROM holiday INNER JOIN region on (region.id = holiday.region_id_id) WHERE  holiday.is_deleted = false",nativeQuery = true)
 	List<Object[]> getHolidayLists();
 
 	@Query(value = "SELECT COUNT(date) as `total_holiday`  FROM holiday where holiday_type='National Holiday' and date <=?2 and date >=?1",nativeQuery = true)

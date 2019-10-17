@@ -48,6 +48,12 @@ public class UserModel implements UserDetails{
 	@ManyToOne
 	private EmployeeContractors contractor;
 	
+	@ManyToOne
+	private Region region;
+	
+	@ManyToOne
+	private TimeZoneModel timezone;
+	
 	private String firstName, lastName,password;
 	private String email;
 	private String  userName;
@@ -308,4 +314,21 @@ public class UserModel implements UserDetails{
 			return userName;
 		}
 
+		public Region getRegion() {
+			return region;
+		}
+
+		public void setRegion(Region region) {
+			this.region = region;
+		}
+
+		public TimeZoneModel getTimezone() {
+			return timezone;
+		}
+
+		public void setTimezone(TimeZoneModel timezone) {
+			this.timezone = timezone;
+		}
+
+		
 }

@@ -2489,9 +2489,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							for(TaskTrackApprovalLevel2 item1:level2data) {
 
 								Date previous_forwardedDate =  item1.getTasktrack_level1_Id().getForwarded_date();
-
 								Calendar caldays = Calendar.getInstance();
-								caldays.setTime(previous_forwardedDate);
+								if(previous_forwardedDate != null) {
+									
+									caldays.setTime(previous_forwardedDate);  // changed on 17/10/19
+									
+								}
+								
 								Calendar caldayss = Calendar.getInstance();
 								caldays.setTime(endDate);
 								int dayf = 0; int daypf = 0;
@@ -5361,6 +5365,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		    for(TaskTrackApprovalLevel2 data: approvedData) {	
 		    	System.out.println("Here-------------------------------------------->1");
 		    	TaskTrackApprovalLevel2 taskTrackApproval = timeTrackApprovalLevel2.getOne(data.getId());
+		    	TaskTrackApproval level1 = tasktrackApprovalService.findById(taskTrackApproval.getTasktrack_level1_Id().getId());
+		    	level1.setForwarded_date(dates.getApproved_date());
+		    	timeTrackApprovalJPARepository.save(level1);
 		    		for(int i = approved_date+1; i<= forwarded ; i++) {
 		    			
 		    			if(i==1) {
@@ -5485,6 +5492,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
  		    	System.out.println("Here-------------------------------------------->3");
  		    for(TaskTrackApprovalLevel2 data: approvedData) {		    		
  		    	TaskTrackApprovalLevel2 taskTrackApproval = timeTrackApprovalLevel2.getOne(data.getId());
+ 		    	TaskTrackApproval level1 = tasktrackApprovalService.findById(taskTrackApproval.getTasktrack_level1_Id().getId());
+		    	level1.setForwarded_date(dates.getApproved_date());
  		    		for(int i = 1; i< forwarded ; i++) {
  		    			
  		    			if(i==1) {
@@ -5710,6 +5719,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			node.put("firstName",item[1]);
 			node.put("lastName",item[2]);
 			node.put("status",item[3]);
+			node.put("projectName",item[4]);
 			for(int i=1;i<=daysInMonth;i++)
 			{
 				String j;
@@ -5720,7 +5730,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					j =String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year+"-"+intmonth+"-"+j,item[i+3]);
+				billableNode.put(year+"-"+intmonth+"-"+j,item[i+4]);
 				billableArray.add(billableNode);
 			}
 			node.put("billable",billableArray);
