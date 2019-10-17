@@ -60,6 +60,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 		System.out.println("active users count :" + activeUsers);
 		jsonData.put("usersCount", activeUsers);
 
+		
+//		For getting count of available bench resources
 		List<AllocationModel> allocationList = projectAllocation.getBenchResources(datestring);
 		
 		if (!allocationList.isEmpty()) {
