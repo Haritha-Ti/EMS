@@ -66,6 +66,8 @@ public interface ProjectService {
 
 		List<EmployeeContractors> getEmployeeContractorsList();
 
+		ArrayList<ProjectModel> getListofParentProjects();
+
 	
 }
 

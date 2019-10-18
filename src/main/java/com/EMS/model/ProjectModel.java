@@ -31,6 +31,13 @@ public class ProjectModel {
 	private int projectType,isPOC,projectStatus;
 	private String clientPointOfContact;
 	
+	private long parentProjectId;
+	
+	
+
+
+
+
 	private String project_refId;
 	
 	@ManyToOne
@@ -47,10 +54,11 @@ public class ProjectModel {
 	
 
 	public ProjectModel(long projectId, String projectName, String projectDetails, int estimatedHours, Date startDate,
-			Date endDate, int isBillable, String projectCode,int projectType, UserModel projectOwner,
+			Date endDate, int isBillable, String projectCode,int projectType, UserModel projectOwner,long parentProjectId,
 			ContractModel contract) {
 		super();
 		this.projectId = projectId;
+		this.parentProjectId=parentProjectId;
 		this.projectName = projectName;
 		this.projectDetails = projectDetails;
 		this.estimatedHours = estimatedHours;
@@ -64,7 +72,13 @@ public class ProjectModel {
 	}
 	
 	
-	
+	public long getParentProjectId() {
+		return parentProjectId;
+	}
+
+	public void setParentProjectId(long parentProjectId) {
+		this.parentProjectId = parentProjectId;
+	}
 	
 	public int getProjectCategory() {
 		return projectCategory;

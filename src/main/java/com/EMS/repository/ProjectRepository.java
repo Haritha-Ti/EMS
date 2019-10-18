@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -56,5 +57,11 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 	
 	@Query(value = "SELECT count(*) FROM `project` where start_date<=?1 AND end_date>=?1 AND project_status=1",nativeQuery = true)
 	int getActiveProjects(String datestring);
+
+	@Query(value = "SELECT * FROM project where parent_project_id=0",nativeQuery = true)
+	ArrayList<ProjectModel> getparentProjects();
+	
+	@Query(value = "SELECT * FROM project where parent_project_id!=0 order by project_id ASC;",nativeQuery = true)
+	ArrayList<ProjectModel> getAllNonParentProjects();
 
 }

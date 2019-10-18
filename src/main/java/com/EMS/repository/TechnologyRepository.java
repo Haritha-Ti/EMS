@@ -15,5 +15,8 @@ public interface TechnologyRepository extends JpaRepository<Technology, Long>{
 	@Query(value = "SELECT tec.technology_id,tec.technology_name FROM `user_technology` as usrtec JOIN technology as tec ON usrtec.technology_technology_id=tec.technology_id where usrtec.user_user_id=?1",nativeQuery = true)
 	List<Object[]> gettechnology(long userId);
 	
+	@Query(value = "SELECT count(*) FROM technology  WHERE technology_name=?1",nativeQuery = true)
+	int findTechnology(String technologyName);
+	
 	
 }

@@ -131,7 +131,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public ArrayList<ProjectModel> getListofProjects() {
-		ArrayList<ProjectModel> projectlist=(ArrayList<ProjectModel>) project_repositary.findAll(sortByIdAsc());
+		ArrayList<ProjectModel> projectlist=project_repositary.getAllNonParentProjects();
 		return projectlist;
 	}
 	private Sort sortByIdAsc() {
@@ -203,6 +203,12 @@ public class ProjectServiceImpl implements ProjectService {
 	public List<EmployeeContractors> getEmployeeContractorsList() {
 		List<EmployeeContractors> list=employeeContractorsRepository.findAll();
 		return list;
+	}
+
+	@Override
+	public ArrayList<ProjectModel> getListofParentProjects() {
+		ArrayList<ProjectModel> projectlist= project_repositary.getparentProjects();
+		return projectlist;
 	}
 
 
