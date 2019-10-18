@@ -43,15 +43,10 @@ public interface TaskTrackApprovalLevel2Repository extends JpaRepository<TaskTra
 
 	@Query("SELECT  s FROM TaskTrackApprovalLevel2 s  WHERE s.month=?1 and  s.year=?2 and s.project.projectId =?3 and s.user.userId=?4 and s.projectType = 'Billable'")
 	TaskTrackApprovalLevel2 getapprovedDates2(int month, int year, Long projectId, Long userId);
-	
-	//Renjith
-	@Query("SELECT a FROM TaskTrackApprovalLevel2 a where a.month = ?1 and a.year = ?2 and a.project.projectId = ?3  and approved_date is null")
-	List<TaskTrackApprovalLevel2> getNotApprovedData( int  monthIndex, int yearIndex, Long projectId);
-	//Renjith
-	
-	
-	
-	
+	//bala
+	@Query("SELECT a FROM TaskTrackApprovalLevel2 a where a.month = ?1 and a.year = ?2 and a.project.projectId = ?3  and status is null")
+	List<TaskTrackApprovalLevel2> getMidMonthData(int monthIndex, int yearIndex, Long projectId);
+	//bala
 	
 
 }

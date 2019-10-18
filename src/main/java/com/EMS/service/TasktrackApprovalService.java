@@ -96,9 +96,8 @@ public interface TasktrackApprovalService {
 			Long nonbillableId, Long overtimeId, Long beachId, Long logUser);
 
 	ObjectNode mailRejectTimesheetDetailstoLevel1andClear(Long projectId, Long userId, Long month, Long year,String message);
-	
-	//Renjith
-	List<TaskTrackApprovalLevel2> getNotApprovedData( int  monthIndex, int yearIndex, Long projectId);
-	//Renjith
+//bala
+	List<TaskTrackApprovalLevel2> getMidMonthApprovedData(int monthIndex, int yearIndex, Long projectId);
+//bala	
 }
 

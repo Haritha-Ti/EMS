@@ -1328,7 +1328,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				if(flagExist == 0)
 				{
 					status="HM";
-					forwarded_date = yearIndex+"-"+monthIndex+"-"+"15";
+					Calendar cal =   Calendar.getInstance();
+					int today= cal.get(Calendar.DAY_OF_MONTH);
+					int currentDay=0;
+					if(today>1) {
+					currentDay=today-1;
+					}
+					else if(today==1){
+						currentDay=today;
+					}
+					forwarded_date = yearIndex+"-"+monthIndex+"-"+currentDay;
 					try {
 						date1 = new SimpleDateFormat("yyyy-MM-dd").parse(forwarded_date);
 					} catch (ParseException e) {
@@ -1374,7 +1383,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					status ="FM";
 					for(TaskTrackApprovalFinance eachdata : data ) {
-						 forwarded_date = yearIndex+"-"+monthIndex+"-"+totaldays;
+						Calendar cal =   Calendar.getInstance();
+						int today= cal.get(Calendar.DAY_OF_MONTH);
+						int currentDay=0;
+						if(today>1) {
+						currentDay=today-1;
+						}
+						else if(today==1){
+							currentDay=today;
+						}
+						 forwarded_date = yearIndex+"-"+monthIndex+"-"+currentDay;
 						 try {
 							date1 = new SimpleDateFormat("yyyy-MM-dd").parse(forwarded_date);
 						} catch (ParseException e) {
@@ -1590,7 +1608,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
            	}
 			 
 
-			
+           	Calendar cal =   Calendar.getInstance();
+			int today= cal.get(Calendar.DAY_OF_MONTH);
+			int currentDay=0;
+			if(today>1) {
+			currentDay=today-1;
+			}
+			else if(today==1){
+				currentDay=today;
+			}
 			
 			//
 			String displyDay=null;
@@ -1610,11 +1636,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			if(status.equals("HM"))
 			{
 				
-				displyDay=yearIndex+"-"+mon+"-15";
+				
+				displyDay=yearIndex+"-"+mon+"-"+currentDay;
 			}
 			else if(status.equals("FM")) // return month end if  Full Month
 			{
-				displyDay=yearIndex+"-"+mon+"-"+totaldays;
+				displyDay=yearIndex+"-"+mon+"-"+currentDay;
 			}
 			userListObject.put("data", "success");
 			userListObject.put("status", "success");
@@ -5687,11 +5714,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return msg;
 	}
 
-	//Renjith
+
+//bala
 	@Override
-	public List<TaskTrackApprovalLevel2> getNotApprovedData(int monthIndex, int yearIndex, Long projectId) {
-		return timeTrackApprovalLevel2.getNotApprovedData(monthIndex, yearIndex, projectId);
+	public List<TaskTrackApprovalLevel2> getMidMonthApprovedData(int monthIndex, int yearIndex, Long projectId) {
+		return timeTrackApprovalLevel2.getMidMonthData(monthIndex, yearIndex, projectId);
 	}
-	//Renjith
+	//bala
 	
 }
