@@ -743,6 +743,7 @@ public class ProjectController {
 				responseData.put("projectId", project.getProjectId());
 				responseData.put("projectName", project.getProjectName());
 				responseData.put("projectDetails", project.getProjectDetails());
+				responseData.put("parentProjectId", project.getParentProjectId());
 				responseData.put("estimatedHours", project.getEstimatedHours());
 				responseData.put("startDate", project.getStartDate().toString());
 				responseData.put("endDate", project.getEndDate().toString());
