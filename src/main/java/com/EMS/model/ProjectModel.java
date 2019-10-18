@@ -31,7 +31,7 @@ public class ProjectModel {
 	private int projectType,isPOC,projectStatus;
 	private String clientPointOfContact;
 	
-	private long project_refId;
+	private String project_refId;
 	
 	@ManyToOne
 	private ClientModel clientName;
@@ -222,16 +222,20 @@ public class ProjectModel {
 
 
 
-	public long getProject_refId() {
+	public String getProject_refId() {
 		return project_refId;
 	}
 
 
 
 
-	public void setProject_refId(long project_refId) {
+	public void setProject_refId(String project_refId) {
 		this.project_refId = project_refId;
 	}
+
+
+
+
 	
 
 

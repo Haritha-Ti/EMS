@@ -699,10 +699,10 @@ public class TasktrackController {
 				System.out.println("Month"+intMonth+"Year"+yearIndex);
 				String frowardedDate = "";
 				String frowardedDateLevel2 = "";
-				String finance_status_message = "Timesheet has been not yet submitted to finance";
+				String finance_status_message = "Timesheet not yet submitted to finance";
 				String forwarded_ToLevel2_Status = "";
 				if(flaglevel2) {
-					forwarded_ToLevel2_Status = "Timesheet has been not yet forwarded to Level2";
+					forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
 				}
 				 String pattern = "yyyy-MM-dd"; 
 				 DateFormat df = new SimpleDateFormat(pattern);
@@ -757,8 +757,11 @@ public class TasktrackController {
 								if(fl[0] != null) {
 								Date fdate = (Date) fl[0];
 							  frowardedDate = df.format(fdate);
-							  System.out.println("---------------------------------------4");						  
-							  forwarded_ToLevel2_Status = "Data upto "+frowardedDate+"has been forwarded to Level2";
+							  System.out.println("---------------------------------------4");	
+							  String pattern1 = "MM-dd-yyyy"; 
+								 DateFormat df1 = new SimpleDateFormat(pattern1);
+								 String forw = df1.format(fdate);
+							  forwarded_ToLevel2_Status = "Data upto "+forw+"has been forwarded to Level2";
 								}
 								if(fl[1] != null) {
 								Date fdates = (Date) fl[1];
@@ -2250,7 +2253,7 @@ public class TasktrackController {
 				
 				 // getb finance status of the current project added on 11/10
 					
-				 String finance_status_message = "Timesheet has been not yet submitted to finance";
+				 String finance_status_message = "Timesheet not yet submitted to finance";
 				 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, intMonth, yearIndex);
 				 
 				 if(finance_status != null) {
@@ -3579,5 +3582,92 @@ public class TasktrackController {
 		
 		return responsedata;
 	}
+	
+	// Renjith
+
+		@SuppressWarnings("unchecked")
+		@PostMapping("/bulkApprovalLevel2")
+		public ObjectNode bulkApprovalLevel2(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
+
+			int currentMonth = 0;
+			int currentDay = 0;
+			int currentYear = 0;
+			int monthIndex = 0;
+			int yearIndex = 0;
+			Long projectId = null;
+			Calendar cal = null;
+			SimpleDateFormat dateFormat = null;
+			ObjectNode jsonDataRes = objectMapper.createObjectNode();
+			/*
+			 * String date1 = (String) requestdata.get("startDate"); String date2 =
+			 * (String) requestdata.get("endDate");
+			 */
+			dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			cal = Calendar.getInstance();
+			currentMonth = (cal.get(Calendar.MONTH) + 1);
+			currentDay = cal.get(Calendar.DAY_OF_MONTH);
+			currentYear = cal.get(Calendar.YEAR);
+			int today = 0;
+			if (currentDay > 1) {
+				today = currentDay - 1;
+			} else if (currentDay == 1) {
+				today = currentDay;
+			}
+			// System.out.println("Year :"+intYear+" Month :"+intMonth);
+
+			if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
+				projectId = Long.valueOf(requestdata.get("projectId").toString());
+
+			}
+
+			if (requestdata.get("month") != null && requestdata.get("month") != "" && requestdata.get("year") != null
+					&& requestdata.get("year") != "") {
+				monthIndex = (int) requestdata.get("month");
+				yearIndex = (int) requestdata.get("year");
+			}
+
+			List<TaskTrackApprovalLevel2> ls = tasktrackApprovalService.getNotApprovedData(monthIndex, yearIndex,
+					projectId);
+			
+			if(ls.size()==0){
+				jsonDataRes.put("status", "failure");
+				jsonDataRes.put("code", httpstatus.getStatus());
+				jsonDataRes.put("message", " No data to found ! " );
+				return jsonDataRes;
+			}
+
+			for (TaskTrackApprovalLevel2 trackApprovalLevel2 : ls) {
+				try {
+
+					if (trackApprovalLevel2.getYear() == currentYear && trackApprovalLevel2.getMonth() == currentMonth) {
+
+						trackApprovalLevel2
+								.setApproved_date(dateFormat.parse(currentYear + "-" + currentMonth + "-" + today));
+					} else {
+						YearMonth yearMonthObject = YearMonth.of(trackApprovalLevel2.getYear(),
+								trackApprovalLevel2.getMonth());
+						int daysInMonth = yearMonthObject.lengthOfMonth();
+						trackApprovalLevel2.setApproved_date(dateFormat.parse(
+								trackApprovalLevel2.getYear() + "-" + trackApprovalLevel2.getMonth() + "-" + daysInMonth));
+					}
+					taskTrackApprovalLevel2Repository.save(trackApprovalLevel2);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					jsonDataRes.put("status", "failure");
+					jsonDataRes.put("code", httpstatus.getStatus());
+					jsonDataRes.put("message", "failed. " + e);
+				}
+
+			}
+
+			jsonDataRes.put("status", "success");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "successfully saved. ");
+
+			return jsonDataRes;
+		}
+
+		// Renjith
 	
 }

@@ -98,5 +98,9 @@ public interface TasktrackApprovalService {
 	ObjectNode mailRejectTimesheetDetailstoLevel1andClear(Long projectId, Long userId, Long month, Long year,String message);
 
 	ArrayList<JSONObject> getFinanceDataByMonthAndYear(int month, int year);
+	
+	//Renjith
+		List<TaskTrackApprovalLevel2> getNotApprovedData( int  monthIndex, int yearIndex, Long projectId);
+		//Renjith
 }
 

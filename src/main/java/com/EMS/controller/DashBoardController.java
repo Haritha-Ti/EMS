@@ -26,7 +26,7 @@ public class DashBoardController {
 	@Autowired
 	private DashBoardService dashboardService;
 	
-	
+//	Api for dashboard view
 	@PostMapping(value = "/getBenchProjectResourcesCount")
 	public ObjectNode getCountOfResourcesInBenchProject(HttpServletResponse httpstatus) {
 
@@ -40,6 +40,5 @@ public class DashBoardController {
 		jsonDataRes.put("message", "success ");
 		
 		return jsonDataRes;
-
 	}
 }

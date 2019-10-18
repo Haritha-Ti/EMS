@@ -82,7 +82,7 @@ public class ProjectController {
 					project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
 				}
 			}
-			project.setProject_refId(requestdata.get("projectRefId").asLong());
+			project.setProject_refId(requestdata.get("projectRefId").asText());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
 			project.setProjectName(requestdata.get("projectName").asText());
 			project.setisBillable(requestdata.get("isBillable").asInt());
@@ -583,7 +583,7 @@ public class ProjectController {
 					project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
 				}
 			}
-            project.setProject_refId(requestdata.get("projectRefId").asLong());
+            project.setProject_refId(requestdata.get("projectRefId").asText());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
 			project.setProjectDetails(requestdata.get("projectDetails").asText());
 			project.setProjectName(requestdata.get("projectName").asText());
@@ -763,6 +763,7 @@ public class ProjectController {
 				responseData.put("releasingDate", project.getReleasingDate().toString());
 				responseData.put("isPOC", project.getisPOC());
 				responseData.put("projectStatus", project.getprojectStatus());
+				responseData.put("projectRefId", project.getProject_refId());
 				System.out.println("pro" + project.getProjectId());
 				if (project.getClientName() != null)
 					clientid = project.getClientName().getClientId();
