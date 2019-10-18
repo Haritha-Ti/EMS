@@ -5739,5 +5739,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 		return resultData;
 	}
-	
+
+	//Renjith
+	@Override
+	public List<TaskTrackApprovalLevel2> getNotApprovedData(int monthIndex, int yearIndex, Long projectId) {
+		return timeTrackApprovalLevel2.getNotApprovedData(monthIndex, yearIndex, projectId);
+	}
+	//Renjith
 }

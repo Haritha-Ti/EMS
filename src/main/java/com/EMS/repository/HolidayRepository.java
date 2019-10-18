@@ -23,7 +23,7 @@ public interface HolidayRepository extends JpaRepository<HolidayModel, Long>{
 			" holiday.holiday_name,holiday.holiday_type,region.id,region.region_name " + 
 			" FROM holiday " + 
 			" INNER JOIN region on (region.id = holiday.region_id_id) " + 
-			" WHERE (CASE WHEN :region_Id != null  " + 
+			" WHERE (CASE WHEN :region_Id != 0  " + 
 			"       THEN holiday.region_id_id = :region_Id " + 
 			"       ELSE holiday.region_id_id != 0 END) AND  (CASE WHEN :monthyear !=  '' " + 
 			"        THEN  holiday.date like %:monthyear% " + 

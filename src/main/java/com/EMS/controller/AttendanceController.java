@@ -1097,7 +1097,7 @@ public class AttendanceController {
 		if (requestdata.get("year") != null && requestdata.get("year").asText() != "") {
 			year = requestdata.get("year").asText();
 		}
-		//System.out.println("region_Id _________________"+region_Id);
+		System.out.println("region_Id _________________"+region_Id);
 		try {
 			List<Object[]> holidayList = attendanceService.getHolidayListByRegionId(region_Id,month,year);
 			System.out.println("holidayList : " + holidayList.size());
