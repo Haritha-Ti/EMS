@@ -3585,89 +3585,306 @@ public class TasktrackController {
 	
 	// Renjith
 
-		@SuppressWarnings("unchecked")
-		@PostMapping("/bulkApprovalLevel2")
-		public ObjectNode bulkApprovalLevel2(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
+	@SuppressWarnings("unchecked")
+	@PostMapping("/bulkApprovalLevel2")
+	public ObjectNode bulkApprovalLevel2(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
 
+		int currentMonth = 0;
+		int currentDay = 0;
+		int currentYear = 0;
+		int monthIndex = 0;
+		int yearIndex = 0;
+		Long projectId = null;
+		Calendar cal = null;
+		SimpleDateFormat dateFormat = null;
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+	    dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		cal = Calendar.getInstance();
+		currentMonth = (cal.get(Calendar.MONTH) + 1);
+		currentDay = cal.get(Calendar.DAY_OF_MONTH);
+		currentYear = cal.get(Calendar.YEAR);
+		
+		int today = 0;
+		if (currentDay > 1) {
+			today = currentDay - 1;
+		} else if (currentDay == 1) {
+			today = currentDay;
+		}
+		
+
+		if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
+			projectId = Long.valueOf(requestdata.get("projectId").toString());
+
+		}
+
+		if (requestdata.get("month") != null && requestdata.get("month") != "" && requestdata.get("year") != null
+				&& requestdata.get("year") != "") {
+			monthIndex = (int) requestdata.get("month");
+			yearIndex = (int) requestdata.get("year");
+		}
+
+		List<TaskTrackApprovalLevel2> ls = tasktrackApprovalService.getNotApprovedData(monthIndex, yearIndex,
+				projectId);
+
+		if (ls.size() == 0) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", " No data  found ! ");
+			return jsonDataRes;
+		}
+
+		for (TaskTrackApprovalLevel2 trackApprovalLevel2 : ls) {
+			try {
+
+				if (trackApprovalLevel2.getYear() == currentYear && trackApprovalLevel2.getMonth() == currentMonth) {
+
+					trackApprovalLevel2
+							.setApproved_date(dateFormat.parse(currentYear + "-" + currentMonth + "-" + today));
+				} else {
+					YearMonth yearMonthObject = YearMonth.of(trackApprovalLevel2.getYear(),
+							trackApprovalLevel2.getMonth());
+					int daysInMonth = yearMonthObject.lengthOfMonth();
+					trackApprovalLevel2.setApproved_date(dateFormat.parse(
+							trackApprovalLevel2.getYear() + "-" + trackApprovalLevel2.getMonth() + "-" + daysInMonth));
+				}
+				taskTrackApprovalLevel2Repository.save(trackApprovalLevel2);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				
+			}
+
+		}
+
+		jsonDataRes.put("status", "success");
+		jsonDataRes.put("code", httpstatus.getStatus());
+		jsonDataRes.put("message", "successfully saved. ");
+
+		return jsonDataRes;
+	}
+
+	@SuppressWarnings("unchecked")
+	@PostMapping("/closeTimesheet")
+	public ObjectNode closeTimesheet(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
+		int currentMonth = 0;
+		int currentDay = 0;
+		int currentYear = 0;
+		int monthIndex = 0;
+		int yearIndex = 0;
+		Long projectId = null;
+		Calendar cal = null;
+		SimpleDateFormat dateFormat = null;
+		ProjectModel project = null;
+		TaskTrackApprovalFinance taskTrackApprovalFinance = null;
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		cal = Calendar.getInstance();
+		currentMonth = (cal.get(Calendar.MONTH) + 1);
+		currentDay = cal.get(Calendar.DAY_OF_MONTH);
+		currentYear = cal.get(Calendar.YEAR);
+		if (requestdata.get("month") != null && requestdata.get("month") != "" && requestdata.get("year") != null
+				&& requestdata.get("year") != "") {
+			monthIndex = (int) requestdata.get("month");
+			yearIndex = (int) requestdata.get("year");
+		}
+
+		if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
+			projectId = Long.valueOf(requestdata.get("projectId").toString());
+
+		}
+
+		if (yearIndex > currentYear) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("message", " Date Validation failed - hint future date !");
+
+			return jsonDataRes;
+		}
+
+		if (yearIndex == currentYear && monthIndex == currentMonth) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("message", " Date Validation failed - hint current Month !");
+
+			return jsonDataRes;
+		}
+
+		List<TaskTrackApprovalLevel2> ls = tasktrackApprovalService.getHalfMonthApprovedData(monthIndex, yearIndex,
+				projectId);
+
+		if (ls.size() == 0) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", " No data  found ! ");
+			return jsonDataRes;
+		}
+
+		for (TaskTrackApprovalLevel2 trackApprovalLevel2 : ls) {
+
+			try {
+				trackApprovalLevel2.setStatus("FM");
+				YearMonth yearMonthObject = YearMonth.of(trackApprovalLevel2.getYear(), trackApprovalLevel2.getMonth());
+				int daysInMonth = yearMonthObject.lengthOfMonth();
+				trackApprovalLevel2.setForwarded_date(dateFormat.parse(
+						trackApprovalLevel2.getYear() + "-" + trackApprovalLevel2.getMonth() + "-" + daysInMonth));
+				taskTrackApprovalFinance = new TaskTrackApprovalFinance();
+				taskTrackApprovalLevel2Repository.save(trackApprovalLevel2);
+				taskTrackApprovalFinance.setDay1(trackApprovalLevel2.getDay1());
+				taskTrackApprovalFinance.setDay2(trackApprovalLevel2.getDay2());
+				taskTrackApprovalFinance.setDay3(trackApprovalLevel2.getDay3());
+				taskTrackApprovalFinance.setDay4(trackApprovalLevel2.getDay4());
+				taskTrackApprovalFinance.setDay5(trackApprovalLevel2.getDay5());
+				taskTrackApprovalFinance.setDay6(trackApprovalLevel2.getDay6());
+				taskTrackApprovalFinance.setDay7(trackApprovalLevel2.getDay7());
+				taskTrackApprovalFinance.setDay8(trackApprovalLevel2.getDay8());
+				taskTrackApprovalFinance.setDay9(trackApprovalLevel2.getDay9());
+				taskTrackApprovalFinance.setDay10(trackApprovalLevel2.getDay10());
+				taskTrackApprovalFinance.setDay11(trackApprovalLevel2.getDay11());
+				taskTrackApprovalFinance.setDay12(trackApprovalLevel2.getDay12());
+				taskTrackApprovalFinance.setDay13(trackApprovalLevel2.getDay13());
+				taskTrackApprovalFinance.setDay14(trackApprovalLevel2.getDay14());
+				taskTrackApprovalFinance.setDay15(trackApprovalLevel2.getDay15());
+				taskTrackApprovalFinance.setDay16(trackApprovalLevel2.getDay16());
+				taskTrackApprovalFinance.setDay17(trackApprovalLevel2.getDay17());
+				taskTrackApprovalFinance.setDay18(trackApprovalLevel2.getDay18());
+				taskTrackApprovalFinance.setDay19(trackApprovalLevel2.getDay19());
+				taskTrackApprovalFinance.setDay20(trackApprovalLevel2.getDay20());
+				taskTrackApprovalFinance.setDay21(trackApprovalLevel2.getDay21());
+				taskTrackApprovalFinance.setDay22(trackApprovalLevel2.getDay22());
+				taskTrackApprovalFinance.setDay23(trackApprovalLevel2.getDay23());
+				taskTrackApprovalFinance.setDay24(trackApprovalLevel2.getDay24());
+				taskTrackApprovalFinance.setDay25(trackApprovalLevel2.getDay25());
+				taskTrackApprovalFinance.setDay26(trackApprovalLevel2.getDay26());
+				taskTrackApprovalFinance.setDay27(trackApprovalLevel2.getDay27());
+				taskTrackApprovalFinance.setDay28(trackApprovalLevel2.getDay28());
+				taskTrackApprovalFinance.setDay29(trackApprovalLevel2.getDay29());
+				taskTrackApprovalFinance.setDay30(trackApprovalLevel2.getDay30());
+				taskTrackApprovalFinance.setDay31(trackApprovalLevel2.getDay31());
+				taskTrackApprovalFinance.setFirstName(trackApprovalLevel2.getFirstName());
+				taskTrackApprovalFinance.setLastName(trackApprovalLevel2.getLastName());
+				taskTrackApprovalFinance.setMonth(trackApprovalLevel2.getMonth());
+				taskTrackApprovalFinance.setProject(trackApprovalLevel2.getProject());
+				taskTrackApprovalFinance.setProjectType(trackApprovalLevel2.getProjectType());
+				taskTrackApprovalFinance.setStatus(trackApprovalLevel2.getStatus());
+				taskTrackApprovalFinance.setUser(trackApprovalLevel2.getUser());
+				taskTrackApprovalFinance.setYear(trackApprovalLevel2.getYear());
+				tasktrackApprovalService.saveLevel3(taskTrackApprovalFinance);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		jsonDataRes.put("status", "success");
+		jsonDataRes.put("code", httpstatus.getStatus());
+		jsonDataRes.put("message", "successfully saved. ");
+		return jsonDataRes;
+	}
+
+	             // Renjith
+				 
+			@SuppressWarnings("unchecked")
+		@PostMapping("/midMonth")
+		public ObjectNode midMonth(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) {
 			int currentMonth = 0;
 			int currentDay = 0;
 			int currentYear = 0;
 			int monthIndex = 0;
 			int yearIndex = 0;
 			Long projectId = null;
+			TaskTrackApprovalFinance  taskTrackApprovalFinance=null;
 			Calendar cal = null;
 			SimpleDateFormat dateFormat = null;
+			ProjectModel project = null;
 			ObjectNode jsonDataRes = objectMapper.createObjectNode();
-			/*
-			 * String date1 = (String) requestdata.get("startDate"); String date2 =
-			 * (String) requestdata.get("endDate");
-			 */
 			dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			cal = Calendar.getInstance();
 			currentMonth = (cal.get(Calendar.MONTH) + 1);
 			currentDay = cal.get(Calendar.DAY_OF_MONTH);
 			currentYear = cal.get(Calendar.YEAR);
-			int today = 0;
-			if (currentDay > 1) {
-				today = currentDay - 1;
-			} else if (currentDay == 1) {
-				today = currentDay;
-			}
-			// System.out.println("Year :"+intYear+" Month :"+intMonth);
-
 			if (requestdata.get("projectId") != null && requestdata.get("projectId") != "") {
-				projectId = Long.valueOf(requestdata.get("projectId").toString());
-
-			}
-
+	            projectId = Long.valueOf(requestdata.get("projectId").toString());
+	        }
 			if (requestdata.get("month") != null && requestdata.get("month") != "" && requestdata.get("year") != null
 					&& requestdata.get("year") != "") {
 				monthIndex = (int) requestdata.get("month");
 				yearIndex = (int) requestdata.get("year");
 			}
 
-			List<TaskTrackApprovalLevel2> ls = tasktrackApprovalService.getNotApprovedData(monthIndex, yearIndex,
-					projectId);
-			
-			if(ls.size()==0){
+			if (yearIndex == currentYear && monthIndex == currentMonth && currentDay<15) {
 				jsonDataRes.put("status", "failure");
-				jsonDataRes.put("code", httpstatus.getStatus());
-				jsonDataRes.put("message", " No data to found ! " );
+				jsonDataRes.put("message", " Given date is less than mid month!");
+
 				return jsonDataRes;
 			}
 
-			for (TaskTrackApprovalLevel2 trackApprovalLevel2 : ls) {
-				try {
+			if (yearIndex > currentYear && monthIndex > currentMonth) {
+				jsonDataRes.put("status", "failure");
+				jsonDataRes.put("message", " Date entered is beyond current date !");
 
-					if (trackApprovalLevel2.getYear() == currentYear && trackApprovalLevel2.getMonth() == currentMonth) {
-
-						trackApprovalLevel2
-								.setApproved_date(dateFormat.parse(currentYear + "-" + currentMonth + "-" + today));
-					} else {
-						YearMonth yearMonthObject = YearMonth.of(trackApprovalLevel2.getYear(),
-								trackApprovalLevel2.getMonth());
-						int daysInMonth = yearMonthObject.lengthOfMonth();
-						trackApprovalLevel2.setApproved_date(dateFormat.parse(
-								trackApprovalLevel2.getYear() + "-" + trackApprovalLevel2.getMonth() + "-" + daysInMonth));
-					}
-					taskTrackApprovalLevel2Repository.save(trackApprovalLevel2);
-
-				} catch (Exception e) {
-					e.printStackTrace();
-					jsonDataRes.put("status", "failure");
-					jsonDataRes.put("code", httpstatus.getStatus());
-					jsonDataRes.put("message", "failed. " + e);
-				}
-
+				return jsonDataRes;
 			}
-
-			jsonDataRes.put("status", "success");
-			jsonDataRes.put("code", httpstatus.getStatus());
-			jsonDataRes.put("message", "successfully saved. ");
-
-			return jsonDataRes;
-		}
-
-		// Renjith
+	           System.out.println(monthIndex+ ", "+ yearIndex+ ", "+projectId);
+			List<TaskTrackApprovalLevel2> ls = tasktrackApprovalService.getMidMonthApprovedData(monthIndex, yearIndex,projectId);
+			System.out.println(ls.size());
+			 for (TaskTrackApprovalLevel2 trackApprovalLevel2 : ls) {
+		            try {
+		                trackApprovalLevel2.setStatus("HM");
+		                YearMonth yearMonthObject = YearMonth.of(trackApprovalLevel2.getYear(), trackApprovalLevel2.getMonth());
+		                int daysInMonth = yearMonthObject.lengthOfMonth();
+		                trackApprovalLevel2.setForwarded_date(dateFormat.parse(
+		                        trackApprovalLevel2.getYear() + "-" + trackApprovalLevel2.getMonth() + "-" +"15"));
+		                taskTrackApprovalFinance = new TaskTrackApprovalFinance();
+		                taskTrackApprovalLevel2Repository.save(trackApprovalLevel2);
+		                taskTrackApprovalFinance.setDay1(trackApprovalLevel2.getDay1());
+		                taskTrackApprovalFinance.setDay2(trackApprovalLevel2.getDay2());
+		                taskTrackApprovalFinance.setDay3(trackApprovalLevel2.getDay3());
+		                taskTrackApprovalFinance.setDay4(trackApprovalLevel2.getDay4());
+		                taskTrackApprovalFinance.setDay5(trackApprovalLevel2.getDay5());
+		                taskTrackApprovalFinance.setDay6(trackApprovalLevel2.getDay6());
+		                taskTrackApprovalFinance.setDay7(trackApprovalLevel2.getDay7());
+		                taskTrackApprovalFinance.setDay8(trackApprovalLevel2.getDay8());
+		                taskTrackApprovalFinance.setDay9(trackApprovalLevel2.getDay9());
+		                taskTrackApprovalFinance.setDay10(trackApprovalLevel2.getDay10());
+		                taskTrackApprovalFinance.setDay11(trackApprovalLevel2.getDay11());
+		                taskTrackApprovalFinance.setDay12(trackApprovalLevel2.getDay12());
+		                taskTrackApprovalFinance.setDay13(trackApprovalLevel2.getDay13());
+		                taskTrackApprovalFinance.setDay14(trackApprovalLevel2.getDay14());
+		                taskTrackApprovalFinance.setDay15(trackApprovalLevel2.getDay15());
+		                taskTrackApprovalFinance.setDay16(trackApprovalLevel2.getDay16());
+		                taskTrackApprovalFinance.setDay17(trackApprovalLevel2.getDay17());
+		                taskTrackApprovalFinance.setDay18(trackApprovalLevel2.getDay18());
+		                taskTrackApprovalFinance.setDay19(trackApprovalLevel2.getDay19());
+		                taskTrackApprovalFinance.setDay20(trackApprovalLevel2.getDay20());
+		                taskTrackApprovalFinance.setDay21(trackApprovalLevel2.getDay21());
+		                taskTrackApprovalFinance.setDay22(trackApprovalLevel2.getDay22());
+		                taskTrackApprovalFinance.setDay23(trackApprovalLevel2.getDay23());
+		                taskTrackApprovalFinance.setDay24(trackApprovalLevel2.getDay24());
+		                taskTrackApprovalFinance.setDay25(trackApprovalLevel2.getDay25());
+		                taskTrackApprovalFinance.setDay26(trackApprovalLevel2.getDay26());
+		                taskTrackApprovalFinance.setDay27(trackApprovalLevel2.getDay27());
+		                taskTrackApprovalFinance.setDay28(trackApprovalLevel2.getDay28());
+		                taskTrackApprovalFinance.setDay29(trackApprovalLevel2.getDay29());
+		                taskTrackApprovalFinance.setDay30(trackApprovalLevel2.getDay30());
+		                taskTrackApprovalFinance.setDay31(trackApprovalLevel2.getDay31());
+		                taskTrackApprovalFinance.setFirstName(trackApprovalLevel2.getFirstName());
+		                taskTrackApprovalFinance.setLastName(trackApprovalLevel2.getLastName());
+		                taskTrackApprovalFinance.setMonth(trackApprovalLevel2.getMonth());
+		                taskTrackApprovalFinance.setProject(trackApprovalLevel2.getProject());
+		                taskTrackApprovalFinance.setProjectType(trackApprovalLevel2.getProjectType());
+		                taskTrackApprovalFinance.setStatus(trackApprovalLevel2.getStatus());
+		                taskTrackApprovalFinance.setUser(trackApprovalLevel2.getUser());
+		                taskTrackApprovalFinance.setYear(trackApprovalLevel2.getYear());
+		                tasktrackApprovalService.saveLevel3(taskTrackApprovalFinance);
+		            } catch (Exception e) {
+		                e.printStackTrace();
+		                jsonDataRes.put("status", "Failure");
+		    	        jsonDataRes.put("code", httpstatus.getStatus());
+		    	        jsonDataRes.put("message", "Exception occured. ");
+		            }
+		        }
+		        jsonDataRes.put("status", "success");
+		        jsonDataRes.put("code", httpstatus.getStatus());
+		        jsonDataRes.put("message", "successfully saved. ");
+		        return jsonDataRes;
+		    }	 
 	
 }

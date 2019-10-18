@@ -5740,10 +5740,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return resultData;
 	}
 
-	//Renjith
+	     //Renjith
 	@Override
 	public List<TaskTrackApprovalLevel2> getNotApprovedData(int monthIndex, int yearIndex, Long projectId) {
 		return timeTrackApprovalLevel2.getNotApprovedData(monthIndex, yearIndex, projectId);
 	}
-	//Renjith
+	
+	public List<TaskTrackApprovalLevel2> getHalfMonthApprovedData( int  monthIndex, int yearIndex, Long projectId){
+		return timeTrackApprovalLevel2.getHalfMonthApprovedData(monthIndex, yearIndex, projectId);
+	}
+	     //Renjith
+		 @Override
+	public List<TaskTrackApprovalLevel2> getMidMonthApprovedData(int monthIndex, int yearIndex, Long projectId) {
+		return timeTrackApprovalLevel2.getMidMonthData(monthIndex, yearIndex, projectId);
+	}
 }

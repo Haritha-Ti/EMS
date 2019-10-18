@@ -99,8 +99,10 @@ public interface TasktrackApprovalService {
 
 	ArrayList<JSONObject> getFinanceDataByMonthAndYear(int month, int year);
 	
-	//Renjith
-		List<TaskTrackApprovalLevel2> getNotApprovedData( int  monthIndex, int yearIndex, Long projectId);
-		//Renjith
+	             //Renjith
+	        List<TaskTrackApprovalLevel2> getNotApprovedData( int  monthIndex, int yearIndex, Long projectId);
+	        List<TaskTrackApprovalLevel2> getHalfMonthApprovedData( int  monthIndex, int yearIndex, Long projectId);
+	            //Renjith
+		    List<TaskTrackApprovalLevel2> getMidMonthApprovedData(int monthIndex, int yearIndex, Long projectId);
 }
 
