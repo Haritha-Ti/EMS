@@ -827,6 +827,8 @@ public class TasktrackController {
 		
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		
+		ObjectNode jsonDataMessageDetails = objectMapper.createObjectNode();
+		
 		ObjectNode ids = objectMapper.createObjectNode();
 
 		boolean timesheet_button = false;
@@ -2037,6 +2039,91 @@ public class TasktrackController {
  			
  			}
 			
+ 		// for showing status
+ 	 		// Level 2 approver name 	 
+ 				 
+ 				 ProjectModel projectdetails = null;
+ 			boolean flaglevel2 = true;
+ 			if(projectId != null) {
+ 				//System.out.println("Here____________________________");
+ 				 projectdetails = getProjectDetails(projectId);
+ 				}
+ 			if(projectdetails != null) {
+ 				if(projectdetails.getOnsite_lead() != null)
+ 				
+ 					{
+ 					System.out.println("------------------------------------------------1");
+ 				
+ 					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ " " +projectdetails.getOnsite_lead().getLastName());
+ 					}
+ 				else
+ 				{
+ 					
+ 					flaglevel2 = false;
+ 					jsonDataMessageDetails.put("Level2_Approvar_Name", "");
+ 				}
+ 				
+ 				// level2 forwarded 
+ 				String frowardedDate = "";
+ 				String frowardedDateLevel2 = "";
+ 				String finance_status_message = "Timesheet not yet submitted to finance";
+ 				String forwarded_ToLevel2_Status = "";
+ 				if(flaglevel2) {
+ 					forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
+ 				}
+ 				 // getb finance status of the current project added on 11/10
+ 				
+ 				 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, month, year);
+ 				 
+ 				 if(finance_status != null) {
+ 					 System.out.println("---------------------------------------0");
+ 					 if(finance_status.length > 0 ) {
+ 					 System.out.println("---------------------------------------1");
+ 						if(finance_status[0].equals("HM")) {
+ 							 System.out.println("---------------------------------------2");	
+ 							finance_status_message = "Submitted mid report";
+ 						}
+ 						else if(finance_status[0].equals("FM")) {
+ 							 System.out.println("---------------------------------------3");	
+ 							finance_status_message = "Submitted Final report";
+ 						}
+ 						
+ 					 }
+ 				 }
+ 				 jsonDataMessageDetails.put("Status",finance_status_message);
+ 				 //
+ 					// level2 forwarded 
+ 					
+ 				 List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId,userId,month,year);
+ 				  if(!level1.isEmpty()) {
+ 					 // System.out.println("forwarded_date"+level1.get(0));
+ 					 if(level1 != null) {
+ 						for(Object[] fl : level1) {
+ 							if(fl != null)
+ 							{ 
+ 								if(fl[0] != null) {
+ 								Date fdate = (Date) fl[0];				
+ 							  System.out.println("---------------------------------------4");	
+ 							  String pattern1 = "MM-dd-yyyy"; 
+ 								 DateFormat df1 = new SimpleDateFormat(pattern1);
+ 								 String forw = df1.format(fdate);
+ 							  forwarded_ToLevel2_Status = "Data upto "+forw+" has been forwarded to Level2";
+ 								}
+ 								if(fl[1] != null) {
+ 								Date fdates = (Date) fl[1];
+ 							  
+ 								}
+ 							}
+ 						}
+ 					 }	  						 //System.out.println("frowardedDate___________"+frowardedDate);
+
+
+ 				 }
+ 				  jsonDataMessageDetails.put("Forwarded_status",forwarded_ToLevel2_Status);
+ 			}
+ 	 			
+ 	 			//end
+
 			 ids.put("billableId", billable_id);
 			 ids.put("nonBillableId", nonbillable_id);
 			 ids.put("beachId", beach_id);
@@ -2048,6 +2135,7 @@ public class TasktrackController {
 			jsonDataRes.put("timesheet_button", timesheet_button);
 			jsonDataRes.put("approve_button", approve_button);
 			jsonDataRes.put("forward_button", forward_button);
+			jsonDataRes.put("message_details", jsonDataMessageDetails);
 			//jsonDataRes.put("approved_till_date", );
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2368,6 +2456,7 @@ public class TasktrackController {
 
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		ObjectNode ids = objectMapper.createObjectNode();
+		ObjectNode jsonDataMessageDetails = objectMapper.createObjectNode();
 		boolean timesheet_button = false;
 		try {
 			// Obtain the data from request data
@@ -2987,7 +3076,90 @@ public class TasktrackController {
  				}
             	 
              }
-            
+          // for showing status
+      		// Level 2 approver name 	 
+     			 
+     			 ProjectModel projectdetails = null;
+     		boolean flaglevel2 = true;
+     		if(projectId != null) {
+     			//System.out.println("Here____________________________");
+     			 projectdetails = getProjectDetails(projectId);
+     			}
+     		if(projectdetails != null) {
+     			if(projectdetails.getOnsite_lead() != null)
+     			
+     				{
+     				System.out.println("------------------------------------------------1");
+     			
+     				jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ " " +projectdetails.getOnsite_lead().getLastName());
+     				}
+     			else
+     			{
+     				
+     				flaglevel2 = false;
+     				jsonDataMessageDetails.put("Level2_Approvar_Name", "");
+     			}
+     			
+     			// level2 forwarded 
+     			String frowardedDate = "";
+     			String frowardedDateLevel2 = "";
+     			String finance_status_message = "Timesheet not yet submitted to finance";
+     			String forwarded_ToLevel2_Status = "";
+     			if(flaglevel2) {
+     				forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
+     			}
+     			 // getb finance status of the current project added on 11/10
+     			
+     			 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, month, year);
+     			 
+     			 if(finance_status != null) {
+     				 System.out.println("---------------------------------------0");
+     				 if(finance_status.length > 0 ) {
+     				 System.out.println("---------------------------------------1");
+     					if(finance_status[0].equals("HM")) {
+     						 System.out.println("---------------------------------------2");	
+     						finance_status_message = "Submitted mid report";
+     					}
+     					else if(finance_status[0].equals("FM")) {
+     						 System.out.println("---------------------------------------3");	
+     						finance_status_message = "Submitted Final report";
+     					}
+     					
+     				 }
+     			 }
+     			 jsonDataMessageDetails.put("Status",finance_status_message);
+     			 //
+     				// level2 forwarded 
+     				
+     			 List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId,userId,month,year);
+     			  if(!level1.isEmpty()) {
+     				 // System.out.println("forwarded_date"+level1.get(0));
+     				 if(level1 != null) {
+     					for(Object[] fl : level1) {
+     						if(fl != null)
+     						{ 
+     							if(fl[0] != null) {
+     							Date fdate = (Date) fl[0];				
+     						  System.out.println("---------------------------------------4");	
+     						  String pattern1 = "MM-dd-yyyy"; 
+     							 DateFormat df1 = new SimpleDateFormat(pattern1);
+     							 String forw = df1.format(fdate);
+     						  forwarded_ToLevel2_Status = "Data upto "+forw+" has been forwarded to Level2";
+     							}
+     							if(fl[1] != null) {
+     							Date fdates = (Date) fl[1];
+     						  
+     							}
+     						}
+     					}
+     				 }	  						 //System.out.println("frowardedDate___________"+frowardedDate);
+
+
+     			 }
+     			  jsonDataMessageDetails.put("Forwarded_status",forwarded_ToLevel2_Status);
+     		}
+      			
+      			//end    
        
 			ids.put("billableId", billableId);
 			ids.put("nonBillableId", nonbillableId);
@@ -2998,6 +3170,7 @@ public class TasktrackController {
 			jsonDataRes.put("message", "successfully saved. ");
 			jsonDataRes.set("ids", ids);
 			jsonDataRes.put("timesheet_button", timesheet_button);
+			jsonDataRes.put("message_details", jsonDataMessageDetails);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");

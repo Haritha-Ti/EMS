@@ -48,7 +48,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	@Query("select u.userId from UserModel u")
 	List<Object[]> getUserIdLists();
 
-	@Query(value = "SELECT first_name,last_name FROM user where user.user_id = ?1",nativeQuery = true)
+	@Query(value = "SELECT last_name,first_name FROM user where user.user_id = ?1",nativeQuery = true)
 	String getUserName(Long id);
 
 	@Query(value = "SELECT COUNT(user_id) FROM user",nativeQuery = true)
