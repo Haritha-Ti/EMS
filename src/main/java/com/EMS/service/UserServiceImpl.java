@@ -9,12 +9,14 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.model.CppLevelModel;
 import com.EMS.model.PasswordResetModel;
 import com.EMS.model.Technology;
 import com.EMS.model.UserModel;
 import com.EMS.model.TaskCategory;
 import com.EMS.model.UserTaskCategory;
 import com.EMS.model.UserTechnology;
+import com.EMS.repository.CppLevelRepository;
 import com.EMS.repository.PasswordResetRepository;
 import com.EMS.repository.TechnologyRepository;
 import com.EMS.repository.UserRepository;
@@ -24,6 +26,7 @@ import com.EMS.repository.TaskRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.transaction.Transactional;
 
@@ -46,6 +49,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserTaskCategoryRepository UserTaskCategoryRepository;
+	
+	@Autowired
+	private CppLevelRepository cppLevelRepository;
 	
 	@Override
 	public UserModel getUserDetailsById(Long id) {
@@ -212,5 +218,27 @@ public class UserServiceImpl implements UserService {
 		onsite_lead = userRepository.getOnsiteLeads();
 		return onsite_lead;
 
+	}
+
+	@Override
+	public ArrayNode getCppLevel() {
+		// TODO Auto-generated method stub
+		ArrayNode cpplevels = objectMapper.createArrayNode();
+		List<CppLevelModel> cpplevelsdata = cppLevelRepository.findAll();
+		
+		for(CppLevelModel data : cpplevelsdata) {
+			ObjectNode node = objectMapper.createObjectNode();
+			node.put("levelId", data.getId());
+			node.put("levelName", data.getCpp_level_name());
+			cpplevels.add(node);
+		}
+		
+		return cpplevels;
+	}
+
+	@Override
+	public CppLevelModel findCppLevelById(Long cpp_level_id) {
+		// TODO Auto-generated method stub
+		return cppLevelRepository.getOne(cpp_level_id);
 	}
 }

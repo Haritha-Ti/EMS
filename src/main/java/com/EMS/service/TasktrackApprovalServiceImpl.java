@@ -1303,6 +1303,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		int flagExist = 0;
 		JSONObject userListObject = new JSONObject();
 		JSONObject testValidation = new JSONObject();
+		JSONObject jsonDataMessageDetails = new JSONObject();
 		boolean timesheet_button = false;
 		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, logUser);
 		String status = null;
@@ -1590,7 +1591,90 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
            	}
 			 
 
-			
+         // for showing status
+     		// Level 2 approver name 	 
+    			 
+    			 ProjectModel projectdetails = null;
+    		boolean flaglevel2 = true;
+    		if(projectId != null) {
+    			//System.out.println("Here____________________________");
+    			 projectdetails = getProjectDetails(projectId);
+    			}
+    		if(projectdetails != null) {
+    			if(projectdetails.getOnsite_lead() != null)
+    			
+    				{
+    				System.out.println("------------------------------------------------1");
+    			
+    				jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ " " +projectdetails.getOnsite_lead().getLastName());
+    				}
+    			else
+    			{
+    				
+    				flaglevel2 = false;
+    				jsonDataMessageDetails.put("Level2_Approvar_Name", "");
+    			}
+    			
+    			// level2 forwarded 
+    			String frowardedDate = "";
+    			String frowardedDateLevel2 = "";
+    			String finance_status_message = "Timesheet not yet submitted to finance";
+    			String forwarded_ToLevel2_Status = "";
+    			if(flaglevel2) {
+    				forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
+    			}
+    			 // getb finance status of the current project added on 11/10
+    			
+    			 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, monthIndex, yearIndex);
+    			 
+    			 if(finance_status != null) {
+    				 System.out.println("---------------------------------------0");
+    				 if(finance_status.length > 0 ) {
+    				 System.out.println("---------------------------------------1");
+    					if(finance_status[0].equals("HM")) {
+    						 System.out.println("---------------------------------------2");	
+    						finance_status_message = "Submitted mid report";
+    					}
+    					else if(finance_status[0].equals("FM")) {
+    						 System.out.println("---------------------------------------3");	
+    						finance_status_message = "Submitted Final report";
+    					}
+    					
+    				 }
+    			 }
+    			 jsonDataMessageDetails.put("Status",finance_status_message);
+    			 //
+    				// level2 forwarded 
+    				
+    			 List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId,userId,monthIndex,yearIndex);
+    			  if(!level1.isEmpty()) {
+    				 // System.out.println("forwarded_date"+level1.get(0));
+    				 if(level1 != null) {
+    					for(Object[] fl : level1) {
+    						if(fl != null)
+    						{ 
+    							if(fl[0] != null) {
+    							Date fdate = (Date) fl[0];				
+    						  System.out.println("---------------------------------------4");	
+    						  String pattern1 = "MM-dd-yyyy"; 
+    							 DateFormat df1 = new SimpleDateFormat(pattern1);
+    							 String forw = df1.format(fdate);
+    						  forwarded_ToLevel2_Status = "Data upto "+forw+" has been forwarded to Level2";
+    							}
+    							if(fl[1] != null) {
+    							Date fdates = (Date) fl[1];
+    						  
+    							}
+    						}
+    					}
+    				 }	  						 //System.out.println("frowardedDate___________"+frowardedDate);
+
+
+    			 }
+    			  jsonDataMessageDetails.put("Forwarded_status",forwarded_ToLevel2_Status);
+    		}
+     			
+     			//end
 			
 			//
 			String displyDay=null;

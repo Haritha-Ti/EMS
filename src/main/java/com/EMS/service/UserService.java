@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import com.EMS.model.Technology;
 import com.EMS.model.UserModel;
 import com.EMS.model.UserTechnology;
+import com.EMS.model.CppLevelModel;
 import com.EMS.model.TaskCategory;
 import com.EMS.model.UserTaskCategory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -58,4 +59,8 @@ public interface UserService {
 	JsonNode getAllUserList();
 	
 	List<UserModel> getOnsiteLead();
+
+	ArrayNode getCppLevel();
+
+	CppLevelModel findCppLevelById(Long cpp_level_id);
 }

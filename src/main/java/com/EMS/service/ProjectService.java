@@ -68,6 +68,16 @@ public interface ProjectService {
 
 		ArrayList<ProjectModel> getListofParentProjects();
 
+		void save_project_region(ProjectRegion region);
+
+		List<ProjectRegion> getregionlist(long projectId);
+
+		ArrayList<ProjectRegion> getRegionsByprojectId(long projectId);
+
+		ProjectRegion findByIdRegion(long project_region_Id);
+
+		int deleteProjectRegions(long projectId);
+
 	
 }
 

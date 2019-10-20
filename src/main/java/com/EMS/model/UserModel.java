@@ -54,6 +54,10 @@ public class UserModel implements UserDetails{
 	@ManyToOne
 	private TimeZoneModel timezone;
 	
+	
+	@ManyToOne
+	private CppLevelModel cpplevels;
+	
 	private String firstName, lastName,password;
 	private String email;
 	private String  userName;
@@ -75,6 +79,14 @@ public class UserModel implements UserDetails{
 
 //	private Address address;
 	
+
+	public CppLevelModel getCpplevels() {
+		return cpplevels;
+	}
+
+	public void setCpplevels(CppLevelModel cpplevels) {
+		this.cpplevels = cpplevels;
+	}
 
 	public DepartmentModel getDepartment() {
 		return department;
@@ -329,6 +341,9 @@ public class UserModel implements UserDetails{
 		public void setTimezone(TimeZoneModel timezone) {
 			this.timezone = timezone;
 		}
+
+
+		
 
 		
 }

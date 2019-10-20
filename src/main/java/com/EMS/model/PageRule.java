@@ -24,6 +24,61 @@ public class PageRule {
 	private long roleId;
 
 
+	private long parent_Id;
+	
+	private long level_Id;
+	
+	private String path;
+	
+	private String icon;
+	
+	private String label;
+	
+	
+	
+	
+	
+	
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public long getParent_Id() {
+		return parent_Id;
+	}
+
+	public void setParent_Id(long parent_Id) {
+		this.parent_Id = parent_Id;
+	}
+
+	public long getLevel_Id() {
+		return level_Id;
+	}
+
+	public void setLevel_Id(long level_Id) {
+		this.level_Id = level_Id;
+	}
 
 	public long getId() {
 		return id;

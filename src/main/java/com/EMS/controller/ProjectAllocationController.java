@@ -82,6 +82,7 @@ public class ProjectAllocationController {
 					jsonObject.put("firstName", user.getFirstName());
 					jsonObject.put("lastName", user.getLastName());
 					jsonObject.put("role", user.getRole().getroleId());
+					jsonObject.put("region_id", user.getRegion().getId());
 					DepartmentModel departmentModel = user.getDepartment();
 					ObjectNode depNode = objectMapper.createObjectNode();
 					depNode.put("departmentId",departmentModel.getDepartmentId());
@@ -466,6 +467,7 @@ public class ProjectAllocationController {
 				jsonObject.put("lastName", user.getLastName());
 				jsonObject.put("role", user.getRole().getroleId());
 				jsonObject.put("department", user.getDepartment());
+				jsonObject.put("region_id", user.getRegion().getId());
 				for (AllocationModel item : newUserList) {
 					JSONObject jsonObjectData = new JSONObject();
 					jsonObjectData.put("allocationId", item.getAllocId());

@@ -10,16 +10,19 @@ import org.springframework.stereotype.Service;
 import com.EMS.model.ClientModel;
 import com.EMS.model.ContractModel;
 import com.EMS.model.DepartmentModel;
-import com.EMS.model.ProjectModel;
 import com.EMS.model.EmployeeContractors;
+import com.EMS.model.ProjectModel;
+import com.EMS.model.ProjectRegion;
 import com.EMS.model.Resources;
 import com.EMS.repository.ClientRepository;
 import com.EMS.repository.ContractRepository;
 import com.EMS.repository.DepartmentRepository;
+import com.EMS.repository.EmployeeContractorsRepository;
+import com.EMS.repository.ProjectRegionRepository;
 import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.ResourceRepository;
+import com.EMS.repository.TermRepository;
 import com.EMS.repository.UserRepository;
-import com.EMS.repository.EmployeeContractorsRepository;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -44,6 +47,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	EmployeeContractorsRepository employeeContractorsRepository;
+	
+	@Autowired
+	ProjectRegionRepository projectRegionRepository;
+	
+	@Autowired
+	TermRepository termRepository;
 	
 	@Override
 	public ProjectModel save_project_record(ProjectModel projectmodel) {
@@ -209,6 +218,41 @@ public class ProjectServiceImpl implements ProjectService {
 	public ArrayList<ProjectModel> getListofParentProjects() {
 		ArrayList<ProjectModel> projectlist= project_repositary.getparentProjects();
 		return projectlist;
+	}
+
+	@Override
+	public void save_project_region(ProjectRegion region) {
+		// TODO Auto-generated method stub
+		ProjectRegion region1 = projectRegionRepository.save(region);
+		
+	}
+
+	@Override
+	public List<ProjectRegion> getregionlist(long projectId) {
+		// TODO Auto-generated method stub
+		List<ProjectRegion> list=projectRegionRepository.getRegionList(projectId);
+		return list;
+	}
+
+	@Override
+	public ArrayList<ProjectRegion> getRegionsByprojectId(long projectId) {
+		// TODO Auto-generated method stub
+		ArrayList<ProjectRegion> list = (ArrayList<ProjectRegion>) projectRegionRepository.getRegionList(projectId);
+		return list;
+	}
+
+	@Override
+	public ProjectRegion findByIdRegion(long project_region_Id) {
+		// TODO Auto-generated method stub
+		ProjectRegion region = projectRegionRepository.getOne(project_region_Id);
+		return region;
+	}
+
+	@Override
+	public int deleteProjectRegions(long projectId) {
+		// TODO Auto-generated method stub
+		int i =  termRepository.deleteByProjectId(projectId);
+		return i ;
 	}
 
 

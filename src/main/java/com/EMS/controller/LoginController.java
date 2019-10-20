@@ -112,8 +112,8 @@ public class LoginController {
 					data.put("roleName", usercheck.getRole().getroleName());
 						
 					ObjectMapper mapper = new ObjectMapper();
-					ArrayNode array = mapper.valueToTree(getBlockedPageList(usercheck.getRole().getroleId()));
-					data.putArray("blockedPages").addAll(array);
+					ArrayNode array = getBlockedPageList(usercheck.getRole().getroleId());
+					data.putArray("allowedPages").addAll(array);
 					data.put("token", token);
 					
 					response.set("payload", data);
@@ -187,8 +187,11 @@ public class LoginController {
 				user.setRole(role);
 
 			//region add 
-			
-			Long regionId = requestdata.get("regionId").asLong();
+			Long regionId = null;
+			if(requestdata.get("regionId") != null)
+			{
+				regionId = requestdata.get("regionId").asLong();
+			}
 			Region region = null;
 			if(regionId != null) {
 				
@@ -197,6 +200,20 @@ public class LoginController {
 			
 			if(region != null)
 				user.setRegion(region);
+			
+			//add cpp level 
+			
+			Long cpp_level_id = requestdata.get("levelId").asLong();
+			CppLevelModel cpplevel = null;
+			if(cpp_level_id != null) {
+				
+				cpplevel = userService.findCppLevelById(cpp_level_id);
+			}
+			
+			if(cpplevel != null)
+				user.setCpplevels(cpplevel);
+			
+			
 			
 			
 			// add timezone
@@ -448,9 +465,9 @@ public class LoginController {
 		}
 		return responsedata;
 	}
-	private List<PageRule> getBlockedPageList(long roleid) {
+	private ArrayNode getBlockedPageList(long roleid) {
 
-			List<PageRule> blockedPageList = pageruleService.getBlockedPageList(roleid);
+		ArrayNode blockedPageList = pageruleService.getBlockedPageList(roleid);
 			return blockedPageList;		
 	}
 
@@ -737,6 +754,18 @@ public class LoginController {
 				if(region != null)
 					user.setRegion(region);
 				
+				//add cpp level 
+				Long cpplevel_Id = requestdata.get("levelId").asLong();
+				
+				CppLevelModel cpplevel =null;
+				if(cpplevel_Id != null) {
+					cpplevel = userService.findCppLevelById(cpplevel_Id);
+					
+				}
+				if(cpplevel != null)
+				{
+					user.setCpplevels(cpplevel);
+				}
 				
 				// add timezone
 				
@@ -903,5 +932,24 @@ public class LoginController {
 
 		return node;
 
+	}
+	@GetMapping("/getCppLevelList")
+	public JsonNode getCppLevelList(HttpServletResponse httpstatus) throws ParseException {
+		
+		ObjectNode dataNode = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		ArrayNode cpplevelarray = objectMapper.createArrayNode();
+		try {
+		cpplevelarray = userService.getCppLevel();
+		dataNode.set("cpplevels", cpplevelarray);
+		node.put("status", "success");
+		node.set("data", dataNode);
+		}	
+		catch (Exception e) {
+			System.out.println("Exception " + e);
+			node.put("status", "failure");
+			node.set("data", dataNode);
+		}
+		return node;
 	}
 }

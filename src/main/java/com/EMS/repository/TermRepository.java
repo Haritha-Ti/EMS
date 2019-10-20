@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -36,6 +37,19 @@ public class TermRepository extends DbConnectionUtility{
 
 		System.out.println("list :" + result.size());
 
+		return result;
+	}
+
+	public int deleteByProjectId(long projectId) {
+		// TODO Auto-generated method stub
+		
+		String str =  "Delete FROM project_region WHERE project_region.project_id_project_id= '"+projectId+"'";
+		int result=0;
+		try {
+		 result = jdbcTemplate.update(str);	
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		return result;
 	}
 

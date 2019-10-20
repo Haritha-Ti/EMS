@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.mapping.Array;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import com.EMS.model.ClientModel;
 import com.EMS.model.ContractModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.ProjectRegion;
 import com.EMS.model.Region;
 import com.EMS.model.Resources;
 import com.EMS.model.TimeZoneModel;
@@ -114,7 +116,7 @@ public class ProjectController {
 			String startdate = requestdata.get("startDate").asText();
 			String enddate = requestdata.get("endDate").asText();
 			String releasingdate = requestdata.get("releasingDate").asText();
-
+          
 			// Formatting the dates before storing
 			TimeZone zone = TimeZone.getTimeZone("MST");
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -150,6 +152,30 @@ public class ProjectController {
 					ProjectModel projectmodel = projectservice.save_project_record(project);
 					// method invocation for storing resouces of project created
 
+					
+					
+					  // regions
+					ArrayNode arrayNodes = null;
+					/*if(requestdata.get("projectRegion") != null)
+					{*/ 
+						 arrayNodes = (ArrayNode) requestdata.get("projectRegion");
+					
+					//}
+					if (projectmodel != null && arrayNodes.size()!=0) {
+						
+						for(JsonNode jregion : arrayNodes) {
+							ProjectRegion region = new ProjectRegion();
+							region.setProject_Id(projectmodel);
+							Region regionmodel = regionService.getregion(jregion.asLong());
+							region.setRegion_Id(regionmodel);
+							projectservice.save_project_region(region);
+						}
+						
+					}
+					// regions
+					
+					
+					
 					if (projectmodel == null) {
 						responseflag = 1;
 						responsedata.put("message", "Project record creation failed");
@@ -651,7 +677,45 @@ public class ProjectController {
 
 					ArrayNode resourcenode = (ArrayNode) requestdata.get("resources");
 					for (JsonNode node : resourcenode) {
-
+                          //update project region
+						ArrayNode regionsjson = (ArrayNode) requestdata.get("projectRegion");
+						
+						
+						
+						if (projectmodel != null)
+						{
+							ArrayList<ProjectRegion> regions = projectservice.getRegionsByprojectId(projectmodel.getProjectId());
+							if(regions.size() > 0) {
+							int i = projectservice.deleteProjectRegions(projectmodel.getProjectId());
+							System.out.println("-----------i"+i);
+							if(i == 1) {
+								
+								for(JsonNode nodes : regionsjson) {
+									
+									ProjectRegion regionedits = new ProjectRegion();
+									regionedits.setProject_Id(projectmodel);
+									Region region1 = regionService.getregion(nodes.asLong());
+									regionedits.setRegion_Id(region1);
+									projectservice.save_project_region(regionedits);
+									
+								}
+								
+							}
+							}
+							else {
+									for(JsonNode nodes : regionsjson) {
+									
+									ProjectRegion regionedits = new ProjectRegion();
+									regionedits.setProject_Id(projectmodel);
+									Region region1 = regionService.getregion(nodes.asLong());
+									regionedits.setRegion_Id(region1);
+									projectservice.save_project_region(regionedits);
+									
+								}
+							}
+							
+						}
+						//
 						// setting values on resource object
 						Resources resou1 = projectservice.getResourceById(node.get("resourceId").asLong());
 						if (projectmodel != null)
@@ -720,6 +784,7 @@ public class ProjectController {
 		System.out.println("start");
 		ObjectNode responseData = objectMapper.createObjectNode();
 		ObjectNode response = objectMapper.createObjectNode();
+		ArrayNode region = objectMapper.createArrayNode();
 		// Object declarations
 		ContractModel contract = null;
 		ObjectNode contractobj = objectMapper.createObjectNode();
@@ -832,6 +897,26 @@ public class ProjectController {
 
 				}
 				responseData.set("approver_level_2", onsite_leads);
+				//get region list
+				List<ProjectRegion> regions = projectservice.getregionlist(project.getProjectId());
+				ArrayNode regionsArray = objectMapper.createArrayNode();
+				ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+				if(regions.isEmpty()) {
+					responseData.set("projectRegion", regionsArray);
+				}
+				else {
+					
+					 for(ProjectRegion regioneach : regions) { 
+						 ObjectNode resource = objectMapper.createObjectNode(); 
+						 regionsArray.add((int)regioneach.getRegion_Id().getId());
+						 
+					 }
+					 responseData.set("projectRegion", regionsArray);
+				}
+				//
+				
+				
+				
 				// getting list of resources based on project
 				List<Resources> resourcelist = projectservice.getResourceList(project.getProjectId());
 				ArrayNode resourceArray = objectMapper.createArrayNode();

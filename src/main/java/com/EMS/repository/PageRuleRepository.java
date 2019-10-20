@@ -9,7 +9,10 @@ import com.EMS.model.PageRule;
 
 public interface PageRuleRepository extends JpaRepository<PageRule, Long> {
 
-	@Query(value = "select rule.pageKey from PageRule rule where rule.roleId = ?1")
+	@Query(value = "select rule from PageRule rule where rule.roleId = ?1 and rule.level_Id = 0 ")
 	List<PageRule> getBlockedList(Long roleId);
+
+	@Query(value = "select rule from PageRule rule where rule.parent_Id = ?1")
+	List<PageRule> getChildsParent(long parent_Id);
 
 }
