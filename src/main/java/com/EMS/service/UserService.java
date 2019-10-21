@@ -63,4 +63,8 @@ public interface UserService {
 	ArrayNode getCppLevel();
 
 	CppLevelModel findCppLevelById(Long cpp_level_id);
+
+	List<UserModel> getUserByRegion(Long regionId);
+
+	UserModel getUserBydeptRegion(Long deptId, Long userId, Long regionId);
 }

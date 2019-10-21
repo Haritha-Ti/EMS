@@ -17,6 +17,7 @@ public class ApprovalReportRowMapper implements RowMapper<ExportApprovalReportMo
 		rpt.setFirstName(rs.getString("firstName"));
 		rpt.setLastName(rs.getString("lastName"));
 		rpt.setProjectName(rs.getString("projectName"));
+		rpt.setCppLevel(rs.getString("levelName"));
 		rpt.setDay1(rs.getString("day1")!=null ? Double.parseDouble(rs.getString("day1")) : 0);
 		rpt.setDay2(rs.getString("day2")!=null ? Double.parseDouble(rs.getString("day2")) : 0);
 		rpt.setDay3(rs.getString("day3")!=null ? Double.parseDouble(rs.getString("day3")) : 0);

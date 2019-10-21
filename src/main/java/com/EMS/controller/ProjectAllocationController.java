@@ -9,26 +9,31 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.EMS.model.AllocationModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.Region;
 import com.EMS.model.UserModel;
-import com.EMS.service.ProjectService;
-import com.EMS.service.ReportService;
 import com.EMS.service.AttendanceService;
 import com.EMS.service.ProjectAllocationService;
+import com.EMS.service.ProjectService;
+import com.EMS.service.RegionService;
+import com.EMS.service.ReportService;
 import com.EMS.service.UserService;
-import com.EMS.service.ProjectExportService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -54,6 +59,9 @@ public class ProjectAllocationController {
 	
 	@Autowired
 	AttendanceService attendanceService;
+	
+	@Autowired
+	private RegionService regionService;
 	
 	// To get user, department and project list
 
@@ -339,6 +347,7 @@ public class ProjectAllocationController {
 		outputFormat.setTimeZone(zone);
 		java.util.Date date1 = null, date2 = null;
 		String uId = null,dId = null,startDate = null, endDate = null;
+		Long regionId = null;
 		try {
 
 			if (!requestData.get("startDate").toString().isEmpty() && requestData.get("startDate").toString() != null) {
@@ -362,11 +371,12 @@ public class ProjectAllocationController {
 			if(!requestData.get("deptId").toString().isEmpty() && requestData.get("deptId").toString() != null)
 			    dId = requestData.get("deptId").toString();
 			 
-			
+			if(!requestData.get("regionId").toString().isEmpty() && requestData.get("regionId").toString() != null)
+				regionId = Long.parseLong(requestData.get("regionId").toString());
 			
 			// Obtain the user list if both department id and user id are not available
 
-			if ((uId == null || uId == "") && (dId == null || dId == "")) {
+			if ((uId == null || uId == "") && (dId == null || dId == "") && ( regionId == null || regionId == 0)) {
 
 				List<UserModel> userList = userService.getAllUsers();
 
@@ -383,7 +393,7 @@ public class ProjectAllocationController {
 
 			// Obtain the user list only if the department id is available and user id is not available or if the user id is 0.
 			
-			else if ((dId != null || dId != "") && (uId == null || uId == "" || uId.equals("0"))) {
+			else if ((dId != null || dId != "") && (uId == null || uId == "" || uId.equals("0"))&& ( regionId == null || regionId == 0)) {
 				Long deptId = Long.parseLong(dId);
 
 				// Obtain the user list based on the department
@@ -401,7 +411,7 @@ public class ProjectAllocationController {
 
 			// Obtain the user list only if the user id is available and department id is not available
 			
-			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId == null || dId == "")) {
+			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId == null || dId == "")&& ( regionId == null || regionId == 0)) {
 
 				Long userId = Long.parseLong(uId);
 				UserModel user = userService.getUserDetailsById(userId);
@@ -414,9 +424,23 @@ public class ProjectAllocationController {
 
 			}
 
+			else if((uId == null || uId == "" || uId.equals("0")) && (dId == null || dId == "")&& ( regionId != null && regionId != 0)) {
+				
+				
+				List<UserModel> userList = userService.getUserByRegion(regionId);
+				
+				if (userList != null) {
+					for (UserModel user : userList) {
+
+						// Invoc getUserAllocationList() to findout the allocation details of the user
+						getUserAllocationList(user, date1, date2, jsonArrayFiltered);
+
+					}
+				}
+			}
 			// Obtain the user list if both department id and user id are available
 
-			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "")) {
+			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "") && ( regionId == null || regionId == 0)) {
 				Long deptId = Long.parseLong(dId);
 				Long userId = Long.parseLong(uId);
 
@@ -427,6 +451,19 @@ public class ProjectAllocationController {
 					getUserAllocationList(user, date1, date2, jsonArrayFiltered);
 				}
 			}
+			
+			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "") && ( regionId != null && regionId != 0)) {
+				Long deptId = Long.parseLong(dId);
+				Long userId = Long.parseLong(uId);
+				
+				UserModel user = userService.getUserBydeptRegion(deptId, userId,regionId);
+
+				// Invoc getUserAllocationList() to findout the allocation details of the user
+				if (user != null) {
+					getUserAllocationList(user, date1, date2, jsonArrayFiltered);
+				}
+			}
+			
 			
 
 			jsonData.put("user", jsonArrayFiltered);

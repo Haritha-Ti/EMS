@@ -14,31 +14,33 @@ public class CppLevelModel {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private long levelId;
 	
 	
-	private String cpp_level_name;
+	private String levelName;
 
 
-	public long getId() {
-		return id;
+	public long getLevelId() {
+		return levelId;
 	}
 
 
-	public void setId(long id) {
-		this.id = id;
+	public void setLevelId(long levelId) {
+		this.levelId = levelId;
 	}
 
 
-	public String getCpp_level_name() {
-		return cpp_level_name;
+	public String getLevelName() {
+		return levelName;
 	}
 
 
-	public void setCpp_level_name(String cpp_level_name) {
-		this.cpp_level_name = cpp_level_name;
+	public void setLevelName(String levelName) {
+		this.levelName = levelName;
 	}
-	
+
+
+
 	
 	
 	

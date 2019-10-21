@@ -300,7 +300,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 		for(ExportApprovalReportModel obj : data) {
 			Listdata.add(new ExportApprovalReportModel
-					(obj.getId(),obj.getProjectName(),obj.getFirstName(),obj.getLastName()
+					(obj.getId(),obj.getProjectName(),obj.getFirstName(),obj.getLastName(),obj.getCppLevel()
 							,obj.getDay1(),obj.getDay2(),obj.getDay3(),obj.getDay4(),obj.getDay5(),
 							obj.getDay6(),obj.getDay7(),obj.getDay8(),obj.getDay9(),obj.getDay10(),
 							obj.getDay11(),obj.getDay12(),obj.getDay13(),obj.getDay14(),obj.getDay15(),
@@ -558,7 +558,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		//headers[0] = "User Id";
 		headers[0] = "Last Name";
 		headers[1] = "First Name";
-		headers[2] = "Project Name";
+		headers[2] = "Cpp Level";
+		headers[3] = "Project Name";
 		for(int i=0;i<dayCount;i++) {
 			headers[i+3] = colNames.get(i);
 
@@ -568,7 +569,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		for(ExportApprovalReportModel obj : data) {
 
 			Listdata.add(new ExportApprovalReportModel
-					(obj.getId(),obj.getProjectName(),obj.getFirstName(),obj.getLastName()
+					(obj.getId(),obj.getProjectName(),obj.getFirstName(),obj.getLastName(),obj.getCppLevel()
 							,obj.getDay1(),obj.getDay2(),obj.getDay3(),obj.getDay4(),obj.getDay5(),
 							obj.getDay6(),obj.getDay7(),obj.getDay8(),obj.getDay9(),obj.getDay10(),
 							obj.getDay11(),obj.getDay12(),obj.getDay13(),obj.getDay14(),obj.getDay15(),
@@ -637,7 +638,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			if (!tmp_pjctName .equals(" ") && !tmp_pjctName.equals(summary.getProjectName())) {
 				Row row1 = sheet.createRow(rowNum++);
 				int j;
-				for(j=0;j<dayCount+4;j++){
+				for(j=0;j<dayCount+5;j++){
 					Cell cell = row1.createCell(j);
 					cell.setCellValue("");
 					cell.setCellStyle(borderedCellStyle);
@@ -656,8 +657,13 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell = row.createCell(1);
 			cell.setCellValue(summary.getFirstName());
 			cell.setCellStyle(borderedCellStyle);
-
+			
 			cell = row.createCell(2);
+			cell.setCellValue(summary.getCppLevel());
+			cell.setCellStyle(borderedCellStyle);
+			
+
+			cell = row.createCell(3);
 			cell.setCellValue(summary.getProjectName());
 			cell.setCellStyle(borderedCellStyle);
 			int cellcount = 2;
@@ -896,13 +902,14 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	}
 
 	@Override
-	public void exportBenchReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate) throws FileNotFoundException {
+	public void exportBenchReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate,int projectType) throws FileNotFoundException {
 
-		String[] headers = new String[3];
+		String[] headers = new String[4];
 		//headers[0] = "User Id";
 		headers[0] = "Last Name";
 		headers[1] = "First Name";
-		headers[2] = "Bench Hour";
+		headers[2] = "Cpp Level";
+		headers[3] = "Bench Hour";
 		int dayCount = colNames.size();
 
 		int working_days =0;
@@ -928,6 +935,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			Long id                  = ((BigInteger) item[0]).longValue();
 			String firstName         = (String)item[1];
 			String lastName          = (String) item[2];
+			String cpplevel          = (String) item[5];
 			Date joiningDate         = (Date) item[3];
 			Date terminationDate     = (Date) item[4];
 
@@ -937,7 +945,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			if(reportType == "monthly") {
 
 				//loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id);
-				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id);
+				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id,projectType);
 				working_days = calculateWorkingDays(startDate,endDate);
 				holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,endDate);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,endDate);
@@ -960,7 +968,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			}
 			else {
 				// loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id);
-				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id);
+				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id,2);
 				working_days = calculateWorkingDays(startDate,end_date);
 				holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,end_date);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,end_date);
@@ -1004,7 +1012,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 				}
 
 			}
-			Listdata.add(new Object[]{id,firstName,lastName,benchHour});
+			Listdata.add(new Object[]{id,firstName,lastName,cpplevel,benchHour});
 
 		}
 
@@ -1076,8 +1084,13 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellValue((String) summary[1]);
 			cell.setCellStyle(borderedCellStyle);
 
+			
 			cell = row.createCell(2);
-			cell.setCellValue((double) summary[3]);
+			cell.setCellValue((String) summary[3]);
+			cell.setCellStyle(borderedCellStyle);
+			
+			cell = row.createCell(3);
+			cell.setCellValue((double) summary[4]);
 			cell.setCellStyle(borderedCellStyle);
 
 
@@ -1094,19 +1107,20 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	}
 
 	@Override
-	public void exportSummaryReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate) throws Exception {
+	public void exportSummaryReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate,int projectType) throws Exception {
 
-		String[] headers = new String[8];
+		String[] headers = new String[9];
 		//headers[0] = "User Id";
 		headers[0] = "Last Name";
 		headers[1] = "First Name";
 		//headers[3] = "Project";
-		headers[2] = "Billable";
-		headers[3] = "Non-Billable";
-		headers[4] = "Overtime";
-		headers[5] = "Beach";
-		headers[6] = "Vacation";
-		headers[7] = "Total";
+		headers[2] = "Cpp Level";
+		headers[3] = "Billable";
+		headers[4] = "Non-Billable";
+		headers[5] = "Overtime";
+		headers[6] = "Beach";
+		headers[7] = "Vacation";
+		headers[8] = "Total";
 		int dayCount = colNames.size();
 		//int weekDays = 0;
 		int working_days =0;
@@ -1139,6 +1153,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			String lastName          = (String) item[2];
 			Date joiningDate         = (Date) item[3];
 			Date terminationDate     = (Date) item[4];
+			String cppLevel          = (String) item[5];
 			//String projectName = "";
 			List<Object[]> loggedData;
 			List<Object[]> billable;
@@ -1166,10 +1181,10 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 				//nonBillable = timeTrackApprovalJPARepository.getNonBillableDataByUserId(monthIndex, yearIndex, id);
 				//overtime    = timeTrackApprovalJPARepository.getOvertimeDataByUserId(monthIndex, yearIndex, id);
 
-				loggedData  = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id);
-				billable    = taskTrackFinanceRepository.getBillableDataByUserId(monthIndex, yearIndex, id);
-				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserId(monthIndex, yearIndex, id);
-				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserId(monthIndex, yearIndex, id);
+				loggedData  = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id,projectType);
+				billable    = taskTrackFinanceRepository.getBillableDataByUserId(monthIndex, yearIndex, id,projectType);
+				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserId(monthIndex, yearIndex, id,projectType);
+				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserId(monthIndex, yearIndex, id,projectType);
 				working_days = calculateWorkingDays(startDate,endDate);
 				holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,endDate);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,endDate);
@@ -1198,10 +1213,10 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 				billable    = timeTrackApprovalJPARepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id);
 				nonBillable = timeTrackApprovalJPARepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id);
 				overtime    = timeTrackApprovalJPARepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id);*/
-				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id);
-				billable    = taskTrackFinanceRepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id);
-				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id);
-				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id);
+				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				billable    = taskTrackFinanceRepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
 				working_days = calculateWorkingDays(startDate,end_date);
 				holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,end_date);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,end_date);
@@ -1292,7 +1307,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 
 			totalHour = billableHour+nonBillableHour+overtimeHour+benchHour+leaveHours;
-			Listdata.add(new Object[]{id,firstName,lastName,billableHour,nonBillableHour,overtimeHour,benchHour,leaveHours,totalHour});
+			Listdata.add(new Object[]{id,firstName,lastName,cppLevel,billableHour,nonBillableHour,overtimeHour,benchHour,leaveHours,totalHour});
 
 		}
 
@@ -1365,7 +1380,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(2);
-			cell.setCellValue((double) summary[3]);
+			cell.setCellValue((String) summary[3]);
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(3);
@@ -1387,7 +1402,10 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell = row.createCell(7);
 			cell.setCellValue((double) summary[8]);
 			cell.setCellStyle(borderedCellStyle);
-
+			
+			cell = row.createCell(8);
+			cell.setCellValue((double) summary[9]);
+			cell.setCellStyle(borderedCellStyle);
 
 		}
 
@@ -1581,13 +1599,14 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	}
 
 	public void exportVacationReport(Workbook workrbook, Sheet sheet4, ArrayList<String> colNames, String nameofReport4,
-									 int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate) {
+									 int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate,int projectType) {
 		// TODO Auto-generated method stub
-		String[] headers = new String[3];
+		String[] headers = new String[4];
 		//headers[0] = "User Id";
 		headers[0] = "Last Name";
 		headers[1] = "First Name";
-		headers[2] = "Vacation Hour";
+		headers[2] = "Cpp Level";
+		headers[3] = "Vacation Hour";
 
 		int working_days =0;
 		int holidays =0;
@@ -1613,6 +1632,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			Long id                  = ((BigInteger) item[0]).longValue();
 			String firstName         = (String)item[1];
 			String lastName          = (String) item[2];
+			String cpplevel          = (String) item[5];
 			Date joiningDate         = (Date) item[3];
 			Date terminationDate     = (Date) item[4];
 
@@ -1621,7 +1641,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 			if(reportType == "monthly") {
 
-				loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id);
+				loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id,projectType);
 				working_days = calculateWorkingDays(startDate,endDate);
 				holidays = holidayRepository.getNationalHolidayListsByMonth(startDate,endDate);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,endDate);
@@ -1685,7 +1705,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			 *
 			 * }
 			 */
-			Listdata.add(new Object[]{id,firstName,lastName,total_vacation_hours});
+			Listdata.add(new Object[]{id,firstName,lastName,cpplevel,total_vacation_hours});
 			//System.out.println("Listdata------------------------------>"+Listdata.size());
 		}
 		//Removing grids
@@ -1754,9 +1774,13 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell = row.createCell(1);
 			cell.setCellValue((String) summary[1]);
 			cell.setCellStyle(borderedCellStyle);
-
+			
 			cell = row.createCell(2);
-			cell.setCellValue((double) summary[3]);
+			cell.setCellValue((String) summary[3]);
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(3);
+			cell.setCellValue((double) summary[4]);
 			cell.setCellStyle(borderedCellStyle);
 
 

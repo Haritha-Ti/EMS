@@ -228,8 +228,8 @@ public class UserServiceImpl implements UserService {
 		
 		for(CppLevelModel data : cpplevelsdata) {
 			ObjectNode node = objectMapper.createObjectNode();
-			node.put("levelId", data.getId());
-			node.put("levelName", data.getCpp_level_name());
+			node.put("levelId", data.getLevelId());
+			node.put("levelName", data.getLevelName());
 			cpplevels.add(node);
 		}
 		
@@ -240,5 +240,19 @@ public class UserServiceImpl implements UserService {
 	public CppLevelModel findCppLevelById(Long cpp_level_id) {
 		// TODO Auto-generated method stub
 		return cppLevelRepository.getOne(cpp_level_id);
+	}
+
+	@Override
+	public List<UserModel> getUserByRegion(Long regionId) {
+		// TODO Auto-generated method stub
+		List<UserModel> modles = userRepository.getUserlistByregion(regionId);
+		return modles;
+	}
+
+	@Override
+	public UserModel getUserBydeptRegion(Long deptId, Long userId, Long regionId) {
+		// TODO Auto-generated method stub
+		UserModel modles = userRepository.getUserlistByregionDeptuser(deptId,userId,regionId);
+		return modles;
 	}
 }

@@ -507,6 +507,7 @@ public class ProjectController {
 				for (ProjectModel obj : projectlist) {
 
 					// Object declarations
+					ObjectNode client = objectMapper.createObjectNode();
 					ContractModel contract = null;
 					ObjectNode contractobj = objectMapper.createObjectNode();
 					String parentproject = projectservice.getProjectName(obj.getParentProjectId());
@@ -521,7 +522,19 @@ public class ProjectController {
 					jsonobj.put("projectType", obj.getprojectType());
 					jsonobj.put("projectStatus", obj.getprojectStatus());
 					jsonobj.put("releasingDate", obj.getReleasingDate().toString());
-
+					
+					if(obj.getClientName() != null)
+					{
+						client.put("clientId", obj.getClientName().getClientId());
+					    client.put("clientName", obj.getClientName().getClientName());
+					    jsonobj.set("client", client);
+					}
+					else {
+						client.set("clientId", null);
+					    client.set("clientName", null);
+					    jsonobj.set("client", client);
+						
+					}
 					Long contractId = obj.getContract().getContractTypeId();
 
 					if (contractId != null) {
@@ -602,7 +615,7 @@ public class ProjectController {
 				}
 			}
 			project.setParentProjectId(requestdata.get("parentProjectId").asLong());
-			project.setProject_refId(requestdata.get("projectRefId").asText());
+			//project.setProject_refId(requestdata.get("projectRefId").asText());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
 			project.setProjectDetails(requestdata.get("projectDetails").asText());
 			project.setProjectName(requestdata.get("projectName").asText());

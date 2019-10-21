@@ -138,7 +138,7 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	public List<Technology> getTechnology() {
-		List<Technology> techlist=technology_repository.findAll();
+		List<Technology> techlist=technology_repository.getTechnologies();
 		return techlist;
 	}
 

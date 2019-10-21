@@ -77,6 +77,12 @@ public class PulseReportController {
 		String startdate = requestData.get("startDate").asText();
 		String enddate = requestData.get("endDate").asText();
 		String reportName = requestData.get("reportName").asText();
+		int projectType = 2;
+		if(requestData.get("projectType") != null)
+		{ 
+			 projectType = requestData.get("projectType").asInt(); 
+		}
+		
 
 		if(reportName.equalsIgnoreCase("pulseReport")) {//Added By Jinu On 22/05/19 for adding new reports under Other Reports.
 		Workbook userbook = new XSSFWorkbook();
@@ -254,28 +260,28 @@ public class PulseReportController {
 			Sheet sheet = workrbook.createSheet("Summary");
 			String nameofReport   = "REPORT SUMMARY";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
-			projectExportService.exportSummaryReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,reportType,startDate,endDate);
+			projectExportService.exportSummaryReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,reportType,startDate,endDate,projectType);
 
 			Sheet sheet1        = workrbook.createSheet("Billable");
 			String nameofReport1   = "PROJECT APPROVAL REPORT";
-			List <ExportApprovalReportModel>exportData = timeTrackApprovalRepository.getApprovalReportDataFinance(monthIndex,yearIndex);
+			List <ExportApprovalReportModel>exportData = timeTrackApprovalRepository.getApprovalReportDataFinance(monthIndex,yearIndex,projectType);
 			projectExportService.exportAllReport(exportData,workrbook,sheet1,colNames,nameofReport1);
 
 			Sheet sheet2 = workrbook.createSheet("Non-billable");
 			String nameofReport2   = "PROJECT NON-BILLABLE  REPORT";
-			List <ExportApprovalReportModel>exportData1 = timeTrackApprovalRepository.getNonApprovalReportDataFinance(monthIndex,yearIndex);
+			List <ExportApprovalReportModel>exportData1 = timeTrackApprovalRepository.getNonApprovalReportDataFinance(monthIndex,yearIndex,projectType);
 			projectExportService.exportAllReport(exportData1,workrbook,sheet2,colNames,nameofReport2);
 
 			Sheet sheet3 = workrbook.createSheet("Beach");
 			String nameofReport3   = "BENCH PROJECT REPORT";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
-			projectExportService.exportBenchReport(workrbook,sheet3,colNames,nameofReport3,monthIndex,yearIndex,reportType,startDate,endDate);
+			projectExportService.exportBenchReport(workrbook,sheet3,colNames,nameofReport3,monthIndex,yearIndex,reportType,startDate,endDate,projectType);
 
 			
 			Sheet sheet4 = workrbook.createSheet("Vacation");
 			String nameofReport4   = "VACATION REPORT";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
-			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate);
+			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate,projectType);
 			
 			
 			response.setContentType("application/vnd.ms-excel");
@@ -321,27 +327,27 @@ public class PulseReportController {
 			Sheet sheet = workrbook.createSheet("Summary");
 			String nameofReport   = "REPORT SUMMARY";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
-			projectExportService.exportSummaryReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,reportType,startDate,endDate);
+			projectExportService.exportSummaryReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,reportType,startDate,endDate,projectType);
 
 			Sheet sheet1        = workrbook.createSheet("Billable");
 			String nameofReport1   = "PROJECT APPROVAL REPORT";
-			List <ExportApprovalReportModel>exportData = timeTrackApprovalRepository.getApprovalReportDataFinance(monthIndex,yearIndex);
+			List <ExportApprovalReportModel>exportData = timeTrackApprovalRepository.getApprovalReportDataFinance(monthIndex,yearIndex,projectType);
 			projectExportService.exportAllReport(exportData,workrbook,sheet1,colNames,nameofReport1);
 
 			Sheet sheet2 = workrbook.createSheet("Non-billable");
 			String nameofReport2   = "PROJECT NON-BILLABLE  REPORT";
-			List <ExportApprovalReportModel>exportData1 = timeTrackApprovalRepository.getNonApprovalReportDataFinance(monthIndex,yearIndex);
+			List <ExportApprovalReportModel>exportData1 = timeTrackApprovalRepository.getNonApprovalReportDataFinance(monthIndex,yearIndex,projectType);
 			projectExportService.exportAllReport(exportData1,workrbook,sheet2,colNames,nameofReport2);
 
 			Sheet sheet3 = workrbook.createSheet("Beach");
 			String nameofReport3   = "BENCH PROJECT REPORT";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
-			projectExportService.exportBenchReport(workrbook,sheet3,colNames,nameofReport3,monthIndex,yearIndex,reportType,startDate,endDate);
+			projectExportService.exportBenchReport(workrbook,sheet3,colNames,nameofReport3,monthIndex,yearIndex,reportType,startDate,endDate,projectType);
 
 			Sheet sheet4 = workrbook.createSheet("Vacation");
 			String nameofReport4   = "VACATION REPORT";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
-			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate);
+			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate,projectType);
 			
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");

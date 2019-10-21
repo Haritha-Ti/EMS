@@ -34,11 +34,30 @@ public class PageRule {
 	
 	private String label;
 	
+	@Column(name = "sort")
+	private int sort;
+	
+	@Column(name = "menu")
+	private boolean menu;
 	
 	
 	
-	
-	
+
+	public int getSort() {
+		return sort;
+	}
+
+	public void setSort(int sort) {
+		this.sort = sort;
+	}
+
+	public boolean isMenu() {
+		return menu;
+	}
+
+	public void setMenu(boolean menu) {
+		this.menu = menu;
+	}
 
 	public String getPath() {
 		return path;

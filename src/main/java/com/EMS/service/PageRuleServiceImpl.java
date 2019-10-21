@@ -44,6 +44,7 @@ public class PageRuleServiceImpl implements PageRuleService {
 				nodes.put("icon",child.getIcon());
 				nodes.put("label", child.getLabel());
 				nodes.put("level", child.getLevel_Id());
+				nodes.put("menu", child.isMenu());
 				allowedchilds.add(nodes);
 			}
             eachpage.set("childs", allowedchilds);
@@ -53,6 +54,7 @@ public class PageRuleServiceImpl implements PageRuleService {
 			eachpage.put("icon",rules.getIcon());
 			eachpage.put("label", rules.getLabel());
 			eachpage.put("page_id", rules.getId());
+			eachpage.put("menu", rules.isMenu());
 			allowedpages.add(eachpage);
 			
 			

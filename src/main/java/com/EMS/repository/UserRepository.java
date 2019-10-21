@@ -69,7 +69,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 //	@Query("select u from UserModel u where u.userName = ?1")
 	Optional<UserModel> findByUserName(String username);
 
-	@Query(value = "SELECT user_id,first_name,last_name,joining_date,termination_date FROM user where role_role_id in('2','3','5') and  department_department_id in('1','2','3','4','8') and (termination_date >= ?1 or termination_date IS NULL) and joining_date<=?2 order by first_name",nativeQuery = true)
+	@Query(value = "SELECT user_id,first_name,last_name,joining_date,termination_date,c.level_name FROM user u INNER JOIN cpp_level  c on (u.cpplevels_id = c.id) where role_role_id in('2','3','5') and  department_department_id in('1','2','3','4','8') and (termination_date >= ?1 or termination_date IS NULL) and joining_date<=?2 order by first_name",nativeQuery = true)
 	List<Object[]> getUserList(Date startDate, Date endDate);
 
 	@Query("SELECT u FROM UserModel u WHERE u.role NOT IN(1) order by firstName")
@@ -83,5 +83,10 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	
 	@Query(value="SELECT count(*) FROM user where active=1 AND termination_date IS NULL",nativeQuery=true)
 	int getAllActiveUsers(String datestring);
+	@Query("SELECT u FROM UserModel u WHERE u.region.id = ?1 AND u.active = true AND u.role = 3 order by firstName")
+	List<UserModel> getUserlistByregion(Long regionId);
+
+	@Query("SELECT u FROM UserModel u WHERE u.userId = ?1 and u.department.departmentId = ?2  and u.region.id = ?3 AND u.active = true order by firstName")
+	UserModel getUserlistByregionDeptuser(Long deptId, Long userId, Long regionId);
 
 }

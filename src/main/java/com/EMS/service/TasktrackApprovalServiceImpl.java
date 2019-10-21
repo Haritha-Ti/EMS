@@ -3738,6 +3738,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Date from_date = null;
 		Date to_date = null;
 		String message = "successfully saved";
+		String status = "success";
 		// find approved date and forwarded date to decide editable columns
 		List<Object[]> dates = timeTrackApprovalJPARepository.getForwardedDates(projectId, userId, month, year);
 		System.out.println("outside data size greater-----------------------------"+dates.size());
@@ -3773,7 +3774,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						
 					if(billableId!=null) {
 						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);	
-						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+						for(int i = forwardeddate+1 ; i <= approveddate ; i++ ) {
 							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
 									+ ((i < 10) ? "0" + i : "" + i);
 							System.out.println("dates--------->"+dateString);
@@ -3878,7 +3879,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}	
 					if(nonbillableId!=null) {
 						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);	
-						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+						for(int i = forwardeddate+1 ; i <= approveddate ; i++ ) {
 							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
 									+ ((i < 10) ? "0" + i : "" + i);
 							if(nonbillableArray.get(dateString)!=null) {						
@@ -3982,7 +3983,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					if(overtimeId!=null) {
 						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);	
-						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+						for(int i = forwardeddate+1 ; i <= approveddate ; i++ ) {
 							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
 									+ ((i < 10) ? "0" + i : "" + i);
 							if(overtimeArray.get(dateString)!=null) {						
@@ -4086,7 +4087,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					if(beachId!=null) {
 						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);	
-						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
+						for(int i = forwardeddate+1 ; i <= approveddate ; i++ ) {
 							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
 									+ ((i < 10) ? "0" + i : "" + i);
 							if(beachArray.get(dateString)!=null) {						
@@ -4204,7 +4205,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				// approved date not null 
 				if(billableId!= null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);	
-					for(int i = 1 ; i < approveddate ; i++ ) {
+					for(int i = 1 ; i <= approveddate ; i++ ) {
 						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
 								+ ((i < 10) ? "0" + i : "" + i);
 						System.out.println("----------"+dateString);
@@ -4309,7 +4310,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}	
 				if(nonbillableId!=null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);	
-					for(int i = 1 ; i < approveddate ; i++ ) {
+					for(int i = 1 ; i <= approveddate ; i++ ) {
 						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
 								+ ((i < 10) ? "0" + i : "" + i);
 						if(nonbillableArray.get(dateString)!=null) {						
@@ -4413,7 +4414,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 				if(overtimeId!=null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);	
-					for(int i = 1 ; i < approveddate ; i++ ) {
+					for(int i = 1 ; i <= approveddate ; i++ ) {
 						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
 								+ ((i < 10) ? "0" + i : "" + i);
 						if(overtimeArray.get(dateString)!=null) {						
@@ -4518,7 +4519,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 				if(beachId!=null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);	
-					for(int i = 1 ; i < approveddate ; i++ ) {
+					for(int i = 1 ; i <= approveddate ; i++ ) {
 						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
 								+ ((i < 10) ? "0" + i : "" + i);
 						if(beachArray.get(dateString)!=null) {						
@@ -4624,11 +4625,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 			else {
 				message = "Not yet approved";
-				
+				status = "failed";
 			}
 			
 			}
 			
+		}
+		else {
+			message = "Not yet approved";
+			status = "failed";
 		}
 		
 		// data insertion to activity log
@@ -4648,7 +4653,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		activity.setYear(year);
 		activitylogrepository.save(activity);
 		
-		jsonDataRes.put("status", "success");
+		jsonDataRes.put("status", status);
 		//jsonDataRes.put("code", httpstatus.getStatus());
 		jsonDataRes.put("message", message);
 		}catch(Exception e) {
