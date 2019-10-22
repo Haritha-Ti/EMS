@@ -42,9 +42,15 @@ public class ProjectReportsRepository extends DbConnectionUtility {
 		}
 		else 
 		{
-		//sql = "   SELECT CONCAT(u.first_name,' ',u.last_name) AS users ,  a.is_billable, a.allocated_perce, p.project_name FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN project p ON p.project_id = a.project_project_id WHERE p.project_id = ? AND CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) order by project_name";
-		 sql = "SELECT CONCAT(u.last_name,' ',u.first_name) AS users ,  a.is_billable, a.allocated_perce, p.project_name FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN project p ON p.project_id = a.project_project_id WHERE p.project_id = ? AND ((CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.start_date  AS DATE)  <=  CAST(?  AS DATE) ) OR (CAST(a.end_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) ) OR (CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) ) ) order by project_name";
-			list = jdbcTemplate.query(sql, new ReportRowMapper(), new Object[] {projectId,fromDate,toDate,fromDate,toDate,fromDate,toDate});
+			//sql = "   SELECT CONCAT(u.first_name,' ',u.last_name) AS users ,  a.is_billable, a.allocated_perce, p.project_name FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN project p ON p.project_id = a.project_project_id WHERE p.project_id = ? AND CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) order by project_name";
+			
+			//Changed by Haritha 21-10-2019//
+			//sql = "SELECT CONCAT(u.last_name,' ',u.first_name) AS users ,  a.is_billable, a.allocated_perce, p.project_name FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN project p ON p.project_id = a.project_project_id WHERE p.project_id = ? AND ((CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.start_date  AS DATE)  <=  CAST(?  AS DATE) ) OR (CAST(a.end_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) ) OR (CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) ) ) order by project_name";
+			//list = jdbcTemplate.query(sql, new ReportRowMapper(), new Object[] {projectId,fromDate,toDate,fromDate,toDate,fromDate,toDate});
+			//Changed by Haritha 21-10-2019//
+			
+			sql = "SELECT CONCAT(u.last_name,' ',u.first_name) AS users ,  a.is_billable, a.allocated_perce, p.project_name FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN project p ON p.project_id = a.project_project_id WHERE p.project_id = ? AND ((CAST(a.start_date  AS DATE) >= CAST(?  AS DATE)) OR (CAST(a.end_date  AS DATE) >= CAST(?  AS DATE)  ) OR (CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) ) ) order by project_name";
+			list = jdbcTemplate.query(sql, new ReportRowMapper(), new Object[] {projectId,fromDate,toDate,fromDate,toDate});
 		}
 		return list;
 	}
