@@ -1306,6 +1306,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		JSONObject jsonDataMessageDetails = new JSONObject();
 		boolean timesheet_button = false;
 		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, logUser);
+		
 		String status = null;
 		if((boolean) testValidation.get("data")) {
 
@@ -3307,9 +3308,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			e.printStackTrace();
 		}
 		int allocated = tasktrackRepository.checkprojectallocated(projectId, startDate, endDate);
+		System.out.println("projectId"+projectId+"startdate" + startDate+"enddate"+ endDate);
 		if(allocated>0) {
 			int expectedRows = allocated * 4;
+			System.out.println("expected rows"+expectedRows);
+			System.out.println("allocated rows"+allocated);
 			if (role == 2)
+				
 			{
 				ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 				approverrowcount = timeTrackApprovalJPARepository.getCountOfRows(prevMonth, prevMonthYear, projectId);
@@ -3402,7 +3407,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			status = true;
 
 		}
-
+		status = true;
+		message = null;
 		jsonDataRes.put("data", status);
 		jsonDataRes.put("status", "success");
 		jsonDataRes.put("message", message);

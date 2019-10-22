@@ -245,8 +245,20 @@ public class PulseReportController {
 			int yearIndex = cal.get(Calendar.YEAR);
 
 			int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-			String sheetName = month+" "+yearIndex;
+			
+			String IcorNon = "";
+			
+			if(projectType == 1) {
+				
+				IcorNon = "IC";
+			}
+			else if(projectType == 0) {
+				
+				IcorNon = "Non IC";
+			}
+			
+			String sheetName = month+" "+yearIndex+" "+IcorNon;
+			
 			String reportType = "monthly";
 
 			ArrayList<String> colNames = new ArrayList<String>();
@@ -284,6 +296,8 @@ public class PulseReportController {
 			projectExportService.exportVacationReport(workrbook,sheet4,colNames,nameofReport4,monthIndex,yearIndex,reportType,startDate,endDate,projectType);
 			
 			
+			
+			
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			response.setHeader("Content-Disposition", "filename=\"" + sheetName+".xlsx" + "\"");
@@ -311,8 +325,18 @@ public class PulseReportController {
 			int yearIndex = cal.get(Calendar.YEAR);
 
 			int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-			String sheetName = month+"-Mid"+" "+yearIndex;
+			String IcorNon = "";
+			
+			if(projectType == 1) {
+				
+				IcorNon = "IC";
+			}
+			else if(projectType == 0) {
+				
+				IcorNon = "Non IC";
+			}
+			
+			String sheetName = month+"-Mid"+" "+yearIndex+" "+IcorNon;
 			String reportType = "midmonth";
 
 			ArrayList<String> colNames = new ArrayList<String>();
