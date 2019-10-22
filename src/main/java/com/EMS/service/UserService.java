@@ -67,4 +67,6 @@ public interface UserService {
 	List<UserModel> getUserByRegion(Long regionId);
 
 	UserModel getUserBydeptRegion(Long deptId, Long userId, Long regionId);
+
+	UserModel getUserByRegion(Long regionId, Long userId);
 }

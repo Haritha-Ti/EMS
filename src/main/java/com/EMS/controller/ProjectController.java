@@ -689,46 +689,42 @@ public class ProjectController {
 					ProjectModel projectmodel = projectservice.save_project_record(project);
 
 					ArrayNode resourcenode = (ArrayNode) requestdata.get("resources");
-					for (JsonNode node : resourcenode) {
-                          //update project region
-						ArrayNode regionsjson = (ArrayNode) requestdata.get("projectRegion");
-						
-						
-						
-						if (projectmodel != null)
-						{
-							ArrayList<ProjectRegion> regions = projectservice.getRegionsByprojectId(projectmodel.getProjectId());
-							if(regions.size() > 0) {
-							int i = projectservice.deleteProjectRegions(projectmodel.getProjectId());
-							System.out.println("-----------i"+i);
-							if(i == 1) {
+					ArrayNode regionsjson = (ArrayNode) requestdata.get("projectRegion");
+					
+					if (projectmodel != null)
+					{
+						ArrayList<ProjectRegion> regions = projectservice.getRegionsByprojectId(projectmodel.getProjectId());
+						if(regions.size() > 0) {
+						int i = projectservice.deleteProjectRegions(projectmodel.getProjectId());
+						System.out.println("-----------i"+i);
+						if(i == 1) {
+							
+							for(JsonNode nodes : regionsjson) {
 								
-								for(JsonNode nodes : regionsjson) {
-									
-									ProjectRegion regionedits = new ProjectRegion();
-									regionedits.setProject_Id(projectmodel);
-									Region region1 = regionService.getregion(nodes.asLong());
-									regionedits.setRegion_Id(region1);
-									projectservice.save_project_region(regionedits);
-									
-								}
+								ProjectRegion regionedits = new ProjectRegion();
+								regionedits.setProject_Id(projectmodel);
+								Region region1 = regionService.getregion(nodes.asLong());
+								regionedits.setRegion_Id(region1);
+								projectservice.save_project_region(regionedits);
 								
-							}
-							}
-							else {
-									for(JsonNode nodes : regionsjson) {
-									
-									ProjectRegion regionedits = new ProjectRegion();
-									regionedits.setProject_Id(projectmodel);
-									Region region1 = regionService.getregion(nodes.asLong());
-									regionedits.setRegion_Id(region1);
-									projectservice.save_project_region(regionedits);
-									
-								}
 							}
 							
 						}
-						//
+						}
+						else {
+								for(JsonNode nodes : regionsjson) {
+								
+								ProjectRegion regionedits = new ProjectRegion();
+								regionedits.setProject_Id(projectmodel);
+								Region region1 = regionService.getregion(nodes.asLong());
+								regionedits.setRegion_Id(region1);
+								projectservice.save_project_region(regionedits);
+								
+							}
+						}
+						
+					}
+					for (JsonNode node : resourcenode) {
 						// setting values on resource object
 						Resources resou1 = projectservice.getResourceById(node.get("resourceId").asLong());
 						if (projectmodel != null)

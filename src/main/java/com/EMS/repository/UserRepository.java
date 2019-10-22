@@ -89,4 +89,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	@Query("SELECT u FROM UserModel u WHERE u.userId = ?1 and u.department.departmentId = ?2  and u.region.id = ?3 AND u.active = true order by firstName")
 	UserModel getUserlistByregionDeptuser(Long deptId, Long userId, Long regionId);
 
+	@Query("SELECT u FROM UserModel u WHERE u.userId = ?2 and u.region.id = ?1  AND u.active = true order by firstName")
+	UserModel getUserByRegion(Long regionId, Long userId);
+
 }

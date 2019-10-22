@@ -255,4 +255,12 @@ public class UserServiceImpl implements UserService {
 		UserModel modles = userRepository.getUserlistByregionDeptuser(deptId,userId,regionId);
 		return modles;
 	}
+
+	@Override
+	public UserModel getUserByRegion(Long regionId, Long userId) {
+		// TODO Auto-generated method stub
+		
+		UserModel model = userRepository.getUserByRegion(regionId,userId);
+		return model;
+	}
 }
