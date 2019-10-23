@@ -37,6 +37,10 @@ public interface ProjectAllocationService {
 
 
     List<UserModel> getUserLists();
+    
+    //Renjith
+    public List<UserModel>  getUsersByProjectId(Long projectId );
+    //Renjith
 }
 
 

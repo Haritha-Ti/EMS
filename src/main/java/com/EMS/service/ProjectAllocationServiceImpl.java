@@ -178,5 +178,9 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 		return userList;
 	}
 
-
+	//Renjith
+    public List<UserModel>  getUsersByProjectId(Long projectId ){
+    	return projectAllocationRepository.getUsersByProjectId(projectId);
+    }
+    //Renjith
 }

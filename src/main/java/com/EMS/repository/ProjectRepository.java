@@ -63,5 +63,17 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 	
 	@Query(value = "SELECT * FROM project where parent_project_id!=0 order by project_id ASC;",nativeQuery = true)
 	ArrayList<ProjectModel> getAllNonParentProjects();
+	
+	//Renjith
+	
+	@Query("SELECT  p   from ProjectModel  p where   p.projectOwner.userId =?1  ")
+    List<ProjectModel>  getProjectListByLevel1(Long userId);
+	
+    @Query("SELECT  p   from ProjectModel  p where  p.onsite_lead.userId =?1  ")
+    List<ProjectModel>  getProjectListByLevel2(Long userId);
+    
+    
+    
+   //Renjith
 
 }

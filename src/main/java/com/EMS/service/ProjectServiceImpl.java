@@ -255,7 +255,15 @@ public class ProjectServiceImpl implements ProjectService {
 		return i ;
 	}
 
-
+	//Renjith
+		public List<ProjectModel>  getProjectListByLevel1(Long userId){
+			return project_repositary.getProjectListByLevel1(userId);
+		}
+		
+		public List<ProjectModel>  getProjectListByLevel2(Long userId){
+			return project_repositary.getProjectListByLevel2(userId);
+		}
+		//Renjith
 
 
 }

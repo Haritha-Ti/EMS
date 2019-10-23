@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,6 +30,7 @@ import com.EMS.model.Region;
 import com.EMS.model.UserModel;
 import com.EMS.service.AttendanceService;
 import com.EMS.service.ProjectAllocationService;
+import com.EMS.service.ProjectRegionService;
 import com.EMS.service.ProjectService;
 import com.EMS.service.RegionService;
 import com.EMS.service.ReportService;
@@ -47,22 +49,25 @@ public class ProjectAllocationController {
 
 	@Autowired
 	ProjectService projectService;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	private ObjectMapper objectMapper;
-		
+
 	@Autowired
 	ReportService reportService;
-	
+
 	@Autowired
 	AttendanceService attendanceService;
-	
+
 	@Autowired
 	private RegionService regionService;
-	
+
+	@Autowired
+	private ProjectRegionService projectRegionService;
+
 	// To get user, department and project list
 
 	@GetMapping(value = "/getPreResourceData")
@@ -70,12 +75,12 @@ public class ProjectAllocationController {
 		ObjectNode jsonData = objectMapper.createObjectNode();
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
-			//Method invocation for getting user list
-			//List<UserModel> userList = projectAllocation.getUserList();
+			// Method invocation for getting user list
+			// List<UserModel> userList = projectAllocation.getUserList();
 			List<UserModel> userList = projectAllocation.getUserLists();
-			//Method invocation for getting department list
+			// Method invocation for getting department list
 			List<DepartmentModel> departmentList = projectAllocation.getDepartmentList();
-			//Method invocation for getting project list
+			// Method invocation for getting project list
 			List<ProjectModel> projectList = projectService.getProjectList();
 
 			ArrayNode jsonArray = objectMapper.createArrayNode();
@@ -93,13 +98,12 @@ public class ProjectAllocationController {
 					jsonObject.put("region_id", user.getRegion().getId());
 					DepartmentModel departmentModel = user.getDepartment();
 					ObjectNode depNode = objectMapper.createObjectNode();
-					depNode.put("departmentId",departmentModel.getDepartmentId());
+					depNode.put("departmentId", departmentModel.getDepartmentId());
 					depNode.put("departmentName", departmentModel.getdepartmentName());
 
 					jsonObject.set("department", depNode);
-					
-					
-					LocalDate now=LocalDate.now();
+
+					LocalDate now = LocalDate.now();
 					int quarter = 0;
 					int monthNumber = now.getMonthValue();
 					int year = now.getYear();
@@ -112,12 +116,13 @@ public class ProjectAllocationController {
 						quarter = 3;
 					else if (monthNumber >= 10 && monthNumber <= 12)
 						quarter = 4;
-					ObjectNode leaveBalanceNode = attendanceService.getLeavebalanceData(user.getUserId(), quarter, year);
+					ObjectNode leaveBalanceNode = attendanceService.getLeavebalanceData(user.getUserId(), quarter,
+							year);
 					jsonObject.set("leaveBalance", leaveBalanceNode);
 					jsonArray.add(jsonObject);
 				}
 				jsonData.set("userList", jsonArray);
-				
+
 			}
 
 			// Add project list to json object
@@ -130,7 +135,7 @@ public class ProjectAllocationController {
 				}
 				jsonData.set("projectList", jsonProjectArray);
 			}
-			
+
 			// Add department list to json object
 			if (!(departmentList).isEmpty() && departmentList.size() > 0) {
 				for (DepartmentModel department : departmentList) {
@@ -141,8 +146,7 @@ public class ProjectAllocationController {
 				}
 				jsonData.set("departmentList", jsonDepartmentArray);
 			}
-			
-			
+
 			jsonDataRes.set("data", jsonData);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
@@ -154,30 +158,210 @@ public class ProjectAllocationController {
 		}
 		return jsonDataRes;
 	}
-	
 
-	
+	// Renjith
+
+		@GetMapping(value = "/getPreResourceDataByRegionAndLevels")
+		public ObjectNode getUsernameByUserRoleList(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+
+			ObjectNode jsonData = objectMapper.createObjectNode();
+			ObjectNode jsonDataRes = objectMapper.createObjectNode();
+			Long userId = null;
+			Long roleId = null;
+			Long regionId = null;
+	        boolean  isLevels=true;
+	        ArrayNode jsonProjectArray = objectMapper.createArrayNode();
+	        
+			if (requestdata.get("sessionId") != null && (!requestdata.get("sessionId").asText().trim().isEmpty())) {
+				userId = requestdata.get("sessionId").asLong();
+			}
+
+			if (userId == null) {
+				jsonDataRes.put("status", "failure");
+				jsonDataRes.put("code", httpstatus.getStatus());
+				jsonDataRes.put("message", "failed. Invalid user ");
+				return jsonDataRes;
+			}
+			List<ProjectModel> projectList = new ArrayList<ProjectModel>();
+			try {
+				
+				roleId = userService.getUserDetailsById(userId).getRole().getroleId();
+				regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
+
+				if (roleId == 1){
+					
+					projectList = projectService.getProjectList();
+					isLevels= false;
+				}
+					
+
+				if (roleId == 4 | roleId == 6 | roleId == 9) {
+					projectList = projectRegionService.getProjectsByRegionId(regionId);
+					isLevels= false;
+				}
+				
+				if ((projectList).isEmpty() && projectList.size() == 0 && !isLevels) {
+					
+					
+					jsonDataRes.put("status", "no data");
+					jsonDataRes.put("code", httpstatus.SC_NO_CONTENT);
+					jsonDataRes.put("message", "no data found !");
+					return jsonDataRes;
+				}
+				
+				if (!(projectList).isEmpty() && projectList.size() > 0 && !isLevels) {
+					for (ProjectModel project : projectList) {
+						ObjectNode jsonObject = objectMapper.createObjectNode();
+						jsonObject.put("projectId", project.getProjectId());
+						jsonObject.put("projectName", project.getProjectName());
+						jsonProjectArray.add(jsonObject);
+					}
+					jsonData.set("projectList", jsonProjectArray);
+					jsonDataRes.set("data", jsonData);
+					jsonDataRes.put("status", "success");
+					jsonDataRes.put("code", httpstatus.getStatus());
+					jsonDataRes.put("message", "success");
+					return jsonDataRes;
+				}
+				
+				// Level 1
+				projectList = projectService.getProjectListByLevel1(userId);
+				// Level 2
+				projectList.addAll(projectService.getProjectListByLevel2(userId));
+
+				//Remove duplicates if any
+				
+				projectList = projectList.stream() 
+	                    .distinct() 
+	                    .collect(Collectors.toList());
+	            
+				if ((projectList).isEmpty() && projectList.size() == 0 &&  isLevels) {
+					jsonDataRes.put("status", "no data");
+					jsonDataRes.put("code", httpstatus.SC_NO_CONTENT);
+					jsonDataRes.put("message", "no data found !");
+					return jsonDataRes;
+				}
+				
+				// Add project list to json object
+				if (!(projectList).isEmpty() && projectList.size() > 0 &&  isLevels) {
+					for (ProjectModel project : projectList) {
+						ObjectNode jsonObject = objectMapper.createObjectNode();
+						jsonObject.put("projectId", project.getProjectId());
+						jsonObject.put("projectName", project.getProjectName());
+						jsonProjectArray.add(jsonObject);
+					}
+					jsonData.set("projectList", jsonProjectArray);
+				}
+
+				
+
+				jsonDataRes.set("data", jsonData);
+				jsonDataRes.put("status", "success");
+				jsonDataRes.put("code", httpstatus.getStatus());
+				jsonDataRes.put("message", "success");
+			} catch (Exception e) {
+				jsonDataRes.put("status", "failure");
+				jsonDataRes.put("code", httpstatus.getStatus());
+				jsonDataRes.put("message", "failed. " + e);
+			}
+			return jsonDataRes;
+		}
+
+		@GetMapping(value = "/getUsersByProjectId")
+		public ObjectNode getUsersByProjectId(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+			ObjectNode jsonData = objectMapper.createObjectNode();
+			ObjectNode jsonDataRes = objectMapper.createObjectNode();
+			Long projectId = null;
+			List<UserModel> userList = new ArrayList<UserModel>();
+			ArrayNode jsonArray = objectMapper.createArrayNode();
+
+			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
+				projectId = requestdata.get("projectId").asLong();
+			}
+
+			if (projectId == null) {
+				jsonDataRes.put("status", "failure");
+				jsonDataRes.put("code", httpstatus.getStatus());
+				jsonDataRes.put("message", "failed. Invalid Project ");
+				return jsonDataRes;
+			}
+			               userList =  projectAllocation.getUsersByProjectId(projectId);
+			try {
+				// Add user list to json object
+				if (!(userList).isEmpty() && userList.size() > 0) {
+
+					for (UserModel user : userList) {
+						ObjectNode jsonObject = objectMapper.createObjectNode();
+						jsonObject.put("userId", user.getUserId());
+						jsonObject.put("firstName", user.getFirstName());
+						jsonObject.put("lastName", user.getLastName());
+						jsonObject.put("role", user.getRole().getroleId());
+						DepartmentModel departmentModel = user.getDepartment();
+						ObjectNode depNode = objectMapper.createObjectNode();
+						depNode.put("departmentId", departmentModel.getDepartmentId());
+						depNode.put("departmentName", departmentModel.getdepartmentName());
+
+						jsonObject.set("department", depNode);
+
+						LocalDate now = LocalDate.now();
+						int quarter = 0;
+						int monthNumber = now.getMonthValue();
+						int year = now.getYear();
+
+						if (monthNumber >= 1 && monthNumber <= 3)
+							quarter = 1;
+						else if (monthNumber >= 4 && monthNumber <= 6)
+							quarter = 2;
+						else if (monthNumber >= 7 && monthNumber <= 9)
+							quarter = 3;
+						else if (monthNumber >= 10 && monthNumber <= 12)
+							quarter = 4;
+						ObjectNode leaveBalanceNode = attendanceService.getLeavebalanceData(user.getUserId(), quarter,
+								year);
+						jsonObject.set("leaveBalance", leaveBalanceNode);
+						jsonArray.add(jsonObject);
+					}
+					jsonData.set("userList", jsonArray);
+
+				}
+
+				jsonDataRes.set("data", jsonData);
+				jsonDataRes.put("status", "success");
+				jsonDataRes.put("code", httpstatus.getStatus());
+				jsonDataRes.put("message", "success");
+
+			} catch (Exception e) {
+				jsonDataRes.put("status", "failure");
+				jsonDataRes.put("code", httpstatus.getStatus());
+				jsonDataRes.put("message", "failed. " + e);
+			}
+
+			return jsonDataRes;
+		}
+
+		// Renjith
+
 	// To update resource allocation data
 
 	@PutMapping(value = "/editAllocation")
 	public ObjectNode updateData(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
-		
-		try {
-				Long id = requestdata.get("id").asLong();
-				Double allocatedVal = requestdata.get("allocatedPerce").asDouble();
-				Boolean isBillable = requestdata.get("isBillable").asBoolean();
-				Boolean isActive = true;//requestdata.get("active").asBoolean();
 
-			//Method invocation for getting allocation details
+		try {
+			Long id = requestdata.get("id").asLong();
+			Double allocatedVal = requestdata.get("allocatedPerce").asDouble();
+			Boolean isBillable = requestdata.get("isBillable").asBoolean();
+			Boolean isActive = true;// requestdata.get("active").asBoolean();
+
+			// Method invocation for getting allocation details
 			AllocationModel allocationModel = projectAllocation.findDataById(id);
 			if (allocationModel != null) {
 				allocationModel.setAllocatedPerce(allocatedVal);
-                allocationModel.setIsBillable(isBillable);
-                allocationModel.setActive(isActive);
-                
-                //Updating allcation details
+				allocationModel.setIsBillable(isBillable);
+				allocationModel.setActive(isActive);
+
+				// Updating allcation details
 				projectAllocation.updateData(allocationModel);
 				jsonDataRes.put("status", "success");
 				jsonDataRes.put("code", httpstatus.getStatus());
@@ -192,40 +376,42 @@ public class ProjectAllocationController {
 
 	}
 
-	
-
-	
-	
 	// To get the allocation list
 
-	//@GetMapping(value = "/getResourceListBasedonProject/{projectId}")
-	//public ObjectNode getAllocationListsBasedonProject(@PathVariable("projectId") Long projectId,HttpServletResponse httpstatus) {
+	// @GetMapping(value = "/getResourceListBasedonProject/{projectId}")
+	// public ObjectNode
+	// getAllocationListsBasedonProject(@PathVariable("projectId") Long
+	// projectId,HttpServletResponse httpstatus) {
 	@PostMapping(value = "/getResourceListBasedonProject")
-	public ObjectNode getAllocationListsBasedonProject(@RequestBody ObjectNode requestData,HttpServletResponse httpstatus) {
-	
+	public ObjectNode getAllocationListsBasedonProject(@RequestBody ObjectNode requestData,
+			HttpServletResponse httpstatus) {
+
 		// Method invocation for getting allocation list based on the project
 		Long projectId = requestData.get("projectId").asLong();
 		String startDate = requestData.get("startDate").asText();
 		String endDate = requestData.get("endDate").asText();
-		Date fromDate=null,toDate=null;
+		Date fromDate = null, toDate = null;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-				    
+
 		List<AllocationModel> allocationModel = projectAllocation.getAllocationList(projectId);
-		
+
 		ArrayNode jsonArray = objectMapper.createArrayNode();
 		ObjectNode jsonData = objectMapper.createObjectNode();
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
 			fromDate = df.parse(startDate);
-	    	toDate = df.parse(endDate);
+			toDate = df.parse(endDate);
 			if (!(allocationModel.isEmpty() && allocationModel.size() > 0)) {
 				for (AllocationModel item : allocationModel) {
 					String projectStartDate = df.format(item.getStartDate());
 					String projectEndDate = df.format(item.getEndDate());
-					if ((fromDate.compareTo(df.parse(projectStartDate)) >= 0 && fromDate.compareTo(df.parse(projectStartDate)) <= 0)||
-									(toDate.compareTo(df.parse(projectStartDate)) >= 0 && toDate.compareTo(df.parse(projectEndDate)) <= 0)||
-									(fromDate.compareTo(df.parse(projectStartDate)) >= 0 && toDate.compareTo(df.parse(projectEndDate)) <= 0)) {
-										
+					if ((fromDate.compareTo(df.parse(projectStartDate)) >= 0
+							&& fromDate.compareTo(df.parse(projectStartDate)) <= 0)
+							|| (toDate.compareTo(df.parse(projectStartDate)) >= 0
+									&& toDate.compareTo(df.parse(projectEndDate)) <= 0)
+							|| (fromDate.compareTo(df.parse(projectStartDate)) >= 0
+									&& toDate.compareTo(df.parse(projectEndDate)) <= 0)) {
+
 						ObjectNode jsonObject = objectMapper.createObjectNode();
 						jsonObject.put("allocationId", item.getAllocId());
 						if (item.getproject() != null) {
@@ -233,7 +419,7 @@ public class ProjectAllocationController {
 							jsonObject.put("projectCategory", item.getproject().getProjectCategory());
 						}
 						if (item.getuser() != null) {
-							jsonObject.put("userId",item.getuser().getUserId());
+							jsonObject.put("userId", item.getuser().getUserId());
 							jsonObject.put("firstName", item.getuser().getFirstName());
 							jsonObject.put("lastName", item.getuser().getLastName());
 							jsonObject.put("role", item.getuser().getRole().getroleId());
@@ -261,9 +447,7 @@ public class ProjectAllocationController {
 		return jsonDataRes;
 
 	}
-	
 
-		
 	// saving allocation details
 
 	@PostMapping("/saveAllocation")
@@ -273,7 +457,7 @@ public class ProjectAllocationController {
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
 		try {
-           // Obtain the data from request data
+			// Obtain the data from request data
 			String date1 = requestdata.get("startDate").asText();
 			String date2 = requestdata.get("endDate").asText();
 			TimeZone zone = TimeZone.getTimeZone("MST");
@@ -293,35 +477,36 @@ public class ProjectAllocationController {
 			Long projectId = requestdata.get("projectId").asLong();
 			Long userId = requestdata.get("userId").asLong();
 			Boolean isBillable = requestdata.get("isBillable").asBoolean();
-			
+
 			ProjectModel project = projectService.findById(projectId);
 			UserModel user = userService.getUserDetailsById(userId);
-			
+
 			allocationModel.setproject(project);
 			allocationModel.setuser(user);
 			allocationModel.setStartDate(startDate);
 			allocationModel.setEndDate(endDate);
 			allocationModel.setAllocatedPerce(val);
 			allocationModel.setIsBillable(isBillable);
-			// Check whether the user is already allocated to the project.If so update the previous entry of the user otherwise new entry is created.
-			/*Long allocId = projectAllocation.getAllocId(projectId,userId);
-			if(allocId != null) {
-				AllocationModel oldAlloc = projectAllocation.findDataById(allocId);
-				if(oldAlloc != null) {
-					oldAlloc.setAllocatedPerce(allocationModel.getAllocatedPerce());
-					oldAlloc.setStartDate(allocationModel.getStartDate());
-					oldAlloc.setEndDate(allocationModel.getEndDate());
-					oldAlloc.setIsBillable(allocationModel.getIsBillable());
-					projectAllocation.updateData(oldAlloc);
-				}
+			// Check whether the user is already allocated to the project.If so
+			// update the previous entry of the user otherwise new entry is
+			// created.
+			/*
+			 * Long allocId = projectAllocation.getAllocId(projectId,userId);
+			 * if(allocId != null) { AllocationModel oldAlloc =
+			 * projectAllocation.findDataById(allocId); if(oldAlloc != null) {
+			 * oldAlloc.setAllocatedPerce(allocationModel.getAllocatedPerce());
+			 * oldAlloc.setStartDate(allocationModel.getStartDate());
+			 * oldAlloc.setEndDate(allocationModel.getEndDate());
+			 * oldAlloc.setIsBillable(allocationModel.getIsBillable());
+			 * projectAllocation.updateData(oldAlloc); }
+			 * 
+			 * } else {
+			 */
 
-			}
-			else {*/
-				
-				projectAllocation.save(allocationModel);
+			projectAllocation.save(allocationModel);
 
-			//}
-		
+			// }
+
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "successfully saved. ");
@@ -332,10 +517,7 @@ public class ProjectAllocationController {
 		}
 		return jsonDataRes;
 	}
-		
-	
 
-	
 	@PostMapping("/getUserData")
 	public JSONObject getAllocationList(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
 
@@ -346,9 +528,9 @@ public class ProjectAllocationController {
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 		outputFormat.setTimeZone(zone);
 		java.util.Date date1 = null, date2 = null;
-		String uId = null,dId = null,startDate = null, endDate = null;
-		String  regionId = null;
-		
+		String uId = null, dId = null, startDate = null, endDate = null;
+		String regionId = null;
+
 		try {
 
 			if (!requestData.get("startDate").toString().isEmpty() && requestData.get("startDate").toString() != null) {
@@ -365,38 +547,41 @@ public class ProjectAllocationController {
 
 				}
 			}
-               
 
-			if(!requestData.get("userId").toString().isEmpty() && requestData.get("userId").toString() != null)
+			if (!requestData.get("userId").toString().isEmpty() && requestData.get("userId").toString() != null)
 				uId = requestData.get("userId").toString();
-			if(!requestData.get("deptId").toString().isEmpty() && requestData.get("deptId").toString() != null)
-			    dId = requestData.get("deptId").toString();
-			 
-			if(!requestData.get("regionId").toString().isEmpty() && requestData.get("regionId").toString() != null)
-				regionId = requestData.get("regionId").toString();
-			System.out.println("-------------------->"+regionId);
-			
-			// Obtain the user list if both department id and user id are not available
+			if (!requestData.get("deptId").toString().isEmpty() && requestData.get("deptId").toString() != null)
+				dId = requestData.get("deptId").toString();
 
-			if ((uId == null || uId == "") && (dId == null || dId == "") && ( regionId == null || regionId == "")) {
+			if (!requestData.get("regionId").toString().isEmpty() && requestData.get("regionId").toString() != null)
+				regionId = requestData.get("regionId").toString();
+			System.out.println("-------------------->" + regionId);
+
+			// Obtain the user list if both department id and user id are not
+			// available
+
+			if ((uId == null || uId == "") && (dId == null || dId == "") && (regionId == null || regionId == "")) {
 				System.out.println("no ids");
 				List<UserModel> userList = userService.getAllUsers();
 
-				// Invoc getUserAllocationList() to findout the allocation details of the user
+				// Invoc getUserAllocationList() to findout the allocation
+				// details of the user
 				if (userList != null) {
 					for (UserModel user : userList) {
 
-						
-						// Invoc getUserAllocationList() to findout the allocation details of the user
+						// Invoc getUserAllocationList() to findout the
+						// allocation details of the user
 						getUserAllocationList(user, date1, date2, jsonArrayFiltered);
 
 					}
 				}
 			}
 
-			// Obtain the user list only if the department id is available and user id is not available or if the user id is 0.
-			
-			else if ((dId != null || dId != "") && (uId == null || uId == "" || uId.equals("0"))&& ( regionId == null || regionId == "")) {
+			// Obtain the user list only if the department id is available and
+			// user id is not available or if the user id is 0.
+
+			else if ((dId != null || dId != "") && (uId == null || uId == "" || uId.equals("0"))
+					&& (regionId == null || regionId == "")) {
 				Long deptId = Long.parseLong(dId);
 				System.out.println("depart id");
 				// Obtain the user list based on the department
@@ -405,21 +590,25 @@ public class ProjectAllocationController {
 				if (userList != null) {
 					for (UserModel user : userList) {
 
-						// Invoc getUserAllocationList() to findout the allocation details of the user
+						// Invoc getUserAllocationList() to findout the
+						// allocation details of the user
 						getUserAllocationList(user, date1, date2, jsonArrayFiltered);
 
 					}
 				}
 			}
 
-			// Obtain the user list only if the user id is available and department id is not available
-			
-			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId == null || dId == "")&& ( regionId == null || regionId == "")) {
+			// Obtain the user list only if the user id is available and
+			// department id is not available
+
+			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId == null || dId == "")
+					&& (regionId == null || regionId == "")) {
 
 				Long userId = Long.parseLong(uId);
 				UserModel user = userService.getUserDetailsById(userId);
 				System.out.println("userId");
-				// Invoc getUserAllocationList() to findout the allocation details of the user
+				// Invoc getUserAllocationList() to findout the allocation
+				// details of the user
 				if (user != null) {
 					getUserAllocationList(user, date1, date2, jsonArrayFiltered);
 
@@ -427,55 +616,64 @@ public class ProjectAllocationController {
 
 			}
 
-			else if((uId == null || uId == "" || uId.equals("0")) && (dId == null || dId == "")&& ( regionId != null && regionId != "")) {
-				
+			else if ((uId == null || uId == "" || uId.equals("0")) && (dId == null || dId == "")
+					&& (regionId != null && regionId != "")) {
+
 				Long regId = Long.parseLong(regionId);
 				List<UserModel> userList = userService.getUserByRegion(regId);
 				System.out.println("regionId");
 				if (userList != null) {
 					for (UserModel user : userList) {
 
-						// Invoc getUserAllocationList() to findout the allocation details of the user
+						// Invoc getUserAllocationList() to findout the
+						// allocation details of the user
 						getUserAllocationList(user, date1, date2, jsonArrayFiltered);
 
 					}
 				}
 			}
-			// Obtain the user list if both department id and user id are available
+			// Obtain the user list if both department id and user id are
+			// available
 
-			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "") && ( regionId == null || regionId == "")) {
+			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "")
+					&& (regionId == null || regionId == "")) {
 				Long deptId = Long.parseLong(dId);
 				Long userId = Long.parseLong(uId);
 				System.out.println("userId&deptId");
 				UserModel user = userService.getUser(deptId, userId);
 
-				// Invoc getUserAllocationList() to findout the allocation details of the user
+				// Invoc getUserAllocationList() to findout the allocation
+				// details of the user
 				if (user != null) {
 					getUserAllocationList(user, date1, date2, jsonArrayFiltered);
 				}
 			}
-			
-			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "") && ( regionId != null && regionId != "")) {
+
+			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "")
+					&& (regionId != null && regionId != "")) {
 				Long deptId = Long.parseLong(dId);
 				Long userId = Long.parseLong(uId);
 				Long regId = Long.parseLong(regionId);
 				System.out.println("userId&deptId&regionId");
-				UserModel user = userService.getUserBydeptRegion(deptId, userId,regId);
+				UserModel user = userService.getUserBydeptRegion(deptId, userId, regId);
 
-				// Invoc getUserAllocationList() to findout the allocation details of the user
+				// Invoc getUserAllocationList() to findout the allocation
+				// details of the user
 				if (user != null) {
 					getUserAllocationList(user, date1, date2, jsonArrayFiltered);
 				}
 			}
-			
-			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId == null || dId == "") && ( regionId != null || regionId != "")) {
+
+			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId == null || dId == "")
+					&& (regionId != null || regionId != "")) {
 				Long deptId = Long.parseLong(dId);
 				Long userId = Long.parseLong(uId);
 				System.out.println("Region and user only");
 				Long regId = Long.parseLong(regionId);
 				UserModel user = userService.getUserByRegion(regId, userId);
 
-				// Invoc getUserAllocationList() to findout the allocation details of the user
+				// Invoc getUserAllocationList() to findout the allocation
+				// details of the user
 				if (user != null) {
 					getUserAllocationList(user, date1, date2, jsonArrayFiltered);
 				}
@@ -496,18 +694,16 @@ public class ProjectAllocationController {
 		return jsonDataRes;
 	}
 
-
-
 	private void getUserAllocationList(UserModel user, Date date1, Date date2, List<JSONObject> jsonArrayFiltered) {
 
 		// Checks whether the user has an entry on allocation table
 		Boolean isExist = projectAllocation.checkIsExist(user.getUserId());
 		if (isExist) {
 
-			// find out the allocation details based on the date passed as an argument
-			List<AllocationModel> newUserList = projectAllocation.getUsersList(user.getUserId(),date1,date2);
-			
-            
+			// find out the allocation details based on the date passed as an
+			// argument
+			List<AllocationModel> newUserList = projectAllocation.getUsersList(user.getUserId(), date1, date2);
+
 			// Add user and project alocation details to the json object
 			if (newUserList != null && newUserList.size() > 0) {
 				JSONObject jsonObject = new JSONObject();
@@ -531,10 +727,10 @@ public class ProjectAllocationController {
 					jsonObjectData.put("allocationEndDate", item.getEndDate().toString());
 					jsonObjectData.put("isBillable", item.getIsBillable());
 					totAlloc += item.getAllocatedPerce();
-					
-					if(freeAlloc>0)
-						freeAlloc-= item.getAllocatedPerce();
-					
+
+					if (freeAlloc > 0)
+						freeAlloc -= item.getAllocatedPerce();
+
 					jsonArray.add(jsonObjectData);
 
 				}
@@ -558,7 +754,8 @@ public class ProjectAllocationController {
 
 		}
 
-		// If the user has no entry, then add user detais without project allocation details to the json object
+		// If the user has no entry, then add user detais without project
+		// allocation details to the json object
 		else {
 			JSONObject jsonObject = new JSONObject();
 			List<JSONObject> jsonArray = new ArrayList<>();
@@ -572,23 +769,24 @@ public class ProjectAllocationController {
 			jsonObject.put("totalAllocation", 0);
 			jsonArrayFiltered.add(jsonObject);
 		}
-		
-	}	
+
+	}
+
 	@PutMapping(value = "/editAllocationstatus")
 	public ObjectNode editAllocationstatus(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
-		
-		try {
-				Long id = requestdata.get("id").asLong();
-				Boolean isActive = requestdata.get("isActive").asBoolean();
 
-			//Method invocation for getting allocation details
+		try {
+			Long id = requestdata.get("id").asLong();
+			Boolean isActive = requestdata.get("isActive").asBoolean();
+
+			// Method invocation for getting allocation details
 			AllocationModel allocationModel = projectAllocation.findDataById(id);
 			if (allocationModel != null) {
-                allocationModel.setActive(isActive);
+				allocationModel.setActive(isActive);
 
-                //Updating allcation details
+				// Updating allcation details
 				projectAllocation.updateData(allocationModel);
 				jsonDataRes.put("status", "success");
 				jsonDataRes.put("code", httpstatus.getStatus());
@@ -602,6 +800,7 @@ public class ProjectAllocationController {
 		return jsonDataRes;
 
 	}
+
 	@DeleteMapping("/deleteAllocationById")
 	public JsonNode deleteTaskById(@RequestParam("allocationId") Long id) {
 		ObjectNode node = objectMapper.createObjectNode();
@@ -638,9 +837,9 @@ public class ProjectAllocationController {
 			}
 			Double allocatedVal = requestdata.get("allocatedPerce").asDouble();
 			Boolean isBillable = requestdata.get("isBillable").asBoolean();
-			Boolean isActive = true;//requestdata.get("active").asBoolean();
+			Boolean isActive = true;// requestdata.get("active").asBoolean();
 
-			//Method invocation for getting allocation details
+			// Method invocation for getting allocation details
 			AllocationModel allocationModel = projectAllocation.findDataById(id);
 			if (allocationModel != null) {
 				allocationModel.setStartDate(startDate);
@@ -649,7 +848,7 @@ public class ProjectAllocationController {
 				allocationModel.setIsBillable(isBillable);
 				allocationModel.setActive(isActive);
 
-				//Updating allcation details
+				// Updating allcation details
 				projectAllocation.updateData(allocationModel);
 				jsonDataRes.put("status", "success");
 				jsonDataRes.put("code", httpstatus.getStatus());
@@ -665,13 +864,14 @@ public class ProjectAllocationController {
 	}
 
 	@PostMapping(value = "/v2/getResourceListBasedonProject")
-	public ObjectNode getAllocationListsBasedonProjectV2(@RequestBody ObjectNode requestData,HttpServletResponse httpstatus) {
+	public ObjectNode getAllocationListsBasedonProjectV2(@RequestBody ObjectNode requestData,
+			HttpServletResponse httpstatus) {
 
 		// Method invocation for getting allocation list based on the project
 		Long projectId = requestData.get("projectId").asLong();
 		String startDate = requestData.get("startDate").asText();
 		String endDate = requestData.get("endDate").asText();
-		Date fromDate=null,toDate=null;
+		Date fromDate = null, toDate = null;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 		List<AllocationModel> allocationModel = projectAllocation.getAllocationList(projectId);
@@ -686,9 +886,12 @@ public class ProjectAllocationController {
 				for (AllocationModel item : allocationModel) {
 					String projectStartDate = df.format(item.getStartDate());
 					String projectEndDate = df.format(item.getEndDate());
-					if ((fromDate.compareTo(df.parse(projectStartDate)) >= 0 && fromDate.compareTo(df.parse(projectStartDate)) <= 0)||
-							(toDate.compareTo(df.parse(projectStartDate)) >= 0 && toDate.compareTo(df.parse(projectEndDate)) <= 0)||
-							(fromDate.compareTo(df.parse(projectStartDate)) >= 0 && toDate.compareTo(df.parse(projectEndDate)) <= 0)) {
+					if ((fromDate.compareTo(df.parse(projectStartDate)) >= 0
+							&& fromDate.compareTo(df.parse(projectStartDate)) <= 0)
+							|| (toDate.compareTo(df.parse(projectStartDate)) >= 0
+									&& toDate.compareTo(df.parse(projectEndDate)) <= 0)
+							|| (fromDate.compareTo(df.parse(projectStartDate)) >= 0
+									&& toDate.compareTo(df.parse(projectEndDate)) <= 0)) {
 
 						ObjectNode jsonObject = objectMapper.createObjectNode();
 						jsonObject.put("allocationId", item.getAllocId());
@@ -697,12 +900,12 @@ public class ProjectAllocationController {
 							jsonObject.put("projectCategory", item.getproject().getProjectCategory());
 						}
 						if (item.getuser() != null) {
-							jsonObject.put("userId",item.getuser().getUserId());
+							jsonObject.put("userId", item.getuser().getUserId());
 							jsonObject.put("firstName", item.getuser().getFirstName());
 							jsonObject.put("lastName", item.getuser().getLastName());
 							jsonObject.put("role", item.getuser().getRole().getroleId());
 						}
-						jsonObject.put("startDate",projectStartDate);
+						jsonObject.put("startDate", projectStartDate);
 						jsonObject.put("endDate", projectEndDate);
 						jsonObject.put("allocatedVal", item.getAllocatedPerce());
 						jsonObject.put("isBillable", item.getIsBillable());

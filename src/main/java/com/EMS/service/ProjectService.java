@@ -78,6 +78,10 @@ public interface ProjectService {
 
 		int deleteProjectRegions(long projectId);
 
+		//Renjith
+	    public List<ProjectModel>  getProjectListByLevel1(Long userId);
+	    public List<ProjectModel>  getProjectListByLevel2(Long userId);
+	    //Renjith
 	
 }
 
