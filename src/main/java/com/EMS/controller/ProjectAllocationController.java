@@ -161,7 +161,7 @@ public class ProjectAllocationController {
 
 	// Renjith
 
-		@GetMapping(value = "/getPreResourceDataByRegionAndLevels")
+		@PostMapping(value = "/getPreResourceDataByRegionAndLevels")
 		public ObjectNode getUsernameByUserRoleList(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 
 			ObjectNode jsonData = objectMapper.createObjectNode();
@@ -267,7 +267,7 @@ public class ProjectAllocationController {
 			return jsonDataRes;
 		}
 
-		@GetMapping(value = "/getUsersByProjectId")
+		@PostMapping(value = "/getUsersByProjectId")
 		public ObjectNode getUsersByProjectId(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 			ObjectNode jsonData = objectMapper.createObjectNode();
 			ObjectNode jsonDataRes = objectMapper.createObjectNode();
