@@ -69,4 +69,8 @@ public interface UserService {
 	UserModel getUserBydeptRegion(Long deptId, Long userId, Long regionId);
 
 	UserModel getUserByRegion(Long regionId, Long userId);
+	
+	//Bala
+	public JsonNode getAllUsersByRegion(Long regionId);
+	//Bala
 }

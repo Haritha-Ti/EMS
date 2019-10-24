@@ -91,5 +91,10 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 
 	@Query("SELECT u FROM UserModel u WHERE u.userId = ?2 and u.region.id = ?1  AND u.active = true order by firstName")
 	UserModel getUserByRegion(Long regionId, Long userId);
+	
+	//Bala
+	@Query("SELECT u FROM UserModel u WHERE u.role NOT IN(1)  and u.region.id=?1    order by firstName")
+	List<UserModel> getAllUsersByRegion(Long regionId);
+	//Bala
 
 }

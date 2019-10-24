@@ -933,6 +933,55 @@ public class LoginController {
 		return node;
 
 	}
+	  //Bala
+	@PostMapping("/getAllUserListByRegion")
+	public JsonNode getAllUserListByRegion(@RequestBody JsonNode requestdata,HttpServletResponse httpstatus) throws ParseException {
+
+
+		ObjectNode dataNode = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		ArrayNode userarray=objectMapper.createArrayNode();
+		Long userId = null;
+        Long regionId=null;
+		try {
+			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
+				userId = requestdata.get("sessionId").asLong();
+			}
+			regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
+			JsonNode userList = userService.getAllUsersByRegion(regionId);
+			for(JsonNode nodeItem : userList) {
+				ArrayNode techarray=objectMapper.createArrayNode();
+
+				List<Object[]> technologyList = userService.getUserTechnologyList(nodeItem.get("userId").asLong());
+				for(Object[] item : technologyList) {
+					ObjectNode responseData=objectMapper.createObjectNode();
+					String experience = String.valueOf(item[0]);
+					String id = String.valueOf(item[1]);
+					responseData.put("id", id);
+					responseData.put("experience", experience);
+					techarray.add(responseData);
+				}
+				((ObjectNode) nodeItem).set("technologyList", techarray);
+				userarray.add(nodeItem);
+			}
+
+			dataNode.set("userList", userarray);
+
+			node.put("status", "success");
+			node.set("data", dataNode);
+
+		} catch (Exception e) {
+			System.out.println("Exception " + e);
+			node.put("status", "failure");
+			node.set("data", dataNode);
+		}
+
+		return node;
+
+	
+		
+	}
+	//Bala
 	@GetMapping("/getCppLevelList")
 	public JsonNode getCppLevelList(HttpServletResponse httpstatus) throws ParseException {
 		

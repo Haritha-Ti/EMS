@@ -263,4 +263,15 @@ public class UserServiceImpl implements UserService {
 		UserModel model = userRepository.getUserByRegion(regionId,userId);
 		return model;
 	}
+	
+	//Bala
+	@Override
+	public JsonNode getAllUsersByRegion(Long regionId){
+		
+		JsonNode node = objectMapper.createObjectNode();
+		node = objectMapper.convertValue(userRepository.getAllUsersByRegion(regionId), JsonNode.class);
+		return node;
+		
+	}
+	//Bala
 }
