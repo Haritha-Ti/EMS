@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
@@ -102,6 +103,7 @@ public interface TasktrackApprovalService {
 	             //Renjith
 	        List<TaskTrackApprovalLevel2> getNotApprovedData( int  monthIndex, int yearIndex, Long projectId);
 	        List<TaskTrackApprovalLevel2> getHalfMonthApprovedData( int  monthIndex, int yearIndex, Long projectId);
+	        public ArrayList<JSONObject>  getFinanceDataByProjectSet(int month, int year, Set<Long> id);
 	            //Renjith
 		    List<TaskTrackApprovalLevel2> getMidMonthApprovedData(int monthIndex, int yearIndex, Long projectId);
 }

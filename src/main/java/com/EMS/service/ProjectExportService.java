@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -40,6 +42,10 @@ public interface ProjectExportService {
 
 	public void exportFinanceDataByMonthAndYear(Workbook workrbook, Sheet sheet, String nameofReport, int month,
 			int year);
+	
+	//Renjith
+	public void exportFinanceDataByProjectSet(Workbook workbook,Sheet sheet,String reportName,Integer month,Integer year,Set<Long> prjSet) throws Exception;
+	//renjith
 
 
 }
