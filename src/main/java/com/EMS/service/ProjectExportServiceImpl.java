@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -1915,7 +1916,131 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 
 	}
+    //Renjith
+	public void exportFinanceDataByProjectSet(Workbook workbook,Sheet sheet,String reportName,Integer month,Integer year,Set<Long> prjSet) throws Exception{
 
+		YearMonth yearMonthObject = YearMonth.of(year, month);
+		int dayCount = yearMonthObject.lengthOfMonth();
+		int cols = dayCount+3;
+		String[] headers = new String[cols];
+		headers[0] = "Name";
+		headers[1] = "Project Name";
+
+
+		String intmonth;
+		if(month<10){
+			intmonth ="0"+month;
+		}
+		else{
+			intmonth =String.valueOf(month);
+		}
+		if(month<10){
+			intmonth ="0"+month;
+		}
+		for(int i=1;i<=dayCount;i++){
+			String j;
+			if(i<10){
+				j ="0"+i;
+			}
+			else{
+				j =String.valueOf(i);
+			}
+			headers[i + 1] = year+"-"+intmonth+"-"+j;
+		}
+		headers[dayCount+2] ="Total Hours";
+
+		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProjectSet(month, year, prjSet);
+
+		//Removing grids
+		sheet.setDisplayGridlines(false);
+		//Freezing columns and rows from scrooling
+		sheet.createFreezePane(3,3);
+
+		//Bordered Cell Style
+		CellStyle borderedCellStyle = workbook.createCellStyle();
+		borderedCellStyle.setBorderLeft(BorderStyle.THIN);
+		borderedCellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderRight(BorderStyle.THIN);
+		borderedCellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderTop(BorderStyle.THIN);
+		borderedCellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderBottom(BorderStyle.THIN);
+		borderedCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+
+		//Title Cell Style
+		CellStyle titleCellStyle = workbook.createCellStyle();
+		//titleCellStyle.setFont((org.apache.poi.ss.usermodel.Font) headerFont);
+
+		Row titleRow = sheet.createRow(0);
+		Cell titleCell = titleRow.createCell(0);
+		titleCell.setCellValue(reportName);
+		titleCell.setCellStyle(titleCellStyle);
+
+		titleRow = sheet.createRow(1);
+		titleCell = titleRow.createCell(1);
+		titleCell.setCellValue("");
+
+		XSSFFont font = (XSSFFont) workbook.createFont();
+		font.setFontName("Liberation Sans");
+		font.setFontHeightInPoints((short)10);
+		font.setBold(true);
+
+
+		// Header Cell Style
+		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.cloneStyleFrom(borderedCellStyle);
+		headerCellStyle.setBorderTop(BorderStyle.THICK);
+		headerCellStyle.setFont(font);
+
+		Row headerRow = sheet.createRow(2);
+		int widthInChars = 50;
+		sheet.setColumnWidth(4, widthInChars);
+		for (int i = 0; i < headers.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(headers[i]);
+			cell.setCellStyle(headerCellStyle);
+		}
+
+		// Create Other rows and cells with contacts data
+		int rowNum = 3;
+
+		for (Object[] summary : financeData) {
+			double totalHour =0.0;
+			Row row = sheet.createRow(rowNum++);
+
+			Cell cell = row.createCell(0);
+			cell.setCellValue((String) summary[1]+" "+(String) summary[2]);
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(1);
+			//cell.setCellValue(projectName);
+			cell.setCellStyle(borderedCellStyle);
+
+			for(int d=1;d<=dayCount;d++) {
+				cell = row.createCell(d+1);
+				cell.setCellValue((double)summary[d+3]);
+				cell.setCellStyle(borderedCellStyle);
+				totalHour =totalHour+(double)summary[d+3];
+			}
+			cell = row.createCell(dayCount+2);
+			cell.setCellValue(totalHour);
+			cell.setCellStyle(borderedCellStyle);
+
+		}
+
+
+		// Resize all columns to fit the content size
+		for (int i = 0; i < headers.length; i++) {
+			sheet.autoSizeColumn(i);
+		}
+
+		//Adding filter menu in column headers
+		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
+
+
+	}
+
+	//Renjith
 	public void exportFinanceDataByUser(Workbook workbook,Sheet sheet,String reportName,Integer month,Integer year,Long userId,String userName) throws Exception{
 
 		YearMonth yearMonthObject = YearMonth.of(year, month);
