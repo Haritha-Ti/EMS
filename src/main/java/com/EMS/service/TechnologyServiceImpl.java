@@ -34,7 +34,7 @@ public class TechnologyServiceImpl implements TechnologyService{
 
 	@Override
 	public ArrayList<Technology> getTechnologyList() {
-		ArrayList<Technology> list=(ArrayList<Technology>) technologyRepository.findAll();
+		ArrayList<Technology> list=(ArrayList<Technology>) technologyRepository.getAll();
 		return list;
 	}
 

@@ -1,5 +1,6 @@
 package com.EMS.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,10 @@ public interface TechnologyRepository extends JpaRepository<Technology, Long>{
 
 	@Query(value = "SELECT t FROM Technology t order by technologyName")
 	List<Technology> getTechnologies();
+
+	@Query(value = "SELECT t FROM Technology t order by technologyName")
+	ArrayList<Technology> getAll();
+
 	
 	
 }

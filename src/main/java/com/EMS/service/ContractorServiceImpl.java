@@ -28,7 +28,7 @@ public class ContractorServiceImpl implements ContractorService{
 
 	@Override
 	public ArrayList<EmployeeContractors> getContractorList() {
-		ArrayList<EmployeeContractors> list=(ArrayList<EmployeeContractors>) contractorRepository.findAll();
+		ArrayList<EmployeeContractors> list=(ArrayList<EmployeeContractors>) contractorRepository.getAlData();
 		return list;
 	}
 

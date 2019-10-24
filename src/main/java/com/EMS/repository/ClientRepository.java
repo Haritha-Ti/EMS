@@ -1,5 +1,6 @@
 package com.EMS.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,14 @@ public interface ClientRepository extends JpaRepository<ClientModel, Long>{
 
 	@Query(value="SELECT count(*) FROM client  WHERE client_name=?1",nativeQuery=true)
 	int findClient(String clientName);
+
+	@Query("Select s From ClientModel s order by clientName")
+	ArrayList<ClientModel> getAll();
+	
+	
+	
+	
+	
+	
 
 }

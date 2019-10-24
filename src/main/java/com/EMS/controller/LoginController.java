@@ -110,6 +110,7 @@ public class LoginController {
 					data.put("userId", usercheck.getUserId());
 					data.put("roleId", usercheck.getRole().getroleId());
 					data.put("roleName", usercheck.getRole().getroleName());
+					data.put("regionName",usercheck.getRegion().getRegion_name());
 						
 					ObjectMapper mapper = new ObjectMapper();
 					ArrayNode array = getBlockedPageList(usercheck.getRole().getroleId());

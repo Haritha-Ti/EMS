@@ -568,6 +568,7 @@ public class ProjectController {
 						userobj.put("lastName", userdata.getLastName());
 						userobj.put("role", userdata.getRole().getroleId());
 						userobj.put("userId", userdata.getUserId());
+						userobj.put("regionId", userdata.getRegion().getId());
 
 					}
 					jsonobj.set("approver_level_1", userobj);
@@ -1092,5 +1093,43 @@ public class ProjectController {
 		}
 		return responsedata;
 	}
+	
+	@PostMapping("/editParentProject")
+	public JsonNode edit_Parentproject(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		int responseflag = 0;
+		
+		try {
+			ProjectModel project = projectservice.findById(requestdata.get("projectId").asLong());
+			project.setProjectName(requestdata.get("projectName").asText());
+			ProjectModel projectmodel = projectservice.save_project_record(project);
+			
+			if (projectmodel == null) {
+				responseflag = 1;
+				responsedata.put("message", "Project record creation failed");
+			}
+			
+			if (responseflag == 0) {
+				responsedata.put("status", "success");
+				responsedata.put("code", httpstatus.getStatus());
+				responsedata.put("message", "Record Inserted");
+				responsedata.put("payload", "");
+			} else {
+				responsedata.put("status", "Failed");
+				responsedata.put("code", httpstatus.getStatus());
+				responsedata.put("payload", "");
+			}
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			
+			responsedata.put("status", "Failed");
+			responsedata.put("code", httpstatus.getStatus());
+			responsedata.put("message", "Exception " + e);
+			responsedata.put("payload", "");
+		}
+		return responsedata;
+	}
+	
 
 }

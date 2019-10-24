@@ -83,4 +83,11 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 		//Renjith
 
 	
+	@Query(value = "SELECT (100 - SUM(allocation.allocated_perce )) FROM allocation " + 
+			" WHERE allocation.start_date <= ?2 AND allocation.user_user_id = ?1 ",nativeQuery = true)
+	Object[] getAvailableAlloc(long userId,Date current);
+
+
+
+	
 }
