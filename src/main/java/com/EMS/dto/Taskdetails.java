@@ -11,7 +11,7 @@ public class Taskdetails {
 	private Date fromDate;
 	private Date toDate;
 	private Long projectId;
-	
+	private Long sessionId;
 	public Date getFromDate() {
 		return fromDate;
 	}
@@ -56,6 +56,12 @@ public class Taskdetails {
 	}
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
+	}
+	public Long getSessionId() {
+		return sessionId;
+	}
+	public void setSessionId(Long sessionId) {
+		this.sessionId = sessionId;
 	}
 	
 

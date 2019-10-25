@@ -79,8 +79,8 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	@Query(value="SELECT * FROM `allocation` as alloc Join project as pro ON alloc.project_project_id=pro.project_id where pro.project_category=2 AND alloc.start_date<=?1 AND alloc.end_date>=?1",nativeQuery=true)
 	List<AllocationModel> getBenchResources(String datestring);
 
-	    //Renjith
-		@Query("select u.user from AllocationModel u where u.project.projectId = ?1 ")
+	     //Renjith
+		@Query("select u.user from AllocationModel u where u.project.projectId = ?1 order by u.user.firstName Asc ")
 		List<UserModel>  getUsersByProjectId(Long projectId );
 		//Renjith
 

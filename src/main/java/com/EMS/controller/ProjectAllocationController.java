@@ -188,11 +188,9 @@ public class ProjectAllocationController {
 			List<ProjectModel> projectList = new ArrayList<ProjectModel>();
 			try {
 				
-				System.out.println(userService.getUserDetailsById(userId));
-				System.out.println(userService.getUserDetailsById(userId).getRole());
+				
 				roleId = userService.getUserDetailsById(userId).getRole().getroleId();
-				System.out.println(userService.getUserdetailsbyId(userId));
-				System.out.println(userService.getUserdetailsbyId(userId).getRegion());
+				
 				regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
 
 				if (roleId == 1){
