@@ -1,5 +1,7 @@
 package com.EMS.repository;
 
+import java.awt.print.Pageable;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -86,6 +88,15 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	@Query(value = "SELECT (100 - SUM(allocation.allocated_perce )) FROM allocation " + 
 			" WHERE allocation.start_date <= ?2 AND allocation.user_user_id = ?1 ",nativeQuery = true)
 	Object[] getAvailableAlloc(long userId,Date current);
+
+	@Query(value ="SELECT (100 - SUM(allocation.allocated_perce)) FROM allocation WHERE allocation.user_user_id  = ?1 AND allocation.start_date <= ?2 AND allocation.end_date >= ?3",nativeQuery = true)
+	Object[] getFreeAlloc(Long userId, Date fromDate, Date toDate);
+
+	@Query(value = "SELECT allocation.alloc_id FROM allocation WHERE allocation.project_project_id = ?1 " + 
+			" and allocation.user_user_id = ?2 " + 
+			" order by allocation.end_date desc " + 
+			" LIMIT 1",nativeQuery = true)
+	BigInteger getAllocationContinousDateRange(Long projectId, Long userId, Date startDate, Date endDate);
 
 
 

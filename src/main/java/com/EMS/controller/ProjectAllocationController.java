@@ -1,6 +1,8 @@
 package com.EMS.controller;
 
+import java.math.BigInteger;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -491,6 +494,45 @@ public class ProjectAllocationController {
 			allocationModel.setEndDate(endDate);
 			allocationModel.setAllocatedPerce(val);
 			allocationModel.setIsBillable(isBillable);
+			
+			//if the endate is just after the end date of previously added one
+			System.out.println("Here---------------------->");
+			//List<Object[]> allocationModelnew = projectAllocation.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
+			//Object[] allocationModelnew = projectAllocation.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
+			
+			BigInteger allocationID=projectAllocation.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
+			System.out.println("Here---------------------->1"+allocationID);
+			Long prim_id = null;
+			//long alloc_id = 721;
+			
+		
+
+			if(allocationID.compareTo(BigInteger.ZERO)>0) 
+			{
+				prim_id = allocationID.longValue();
+				
+				
+				//System.out.println("-------------------->2");
+				AllocationModel allocationmodelupdate = projectAllocation.findById(prim_id);
+				long difference = startDate.getTime()-allocationmodelupdate.getEndDate().getTime();
+				long diff = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS);
+				//System.out.println("-------------------->3"+diff);
+				if(diff == 1) {
+					
+					allocationmodelupdate.setEndDate(endDate);
+					allocationmodelupdate.setAllocatedPerce(val);
+					projectAllocation.save(allocationmodelupdate);
+				
+				}
+			else {
+				projectAllocation.save(allocationModel);
+			}
+			
+			}else {
+				projectAllocation.save(allocationModel);
+			}
+			
+			
 			// Check whether the user is already allocated to the project.If so
 			// update the previous entry of the user otherwise new entry is
 			// created.
@@ -507,7 +549,7 @@ public class ProjectAllocationController {
 			 * } else {
 			 */
 
-			projectAllocation.save(allocationModel);
+		
 
 			// }
 
@@ -938,5 +980,45 @@ public class ProjectAllocationController {
 		}
 		return jsonDataRes;
 
+	}
+	
+	@PostMapping("/getFreeAllocation")
+	public JsonNode getFreeAllocation(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) {
+
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		
+		Long userId = requestdata.get("userId").asLong();
+		String startDate = requestdata.get("startDate").asText();
+		String endDate = requestdata.get("endDate").asText();
+		Date fromDate = null, toDate = null;
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			fromDate = df.parse(startDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			toDate = df.parse(endDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+		Object[] freeAlloc = projectAllocation.getFreeAlloc(userId,fromDate,toDate);
+		responsedata.put("status", "success");
+		responsedata.put("code", httpstatus.getStatus());
+		responsedata.put("message", "success ");
+		responsedata.put("totalFreeAlloc", (double) freeAlloc[0]);
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			responsedata.put("status", "failure");
+			responsedata.put("code", httpstatus.getStatus());
+			responsedata.put("message", "failed. " + e);
+		}
+		
+		return responsedata;
 	}
 }
