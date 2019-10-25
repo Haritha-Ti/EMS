@@ -28,7 +28,7 @@ public class ClientServiceImpl implements ClientService{
 
 	@Override
 	public ArrayList<ClientModel> getClientList() {
-		ArrayList<ClientModel> list=(ArrayList<ClientModel>) clientRepository.findAll();
+		ArrayList<ClientModel> list=(ArrayList<ClientModel>) clientRepository.getAll();
 		return list;
 	}
 

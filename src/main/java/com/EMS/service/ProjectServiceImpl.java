@@ -185,7 +185,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public List<ClientModel> getClientList() {
-		List<ClientModel> list=client_repository.findAll();
+		List<ClientModel> list=client_repository.getAll();
 		return list;
 	}
 

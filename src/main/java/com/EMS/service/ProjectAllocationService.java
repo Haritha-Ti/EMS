@@ -37,10 +37,13 @@ public interface ProjectAllocationService {
 
 
     List<UserModel> getUserLists();
-    
+
     //Renjith
     public List<UserModel>  getUsersByProjectId(Long projectId );
     //Renjith
+
+	public double getAvailableAlloc(Long projectId, long userId);
+
 }
 
 

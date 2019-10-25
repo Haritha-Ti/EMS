@@ -1,8 +1,15 @@
 package com.EMS.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -183,4 +190,26 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
     	return projectAllocationRepository.getUsersByProjectId(projectId);
     }
     //Renjith
+
+	@Override
+	public double getAvailableAlloc(Long projectId, long userId) {
+		// TODO Auto-generated method stub
+		
+		
+		LocalDateTime ldt = LocalDateTime.now();
+		String date1 = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).format(ldt);
+		 Date current = new Date();
+		try {
+			current = new SimpleDateFormat("yyyy-MM-dd").parse(date1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		Object[] availableAlloc = projectAllocationRepository.getAvailableAlloc(userId,current);
+		
+		double available = (double) availableAlloc[0];
+		return available;
+	}
+
+
 }
