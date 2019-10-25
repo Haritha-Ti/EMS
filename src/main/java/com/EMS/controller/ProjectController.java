@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,6 +33,7 @@ import com.EMS.model.TimeZoneModel;
 import com.EMS.model.UserModel;
 import com.EMS.model.EmployeeContractors;
 import com.EMS.service.ProjectService;
+import com.EMS.service.RegionFilterService;
 import com.EMS.service.RegionService;
 import com.EMS.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -55,6 +57,9 @@ public class ProjectController {
 
 	@Autowired
 	private RegionService regionService;
+	
+	@Autowired
+	private RegionFilterService regionFilterService;
 
 	@PostMapping("/createProject")
 	public JsonNode save_newproject(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) {
@@ -486,15 +491,22 @@ public class ProjectController {
 	}
 
 	// api for project list
-	@GetMapping(value = "/viewProjects")
-	public JsonNode getProjectsList(HttpServletResponse statusResponse) {
+	@PostMapping(value = "/viewProjects")
+	public JsonNode getProjectsList(@RequestBody JsonNode requestdata,HttpServletResponse statusResponse) {
 		ObjectNode responsedata = objectMapper.createObjectNode();
 		ArrayNode projectArray = objectMapper.createArrayNode();
-
+        Long userId=null;
 		try {
 			// Getting all projects list to arraylist
-			ArrayList<ProjectModel> projectlist = projectservice.getListofProjects();
-
+			ArrayList<ProjectModel> projectlist=null;
+			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
+				userId = requestdata.get("sessionId").asLong();
+			}
+			if(userId == null)
+			projectlist = projectservice.getListofProjects();
+			else
+		    projectlist =  (ArrayList<ProjectModel>) regionFilterService.getAllProjectByLoginUserRegion(userId);	
+				
 			// checking for project arraylist is empty or not
 			if (projectlist.isEmpty()) {
 				responsedata.put("status", "success");

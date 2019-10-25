@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -895,7 +896,7 @@ public class LoginController {
 	}
 
 	@GetMapping("/getAllUserList")
-	public JsonNode getAllUserList(HttpServletResponse httpstatus) throws ParseException {
+	public JsonNode getAllUserList(@RequestParam("sessionId") Long userId,HttpServletResponse httpstatus) throws ParseException {
 
 		ObjectNode dataNode = objectMapper.createObjectNode();
 		ObjectNode node = objectMapper.createObjectNode();
@@ -903,7 +904,17 @@ public class LoginController {
 
 
 		try {
-			JsonNode userList = userService.getAllUserList();
+			JsonNode userList=null;
+			if(userId==null){
+				
+				 userList = userService.getAllUserList();
+			}
+			
+			else{
+				Long regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
+				 userList = userService.getAllUsersByRegion(regionId);
+			}
+				
 			for(JsonNode nodeItem : userList) {
 				ArrayNode techarray=objectMapper.createArrayNode();
 
