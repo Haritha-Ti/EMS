@@ -192,6 +192,12 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
     public List<UserModel>  getUsersByProjectId(Long projectId ){
     	return projectAllocationRepository.getUsersByProjectId(projectId);
     }
+    
+    @Override
+	public List<UserModel> getUserListByRegion(Long regionId) {
+		List<UserModel> userList = userRepository.getUserlistByregion(regionId);
+		return userList;
+	}
     //Renjith
 
 	@Override

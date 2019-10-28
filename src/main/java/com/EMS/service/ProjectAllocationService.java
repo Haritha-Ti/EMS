@@ -41,6 +41,7 @@ public interface ProjectAllocationService {
 
     //Renjith
     public List<UserModel>  getUsersByProjectId(Long projectId );
+    public List<UserModel> getUserListByRegion(Long regionId);
     //Renjith
 
 	public double getAvailableAlloc(Long projectId, long userId);
