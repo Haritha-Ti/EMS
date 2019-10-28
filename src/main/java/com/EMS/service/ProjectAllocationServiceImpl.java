@@ -1,5 +1,6 @@
 package com.EMS.service;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -12,6 +13,8 @@ import java.util.Locale;
 
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.EMS.model.AllocationModel;
@@ -209,6 +212,21 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 		
 		double available = (double) availableAlloc[0];
 		return available;
+	}
+
+	@Override
+	public Object[] getFreeAlloc(Long userId, Date fromDate, Date toDate) {
+		// TODO Auto-generated method stub
+		
+		Object[] freeAlloc = projectAllocationRepository.getFreeAlloc(userId,fromDate,toDate);
+		return freeAlloc;
+	}
+
+	@Override
+	public BigInteger getAllocationContinousDateRange(Long projectId, Long userId, Date startDate, Date endDate) {
+		// TODO Auto-generated method stub
+		//Object[] allocationmodel = projectAllocationRepository.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
+		return projectAllocationRepository.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
 	}
 
 

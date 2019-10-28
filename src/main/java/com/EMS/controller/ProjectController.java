@@ -715,13 +715,14 @@ public class ProjectController {
 					if (projectmodel != null)
 					{
 						ArrayList<ProjectRegion> regions = projectservice.getRegionsByprojectId(projectmodel.getProjectId());
+						
 						if(regions.size() > 0) {
 						int i = projectservice.deleteProjectRegions(projectmodel.getProjectId());
 						System.out.println("-----------i"+i);
-						if(i == 1) {
+						if(i>0) {
 							
 							for(JsonNode nodes : regionsjson) {
-								
+								System.out.println("Regions--------------Id"+nodes.asLong());	
 								ProjectRegion regionedits = new ProjectRegion();
 								regionedits.setProject_Id(projectmodel);
 								Region region1 = regionService.getregion(nodes.asLong());
@@ -1150,6 +1151,7 @@ public class ProjectController {
 		}
 		return responsedata;
 	}
+
 	
 
 }

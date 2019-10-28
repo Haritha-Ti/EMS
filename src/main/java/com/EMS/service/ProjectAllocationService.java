@@ -1,5 +1,6 @@
 package com.EMS.service;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +44,10 @@ public interface ProjectAllocationService {
     //Renjith
 
 	public double getAvailableAlloc(Long projectId, long userId);
+	
+	public Object[] getFreeAlloc(Long userId, Date fromDate, Date toDate);
+	
+	public BigInteger getAllocationContinousDateRange(Long projectId, Long userId, Date startDate, Date endDate) ;
 
 }
 
