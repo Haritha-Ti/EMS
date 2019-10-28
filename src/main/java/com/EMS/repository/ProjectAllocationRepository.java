@@ -80,7 +80,7 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	List<AllocationModel> getBenchResources(String datestring);
 
 	     //Renjith
-		@Query("select u.user from AllocationModel u where u.project.projectId = ?1 order by u.user.firstName Asc ")
+		@Query("select Distinct(u.user) from AllocationModel u where u.project.projectId = ?1 order by u.user.firstName Asc ")
 		List<UserModel>  getUsersByProjectId(Long projectId );
 		//Renjith
 
