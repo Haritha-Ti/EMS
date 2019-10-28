@@ -534,6 +534,22 @@ public class ProjectController {
 					jsonobj.put("projectCode", obj.getProjectCode());
 					jsonobj.put("projectType", obj.getprojectType());
 					jsonobj.put("projectStatus", obj.getprojectStatus());
+					
+					//get region list
+                    List<ProjectRegion> regions = projectservice.getregionlist(obj.getProjectId());
+                    ArrayNode regionsArray = objectMapper.createArrayNode();
+                    ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+                    if(regions.isEmpty()) {
+                        jsonobj.set("projectRegion", regionsArray);
+                    }
+                    else {
+                        for(ProjectRegion regioneach : regions) {
+                            ObjectNode resource = objectMapper.createObjectNode();
+                            regionsArray.add((int)regioneach.getRegion_Id().getId());
+                        }
+                        jsonobj.set("projectRegion", regionsArray);
+                    }
+                    //
 					 if(obj.getReleasingDate()!=null)
 					 {
 					jsonobj.put("releasingDate", obj.getReleasingDate().toString());
@@ -550,6 +566,7 @@ public class ProjectController {
 					    jsonobj.set("client", client);
 						
 					}
+					
 					Long contractId = obj.getContract().getContractTypeId();
 
 					if (contractId != null) {
@@ -591,7 +608,7 @@ public class ProjectController {
 					projectArray.add(jsonobj);
 				}
 					  catch (Exception e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 			   	
 			}

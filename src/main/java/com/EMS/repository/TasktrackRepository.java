@@ -87,4 +87,8 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	@Query(value="SELECT count(*) from allocation a where a.project_project_id=?1 and  a.start_date <=?3 and a.end_date >=?2",nativeQuery = true)
 	int  checkprojectallocated(long projectId,Date startdate,Date enddate);
 	
+	//Renjith
+	
+	//Renjith
+	
 }

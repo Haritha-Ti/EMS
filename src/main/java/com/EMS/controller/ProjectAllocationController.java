@@ -224,7 +224,7 @@ public class ProjectAllocationController {
 
 			if ((uId == null || uId == "") && (dId == null || dId == "") && (regionId == null || regionId == "")) {
 				System.out.println("no ids");
-				List<UserModel> userList = userService.getUserByRegion(loginUserRegionId);
+				List<UserModel> userList = userService.getUserByRegionAndDepartment(loginUserRegionId);
 
 				// Invoc getUserAllocationList() to findout the allocation
 				// details of the user
@@ -504,7 +504,7 @@ public class ProjectAllocationController {
 				}
 					
 
-				if (roleId == 4 | roleId == 6 | roleId == 9) {
+				if (roleId == 4 | roleId == 5 | roleId == 6 | roleId == 9) {
 					projectList = projectRegionService.getProjectsByRegionId(regionId);
 					isLevels= false;
 				}

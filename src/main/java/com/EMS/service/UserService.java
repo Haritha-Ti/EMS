@@ -73,4 +73,8 @@ public interface UserService {
 	//Bala
 	public JsonNode getAllUsersByRegion(Long regionId);
 	//Bala
+	
+	//Renjith
+	public List<UserModel> getUserByRegionAndDepartment(Long regionId);
+	//Renjith
 }

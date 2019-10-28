@@ -10,5 +10,7 @@ import com.EMS.model.ProjectModel;
 public interface ProjectRegionService {
 	
 	List<ProjectModel>   getProjectsByRegionId(Long regionId);
+	List<Object[]>   getObjProjectsByRegionId(Long regionId);
+	
 
 }

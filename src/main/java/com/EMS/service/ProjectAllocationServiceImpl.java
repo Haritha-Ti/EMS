@@ -195,7 +195,7 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
     
     @Override
 	public List<UserModel> getUserListByRegion(Long regionId) {
-		List<UserModel> userList = userRepository.getUserlistByregion(regionId);
+		List<UserModel> userList = userRepository.getUserlistByregionAndDepartment(regionId);
 		return userList;
 	}
     //Renjith

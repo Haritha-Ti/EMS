@@ -1935,25 +1935,39 @@ public class TasktrackController {
 			}
 		} else {
 			List<Object[]> projectList = null;
-			if (user.getRole().getroleName().equals("APPROVER_LEVEL_2")) {
+			if (user.getRole().getroleId()==7) {
 				// System.out.println("_________________________________________APPROVER_LEVEL_2
 				// " +uId );
 				projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId);
-			} else if (user.getRole().getroleName().equals("LEAD")) {
-				// System.out.println("_________________________________________APPROVER_LEVEL_1
+			} else if (user.getRole().getroleId()==2) {
+				// System.out.println("_________________________________________APPROVER_LEVEL_1/Lead
 				// "+uId);
 				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId);
-			} else {
+			} 
+			//Renjith
+			else if (user.getRole().getroleId()==5) {
+				// System.out.println("_________________________________________Sub Admin
+				// "+uId);
+				projectList = projectRegionService.getObjProjectsByRegionId(user.getRegion().getId());
+			}
+			
+			
+			else {
 				// System.out.println("_________________________________________Other"+uId);
 				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId);
 			}
 
 			for (Object[] alloc : projectList) {
+				try {
+					ObjectNode node = objectMapper.createObjectNode();
+					node.put("id", (Long) alloc[1]);
+					node.put("value", (String) alloc[0]);
+					projectTitle.add(node);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-				ObjectNode node = objectMapper.createObjectNode();
-				node.put("id", (Long) alloc[1]);
-				node.put("value", (String) alloc[0]);
-				projectTitle.add(node);
+				
 			}
 		}
 		ObjectNode dataNode = objectMapper.createObjectNode();
@@ -3148,7 +3162,7 @@ public class TasktrackController {
 				isLevels = false;
 			}
 
-			if (roleId == 4 | roleId == 6 | roleId == 9) {
+			if (roleId == 4 | roleId == 5 | roleId == 6 | roleId == 9) {
 				projectList = projectRegionService.getProjectsByRegionId(regionId);
 				isLevels = false;
 			}

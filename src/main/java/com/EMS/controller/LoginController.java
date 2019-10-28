@@ -905,7 +905,8 @@ public class LoginController {
 
 		try {
 			JsonNode userList=null;
-			if(userId==null){
+			Long roleId = userService.getUserDetailsById(userId).getRole().getroleId();
+			if(roleId==1){
 				
 				 userList = userService.getAllUserList();
 			}

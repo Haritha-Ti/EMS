@@ -15,6 +15,9 @@ public interface ProjectRegionRepository extends JpaRepository<ProjectRegion, Lo
 	
 	@Query("SELECT r.project_Id  FROM ProjectRegion r WHERE r.region_Id.id=?1 order by r.project_Id.projectName Asc ")
 	List<ProjectModel>   getProjectsByRegionId(Long regionId);
+	
+	@Query("SELECT r.project_Id.projectName,r.project_Id.projectId  FROM ProjectRegion r WHERE r.region_Id.id=?1 order by r.project_Id.projectName Asc ")
+	List<Object[]>   getObjProjectsByRegionId(Long regionId);
 
 
 

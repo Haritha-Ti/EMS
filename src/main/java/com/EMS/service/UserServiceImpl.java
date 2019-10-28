@@ -275,5 +275,14 @@ public class UserServiceImpl implements UserService {
 	}
 	//Bala
 	
+	//Renjith
+	@Override
+	public List<UserModel> getUserByRegionAndDepartment(Long regionId) {
+		// TODO Auto-generated method stub
+		List<UserModel> modles = userRepository.getUserlistByregionAndDepartment(regionId);
+		return modles;
+	}
+	//Renjith
+	
 
 }

@@ -21,4 +21,13 @@ public class ProjectRegionServiceImpl implements ProjectRegionService{
 		return projectRegionRepository.getProjectsByRegionId(regionId);
 	}
 
+	@Override
+	public List<Object[]> getObjProjectsByRegionId(Long regionId) {
+		// TODO Auto-generated method stub
+		return projectRegionRepository.getObjProjectsByRegionId(regionId);
+	}
+	
+	
+	
+
 }
