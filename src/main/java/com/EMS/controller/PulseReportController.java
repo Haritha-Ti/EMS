@@ -257,7 +257,8 @@ public class PulseReportController {
 				IcorNon = "Non IC";
 			}
 			
-			String sheetName = month+" "+yearIndex+" "+IcorNon;
+			//String sheetName = month+" "+yearIndex+" "+IcorNon;
+			String sheetName = month+" "+yearIndex;
 			
 			String reportType = "monthly";
 
@@ -336,7 +337,8 @@ public class PulseReportController {
 				IcorNon = "Non IC";
 			}
 			
-			String sheetName = month+"-Mid"+" "+yearIndex+" "+IcorNon;
+			//String sheetName = month+"-Mid"+" "+yearIndex+" "+IcorNon;
+			String sheetName = month+"-Mid"+" "+yearIndex;
 			String reportType = "midmonth";
 
 			ArrayList<String> colNames = new ArrayList<String>();
