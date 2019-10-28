@@ -518,6 +518,7 @@ public class ProjectController {
 				// loop for getting projectwise details
 				for (ProjectModel obj : projectlist) {
 
+					  try{
 					// Object declarations
 					ObjectNode client = objectMapper.createObjectNode();
 					ContractModel contract = null;
@@ -533,8 +534,10 @@ public class ProjectController {
 					jsonobj.put("projectCode", obj.getProjectCode());
 					jsonobj.put("projectType", obj.getprojectType());
 					jsonobj.put("projectStatus", obj.getprojectStatus());
+					 if(obj.getReleasingDate()!=null)
+					 {
 					jsonobj.put("releasingDate", obj.getReleasingDate().toString());
-					
+					 }
 					if(obj.getClientName() != null)
 					{
 						client.put("clientId", obj.getClientName().getClientId());
@@ -587,6 +590,11 @@ public class ProjectController {
 
 					projectArray.add(jsonobj);
 				}
+					  catch (Exception e) {
+						e.printStackTrace();
+					}
+			   	
+			}
 				responsedata.put("status", "success");
 				responsedata.put("message", "success");
 				responsedata.put("code", statusResponse.getStatus());
