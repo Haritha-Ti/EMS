@@ -70,7 +70,7 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
   		"          sum(COALESCE(f.day29,0))+sum(COALESCE(f.day30,0))+sum(COALESCE(f.day31,0))) as totalhour FROM tasktrack_approval_finance f " +
           " INNER JOIN project p ON ( p.project_id = f.project_project_id) "
           + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Billable','Overtime','Non-Billable') and "
-          + " (CASE WHEN ?4 = 1 " + 
+          + " (CASE WHEN ?4 = 1 " +
           "          THEN p.project_type = 1 " + 
           "          WHEN ?4 = 0 " + 
           "          THEN p.project_type = 0 " + 
@@ -79,11 +79,12 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
 
     @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
             "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
-            "sum(COALESCE(day15,0))) as totalhour FROM tasktrack_approval_finance f INNER JOIN project p ON ( p.project_id = f.project_project_id) where user_user_id=?3 and month=?1 and year=?2 and f.project_type in('Billable','Overtime','Non-Billable') and   (CASE WHEN ?4 = 1 " + 
-            "                    THEN p.project_type = 1 " + 
-            "               WHEN ?4 = 0  " + 
-            "                   THEN p.project_type = 0 " + 
-            "                   ELSE p.project_id != 0 END) ",nativeQuery = true)
+            "sum(COALESCE(day15,0))) as totalhour FROM tasktrack_approval_finance f INNER JOIN project p ON ( p.project_id = f.project_project_id) where user_user_id=?3 and month=?1 and year=?2 and f.project_type in('Billable','Overtime','Non-Billable') "
+			/*+" and   (CASE WHEN ?4 = 1 " +
+            " THEN p.project_type = 1 " +
+            " WHEN ?4 = 0  " +
+            "  THEN p.project_type = 0 " +
+            "  ELSE p.project_id != 0 END) "*/,nativeQuery = true)
     List<Object[]> getTimeTrackApprovalDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id,int projectType);
 
     @Query(value ="SELECT user_user_id as id,(sum(COALESCE(f.day1,0))+sum(COALESCE(f.day2,0))+sum(COALESCE(f.day3,0))+sum(COALESCE(f.day4,0))+sum(COALESCE(f.day5,0))+sum(COALESCE(f.day6,0))+sum(COALESCE(f.day7,0))+\n" + 
@@ -92,21 +93,22 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
     		"          sum(COALESCE(f.day22,0))+sum(COALESCE(f.day23,0))+sum(COALESCE(f.day24,0))+sum(COALESCE(f.day25,0))+sum(COALESCE(f.day26,0))+sum(COALESCE(f.day27,0))+sum(COALESCE(f.day28,0))+\n" + 
     		"          sum(COALESCE(f.day29,0))+sum(COALESCE(f.day30,0))+sum(COALESCE(f.day31,0))) as billablehour FROM tasktrack_approval_finance f " +
             " INNER JOIN project p ON ( p.project_id = f.project_project_id) "
-            + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Billable') and "
-            + " (CASE WHEN ?4 = 1 " + 
+            + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Billable')  "
+            /*+ " and (CASE WHEN ?4 = 1 " +
             "          THEN p.project_type = 1 " + 
             "          WHEN ?4 = 0 " + 
             "          THEN p.project_type = 0 " + 
-            "          ELSE p.project_id != 0 END) ",nativeQuery = true)
+            "          ELSE p.project_id != 0 END) " */,nativeQuery = true)
     List<Object[]> getBillableDataByUserId(Integer monthIndex,Integer yearIndex,Long id, int projectType);
 
     @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
             "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
-            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance f  INNER JOIN project p ON ( p.project_id = f.project_project_id) where user_user_id=?3 and month=?1 and year=?2 and f.project_type in('Billable') and   (CASE WHEN ?4 = 1 " + 
+            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance f  INNER JOIN project p ON ( p.project_id = f.project_project_id) where user_user_id=?3 and month=?1 and year=?2 and f.project_type in('Billable') "
+			/*+" and   (CASE WHEN ?4 = 1 " +
             "          THEN p.project_type = 1 " + 
             "          WHEN ?4 = 0 " + 
             "          THEN p.project_type = 0 " + 
-            "          ELSE p.project_id != 0 END) ",nativeQuery = true)
+            "          ELSE p.project_id != 0 END) "*/,nativeQuery = true)
     List<Object[]> getBillableDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id,int projectType);
 
     @Query(value ="SELECT user_user_id as id,(sum(COALESCE(f.day1,0))+sum(COALESCE(f.day2,0))+sum(COALESCE(f.day3,0))+sum(COALESCE(f.day4,0))+sum(COALESCE(f.day5,0))+sum(COALESCE(f.day6,0))+sum(COALESCE(f.day7,0))+\n" + 
@@ -115,22 +117,23 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
     		"          sum(COALESCE(f.day22,0))+sum(COALESCE(f.day23,0))+sum(COALESCE(f.day24,0))+sum(COALESCE(f.day25,0))+sum(COALESCE(f.day26,0))+sum(COALESCE(f.day27,0))+sum(COALESCE(f.day28,0))+\n" + 
     		"          sum(COALESCE(f.day29,0))+sum(COALESCE(f.day30,0))+sum(COALESCE(f.day31,0))) as billablehour FROM tasktrack_approval_finance f" +
             " INNER JOIN project p ON ( p.project_id = f.project_project_id) "
-            + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Non-Billable') and "
-            + " (CASE WHEN ?4 = 1 " + 
+            + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Non-Billable') "
+           /* + "  and (CASE WHEN ?4 = 1 " +
             "          THEN p.project_type = 1 " + 
             "          WHEN ?4 = 0 " + 
             "          THEN p.project_type = 0 " + 
-            "          ELSE p.project_id != 0 END) "
+            "          ELSE p.project_id != 0 END) "*/
             ,nativeQuery = true)
     List<Object[]> getNonBillableDataByUserId(Integer monthIndex,Integer yearIndex,Long id,int projectType);
 
     @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
             "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
-            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance f INNER JOIN project p ON ( p.project_id = f.project_project_id) where user_user_id=?3 and month=?1 and year=?2 and f.project_type in('Non-Billable') and   (CASE WHEN ?4 = 1 " + 
+            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance f INNER JOIN project p ON ( p.project_id = f.project_project_id) where user_user_id=?3 and month=?1 and year=?2 and f.project_type in('Non-Billable') "
+			/*+"and   (CASE WHEN ?4 = 1 " +
             "          THEN p.project_type = 1 " + 
             "          WHEN ?4 = 0 " + 
             "          THEN p.project_type = 0 " + 
-            "          ELSE p.project_id != 0 END)",nativeQuery = true)
+            "          ELSE p.project_id != 0 END)"*/,nativeQuery = true)
     List<Object[]> getNonBillableDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id,int projectType);
 
     @Query(value ="SELECT user_user_id as id,(sum(COALESCE(f.day1,0))+sum(COALESCE(f.day2,0))+sum(COALESCE(f.day3,0))+sum(COALESCE(f.day4,0))+sum(COALESCE(f.day5,0))+sum(COALESCE(f.day6,0))+sum(COALESCE(f.day7,0))+\n" + 
@@ -139,21 +142,22 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
     		"          sum(COALESCE(f.day22,0))+sum(COALESCE(f.day23,0))+sum(COALESCE(f.day24,0))+sum(COALESCE(f.day25,0))+sum(COALESCE(f.day26,0))+sum(COALESCE(f.day27,0))+sum(COALESCE(f.day28,0))+\n" + 
     		"          sum(COALESCE(f.day29,0))+sum(COALESCE(f.day30,0))+sum(COALESCE(f.day31,0))) as billablehour FROM tasktrack_approval_finance f " +
             " INNER JOIN project p ON ( p.project_id = f.project_project_id) "
-            + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Overtime') and "
-            + " (CASE WHEN ?4 = 1 " + 
+            + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Overtime')  "
+           /* + " and (CASE WHEN ?4 = 1 " +
             "          THEN p.project_type = 1 " + 
             "          WHEN ?4 = 0 " + 
             "          THEN p.project_type = 0 " + 
-            "          ELSE p.project_id != 0 END) ",nativeQuery = true)
+            "          ELSE p.project_id != 0 END) "*/,nativeQuery = true)
     List<Object[]> getOvertimeDataByUserId(Integer monthIndex,Integer yearIndex,Long id,int projectType);
 
     @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +
             "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+" +
-            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance f INNER JOIN project p ON ( p.project_id = f.project_project_id) where user_user_id=?3 and month=?1 and year=?2 and f.project_type in('Overtime') and   (CASE WHEN ?4 = 1 " + 
+            "sum(COALESCE(day15,0))) as billablehour FROM tasktrack_approval_finance f INNER JOIN project p ON ( p.project_id = f.project_project_id) where user_user_id=?3 and month=?1 and year=?2 and f.project_type in('Overtime') "
+			/*+" and   (CASE WHEN ?4 = 1 " +
             "          THEN p.project_type = 1 " + 
             "          WHEN ?4 = 0 " + 
             "          THEN p.project_type = 0 " + 
-            "          ELSE p.project_id != 0 END)",nativeQuery = true)
+            "          ELSE p.project_id != 0 END)"*/,nativeQuery = true)
     List<Object[]> getOvertimeDataByUserIdMidMonth(Integer monthIndex,Integer yearIndex,Long id,int projectType);
 
 	
