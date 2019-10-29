@@ -7,6 +7,7 @@ public class ExportApprovalReportModel {
 	private String firstName;
 	private String lastName;
 	private String cppLevel;
+	private String projectType;
 	private Double id;
 	private Double day1,day2,day3,day4,day5,day6,day7,day8,day9,day10,day11,day12,day13,day14,day15,day16,day17,day18,day19,day20,
 	day21,day22,day23,day24,day25,day26,day27,day28,day29,day30,day31;
@@ -16,7 +17,7 @@ public class ExportApprovalReportModel {
 		
 	}
 	
-	public ExportApprovalReportModel( Double id, String projectName, String firstName, String lastName,String cppLevel,
+	public ExportApprovalReportModel( Double id, String projectName, String firstName, String lastName,String projectType,String cppLevel,
 			Double day1,Double day2,Double day3,Double day4,Double day5,Double day6,Double day7,
 			Double day8,Double day9,Double day10,Double day11,Double day12,Double day13,Double day14,
 			Double day15,Double day16,Double day17,Double day18,Double day19,Double day20,Double 
@@ -28,6 +29,7 @@ public class ExportApprovalReportModel {
 			this.projectName = projectName;
 			this.firstName = firstName;
 			this.lastName = lastName;
+			this.projectType = projectType;
 			this.cppLevel = cppLevel;
 			this.day1 = day1;
 			this.day2 = day2;
@@ -349,6 +351,10 @@ public class ExportApprovalReportModel {
 	public void setCppLevel(String cppLevel) {
 		this.cppLevel = cppLevel;
 	}
+
+	public String getProjectType() { return  projectType; }
+
+	public void setProjectType(String projectType) { this.projectType = projectType; }
 
 	
 }

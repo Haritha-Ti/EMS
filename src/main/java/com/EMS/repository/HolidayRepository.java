@@ -32,4 +32,7 @@ public interface HolidayRepository extends JpaRepository<HolidayModel, Long>{
 
 	@Query(value = "SELECT Date(holiday.`date`) as `date` ,holiday.holiday_id,holiday.day,holiday.holiday_name,holiday.holiday_type,region.id,region.region_name FROM holiday INNER JOIN region on (region.id = holiday.region_id_id) where holiday.holiday_id = ?1 ",nativeQuery = true)
 	List<Object[]> getHolidayDetails(Long holiday_id);
+
+	@Query(value = "SELECT COUNT(date) as `total_holiday`  FROM holiday where holiday_type='National Holiday' and date <=?2 and date >=?1 and region_id_id = ?3",nativeQuery = true)
+	int getNationalHolidayListsByMonthRegion(Date startDate,Date endDate,Long regionId);
 }
