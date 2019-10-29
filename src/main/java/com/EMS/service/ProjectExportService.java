@@ -25,9 +25,9 @@ public interface ProjectExportService {
 
 	public void exportAllReport(List <ExportApprovalReportModel> data,Workbook workbook,Sheet sheet, ArrayList<String> colNames, String reportName) throws FileNotFoundException;
 
-	public void exportBenchReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, String reportType, Date startDate, Date endDate,int projectType) throws FileNotFoundException;
+	public void exportBenchReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, String reportType, Date startDate, Date endDate,int projectType,Long regionId) throws FileNotFoundException;
 
-	public void exportSummaryReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, String reportType, Date startDate, Date endDate,int projectType) throws Exception;
+	public void exportSummaryReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, String reportType, Date startDate, Date endDate,int projectType,Long regionId) throws Exception;
 
     public void exportFinanceDataByProject(Workbook workbook,Sheet sheet,String reportName,Integer month,Integer year,Long projectId,String projectName) throws Exception;
 
@@ -38,7 +38,7 @@ public interface ProjectExportService {
 	public void exportLeaveReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, Date startDate, Date endDate) throws FileNotFoundException, ParseException;
 
 	public void exportVacationReport(Workbook workrbook, Sheet sheet4, ArrayList<String> colNames, String nameofReport4,
-			int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate,int projectType);
+			int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate,int projectType,Long regionId);
 
 	public void exportFinanceDataByMonthAndYear(Workbook workrbook, Sheet sheet, String nameofReport, int month,
 			int year);

@@ -102,4 +102,9 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	List<UserModel> getUserlistByregionAndDepartment(Long regionId);
 	//Renjith
 
+	//Nisha
+	@Query(value = "SELECT user_id,first_name,last_name,joining_date,termination_date,c.level_name FROM user u INNER JOIN cpp_level  c on (u.cpplevels_id = c.id) where role_role_id in('2','3','5') and  department_department_id in('1','2','3','4','8') and region_id = ?3 and (termination_date >= ?1 or termination_date IS NULL) and joining_date<=?2 order by first_name",nativeQuery = true)
+	List<Object[]> getUserListByRegion(Date startDate, Date endDate,Long regionId);
+	//Nisha
+
 }

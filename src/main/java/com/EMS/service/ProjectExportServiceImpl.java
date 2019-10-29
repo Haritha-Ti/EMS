@@ -902,7 +902,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	}
 
 	@Override
-	public void exportBenchReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate,int projectType) throws FileNotFoundException {
+	public void exportBenchReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate,int projectType,Long regionId) throws FileNotFoundException {
 
 		String[] headers = new String[4];
 		//headers[0] = "User Id";
@@ -928,7 +928,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 		double benchHour = 0.0;
 		double total_hours =0.0;
-		List<Object[]> userList = userRepository.getUserList(startDate,endDate);
+		List<Object[]> userList = userRepository.getUserListByRegion(startDate,endDate,regionId);
 		List<Object[]> Listdata = new ArrayList<>();
 
 		for(Object[] item : userList) {
@@ -1107,7 +1107,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	}
 
 	@Override
-	public void exportSummaryReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate,int projectType) throws Exception {
+	public void exportSummaryReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,String reportType,Date startDate, Date endDate,int projectType,Long regionId) throws Exception {
 
 		String[] headers = new String[9];
 		//headers[0] = "User Id";
@@ -1144,7 +1144,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		double nonBillableHour   = 0.0;
 		double overtimeHour      = 0.0;
 
-		List<Object[]> userList = userRepository.getUserList(startDate,endDate);
+		List<Object[]> userList = userRepository.getUserListByRegion(startDate,endDate,regionId);
 		List<Object[]> Listdata = new ArrayList<>();
 
 		for(Object[] item : userList) {
@@ -1599,7 +1599,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	}
 
 	public void exportVacationReport(Workbook workrbook, Sheet sheet4, ArrayList<String> colNames, String nameofReport4,
-									 int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate,int projectType) {
+									 int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate,int projectType,Long regionId) {
 		// TODO Auto-generated method stub
 		String[] headers = new String[4];
 		//headers[0] = "User Id";
@@ -1625,7 +1625,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 		double vacationHour = 0.0;
 		double total_hours =0.0;
-		List<Object[]> userList = userRepository.getUserList(startDate,endDate);
+		List<Object[]> userList = userRepository.getUserListByRegion(startDate,endDate,regionId);
 		List<Object[]> Listdata = new ArrayList<>();
 
 		for(Object[] item : userList) {
