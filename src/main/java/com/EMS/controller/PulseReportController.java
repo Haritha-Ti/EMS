@@ -93,15 +93,19 @@ public class PulseReportController {
 		}
 		if (requestData.get("regionId") != null && requestData.get("regionId").asText() != "") {
 			regionId_selected = requestData.get("regionId").asLong();
+			if(user.getRole().getroleId() == 1 || user.getRole().getroleId() == 10) {
+				regionId = regionId_selected;
+			}
 		}
 		
 		
 		//System.out.println("region id "+regionId );
 		// if global user or admin
 		
-		if(regionId_selected != null || regionId_selected != 0  && user.getRole().getroleId() == 1 || user.getRole().getroleId() == 10) {
+		/*if(regionId_selected != null || regionId_selected != 0  && user.getRole().getroleId() == 1 || user.getRole().getroleId() == 10) {
 			regionId = regionId_selected;
-		}
+		}*/
+		System.out.println("regionSelected------------------>"+regionId);
 		
 		//
 		int projectType = 2;

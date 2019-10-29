@@ -502,8 +502,8 @@ public class ProjectAllocationController {
 				
 				regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
 
-				if (roleId == 1 | roleId == 10){
-					if(regionId_selected != null | regionId_selected != 0)
+				if ((roleId == 1 ) || (roleId == 10)){
+					if(regionId_selected!= null)
 					{
 						projectList = projectRegionService.getProjectsByRegionId(regionId_selected);
 					}
