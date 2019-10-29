@@ -3139,6 +3139,7 @@ public class TasktrackController {
 		int year = 0;
 		Long roleId = null;
 		Long regionId = null;
+		Long regionId_selected = null;
 		boolean isLevels = true;
 		Set<Long> projSet = null;
 		List<ProjectModel> projectList = new ArrayList<ProjectModel>();
@@ -3147,7 +3148,9 @@ public class TasktrackController {
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				userId = requestdata.get("sessionId").asLong();
 			}
-
+			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
+				regionId_selected = requestdata.get("regionId").asLong();
+			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
 
 			JSONObject outputdata = new JSONObject();
@@ -3156,9 +3159,16 @@ public class TasktrackController {
 			ArrayList<JSONObject> node1 = new ArrayList<JSONObject>();
 			roleId = userService.getUserDetailsById(userId).getRole().getroleId();
 			regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
-			if (roleId == 1) {
-
-				projectList = projectService.getProjectList();
+			
+			
+			if (roleId == 1 | roleId == 10) {
+				if(regionId_selected != null | regionId_selected != 0)
+				{
+					projectList = projectRegionService.getProjectsByRegionId(regionId_selected);
+				}
+				else {
+					projectList = projectService.getProjectList();
+				}	
 				isLevels = false;
 			}
 

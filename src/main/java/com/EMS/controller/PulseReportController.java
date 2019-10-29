@@ -83,12 +83,27 @@ public class PulseReportController {
 		String enddate = requestData.get("endDate").asText();
 		String reportName = requestData.get("reportName").asText();
 		Long userId = null;
+		Long regionId_selected = null;
+		Long regionId  = null;
+		UserModel user = null;
 		if (requestData.get("sessionId") != null && requestData.get("sessionId").asText() != "") {
 			userId = requestData.get("sessionId").asLong();
+			user = userRepository.getOne(userId);
+			regionId = user.getRegion().getId();
 		}
-		UserModel user=userRepository.getOne(userId);
-		Long regionId = user.getRegion().getId();
-		System.out.println("region id "+regionId );
+		if (requestData.get("regionId") != null && requestData.get("regionId").asText() != "") {
+			regionId_selected = requestData.get("regionId").asLong();
+		}
+		
+		
+		//System.out.println("region id "+regionId );
+		// if global user or admin
+		
+		if(regionId_selected != null || regionId_selected != 0  && user.getRole().getroleId() == 1 || user.getRole().getroleId() == 10) {
+			regionId = regionId_selected;
+		}
+		
+		//
 		int projectType = 2;
 		if(requestData.get("projectType") != null)
 		{ 

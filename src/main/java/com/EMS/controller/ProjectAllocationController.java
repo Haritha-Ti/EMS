@@ -476,13 +476,18 @@ public class ProjectAllocationController {
 			Long userId = null;
 			Long roleId = null;
 			Long regionId = null;
+			Long regionId_selected = null;
 	        boolean  isLevels=true;
 	        ArrayNode jsonProjectArray = objectMapper.createArrayNode();
 	        
+			if (requestdata.get("regionId") != null && (!requestdata.get("regionId").asText().trim().isEmpty())) {
+				regionId_selected = requestdata.get("regionId").asLong();
+			}
+
 			if (requestdata.get("sessionId") != null && (!requestdata.get("sessionId").asText().trim().isEmpty())) {
 				userId = requestdata.get("sessionId").asLong();
 			}
-
+			
 			if (userId == null) {
 				jsonDataRes.put("status", "failure");
 				jsonDataRes.put("code", httpstatus.getStatus());
@@ -497,9 +502,14 @@ public class ProjectAllocationController {
 				
 				regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
 
-				if (roleId == 1){
-					
-					projectList = projectService.getProjectList();
+				if (roleId == 1 | roleId == 10){
+					if(regionId_selected != null | regionId_selected != 0)
+					{
+						projectList = projectRegionService.getProjectsByRegionId(regionId_selected);
+					}
+					else {
+						projectList = projectService.getProjectList();
+					}
 					isLevels= false;
 				}
 					
