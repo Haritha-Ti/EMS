@@ -567,7 +567,10 @@ public class ProjectController {
 						
 					}
 					
-					Long contractId = obj.getContract().getContractTypeId();
+					Long contractId=null;
+					
+					if(obj.getContract()!=null)
+					 contractId = obj.getContract().getContractTypeId() ;
 
 					if (contractId != null) {
 						// getting contract details
@@ -608,7 +611,7 @@ public class ProjectController {
 					projectArray.add(jsonobj);
 				}
 					  catch (Exception e) {
-						//e.printStackTrace();
+						e.printStackTrace();
 					}
 			   	
 			}
