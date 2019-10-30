@@ -803,7 +803,7 @@ public class ReportController {
 
 						String projectName = projectService.getProjectName(projectId);
 						Sheet sheet = workrbook.createSheet(monthName + "-" + year);
-						String nameofReport = "Report Of project " + projectName;
+						String nameofReport = "Project Report  Consolidated" ;
 						projectExportService.exportFinanceDataByProjectSet(workrbook, sheet, nameofReport, month, year,
 								projSet);
 
@@ -842,7 +842,7 @@ public class ReportController {
 
 								String projectName = projectService.getProjectName(projectId);
 								Sheet sheet = workrbook.createSheet(monthName + "-" + year);
-								String nameofReport = "Report Of project " + projectName;
+								String nameofReport = "Project Report  Consolidated" ;
 								projectExportService.exportFinanceDataByProjectSet(workrbook, sheet, nameofReport, month, year,
 										projSet);
 

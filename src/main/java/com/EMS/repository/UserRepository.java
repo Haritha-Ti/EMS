@@ -100,6 +100,9 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	//Renjith
 	@Query("SELECT u FROM UserModel u WHERE u.region.id = ?1 AND u.active = true AND u.role = 3 and department_department_id not in('5','6','7','11') order by firstName")
 	List<UserModel> getUserlistByregionAndDepartment(Long regionId);
+	
+	@Query(value="SELECT count(*) FROM user where active=1 AND termination_date IS NULL AND region_id=?1",nativeQuery=true)
+	int getAllActiveUsersByRegion(Long  regionId);
 	//Renjith
 
 	//Nisha

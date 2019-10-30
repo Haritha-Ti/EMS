@@ -72,7 +72,8 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
     @Query("SELECT  p   from ProjectModel  p where  p.onsite_lead.userId =?1 AND  p.projectStatus=1  order by p.projectName Asc ")
     List<ProjectModel>  getProjectListByLevel2(Long userId);
     
-    
+    @Query(value = "SELECT count(*) FROM `project` p Join  project_region r ON  (p.project_id=r.project_id_project_id)  where p.start_date<=?1 AND p.end_date>=?1 AND p.project_status=1 AND r.region_id_id=?2 ",nativeQuery = true)
+	int getActiveProjectsCountByRegion(String datestring,Long regionId);
     
    //Renjith
 
