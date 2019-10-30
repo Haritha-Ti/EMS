@@ -187,7 +187,7 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
 	                    "sum(COALESCE(day30,0)) as day30,sum(COALESCE(day31,0)) as day31 FROM tasktrack_approval_finance ta  inner join user u ON u.user_id = ta.user_user_id"
 	                    + " inner join project p on  p.project_id= ta.project_project_id "
 	                    + " where " +
-	                    "month=?1 and year=?2 and project_project_id IN (?3)  and ta.project_type in('Billable','Overtime') group by user_user_id,status",nativeQuery = true)
+	                    "month=?1 and year=?2 and project_project_id IN (?3)  and ta.project_type in('Billable','Overtime') group by user_user_id,status,p.project_name",nativeQuery = true)
 	            List<Object[]> getFinanceDataByProjectSet(Integer monthIndex, Integer yearIndex, Set<Long> ids);
 	            
 	   //Renjith         

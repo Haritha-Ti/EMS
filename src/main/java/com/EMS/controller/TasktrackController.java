@@ -3204,14 +3204,16 @@ public class TasktrackController {
 			if (roleId == 1 | roleId == 10) {
 				if(regionId_selected != null)
 				{
+					
 					projectList = projectRegionService.getProjectsByRegionId(regionId_selected);
+					
 				}
 				else {
 					projectList = projectService.getProjectList();
 				}	
 				isLevels = false;
 			}
-
+			
 			if (roleId == 4 | roleId == 5 | roleId == 6 | roleId == 9) {
 				projectList = projectRegionService.getProjectsByRegionId(regionId);
 				isLevels = false;
