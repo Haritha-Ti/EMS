@@ -81,6 +81,7 @@ public interface ProjectService {
 		//Renjith
 	    public List<ProjectModel>  getProjectListByLevel1(Long userId);
 	    public List<ProjectModel>  getProjectListByLevel2(Long userId);
+	    public List<ProjectModel>  getAllActiveProjectList();
 	    //Renjith
 	
 }

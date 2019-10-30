@@ -66,6 +66,9 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 	
 	//Renjith
 	
+	@Query("SELECT  p   from ProjectModel  p where    p.projectStatus=1 order by p.projectName Asc")
+    List<ProjectModel>  getAllActiveProjectList();
+	
 	@Query("SELECT  p   from ProjectModel  p where   p.projectOwner.userId =?1 AND p.projectStatus=1 order by p.projectName Asc")
     List<ProjectModel>  getProjectListByLevel1(Long userId);
 	
