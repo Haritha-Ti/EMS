@@ -449,7 +449,7 @@ public class PulseReportController {
 			Sheet sheet = workrbook.createSheet("Leave");
 			String nameofReport   = "LEAVE REPORT";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
-			projectExportService.exportLeaveReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,startDate,endDate);
+			projectExportService.exportLeaveReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,startDate,endDate,regionId);
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");

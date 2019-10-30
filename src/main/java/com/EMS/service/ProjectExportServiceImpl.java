@@ -1491,7 +1491,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	}
 
 	@Override
-	public void exportLeaveReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,Date startDate, Date endDate) throws ParseException {
+	public void exportLeaveReport(Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName,Integer monthIndex,Integer yearIndex,Date startDate, Date endDate,Long regionId) throws ParseException {
 
 		String[] headers = new String[5];
 		headers[0] = "Name";
@@ -1552,8 +1552,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		int rowNum = 3;
 		ExportApprovalReportModel totalSummary = new ExportApprovalReportModel();
 		//List<Object[]> userList = userLeaveSummaryRepository.getUserLeaveListByMonth(startDate,endDate);
-		List<UserLeaveSummary> userList = userLeaveSummaryRepository.getUserLeaveListByMonth(startDate,endDate);
-		//List<UserLeaveSummary> userList = userLeaveSummaryRepository.getUserLeaveListByMonthRegion(startDate,endDate,regionId);
+		//List<UserLeaveSummary> userList = userLeaveSummaryRepository.getUserLeaveListByMonth(startDate,endDate);
+		List<UserLeaveSummary> userList = userLeaveSummaryRepository.getUserLeaveListByMonthRegion(startDate,endDate,regionId);
 
 		List<Object[]> Listdata = new ArrayList<>();
 		for(UserLeaveSummary item : userList) {
