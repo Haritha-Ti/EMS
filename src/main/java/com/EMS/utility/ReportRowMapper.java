@@ -18,6 +18,7 @@ public class ReportRowMapper implements RowMapper<ProjectReportModel> {
 		rpt.setAllocatedPerce(rs.getString("allocated_perce"));
 		rpt.setIsBillable(rs.getInt("is_billable"));
 		rpt.setProjectName(rs.getString("project_name"));
+		rpt.setRegionId(rs.getInt("region_id"));
 		return rpt;
 	}
 	

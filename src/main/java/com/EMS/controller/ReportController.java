@@ -79,9 +79,21 @@ public class ReportController {
 
 	@PostMapping("/getProjectReport")
 	public JsonNode getProjectReport(@RequestBody Taskdetails requestdata) {
-
-		ArrayNode projectReport = reportServiceImpl.getProjectReportDetails(requestdata.getProjectId(),
-				requestdata.getFromDate(), requestdata.getToDate());
+		ArrayNode projectReport = null;
+		Long regionId_selected = null;
+		if (requestdata.getRegionId() != null && requestdata.getRegionId() != 0) {
+			regionId_selected = requestdata.getRegionId();
+		}
+		
+		if(regionId_selected != null) {
+			projectReport = reportServiceImpl.getProjectReportDetailsByRegions(requestdata.getProjectId(),
+					requestdata.getFromDate(), requestdata.getToDate(),regionId_selected);
+		}
+		else {
+			projectReport = reportServiceImpl.getProjectReportDetails(requestdata.getProjectId(),
+					requestdata.getFromDate(), requestdata.getToDate());
+		}
+		
 
 		ObjectNode dataNode = objectMapper.createObjectNode();
 		dataNode.set("projectReport", projectReport);

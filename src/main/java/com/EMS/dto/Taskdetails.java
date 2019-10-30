@@ -12,6 +12,15 @@ public class Taskdetails {
 	private Date toDate;
 	private Long projectId;
 	private Long sessionId;
+	private Long regionId;
+	
+	
+	public Long getRegionId() {
+		return regionId;
+	}
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
+	}
 	public Date getFromDate() {
 		return fromDate;
 	}

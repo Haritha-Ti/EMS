@@ -55,7 +55,7 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 	Object[] getRoleOftheLoguser(Long logUser);
 
 	
-	@Query(value = "SELECT count(*) FROM `project` where start_date<=?1 AND end_date>=?1 AND project_status=1",nativeQuery = true)
+	@Query(value = "SELECT count(*) FROM `project` where start_date<=?1 AND end_date>=?1 AND project_status=1 AND parent_project_id != 0",nativeQuery = true)
 	int getActiveProjects(String datestring);
 
 	@Query(value = "SELECT * FROM project where parent_project_id=0",nativeQuery = true)
@@ -71,6 +71,9 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 	
     @Query("SELECT  p   from ProjectModel  p where  p.onsite_lead.userId =?1 AND  p.projectStatus=1  order by p.projectName Asc ")
     List<ProjectModel>  getProjectListByLevel2(Long userId);
+
+    @Query("SELECT  p   from ProjectModel  p where p.parentProjectId != 0 AND p.projectStatus=1 order by p.projectName Asc")
+	List<ProjectModel> getProjectsOnly();
     
     
     

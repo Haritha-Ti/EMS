@@ -8,6 +8,14 @@ public class ProjectReportModel {
 	private int isBillable;
 	private String  allocatedPerce;
 	private String projectName ;
+	private int regionId;
+
+	public int getRegionId() {
+		return regionId;
+	}
+	public void setRegionId(int regionId) {
+		this.regionId = regionId;
+	}
 	public String getUserName() {
 		return userName;
 	}

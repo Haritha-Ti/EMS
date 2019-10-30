@@ -101,4 +101,17 @@ public class ReportServiceImpl implements ReportService {
 
 		return result;
 	}
+
+	public ArrayNode getProjectReportDetailsByRegions(Long projectId, Date fromDate, Date toDate,Long regionIdSelected) {
+		// TODO Auto-generated method stub
+		ArrayNode array = objectMapper.createArrayNode();
+		try {
+
+			array = objectMapper.convertValue(projectReportsRepository.GenerateProjectReportsByRegion(projectId,fromDate,toDate,regionIdSelected), ArrayNode.class);
+
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+		return array;
+	}
 }

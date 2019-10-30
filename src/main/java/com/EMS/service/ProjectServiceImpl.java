@@ -134,7 +134,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public List<ProjectModel> getProjectList() {
-		List<ProjectModel> project = project_repositary.findAll(sortByIdAsc());
+		List<ProjectModel> project = project_repositary.getProjectsOnly();
 		return project;
 	}
 

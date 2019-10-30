@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
-import com.EMS.model.Region;
+import com.EMS.model.ProjectRegion;
 import com.EMS.model.UserModel;
 import com.EMS.service.AttendanceService;
 import com.EMS.service.ProjectAllocationService;
@@ -70,6 +70,9 @@ public class ProjectAllocationController {
 
 	@Autowired
 	private ProjectRegionService projectRegionService;
+	
+	@Autowired
+	private ProjectService projectservice;
 
 	// To get user, department and project list
 
@@ -134,6 +137,24 @@ public class ProjectAllocationController {
 					ObjectNode jsonObject = objectMapper.createObjectNode();
 					jsonObject.put("projectId", project.getProjectId());
 					jsonObject.put("projectName", project.getProjectName());
+					
+					//get region list
+					List<ProjectRegion> regions = projectservice.getregionlist(project.getProjectId());
+					ArrayNode regionsArray = objectMapper.createArrayNode();
+					ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+					if(regions.isEmpty()) {
+						jsonObject.set("projectRegion", regionsArray);
+					}
+					else {
+						
+						 for(ProjectRegion regioneach : regions) { 
+							 ObjectNode resource = objectMapper.createObjectNode(); 
+							 regionsArray.add((int)regioneach.getRegion_Id().getId());
+							 
+						 }
+						 jsonObject.set("projectRegion", regionsArray);
+					}
+					//
 					jsonProjectArray.add(jsonObject);
 				}
 				jsonData.set("projectList", jsonProjectArray);
@@ -818,7 +839,8 @@ public class ProjectAllocationController {
 			//long alloc_id = 721;
 			
 		
-
+			
+			if(allocationID != null) {
 			if(allocationID.compareTo(BigInteger.ZERO)>0) 
 			{
 				prim_id = allocationID.longValue();
@@ -840,7 +862,8 @@ public class ProjectAllocationController {
 				projectAllocation.save(allocationModel);
 			}
 			
-			}else {
+			}
+		}else {
 				projectAllocation.save(allocationModel);
 			}
 			
