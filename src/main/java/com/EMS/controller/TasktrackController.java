@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.EMS.dto.Taskdetails;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.ProjectRegion;
 import com.EMS.model.Region;
 import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
@@ -101,6 +102,10 @@ public class TasktrackController {
 
 	@Autowired
 	private ProjectRegionService projectRegionService;
+	
+	
+	@Autowired
+	private ProjectService projectservice;
 
 	@PostMapping(value = "/getTaskDetails")
 	public JsonNode getByDate(@RequestBody Taskdetails requestdata) {
@@ -1931,6 +1936,24 @@ public class TasktrackController {
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", alloc.getProjectId());
 				node.put("value", alloc.getProjectName());
+				//get region list
+				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
+				ArrayNode regionsArray = objectMapper.createArrayNode();
+				ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+				if(regions.isEmpty()) {
+					node.set("projectRegion", regionsArray);
+				}
+				else {
+					
+					 for(ProjectRegion regioneach : regions) { 
+						 ObjectNode resource = objectMapper.createObjectNode(); 
+						 regionsArray.add((int)regioneach.getRegion_Id().getId());
+						 
+					 }
+					 node.set("projectRegion", regionsArray);
+				}
+				//
+				
 				projectTitle.add(node);
 			}
 		} else {
@@ -1962,6 +1985,23 @@ public class TasktrackController {
 					ObjectNode node = objectMapper.createObjectNode();
 					node.put("id", (Long) alloc[1]);
 					node.put("value", (String) alloc[0]);
+					//get region list
+					List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
+					ArrayNode regionsArray = objectMapper.createArrayNode();
+					ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+					if(regions.isEmpty()) {
+						node.set("projectRegion", regionsArray);
+					}
+					else {
+						
+						 for(ProjectRegion regioneach : regions) { 
+							 ObjectNode resource = objectMapper.createObjectNode(); 
+							 regionsArray.add((int)regioneach.getRegion_Id().getId());
+							 
+						 }
+						 node.set("projectRegion", regionsArray);
+					}
+					//
 					projectTitle.add(node);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -3162,7 +3202,7 @@ public class TasktrackController {
 			
 			
 			if (roleId == 1 | roleId == 10) {
-				if(regionId_selected != null | regionId_selected != 0)
+				if(regionId_selected != null)
 				{
 					projectList = projectRegionService.getProjectsByRegionId(regionId_selected);
 				}

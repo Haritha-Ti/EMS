@@ -78,7 +78,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	@Query("SELECT u FROM UserModel u WHERE u.role in (7,8)")
 	List<UserModel> getOnsiteLeads();
 
-	@Query("SELECT u FROM UserModel u WHERE u.role in(2,3,5) AND department_department_id in('1','2','3','4','8','6','11','5','7') AND u.active = true  order by u.firstName")
+	@Query("SELECT u FROM UserModel u WHERE u.role in(2,3,5) AND department_department_id in('1','2','3','4','8','6','5','7') AND u.active = true  order by u.lastName")
 	List<UserModel> getUserLists();
 	
 	@Query(value="SELECT count(*) FROM user where active=1 AND termination_date IS NULL",nativeQuery=true)
@@ -100,6 +100,9 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	//Renjith
 	@Query("SELECT u FROM UserModel u WHERE u.region.id = ?1 AND u.active = true AND u.role = 3 and department_department_id not in('5','6','7','11') order by firstName")
 	List<UserModel> getUserlistByregionAndDepartment(Long regionId);
+	
+	@Query(value="SELECT count(*) FROM user where active=1 AND termination_date IS NULL AND region_id=?1",nativeQuery=true)
+	int getAllActiveUsersByRegion(Long  regionId);
 	//Renjith
 
 	//Nisha

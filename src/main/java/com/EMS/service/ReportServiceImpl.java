@@ -114,8 +114,8 @@ public class ReportServiceImpl implements ReportService {
 		return result;
 	}
 
-	public int getActualHours(long projectId, Date startDate, Date endDate){
-		List<AllocationModel> userdata = projectAllocationRepository.getUserDataByProjectAndDate(projectId,startDate,endDate);
+	public int getActualHours(long projectId, Date startDate, Date endDate) {
+		List<AllocationModel> userdata = projectAllocationRepository.getUserDataByProjectAndDate(projectId, startDate, endDate);
 		int userCount = userdata.size();
 		int workingDays = 0;
 		int totalWorkingHours = 0;
@@ -123,20 +123,18 @@ public class ReportServiceImpl implements ReportService {
 		int actualHours = 0;
 		/*System.out.println("userCount--------"+userCount);
 		System.out.println("projectId--------"+projectId);*/
-		for(AllocationModel data : userdata)
-		{
+		for (AllocationModel data : userdata) {
 			Date curStartDate = startDate;
 			Date curEndDate = endDate;
-			if(startDate.compareTo(data.getStartDate())<0)
-			{
+			if (startDate.compareTo(data.getStartDate()) < 0) {
 				curStartDate = data.getStartDate();
 			}
 			if (endDate.compareTo(data.getEndDate()) > 0) {
 				curEndDate = data.getEndDate();
 			}
-			workingDays = projectExportService.calculateWorkingDays(curStartDate,curEndDate);
-			holidays = holidayRepository.getNationalHolidayListsByMonthRegion(curStartDate,curEndDate,data.getuser().getRegion().getId());
-			totalWorkingHours = (workingDays-holidays)*8;
+			workingDays = projectExportService.calculateWorkingDays(curStartDate, curEndDate);
+			holidays = holidayRepository.getNationalHolidayListsByMonthRegion(curStartDate, curEndDate, data.getuser().getRegion().getId());
+			totalWorkingHours = (workingDays - holidays) * 8;
 			actualHours = actualHours + totalWorkingHours;
 			/*System.out.println("user--------"+data.getuser().getFirstName());
 			System.out.println("curStartDate--------"+curStartDate);
@@ -152,6 +150,19 @@ public class ReportServiceImpl implements ReportService {
 		System.out.println("****************************");*/
 		return actualHours;
 
+	}
+
+	public ArrayNode getProjectReportDetailsByRegions(Long projectId, Date fromDate, Date toDate,Long regionIdSelected) {
+		// TODO Auto-generated method stub
+		ArrayNode array = objectMapper.createArrayNode();
+		try {
+
+			array = objectMapper.convertValue(projectReportsRepository.GenerateProjectReportsByRegion(projectId,fromDate,toDate,regionIdSelected), ArrayNode.class);
+
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+		return array;
 
 	}
 }

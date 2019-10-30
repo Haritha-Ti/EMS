@@ -2024,7 +2024,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(1);
-			//cell.setCellValue(projectName);
+			cell.setCellValue(summary[0]+"");
 			cell.setCellStyle(borderedCellStyle);
 
 			for(int d=1;d<=dayCount;d++) {

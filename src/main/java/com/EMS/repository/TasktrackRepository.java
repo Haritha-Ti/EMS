@@ -50,7 +50,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	@Query("SELECT a from AllocationModel a where a.user.userId=?1 and a.project.isBillable =1 order by a.project.projectName")
 	public List<AllocationModel> getProjectNamesForApproval(long uId) throws Exception;
 
-	@Query("from ProjectModel p where p.isBillable =1 order by p.projectName")
+	@Query("from ProjectModel p where p.isBillable =1  AND p.projectStatus=1 order by p.projectName")
 	public List<ProjectModel> getProjectNamesForApproval() throws Exception;
 	
 	@Query("SELECT tsk from UserTaskCategory utc inner join utc.taskCategory.task tsk where utc.user.userId = ?1 order by tsk.taskName")
