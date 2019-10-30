@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.EMS.model.AllocationModel;
+import com.EMS.repository.HolidayRepository;
+import com.EMS.repository.ProjectAllocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,15 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired
 	ObjectMapper objectMapper;
+
+	@Autowired
+	ProjectAllocationRepository projectAllocationRepository;
+
+	@Autowired
+	ProjectExportService projectExportService;
+
+	@Autowired
+	HolidayRepository holidayRepository;
 	
 	public ArrayNode getProjectReportDetails(long projectId,Date fromDate, Date toDate) {
 		ArrayNode array = objectMapper.createArrayNode();
@@ -100,5 +112,46 @@ public class ReportServiceImpl implements ReportService {
 
 
 		return result;
+	}
+
+	public int getActualHours(long projectId, Date startDate, Date endDate){
+		List<AllocationModel> userdata = projectAllocationRepository.getUserDataByProjectAndDate(projectId,startDate,endDate);
+		int userCount = userdata.size();
+		int workingDays = 0;
+		int totalWorkingHours = 0;
+		int holidays = 0;
+		int actualHours = 0;
+		/*System.out.println("userCount--------"+userCount);
+		System.out.println("projectId--------"+projectId);*/
+		for(AllocationModel data : userdata)
+		{
+			Date curStartDate = startDate;
+			Date curEndDate = endDate;
+			if(startDate.compareTo(data.getStartDate())<0)
+			{
+				curStartDate = data.getStartDate();
+			}
+			if (endDate.compareTo(data.getEndDate()) > 0) {
+				curEndDate = data.getEndDate();
+			}
+			workingDays = projectExportService.calculateWorkingDays(curStartDate,curEndDate);
+			holidays = holidayRepository.getNationalHolidayListsByMonthRegion(curStartDate,curEndDate,data.getuser().getRegion().getId());
+			totalWorkingHours = (workingDays-holidays)*8;
+			actualHours = actualHours + totalWorkingHours;
+			/*System.out.println("user--------"+data.getuser().getFirstName());
+			System.out.println("curStartDate--------"+curStartDate);
+			System.out.println("curEndDate--------"+curEndDate);
+			System.out.println("workingDays--------"+workingDays);
+			System.out.println("holidays--------"+holidays);
+			System.out.println("totalWorkingHours--------"+totalWorkingHours);*/
+
+		}
+
+		/*System.out.println("actualHours--------"+actualHours);
+		System.out.println("****************************");
+		System.out.println("****************************");*/
+		return actualHours;
+
+
 	}
 }

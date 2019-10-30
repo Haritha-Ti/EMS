@@ -47,5 +47,6 @@ public interface ProjectExportService {
 	public void exportFinanceDataByProjectSet(Workbook workbook,Sheet sheet,String reportName,Integer month,Integer year,Set<Long> prjSet) throws Exception;
 	//renjith
 
+	public int calculateWorkingDays(Date startDate,Date endDate);
 
 }

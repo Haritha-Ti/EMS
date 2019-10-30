@@ -4,6 +4,7 @@ package com.EMS.model;
 public class ApprovalTimeTrackReportModel {
 
 	private String projectName ;
+	private long projectId ;
 	private Double billableHours;
 	private Double loggedHours;
 
@@ -12,6 +13,12 @@ public class ApprovalTimeTrackReportModel {
 	}
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+	}
+	public long getProjectId() {
+		return projectId;
+	}
+	public void setProjectId(long projectId) {
+		this.projectId = projectId;
 	}
 	public Double getBillableHours() {
 		return billableHours;

@@ -15,5 +15,7 @@ public interface ReportService {
 		
 	public List getProjectTaskReportDetails(Date fromDate,Date toDate,Long projectId);
 	public List getProjectHourReportDetails(Date fromDate,Date toDate,int monthIndex,int yearIndex);
+
+    int getActualHours(long projectId, Date startDate, Date endDate);
 }
 

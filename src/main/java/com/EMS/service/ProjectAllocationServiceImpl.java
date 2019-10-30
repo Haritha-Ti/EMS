@@ -235,5 +235,8 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 		return projectAllocationRepository.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
 	}
 
+	public List<AllocationModel> getUserDataByProjectAndDate(Long projectId,Date startDate, Date endDate){
+		return projectAllocationRepository.getUserDataByProjectAndDate(projectId,startDate,endDate);
+	}
 
 }

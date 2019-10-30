@@ -1462,7 +1462,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		return count;
 	}*/
 
-	private int calculateWorkingDays(Date startDate,Date endDate){
+	public int calculateWorkingDays(Date startDate,Date endDate){
 
 		int workingDays = 0;
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");

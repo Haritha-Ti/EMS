@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.EMS.model.AllocationModel;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -540,30 +541,37 @@ public class ReportController {
 				List<ApprovalTimeTrackReportModel> data = reportServiceImpl.getApprovalStatusReport(startDate, endDate,
 						startDateOfMonth, endDateOfMonth, month, startyearIndex);
 				JSONObject jsonData = new JSONObject();
+				double actualHours = 0.0;
 				for (ApprovalTimeTrackReportModel obj : data) {
+					long projectId = obj.getProjectId();
+					if(projectId!=35){
+						actualHours = reportService.getActualHours(projectId, startDate, endDate);
 
-					if (projectList.contains(obj.getProjectName())) {
-						for (int k = 0; k < approvalReport.size(); k++) {
-							JSONObject objects = (JSONObject) approvalReport.get(k);
 
-							if (objects.get("projectName").equals(obj.getProjectName())) {
-								double hr = (double) objects.get("BillableHours");
-								hr += obj.getBillableHours();
-								objects.remove("BillableHours");
-								objects.put("BillableHours", hr);
+						if (projectList.contains(obj.getProjectName())) {
+							for (int k = 0; k < approvalReport.size(); k++) {
+								JSONObject objects = (JSONObject) approvalReport.get(k);
+
+								if (objects.get("projectName").equals(obj.getProjectName())) {
+									double hr = (double) objects.get("BillableHours");
+									hr += obj.getBillableHours();
+									objects.remove("BillableHours");
+									objects.put("BillableHours", hr);
+								}
 							}
-						}
-					} else {
-						jsonData = new JSONObject();
-						billableHourMap.put(obj.getProjectName(),
-								obj.getBillableHours() != null ? obj.getBillableHours() : 0);
-						if (!projectList.contains(obj.getProjectName()))
-							projectList.add(obj.getProjectName());
+						} else {
+							jsonData = new JSONObject();
+							billableHourMap.put(obj.getProjectName(),
+									obj.getBillableHours() != null ? obj.getBillableHours() : 0);
+							if (!projectList.contains(obj.getProjectName()))
+								projectList.add(obj.getProjectName());
 
-						jsonData.put("projectName", obj.getProjectName());
-						jsonData.put("BillableHours", obj.getBillableHours() != null ? obj.getBillableHours() : 0);
-						jsonData.put("LoggedHours", obj.getLoggedHours() != null ? obj.getLoggedHours() : 0);
-						approvalReport.add(jsonData);
+							jsonData.put("projectName", obj.getProjectName());
+							jsonData.put("BillableHours", obj.getBillableHours() != null ? obj.getBillableHours() : 0);
+							//jsonData.put("LoggedHours", obj.getLoggedHours() != null ? obj.getLoggedHours() : 0);
+							jsonData.put("LoggedHours", actualHours);
+							approvalReport.add(jsonData);
+						}
 					}
 				}
 			}
