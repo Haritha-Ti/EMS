@@ -87,7 +87,7 @@ public class ProjectAllocationController {
 			// Method invocation for getting department list
 			List<DepartmentModel> departmentList = projectAllocation.getDepartmentList();
 			// Method invocation for getting project list
-			List<ProjectModel> projectList = projectService.getProjectList();
+			List<ProjectModel> projectList = projectService.getAllActiveProjectList();
 
 			ArrayNode jsonArray = objectMapper.createArrayNode();
 			ArrayNode jsonProjectArray = objectMapper.createArrayNode();
@@ -529,7 +529,7 @@ public class ProjectAllocationController {
 						projectList = projectRegionService.getProjectsByRegionId(regionId_selected);
 					}
 					else {
-						projectList = projectService.getProjectList();
+						projectList = projectService.getAllActiveProjectList();
 					}
 					isLevels= false;
 				}
