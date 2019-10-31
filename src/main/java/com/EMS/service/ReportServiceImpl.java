@@ -196,4 +196,11 @@ public class ReportServiceImpl implements ReportService {
 		}
 		return array;
 	}
+
+    public List<Object[]> getAllocationDetailsTechWiseRegionwise(Long techId, Date fromDate, Date toDate, Long regionId) throws Exception {
+		List<Object[]> result  = projectRepository.getAllocationDetailsTechWiseRegionwise(techId,fromDate,toDate,regionId);
+
+		return result;
+    }
+
 }

@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.EMS.model.AllocationModel;
+import com.EMS.model.*;
+import com.EMS.repository.UserRepository;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -80,6 +81,9 @@ public class ReportController {
 
 	@Autowired
 	private ProjectRegionService projectRegionService;
+
+	@Autowired
+	UserRepository userRepository;
 
 	@PostMapping("/getProjectReport")
 	public JsonNode getProjectReport(@RequestBody Taskdetails requestdata) {
@@ -621,6 +625,22 @@ public class ReportController {
 			Long techId = Long.valueOf(requestData.get("techId").toString());
 			String date1 = requestData.get("fromDate").toString();
 			String date2 = requestData.get("toDate").toString();
+			Long userId = null;
+			Long regionId_selected = null;
+			Long regionId  = null;
+			UserModel user = null;
+
+			if (requestData.get("sessionId") != null && requestData.get("sessionId").toString()!= "") {
+				userId =Long.valueOf(requestData.get("sessionId").toString()) ;
+				user = userRepository.getOne(userId);
+				regionId = user.getRegion().getId();
+			}
+			if (requestData.get("regionId") != null && requestData.get("regionId").toString() != "") {
+				regionId_selected =Long.valueOf(requestData.get("regionId").toString()) ;
+				if(user.getRole().getroleId() == 1 || user.getRole().getroleId() == 10) {
+					regionId = regionId_selected;
+				}
+			}
 
 			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date fromDate = null, toDate = null;
@@ -631,10 +651,11 @@ public class ReportController {
 				toDate = outputFormat.parse(date2);
 			}
 
-			List<Object[]> allocReport = reportServiceImpl.getAllocationDetailsTechWise(techId, fromDate, toDate);
+			//List<Object[]> allocReport = reportServiceImpl.getAllocationDetailsTechWise(techId, fromDate, toDate);
+			List<Object[]> allocReport = reportService.getAllocationDetailsTechWiseRegionwise(techId, fromDate, toDate,regionId);
 			ArrayNode jsonArray = objectMapper.createArrayNode();
 			for (Object[] item : allocReport) {
-				Long userId = Long.valueOf((String.valueOf(item[0])));
+				 userId = Long.valueOf((String.valueOf(item[0])));
 				ObjectNode jsonObject = objectMapper.createObjectNode();
 				jsonObject.put("userId", userId);
 				jsonObject.put("userName", (String) item[1]);

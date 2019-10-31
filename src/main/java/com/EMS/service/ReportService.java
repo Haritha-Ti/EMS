@@ -17,5 +17,7 @@ public interface ReportService {
 	public List getProjectHourReportDetails(Date fromDate,Date toDate,int monthIndex,int yearIndex);
 
     int getActualHours(long projectId, Date startDate, Date endDate);
+
+	public List<Object[]> getAllocationDetailsTechWiseRegionwise(Long techId, Date fromDate, Date toDate, Long regionId) throws Exception;
 }
 

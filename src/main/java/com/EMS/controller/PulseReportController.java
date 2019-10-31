@@ -86,6 +86,7 @@ public class PulseReportController {
 		Long regionId_selected = null;
 		Long regionId  = null;
 		UserModel user = null;
+
 		if (requestData.get("sessionId") != null && requestData.get("sessionId").asText() != "") {
 			userId = requestData.get("sessionId").asLong();
 			user = userRepository.getOne(userId);
@@ -449,7 +450,7 @@ public class PulseReportController {
 			Sheet sheet = workrbook.createSheet("Leave");
 			String nameofReport   = "LEAVE REPORT";
 			//List <ExportApprovalReportModel>exportData2 = timeTrackApprovalRepository.getNonApprovalReportData(monthIndex,yearIndex);
-			projectExportService.exportLeaveReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,startDate,endDate);
+			projectExportService.exportLeaveReport(workrbook,sheet,colNames,nameofReport,monthIndex,yearIndex,startDate,endDate,regionId);
 
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");

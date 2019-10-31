@@ -37,7 +37,7 @@ public interface ProjectExportService {
 
     public void exportFinanceDataByUserAndProject(Workbook workbook,Sheet sheet,String reportName,Integer month,Integer year,Long userId,Long projectId) throws Exception;
 
-	public void exportLeaveReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, Date startDate, Date endDate) throws FileNotFoundException, ParseException;
+	public void exportLeaveReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName, Integer monthIndex, Integer yearIndex, Date startDate, Date endDate,Long regionId) throws FileNotFoundException, ParseException;
 
 	public void exportVacationReport(Workbook workrbook, Sheet sheet4, ArrayList<String> colNames, String nameofReport4,
 			int monthIndex, int yearIndex, String reportType, Date startDate, Date endDate,int projectType,Long regionId);
