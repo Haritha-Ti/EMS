@@ -86,6 +86,7 @@ public class PulseReportController {
 		Long regionId_selected = null;
 		Long regionId  = null;
 		UserModel user = null;
+
 		if (requestData.get("sessionId") != null && requestData.get("sessionId").asText() != "") {
 			userId = requestData.get("sessionId").asLong();
 			user = userRepository.getOne(userId);
