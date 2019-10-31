@@ -98,6 +98,9 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 			" LIMIT 1",nativeQuery = true)
 	BigInteger getAllocationContinousDateRange(Long projectId, Long userId, Date startDate, Date endDate);
 
+	@Query(value = "SELECT * FROM `allocation` as alloc Join project as pro ON alloc.project_project_id=pro.project_id left join user on user.user_id = alloc.user_user_id  where pro.project_category=2 AND alloc.start_date<=?1 AND alloc.end_date>=?1  and user.region_id = ?2",nativeQuery = true)
+	List<AllocationModel> getBenchResourcesRegionId(String datestring, Long regionId);
+
 
 
 	

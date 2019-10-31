@@ -44,7 +44,6 @@ import com.EMS.repository.TimeTrackApprovalJPARepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.HolidayRepository;
 import com.EMS.repository.UserLeaveSummaryRepository;
-import com.EMS.model.UserLeaveSummary;
 
 @Service
 public class ProjectExportServiceImpl implements ProjectExportService {
@@ -2420,5 +2419,99 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		//Adding filter menu in column headers
 		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
 	}
+
+	@Override
+	public void exportBenchReport(Workbook workrbook, Sheet sheet, String nameofReport,
+			List<BenchProjectReportModel> benchProjectReport) {
+		// TODO Auto-generated method stub
+		
+		String[] headers = new String[3];
+		headers[0] = "Name";
+		headers[1] = "Department";
+		headers[2] = "Bench Time";
+		
+		//Removing grids
+		sheet.setDisplayGridlines(false);
+		//Freezing columns and rows from scrooling
+		sheet.createFreezePane(3,3);
+
+		//Bordered Cell Style
+		CellStyle borderedCellStyle = workrbook.createCellStyle();
+		borderedCellStyle.setBorderLeft(BorderStyle.THIN);
+		borderedCellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderRight(BorderStyle.THIN);
+		borderedCellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderTop(BorderStyle.THIN);
+		borderedCellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderBottom(BorderStyle.THIN);
+		borderedCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+
+		//Title Cell Style
+		CellStyle titleCellStyle = workrbook.createCellStyle();
+		//titleCellStyle.setFont((org.apache.poi.ss.usermodel.Font) headerFont);
+
+		Row titleRow = sheet.createRow(0);
+		Cell titleCell = titleRow.createCell(0);
+		titleCell.setCellValue(nameofReport);
+		titleCell.setCellStyle(titleCellStyle);
+
+		titleRow = sheet.createRow(1);
+		titleCell = titleRow.createCell(1);
+		titleCell.setCellValue("");
+
+		XSSFFont font = (XSSFFont) workrbook.createFont();
+		font.setFontName("Liberation Sans");
+		font.setFontHeightInPoints((short)10);
+		font.setBold(true);
+
+
+		// Header Cell Style
+		CellStyle headerCellStyle = workrbook.createCellStyle();
+		headerCellStyle.cloneStyleFrom(borderedCellStyle);
+		headerCellStyle.setBorderTop(BorderStyle.THICK);
+		headerCellStyle.setFont(font);
+
+		Row headerRow = sheet.createRow(2);
+		int widthInChars = 50;
+		sheet.setColumnWidth(4, widthInChars);
+		for (int i = 0; i < headers.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(headers[i]);
+			cell.setCellStyle(headerCellStyle);
+		}
+
+		// Create Other rows and cells with contacts data
+		int rowNum = 3;
+		
+		for (BenchProjectReportModel summary : benchProjectReport) {
+			
+			
+			Row row = sheet.createRow(rowNum++);
+
+			Cell cell = row.createCell(0);
+			cell.setCellValue(summary.getUserName());
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(1);
+			cell.setCellValue(summary.getDepartmentName());
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(2);
+			cell.setCellValue(summary.getAllocatedPerce());
+			cell.setCellStyle(borderedCellStyle);
+
+		}
+
+		
+		// Resize all columns to fit the content size
+		for (int i = 0; i < headers.length; i++) {
+			sheet.autoSizeColumn(i);
+		}
+
+		//Adding filter menu in column headers
+		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
+		
+	}
+
 }
 

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.model.ApprovalTimeTrackReportModel;
+import com.EMS.model.BenchProjectReportModel;
 import com.EMS.repository.ProjectReportsRepository;
 import com.EMS.repository.ProjectRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -164,5 +165,35 @@ public class ReportServiceImpl implements ReportService {
 		}
 		return array;
 
+	}
+
+	public List<BenchProjectReportModel> getBenchProjectReportDetailsReport(Long userId, Date fromDate, Date toDate) {
+		// TODO Auto-generated method stub
+		List<BenchProjectReportModel>  data  = projectReportsRepository.GenerateBenchProjectReports(userId,fromDate,toDate);
+		return data;
+	}
+
+	public List<BenchProjectReportModel> getBenchProjectReportDetailsReport(Date fromDate, Date toDate) {
+		// TODO Auto-generated method stub
+		List<BenchProjectReportModel>  data  = projectReportsRepository.GenerateBenchProjectReports(fromDate,toDate);
+		return data;
+	}
+
+	public List<BenchProjectReportModel> getBenchProjectReportDetailsReport(Long userId, Date fromDate, Date toDate,
+			Long regionId) {
+		// TODO Auto-generated method stub
+		List<BenchProjectReportModel>  data  = projectReportsRepository.GenerateBenchProjectReports(fromDate,toDate,regionId);
+		return data;
+	}
+
+	public ArrayNode getBenchProjectReportDetailsReports(Long getuId, Date fromDate, Date toDate, Long regionId) {
+		// TODO Auto-generated method stub
+		ArrayNode array = objectMapper.createArrayNode();
+		try {
+			array = objectMapper.convertValue(projectReportsRepository.GenerateBenchProjectReports(fromDate,toDate,regionId), ArrayNode.class);
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+		return array;
 	}
 }

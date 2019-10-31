@@ -201,5 +201,15 @@ public class ProjectReportsRepository extends DbConnectionUtility {
 		}
 		return list;
 	}
+	public List<BenchProjectReportModel> GenerateBenchProjectReports(Date fromDate, Date toDate, Long regionId) {
+		// TODO Auto-generated method stub
+		String sql ="";
+		List<BenchProjectReportModel> list = null;
+
+		sql = "SELECT CONCAT(u.last_name,' ',u.first_name) AS users ,u.user_id, a.is_billable, a.allocated_perce, p.project_name, d.department_id, d.department_name ,a.start_date,a.end_date FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN project p ON p.project_id = a.project_project_id LEFT JOIN department d ON d.department_id = u.department_department_id WHERE p.project_code = 'BP'  AND  ((CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.start_date  AS DATE)  <=  CAST(?  AS DATE)) OR (CAST(a.end_date  AS DATE) >= CAST(? AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE)) OR (CAST(a.start_date  AS DATE) >= CAST(? AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) ) ) AND u.region_id = ?  order by users";
+		list = jdbcTemplate.query(sql, new BenchReportRowMapper(), new Object[] {fromDate,toDate,fromDate,toDate,fromDate,toDate,regionId});	
+		
+		return list;
+	}
 	
 }

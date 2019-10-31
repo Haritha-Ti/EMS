@@ -1,5 +1,6 @@
 package com.EMS.controller;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.Taskdetails;
 import com.EMS.model.ApprovalTimeTrackReportModel;
+import com.EMS.model.BenchProjectReportModel;
+import com.EMS.model.ExportProjectHourReportModel;
 import com.EMS.model.ExportProjectTaskReportModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.service.ProjectAllocationService;
@@ -113,7 +116,12 @@ public class ReportController {
 		if (requestdata.getuId() != null) { // System.out.println("if");
 			benchProjectReport = reportServiceImpl.getBenchProjectReportDetails(requestdata.getuId(),
 					requestdata.getFromDate(), requestdata.getToDate());
-		} else { // System.out.println("else");
+		} 
+		else if(requestdata.getRegionId() != null) {
+			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReports(requestdata.getuId(),
+					requestdata.getFromDate(),requestdata.getToDate(),requestdata.getRegionId());
+		}
+		else { // System.out.println("else");
 			benchProjectReport = reportServiceImpl.getBenchProjectReportDetails(requestdata.getFromDate(),
 					requestdata.getToDate());
 		}
@@ -883,4 +891,69 @@ public class ReportController {
 	}
 
 	// Renjith
+	
+	/***
+	 * @des export bench report
+	 * @param requestdata
+	 * @param httpstatus
+	 * @return
+	 * @throws IOException 
+	 * @throws ParseException 
+	 */
+	@PostMapping("/exportBenchReport")
+	public void exportBenchReport(@RequestBody JsonNode requestdata,HttpServletResponse response) throws IOException, ParseException {
+		
+
+		String startdate = requestdata.get("fromDate").asText();
+		String enddate = requestdata.get("toDate").asText();
+		Date fromDate = null, toDate = null;
+		Long regionId = null;
+		Long userId = null;
+		if(requestdata.get("regionId").asText() != null && requestdata.get("regionId").asText() != "" ) {
+			regionId = requestdata.get("regionId").asLong();
+		}
+		if(requestdata.get("uId").asText() != null && requestdata.get("uId").asText() != "" ) {
+			userId = requestdata.get("uId").asLong();
+		}
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		if (!startdate.isEmpty()) {
+			fromDate = outputFormat.parse(startdate);
+		}
+		if (!enddate.isEmpty()) {
+			toDate = outputFormat.parse(enddate);
+		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(fromDate);
+
+		int monthIndex = (cal.get(Calendar.MONTH) + 1);
+		int yearIndex = cal.get(Calendar.YEAR);
+		List<BenchProjectReportModel>  benchProjectReport = null;
+		if (userId != null && regionId == null) { 
+			 System.out.println("if");
+			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(userId,
+					fromDate, toDate);
+		}
+		else if(userId == null && regionId != null) {
+			System.out.println("else if");
+			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(userId,
+					fromDate, toDate,regionId);
+		}
+		else { 
+			System.out.println("else");
+			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(fromDate,
+					toDate);
+		}
+		Workbook workrbook = new XSSFWorkbook();
+		Sheet sheet = workrbook.createSheet("Bench Report");
+		String nameofReport   = "BENCH REPORT";
+		projectExportService.exportBenchReport(workrbook,sheet,nameofReport,benchProjectReport);
+		response.setContentType("application/vnd.ms-excel");
+		response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+		response.setHeader("Content-Disposition", "filename=\"" + "Bench Report.xlsx" + "\"");
+		workrbook.write(response.getOutputStream());
+		workrbook.close();
+		
+	}
+	
+	
 }

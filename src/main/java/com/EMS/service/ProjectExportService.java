@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+
+import com.EMS.model.BenchProjectReportModel;
 import com.EMS.model.ExportApprovalReportModel;
 import com.EMS.model.ExportProjectHourReportModel;
 import com.EMS.model.ExportProjectTaskReportModel;
@@ -48,5 +50,9 @@ public interface ProjectExportService {
 	//renjith
 
 	public int calculateWorkingDays(Date startDate,Date endDate);
+
+	public void exportBenchReport(Workbook workrbook, Sheet sheet, String nameofReport,
+			List<BenchProjectReportModel> benchProjectReport);
+
 
 }

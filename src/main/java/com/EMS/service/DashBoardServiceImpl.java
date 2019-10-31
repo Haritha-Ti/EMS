@@ -118,7 +118,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 
 		
 //		For getting count of available bench resources
-		List<AllocationModel> allocationList = projectAllocation.getBenchResources(datestring);
+		List<AllocationModel> allocationList = projectAllocation.getBenchResourcesRegionId(datestring,regionId);
 		
 		if (!allocationList.isEmpty()) {
 			int benchUsersCount = allocationList.size();
