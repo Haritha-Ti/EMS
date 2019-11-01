@@ -1245,12 +1245,16 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			totalWorkingHours = (working_days-holidays)*8;
 			leaveHours = (fullDayLeaveDays*8)+(halfDayLeaveDays*4);
 			totalWorkedHours = totalWorkingHours -leaveHours;
-
+			System.out.println("firstName" + firstName);
+			System.out.println("totalWorkingHours" + totalWorkingHours);
+			System.out.println("leaveHours" + leaveHours);
+			System.out.println("totalWorkedHours" + totalWorkedHours);
 			for(Object[] items : loggedData) {
 
 				if(items[1] != null)
 				{
 					double userHour = (double)items[1];
+					System.out.println("userHour" + userHour);
 					benchHour = totalWorkedHours-userHour;
 					if(benchHour<0.0) {
 						benchHour = 0.0;
@@ -1310,6 +1314,14 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			}
 
 
+
+			benchHour = totalWorkedHours - (billableHour+nonBillableHour+overtimeHour);
+			if(benchHour<0.0)
+			{
+				benchHour=0.0;
+			}
+			System.out.println("benchHour" + benchHour);
+			System.out.println("-----------------------------------------------------------------");
 			totalHour = billableHour+nonBillableHour+overtimeHour+benchHour+leaveHours;
 			Listdata.add(new Object[]{id,firstName,lastName,cppLevel,billableHour,nonBillableHour,overtimeHour,benchHour,leaveHours,totalHour});
 
