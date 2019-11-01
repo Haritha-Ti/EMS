@@ -1323,7 +1323,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			System.out.println("benchHour" + benchHour);
 			System.out.println("-----------------------------------------------------------------");
 			totalHour = billableHour+nonBillableHour+overtimeHour+benchHour+leaveHours;
-			Listdata.add(new Object[]{id,firstName,lastName,cppLevel,billableHour,nonBillableHour,overtimeHour,benchHour,leaveHours,totalHour});
+			double vacationHour = leaveHours+(holidays*8);
+			Listdata.add(new Object[]{id,firstName,lastName,cppLevel,billableHour,nonBillableHour,overtimeHour,benchHour,vacationHour,totalHour});
 
 		}
 
