@@ -934,6 +934,13 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		double total_hours =0.0;
 		List<Object[]> userList = userRepository.getUserListByRegion(startDate,endDate,regionId);
 		List<Object[]> Listdata = new ArrayList<>();
+		
+	
+		double totalHour         = 0.0;
+		double billableHour      = 0.0;
+		double recbillableHour   = 0.0;
+		double nonBillableHour   = 0.0;
+		double overtimeHour      = 0.0;
 
 		for(Object[] item : userList) {
 			Long id                  = ((BigInteger) item[0]).longValue();
@@ -945,10 +952,17 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 
 			List<Object[]> loggedData;
+			List<Object[]> billable;
+			List<Object[]> nonBillable;
+			List<Object[]> overtime;
+
 
 			if(reportType == "monthly") {
 
 				//loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id);
+				billable    = taskTrackFinanceRepository.getBillableDataByUserId(monthIndex, yearIndex, id,projectType);
+				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserId(monthIndex, yearIndex, id,projectType);
+				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserId(monthIndex, yearIndex, id,projectType);	
 				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id,projectType);
 				working_days = calculateWorkingDays(startDate,endDate);
 				holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,endDate,regionId);
@@ -972,6 +986,9 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			}
 			else {
 				// loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id);
+				billable    = taskTrackFinanceRepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
 				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id,2);
 				working_days = calculateWorkingDays(startDate,end_date);
 				holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,end_date,regionId);
@@ -997,25 +1014,87 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			leaveHours = (fullDayLeaveDays*8)+(halfDayLeaveDays*4);
 			totalWorkedHours = totalWorkingHours -leaveHours;
 
-
+			
+			//newly added
+			
+			System.out.println("firstName" + firstName);
+			System.out.println("totalWorkingHours" + totalWorkingHours);
+			System.out.println("leaveHours" + leaveHours);
+			System.out.println("totalWorkedHours" + totalWorkedHours);
 			for(Object[] items : loggedData) {
 
 				if(items[1] != null)
 				{
 					double userHour = (double)items[1];
-					 benchHour = totalWorkedHours-userHour;
-					 if(benchHour<0.0) {
-						 benchHour = 0.0;
-					 }
+					System.out.println("userHour" + userHour);
+					benchHour = totalWorkedHours-userHour;
+					if(benchHour<0.0) {
+						benchHour = 0.0;
+					}
 
 				}
 				else
 				{
-					 benchHour = totalWorkedHours;
+					benchHour = totalWorkedHours;
 
 				}
 
+
+
 			}
+			for(Object[] bill : billable) {
+				if(bill[1] != null)
+				{
+					recbillableHour = (double)bill[1];
+					if(recbillableHour > totalWorkedHours)
+					{
+						billableHour = totalWorkedHours;
+					}
+					else{
+
+						billableHour = recbillableHour;
+					}
+				}
+				else{
+					billableHour = 0.0;
+				}
+			}
+
+			for(Object[] nonbill : nonBillable) {
+				if(nonbill[1] != null)
+				{
+					nonBillableHour = (double)nonbill[1];
+				}
+				else{
+					nonBillableHour = 0.0;
+				}
+			}
+
+			for(Object[] over : overtime) {
+				if(over[1] != null)
+				{
+					if(recbillableHour > totalWorkedHours) {
+						overtimeHour = (recbillableHour - totalWorkedHours)+(double) over[1];
+					}
+					else{
+						overtimeHour = (double) over[1];
+					}
+				}
+				else{
+					overtimeHour = 0.0;
+				}
+			}
+
+
+
+			benchHour = totalWorkedHours - (billableHour+nonBillableHour+overtimeHour);
+			if(benchHour<0.0)
+			{
+				benchHour=0.0;
+			}
+			//
+			
+			
 			Listdata.add(new Object[]{id,firstName,lastName,cpplevel,benchHour});
 
 		}
@@ -1322,7 +1401,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			}
 			System.out.println("benchHour" + benchHour);
 			System.out.println("-----------------------------------------------------------------");
-			totalHour = billableHour+nonBillableHour+overtimeHour+benchHour+leaveHours;
+			totalHour = billableHour+nonBillableHour+overtimeHour+benchHour+leaveHours+(holidays*8);
 			double vacationHour = leaveHours+(holidays*8);
 			Listdata.add(new Object[]{id,firstName,lastName,cppLevel,billableHour,nonBillableHour,overtimeHour,benchHour,vacationHour,totalHour});
 
