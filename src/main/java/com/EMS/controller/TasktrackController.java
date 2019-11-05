@@ -3905,5 +3905,108 @@ public class TasktrackController {
 		jsonDataRes.put("message", "successfully saved. ");
 		return jsonDataRes;
 	}
+//Nisha
+	@PostMapping("/getProjectNamesForApproval")
+	public JsonNode getProjectNamesForApproval(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) throws Exception {
+		ArrayNode projectTitle = objectMapper.createArrayNode();
+		long uId = Long.valueOf(requestdata.get("uId").toString());
+		int month = Integer.parseInt(requestdata.get("month").toString());
+		int year = Integer.parseInt(requestdata.get("year").toString());
+		UserModel user = userService.getUserDetailsById(uId);
+
+		if (user.getRole().getroleId()==6 || user.getRole().getroleId()==1) {// Finance
+			for (ProjectModel alloc : tasktrackRepository.getProjectNamesForApproval( month,year)) {
+
+				ObjectNode node = objectMapper.createObjectNode();
+				node.put("id", alloc.getProjectId());
+				node.put("value", alloc.getProjectName());
+				//get region list
+				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
+				ArrayNode regionsArray = objectMapper.createArrayNode();
+				ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+				if(regions.isEmpty()) {
+					node.set("projectRegion", regionsArray);
+				}
+				else {
+
+					for(ProjectRegion regioneach : regions) {
+						ObjectNode resource = objectMapper.createObjectNode();
+						regionsArray.add((int)regioneach.getRegion_Id().getId());
+
+					}
+					node.set("projectRegion", regionsArray);
+				}
+				//
+
+				projectTitle.add(node);
+			}
+		} else {
+			List<Object[]> projectList = null;
+			if (user.getRole().getroleId()==7) {
+				// System.out.println("_________________________________________APPROVER_LEVEL_2
+				// " +uId );
+				projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId,month,year);
+			} else if (user.getRole().getroleId()==2) {
+				// System.out.println("_________________________________________APPROVER_LEVEL_1/Lead
+				// "+uId);
+				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId,month,year);
+			}
+			//Renjith
+			else if (user.getRole().getroleId()==5) {
+				// System.out.println("_________________________________________Sub Admin
+				// "+uId);
+				projectList = projectRegionService.getObjProjectsByRegionId(user.getRegion().getId());
+			}
+			else if (user.getRole().getroleId()==11) {
+				// System.out.println("_________________________________________Approver
+				// "+uId);
+				projectList = tasktrackRepository.getProjectNamesForApprover(uId,month,year);
+			}
+
+
+			else {
+				// System.out.println("_________________________________________Other"+uId);
+				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId);
+			}
+
+			for (Object[] alloc : projectList) {
+				try {
+					ObjectNode node = objectMapper.createObjectNode();
+					node.put("id", (Long) alloc[1]);
+					node.put("value", (String) alloc[0]);
+					//get region list
+					List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
+					ArrayNode regionsArray = objectMapper.createArrayNode();
+					ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+					if(regions.isEmpty()) {
+						node.set("projectRegion", regionsArray);
+					}
+					else {
+
+						for(ProjectRegion regioneach : regions) {
+							ObjectNode resource = objectMapper.createObjectNode();
+							regionsArray.add((int)regioneach.getRegion_Id().getId());
+
+						}
+						node.set("projectRegion", regionsArray);
+					}
+					//
+					projectTitle.add(node);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+
+			}
+		}
+		ObjectNode dataNode = objectMapper.createObjectNode();
+		dataNode.set("projectTitle", projectTitle);
+
+		ObjectNode node = objectMapper.createObjectNode();
+		node.put("status", "success");
+		node.set("data", dataNode);
+		return node;
+
+	}
 
 }

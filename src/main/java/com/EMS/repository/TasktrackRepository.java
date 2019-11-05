@@ -78,7 +78,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.onsite_lead.userId=?1 and a.isBillable =1 and a.projectStatus=1 order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel2(long uId);
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.projectOwner.userId=?1 and a.isBillable =1 and a.projectStatus=1  order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.projectOwner.userId=?1 and a.isBillable =1 and a.projectStatus=1 order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel1(long uId);
 
 	@Query("SELECT a FROM TaskTrackApproval a where a.user.userId = ?1 and a.month = ?2 and a.year = ?3 and a.project.projectId = ?4 ")
@@ -86,7 +86,19 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	@Query(value="SELECT count(*) from allocation a where a.project_project_id=?1 and  a.start_date <=?3 and a.end_date >=?2",nativeQuery = true)
 	int  checkprojectallocated(long projectId,Date startdate,Date enddate);
-	
+
+	//Nisha
+	@Query("from ProjectModel p where p.isBillable =1  AND p.projectStatus=1 AND (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) order by p.projectName")
+	public List<ProjectModel> getProjectNamesForApproval(int month,int year) throws Exception;
+
+	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.onsite_lead.userId=?1 and a.isBillable =1 and a.projectStatus=1  AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
+	public List<Object[]> getProjectNamesForApprovalLevel2(long uId,int month,int year);
+
+	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.projectOwner.userId=?1 and a.isBillable =1 and a.projectStatus=1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
+	public List<Object[]> getProjectNamesForApprovalLevel1(long uId,int month,int year);
+
+	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) and a.isBillable =1 and a.projectStatus=1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
+	public List<Object[]> getProjectNamesForApprover(long uId,int month,int year);
 	
 	
 }
