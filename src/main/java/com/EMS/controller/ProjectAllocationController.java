@@ -1259,12 +1259,17 @@ public class ProjectAllocationController {
 		List<AllocationModel> allocationModel = projectAllocation.getAllocationList(projectId);
 
 		ArrayNode jsonArray = objectMapper.createArrayNode();
+		ArrayNode projectjsonArray = objectMapper.createArrayNode();
 		ObjectNode jsonData = objectMapper.createObjectNode();
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
 			fromDate = df.parse(startDate);
 			toDate = df.parse(endDate);
 			if (!(allocationModel.isEmpty() && allocationModel.size() > 0)) {
+				ObjectNode jsonprojectObject = objectMapper.createObjectNode();
+				String projectStart = null;
+				String projectEnd = null;
+				String projectName = null;
 				for (AllocationModel item : allocationModel) {
 					String projectStartDate = df.format(item.getStartDate());
 					String projectEndDate = df.format(item.getEndDate());
@@ -1276,10 +1281,14 @@ public class ProjectAllocationController {
 									&& toDate.compareTo(df.parse(projectEndDate)) <= 0)) {
 
 						ObjectNode jsonObject = objectMapper.createObjectNode();
+
 						jsonObject.put("allocationId", item.getAllocId());
 						if (item.getproject() != null) {
 							jsonObject.put("projectTitle", item.getproject().getProjectName());
 							jsonObject.put("projectCategory", item.getproject().getProjectCategory());
+							 projectStart = df.format(item.getproject().getStartDate());
+							 projectEnd = df.format(item.getproject().getEndDate());
+							 projectName = item.getproject().getProjectName();
 						}
 						double availableAlloc = 0;
 						if (item.getuser() != null) {
@@ -1301,7 +1310,14 @@ public class ProjectAllocationController {
 						jsonArray.add(jsonObject);
 					}
 				}
+				jsonprojectObject.put("projectId",projectId);
+				jsonprojectObject.put("projectName",projectName);
+				jsonprojectObject.put("projectStartDate",projectStart);
+				jsonprojectObject.put("projectEndDate",projectEnd);
+
+				jsonData.set("projectData", jsonprojectObject);
 				jsonData.set("resourceList", jsonArray);
+
 			}
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
