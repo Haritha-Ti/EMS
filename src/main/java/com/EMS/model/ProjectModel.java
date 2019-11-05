@@ -1,5 +1,6 @@
 package com.EMS.model;
 
+import java.security.Timestamp;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,6 +13,10 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -36,9 +41,10 @@ public class ProjectModel {
 	private long parentProjectId;
 	
 	
+    private int projectTier; // 1-level1 project ,2level2 project
 
 
-
+    
 
 	private String project_refId;
 	
@@ -54,6 +60,64 @@ public class ProjectModel {
 	@ManyToOne
 	private UserModel onsite_lead; // approver_level_2
 	
+	@CreatedBy
+	@ManyToOne
+	private UserModel createdBy; 
+	
+	@LastModifiedBy
+	@ManyToOne
+	private UserModel modifiedBy;
+	
+	@CreatedDate
+	private Date createdDate; 
+	
+	@LastModifiedDate
+	private Date modifiedDate;
+	
+	
+	
+	
+	
+
+	public UserModel getCreatedBy() {
+		return createdBy;
+	}
+
+
+	public void setCreatedBy(UserModel createdBy) {
+		this.createdBy = createdBy;
+	}
+
+
+	public UserModel getModifiedBy() {
+		return modifiedBy;
+	}
+
+
+	public void setModifiedBy(UserModel modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
 
 	public ProjectModel(long projectId, String projectName, String projectDetails, int estimatedHours, Date startDate,
 			Date endDate, int isBillable, String projectCode,int projectType, UserModel projectOwner,long parentProjectId,
@@ -247,6 +311,16 @@ public class ProjectModel {
 
 	public void setProject_refId(String project_refId) {
 		this.project_refId = project_refId;
+	}
+
+
+	public int getProjectTier() {
+		return projectTier;
+	}
+
+
+	public void setProjectTier(int projectTier) {
+		this.projectTier = projectTier;
 	}
 
 
