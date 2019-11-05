@@ -95,24 +95,91 @@ public class ProjectController {
 			project.setProjectCode(requestdata.get("projectCode").asText());
 			project.setprojectStatus(requestdata.get("projectStatus").asInt());
 			project.setisPOC(requestdata.get("isPOC").asInt());
-			Long userid = requestdata.get("approver_level_1").asLong();
-			UserModel pro_owner = new UserModel();
-			Long onsite_lead = requestdata.get("approver_level_2").asLong();
-			System.out.println("onsite_lead" + onsite_lead);
-			UserModel pro_onsite_lead = new UserModel();
-			if (onsite_lead != null) {
-				pro_onsite_lead = userservice.getUserDetailsById(onsite_lead);
-			}
-			if (pro_onsite_lead != null) {
-				project.setOnsite_lead(pro_onsite_lead);
+			project.setProjectTier(0);
+			UserModel createdBy = userservice.getUserDetailsById(requestdata.get("sessionId").asLong());
+			project.setCreatedBy(createdBy);
+			Date createdDate = new Date();
+			project.setCreatedDate(createdDate);
+			project.setModifiedBy(null);
+			project.setModifiedDate(null);
+			Long userid = null;
+
+			if(requestdata.get("projectTier").asInt() == 1) {
+
+				userid = requestdata.get("approver_level_1").asLong();
+
+				UserModel pro_owner = new UserModel();
+
+				// method for getting userdetails using ID
+
+				if (userid != null)
+
+					pro_owner = userservice.getUserDetailsById(userid);
+
+
+
+				if (pro_owner != null)
+
+					project.setProjectOwner(pro_owner);
+
+				
+
+				project.setProjectTier(1);
+				project.setOnsite_lead(null);
+
 			}
 
-			// method for getting userdetails using ID
-			if (userid != null)
-				pro_owner = userservice.getUserDetailsById(userid);
+			else if (requestdata.get("projectTier").asInt() == 2) {
 
-			if (pro_owner != null)
-				project.setProjectOwner(pro_owner);
+				
+
+				userid = requestdata.get("approver_level_1").asLong();
+
+				UserModel pro_owner = new UserModel();
+
+				// method for getting userdetails using ID
+
+				if (userid != null)
+
+					pro_owner = userservice.getUserDetailsById(userid);
+
+
+
+				if (pro_owner != null)
+
+					project.setProjectOwner(pro_owner);
+
+				
+
+				Long onsite_lead = requestdata.get("approver_level_2").asLong();
+
+				UserModel pro_onsite_lead = new UserModel();
+
+				if (onsite_lead != null) {
+
+					pro_onsite_lead = userservice.getUserDetailsById(onsite_lead);
+
+				}
+
+				if (pro_onsite_lead != null) {
+
+					project.setOnsite_lead(pro_onsite_lead);
+
+				}
+
+				project.setProjectTier(2);
+
+			}
+			/*
+			 * UserModel pro_onsite_lead = new UserModel(); if (onsite_lead != null) {
+			 * pro_onsite_lead = userservice.getUserDetailsById(onsite_lead); } if
+			 * (pro_onsite_lead != null) { project.setOnsite_lead(pro_onsite_lead); }
+			 * 
+			 * // method for getting userdetails using ID if (userid != null) pro_owner =
+			 * userservice.getUserDetailsById(userid);
+			 * 
+			 * if (pro_owner != null) project.setProjectOwner(pro_owner);
+			 */
 
 			if (contractModel != null)
 				project.setContract(contractModel);
@@ -150,8 +217,8 @@ public class ProjectController {
 					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
 					&& (project.getProjectCode().length() > 0)) {
 				// method invocation for checking duplicate entry for project name
-				int result = projectservice.duplicationchecking(project.getProjectName());
-				if (result == 0) {
+				//int result = projectservice.duplicationchecking(project.getProjectName());
+			//	if (result == 0) {
 					// Method invocation for creating new project record
 
 					ProjectModel projectmodel = projectservice.save_project_record(project);
@@ -233,10 +300,10 @@ public class ProjectController {
 
 					}
 
-				} else {
-					responseflag = 1;
-					responsedata.put("message", "Insertion failed due to duplicate entry");
-				}
+				//} else {
+					//responseflag = 1;
+					//responsedata.put("message", "Insertion failed due to duplicate entry");
+			//	}
 
 			} else {
 				responseflag = 1;
@@ -665,31 +732,101 @@ public class ProjectController {
 			project.setprojectStatus(requestdata.get("projectStatus").asInt());
 			project.setisPOC(requestdata.get("isPOC").asInt());
 
-			Long userid = requestdata.get("approver_level_1").asLong();
-			UserModel pro_owner = new UserModel();
+			/*
+			 * Long userid = requestdata.get("approver_level_1").asLong(); UserModel
+			 * pro_owner = new UserModel();
+			 * 
+			 * // method for getting userdetails using ID if (userid != null) pro_owner =
+			 * userservice.getUserDetailsById(userid);
+			 * 
+			 * if (pro_owner != null) project.setProjectOwner(pro_owner);
+			 * 
+			 * if (contractModel != null) project.setContract(contractModel);
+			 * 
+			 * Long approverlevel2 = requestdata.get("approver_level_2").asLong(); UserModel
+			 * pro_approver_2 = null;
+			 * 
+			 * if (approverlevel2 == 0) project.setOnsite_lead(null);
+			 * 
+			 * if (approverlevel2 != 0) pro_approver_2 =
+			 * userservice.getUserDetailsById(approverlevel2);
+			 * 
+			 * if (pro_approver_2 != null) project.setOnsite_lead(pro_approver_2);
+			 */
 
-			// method for getting userdetails using ID
-			if (userid != null)
-				pro_owner = userservice.getUserDetailsById(userid);
+			
+project.setProjectTier(0);
 
-			if (pro_owner != null)
-				project.setProjectOwner(pro_owner);
+			
 
-			if (contractModel != null)
-				project.setContract(contractModel);
+			Long userid = null;
 
-			Long approverlevel2 = requestdata.get("approver_level_2").asLong();
-			UserModel pro_approver_2 = null;
+			if(requestdata.get("projectTier").asInt() == 1) {
 
-			if (approverlevel2 == 0)
+				userid = requestdata.get("approver_level_1").asLong();
+
+				UserModel pro_owner = new UserModel();
+
+				// method for getting userdetails using ID
+
+				if (userid != null)
+
+					pro_owner = userservice.getUserDetailsById(userid);
+
+
+
+				if (pro_owner != null)
+
+					project.setProjectOwner(pro_owner);
+
+				
+
+				project.setProjectTier(1);
 				project.setOnsite_lead(null);
 
-			if (approverlevel2 != 0)
-				pro_approver_2 = userservice.getUserDetailsById(approverlevel2);
+			}
 
-			if (pro_approver_2 != null)
-				project.setOnsite_lead(pro_approver_2);
+			else if (requestdata.get("projectTier").asInt() == 2) {
 
+				
+
+				userid = requestdata.get("approver_level_1").asLong();
+
+				UserModel pro_owner = new UserModel();
+
+				// method for getting userdetails using ID
+
+				if (userid != null)
+
+					pro_owner = userservice.getUserDetailsById(userid);
+
+
+
+				if (pro_owner != null)
+
+					project.setProjectOwner(pro_owner);
+
+				
+
+				Long onsite_lead = requestdata.get("approver_level_2").asLong();
+
+				UserModel pro_onsite_lead = new UserModel();
+
+				if (onsite_lead != null) {
+
+					pro_onsite_lead = userservice.getUserDetailsById(onsite_lead);
+
+				}
+
+				if (pro_onsite_lead != null) {
+
+					project.setOnsite_lead(pro_onsite_lead);
+
+				}
+
+				project.setProjectTier(2);
+
+			}
 			project.setEstimatedHours(requestdata.get("estimatedHours").asInt());
 			String startdate = requestdata.get("startDate").asText();
 			String enddate = requestdata.get("endDate").asText();
@@ -725,7 +862,7 @@ public class ProjectController {
 				// method invocation for checking duplicate entry for project name
 
 				int result = projectservice.duplicationchecking(project.getProjectName());
-				if (result <= 1) {
+				//if (result <= 1) {
 					// Method invocation for creating new project record
 					ProjectModel projectmodel = projectservice.save_project_record(project);
 
@@ -797,9 +934,9 @@ public class ProjectController {
 							responseflag = 1;
 
 					}
-				} else {
-					responseflag = 1;
-				}
+				//} else {
+				//	responseflag = 1;
+				//}
 
 			} else {
 				responseflag = 1;
@@ -870,6 +1007,7 @@ public class ProjectController {
 				responseData.put("releasingDate", project.getReleasingDate().toString());
 				responseData.put("isPOC", project.getisPOC());
 				responseData.put("projectStatus", project.getprojectStatus());
+				responseData.put("projectTier", project.getProjectTier());
 				//responseData.put("projectRefId", project.getProject_refId());
 				System.out.println("pro" + project.getProjectId());
 				if (project.getClientName() != null)
