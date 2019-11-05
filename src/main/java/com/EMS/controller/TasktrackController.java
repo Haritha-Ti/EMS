@@ -304,12 +304,16 @@ public class TasktrackController {
 		// LocalDate newDate = date.withDayOfMonth(max.intValue());
 		// return enddate;
 		ArrayNode projectTitle = objectMapper.createArrayNode();
-		for (AllocationModel alloc : tasktrackServiceImpl.getProjectNamesByMonth(uId, startdate, enddate)) {
+		try {
+			for (Object[] alloc : tasktrackRepository.getProjectNamesByMonths(uId, startdate, enddate)) {
 
-			ObjectNode node = objectMapper.createObjectNode();
-			node.put("id", alloc.getproject().getProjectId());
-			node.put("value", alloc.getproject().getProjectName());
-			projectTitle.add(node);
+				ObjectNode node = objectMapper.createObjectNode();
+				node.put("id", (Long) alloc[0]);
+				node.put("value",(String) alloc[1]);
+				projectTitle.add(node);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		ObjectNode dataNode = objectMapper.createObjectNode();

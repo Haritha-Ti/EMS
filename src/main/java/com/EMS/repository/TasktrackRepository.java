@@ -99,6 +99,11 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) and a.isBillable =1 and a.projectStatus=1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprover(long uId,int month,int year);
+
+	//Nisha
+
+	@Query("SELECT DISTINCT a.project.projectId,a.project.projectName from AllocationModel a where a.user.userId=?1 and  a.startDate <=?3 and a.endDate >=?2 order by a.project.projectName")
+	public List<Object[]> getProjectNamesByMonths(long uId,Date startdate,Date enddate) throws Exception;
 	
 	
 }
