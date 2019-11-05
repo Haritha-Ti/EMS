@@ -254,9 +254,9 @@ public class ProjectController {
 					} else {
 
 						// json array for storing json array from request data
-						ArrayNode arrayNode = (ArrayNode) requestdata.get("resources");
+					//	ArrayNode arrayNode = (ArrayNode) requestdata.get("resources");
 
-						if (arrayNode.equals(null)) {
+					/*	if (arrayNode.equals(null)) {
 							responseflag = 1;
 							responsedata.put("message", "Failed due to project record with empty resource array");
 						} else {
@@ -296,7 +296,7 @@ public class ProjectController {
 											"Insertion failed due to invalid credientials for project resource");
 								}
 							}
-						}
+						}*/
 
 					}
 
@@ -731,7 +731,11 @@ public class ProjectController {
 			project.setProjectCode(requestdata.get("projectCode").asText());
 			project.setprojectStatus(requestdata.get("projectStatus").asInt());
 			project.setisPOC(requestdata.get("isPOC").asInt());
-
+			
+			UserModel modifiedBy = userservice.getUserDetailsById(requestdata.get("sessionId").asLong());
+			project.setModifiedBy(modifiedBy);
+			Date modifiedDate = new Date();
+			project.setModifiedDate(modifiedDate);
 			/*
 			 * Long userid = requestdata.get("approver_level_1").asLong(); UserModel
 			 * pro_owner = new UserModel();
@@ -755,7 +759,7 @@ public class ProjectController {
 			 */
 
 			
-project.setProjectTier(0);
+			project.setProjectTier(0);
 
 			
 
@@ -903,7 +907,7 @@ project.setProjectTier(0);
 						}
 						
 					}
-					for (JsonNode node : resourcenode) {
+				/*	for (JsonNode node : resourcenode) {
 						// setting values on resource object
 						Resources resou1 = projectservice.getResourceById(node.get("resourceId").asLong());
 						if (projectmodel != null)
@@ -933,7 +937,7 @@ project.setProjectTier(0);
 						} else
 							responseflag = 1;
 
-					}
+					}*/
 				//} else {
 				//	responseflag = 1;
 				//}
