@@ -473,6 +473,7 @@ public class ProjectController {
 					object.put("id", user.getUserId());
 					object.put("lastName", user.getLastName());
 					object.put("role", user.getRole().getroleId());
+					object.put("status", user.isActive());
 					// adding records object to json array
 					userarray.add(object);
 				}
@@ -499,6 +500,7 @@ public class ProjectController {
 					object.put("id", user.getUserId());
 					object.put("lastName", user.getLastName());
 					object.put("role", user.getRole().getroleId());
+					object.put("status", user.isActive());
 					// adding records object to json array
 					onsitelead_array.add(object);
 				}
