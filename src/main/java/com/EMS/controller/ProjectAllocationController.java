@@ -1274,12 +1274,14 @@ public class ProjectAllocationController {
 				for (AllocationModel item : allocationModel) {
 					String projectStartDate = df.format(item.getStartDate());
 					String projectEndDate = df.format(item.getEndDate());
-					if ((fromDate.compareTo(df.parse(projectStartDate)) >= 0
+					/*if ((fromDate.compareTo(df.parse(projectStartDate)) >= 0
 							&& fromDate.compareTo(df.parse(projectStartDate)) <= 0)
 							|| (toDate.compareTo(df.parse(projectStartDate)) >= 0
 									&& toDate.compareTo(df.parse(projectEndDate)) <= 0)
 							|| (fromDate.compareTo(df.parse(projectStartDate)) >= 0
-									&& toDate.compareTo(df.parse(projectEndDate)) <= 0)) {
+									&& toDate.compareTo(df.parse(projectEndDate)) <= 0)) { */
+					//if(fromDate.compareTo(df.parse(projectEndDate)) <= 0 && (df.parse(projectEndDate)).compareTo(toDate) <= 0){
+					if((df.parse(projectStartDate)).compareTo(toDate)<=0 && (df.parse(projectEndDate)).compareTo(fromDate)>=0){
 
 						ObjectNode jsonObject = objectMapper.createObjectNode();
 
