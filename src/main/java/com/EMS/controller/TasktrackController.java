@@ -1971,6 +1971,9 @@ public class TasktrackController {
 				// "+uId);
 				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId);
 			} 
+			else if(user.getRole().getroleId()==11) {
+				projectList = tasktrackRepository.getProjectNamesForApproverOnly(uId);
+			}
 			//Renjith
 			else if (user.getRole().getroleId()==5) {
 				// System.out.println("_________________________________________Sub Admin
@@ -1980,7 +1983,7 @@ public class TasktrackController {
 			
 			
 			else {
-				// System.out.println("_________________________________________Other"+uId);
+				 System.out.println("_________________________________________Other"+uId);
 				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId);
 			}
 
@@ -1989,6 +1992,7 @@ public class TasktrackController {
 					ObjectNode node = objectMapper.createObjectNode();
 					node.put("id", (Long) alloc[1]);
 					node.put("value", (String) alloc[0]);
+					node.put("tier", (Integer)alloc[2]);
 					//get region list
 					List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
 					ArrayNode regionsArray = objectMapper.createArrayNode();
