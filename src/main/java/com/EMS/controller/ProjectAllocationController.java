@@ -1261,6 +1261,7 @@ public class ProjectAllocationController {
 
 		ArrayNode jsonArray = objectMapper.createArrayNode();
 		ArrayNode projectjsonArray = objectMapper.createArrayNode();
+		ArrayNode regionjsonArray = objectMapper.createArrayNode();
 		ObjectNode jsonData = objectMapper.createObjectNode();
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
@@ -1328,6 +1329,15 @@ public class ProjectAllocationController {
 
 				jsonData.set("projectData", jsonprojectObject);
 				jsonData.set("resourceList", jsonArray);
+				List<ProjectRegion> projectRegion = projectRegionService.getRegionListByProject(projectId);
+				for(ProjectRegion region : projectRegion){
+					ObjectNode jsonregionObject = objectMapper.createObjectNode();
+					jsonregionObject.put("region_Id",region.getRegion_Id().getId());
+					jsonregionObject.put("region_code",region.getRegion_Id().getRegion_code());
+					jsonregionObject.put("region_name",region.getRegion_Id().getRegion_name());
+					regionjsonArray.add(jsonregionObject);
+				}
+				jsonData.set("regionList", regionjsonArray);
 
 			}
 			jsonDataRes.put("status", "success");

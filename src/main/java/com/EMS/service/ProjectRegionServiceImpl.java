@@ -2,6 +2,7 @@ package com.EMS.service;
 
 import java.util.List;
 
+import com.EMS.model.ProjectRegion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +27,11 @@ public class ProjectRegionServiceImpl implements ProjectRegionService{
 		// TODO Auto-generated method stub
 		return projectRegionRepository.getObjProjectsByRegionId(regionId);
 	}
-	
-	
+
+	@Override
+	public List<ProjectRegion> getRegionListByProject(Long projectId){
+		return projectRegionRepository.getRegionList(projectId);
+	}
 	
 
 }
