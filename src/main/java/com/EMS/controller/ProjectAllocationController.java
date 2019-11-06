@@ -1258,6 +1258,7 @@ public class ProjectAllocationController {
 
 		List<AllocationModel> allocationModel = projectAllocation.getAllocationList(projectId);
 
+
 		ArrayNode jsonArray = objectMapper.createArrayNode();
 		ArrayNode projectjsonArray = objectMapper.createArrayNode();
 		ObjectNode jsonData = objectMapper.createObjectNode();
@@ -1289,6 +1290,14 @@ public class ProjectAllocationController {
 							 projectStart = df.format(item.getproject().getStartDate());
 							 projectEnd = df.format(item.getproject().getEndDate());
 							 projectName = item.getproject().getProjectName();
+						}
+						else{
+							ProjectModel project = projectService.getProjectDetails(projectId);
+							jsonObject.put("projectTitle", project.getProjectName());
+							jsonObject.put("projectCategory", project.getProjectCategory());
+							projectStart = df.format(project.getStartDate());
+							projectEnd = df.format(project.getEndDate());
+							projectName = project.getProjectName();
 						}
 						double availableAlloc = 0;
 						if (item.getuser() != null) {
