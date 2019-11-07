@@ -108,5 +108,14 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) and a.isBillable =1 and a.projectStatus=1 order by a.projectName")
 	List<Object[]> getProjectNamesForApproverOnly(Long uId);
 	
+	@Modifying
+	@Transactional
+	@Query("UPDATE Tasktrack t set t.hours=?2,t.project=?3,t.task=?4 where t.id=?1")
+	public void updateTaskByName(long id,double hours,ProjectModel projectModel,Task task) throws Exception;
+	
+	
+	@Query("select p.projectId,p.projectName,t.date,t.id,sum(t.hours) from ProjectModel p join AllocationModel a on a.project.projectId = p.projectId join UserModel u on u.userId=a.user.userId join Tasktrack t on t.project.projectId=p.projectId and t.user.userId = u.userId where u.userId=?1 and t.date>=?2 and t.date<=?3 group by 1,2,3 order by 1,3")
+	public List<Object[]> getTasksFortimeTrack(long id,Date fromDate, Date toDate) throws Exception;
+	
 	
 }
