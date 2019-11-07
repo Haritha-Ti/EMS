@@ -4,11 +4,18 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ValueRange;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,27 +26,28 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import java.time.YearMonth;
-
-import com.EMS.repository.*;
-import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.EMS.model.ActivityLog;
-import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
-import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.TaskTrackApprovalFinance;
 import com.EMS.model.TaskTrackApprovalLevel2;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
+import com.EMS.repository.ActivityLogRepository;
+import com.EMS.repository.ProjectAllocationRepository;
+import com.EMS.repository.ProjectRepository;
+import com.EMS.repository.TaskRepository;
+import com.EMS.repository.TaskTrackApprovalLevel2Repository;
+import com.EMS.repository.TaskTrackFinalJPARepository;
 import com.EMS.repository.TaskTrackFinanceRepository;
-import com.EMS.utility.Constants;
+import com.EMS.repository.TasktrackRepository;
+import com.EMS.repository.TimeTrackApprovalJPARepository;
+import com.EMS.repository.TimeTrackApprovalRepository;
+import com.EMS.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -63,6 +71,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	@Autowired
 	TimeTrackApprovalJPARepository timeTrackApprovalJPARepository;
+
+	@Autowired
+	TaskTrackFinalJPARepository taskTrackFinalJPARepository;
 //	For Task track Model
 
 	@Autowired
@@ -5307,6 +5318,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return resultData;
 	}
 
+	/**
+	 * @author sreejith.j
+	 */
 	@Override
 	public void saveApprovedHours(JSONObject requestData) throws Exception {
 
@@ -5371,6 +5385,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Calendar endCal = Calendar.getInstance();
 		endCal.setTime(endDate);
 		endCal.add(Calendar.DATE, -1);
+
+		if (billableArray.size() > 0 && billableId == null) {
+			billableId = timeTrackApprovalJPARepository.getBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (billableId != null) {
+				throw new Exception("Duplicate entry for billable.");
+			}
+		}
+		if (nonbillableArray.size() > 0 && nonBillableId == null) {
+			nonBillableId = timeTrackApprovalJPARepository.getNonBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (nonBillableId != null) {
+				throw new Exception("Duplicate entry for NonBillable.");
+			}
+		}
+		if (overtimeArray.size() > 0 && overtimeId == null) {
+			overtimeId = timeTrackApprovalJPARepository.getOvertimeIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (overtimeId != null) {
+				throw new Exception("Duplicate entry for Overtime.");
+			}
+		}
 
 		if (billableArray.size() > 0) {// Billable
 
@@ -5614,6 +5650,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 	}
 
+	/**
+	 * @author sreejith.j
+	 */
 	@Override
 	public void submitFirstHalfHoursForApproval(JSONObject requestData) throws Exception {
 
@@ -5678,6 +5717,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(endDate);
 		calendar.add(Calendar.DATE, -1);
+
+		if (billableArray.size() > 0 && billableId == null) {
+			billableId = timeTrackApprovalJPARepository.getBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (billableId != null) {
+				throw new Exception("Duplicate entry for billable.");
+			}
+		}
+		if (nonbillableArray.size() > 0 && nonBillableId == null) {
+			nonBillableId = timeTrackApprovalJPARepository.getNonBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (nonBillableId != null) {
+				throw new Exception("Duplicate entry for NonBillable.");
+			}
+		}
+		if (overtimeArray.size() > 0 && overtimeId == null) {
+			overtimeId = timeTrackApprovalJPARepository.getOvertimeIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (overtimeId != null) {
+				throw new Exception("Duplicate entry for Overtime.");
+			}
+		}
 
 		if (billableArray.size() > 0) {// Billable
 
@@ -5883,6 +5944,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 	}
 
+	/**
+	 * @author sreejith.j
+	 */
 	@Override
 	public void submitSecondHalfHoursForApproval(JSONObject requestData) throws Exception {
 
@@ -5947,6 +6011,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(endDate);
 		calendar.add(Calendar.DATE, -1);
+
+		if (billableArray.size() > 0 && billableId == null) {
+			billableId = timeTrackApprovalJPARepository.getBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (billableId != null) {
+				throw new Exception("Duplicate entry for billable.");
+			}
+		}
+		if (nonbillableArray.size() > 0 && nonBillableId == null) {
+			nonBillableId = timeTrackApprovalJPARepository.getNonBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (nonBillableId != null) {
+				throw new Exception("Duplicate entry for NonBillable.");
+			}
+		}
+		if (overtimeArray.size() > 0 && overtimeId == null) {
+			overtimeId = timeTrackApprovalJPARepository.getOvertimeIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (overtimeId != null) {
+				throw new Exception("Duplicate entry for Overtime.");
+			}
+		}
 
 		if (billableArray.size() > 0) {// Billable
 
@@ -6159,7 +6245,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	 * @param i
 	 * @param hours
 	 */
-	private void setDayInCorrespondingModel(TaskTrackApproval taskTrackApproval, int i, double hours) throws Exception{
+	private void setDayInCorrespondingModel(TaskTrackApproval taskTrackApproval, int i, double hours) throws Exception {
 
 		if (i == 0) {
 			taskTrackApproval.setDay1(hours);
@@ -6225,5 +6311,4 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			taskTrackApproval.setDay31(hours);
 		}
 	}
-
 }
