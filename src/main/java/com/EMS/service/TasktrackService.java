@@ -59,6 +59,10 @@ public interface TasktrackService {
     List<TaskTrackDaySubmissionModel> saveSubmissionDays(List<TaskTrackDaySubmissionModel> taskTrackDaySubmissionList);
     
     TaskTrackDaySubmissionModel getSubmissionDayByMonth(int month);
+    
+    Task getTaskByName(String taskName);
+
+	List<Object[]> getTasksForTimeTrack(Long userId, Date fromDate, Date toDate);
 		
 }
 
