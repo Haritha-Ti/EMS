@@ -1290,17 +1290,7 @@ public class ProjectAllocationController {
 						if (item.getproject() != null) {
 							jsonObject.put("projectTitle", item.getproject().getProjectName());
 							jsonObject.put("projectCategory", item.getproject().getProjectCategory());
-							 projectStart = df.format(item.getproject().getStartDate());
-							 projectEnd = df.format(item.getproject().getEndDate());
-							 projectName = item.getproject().getProjectName();
-						}
-						else{
-							ProjectModel project = projectService.getProjectDetails(projectId);
-							jsonObject.put("projectTitle", project.getProjectName());
-							jsonObject.put("projectCategory", project.getProjectCategory());
-							projectStart = df.format(project.getStartDate());
-							projectEnd = df.format(project.getEndDate());
-							projectName = project.getProjectName();
+
 						}
 						double availableAlloc = 0;
 						if (item.getuser() != null) {
@@ -1322,6 +1312,10 @@ public class ProjectAllocationController {
 						jsonArray.add(jsonObject);
 					}
 				}
+				ProjectModel project = projectService.getProjectDetails(projectId);
+				projectStart = df.format(project.getStartDate());
+				projectEnd = df.format(project.getEndDate());
+				projectName = project.getProjectName();
 				jsonprojectObject.put("projectId",projectId);
 				jsonprojectObject.put("projectName",projectName);
 				jsonprojectObject.put("projectStartDate",projectStart);
