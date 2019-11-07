@@ -303,11 +303,11 @@ public class ProjectAllocationController {
 					&& (regionId != null && regionId != "")) {
 
 				Long regId = Long.parseLong(regionId);
-				List<UserModel> userList = userService.getUserByRegion(regId);
+				List<UserModel> userList = userService.getUserByRegion(date1,date2,regId);
 				System.out.println("regionId");
 				if (userList != null) {
 					for (UserModel user : userList) {
-
+						System.out.println("userName----"+user.getFirstName()+" "+user.getLastName());
 						// Invoc getUserAllocationList() to findout the
 						// allocation details of the user
 						getUserAllocationList(user, date1, date2, jsonArrayFiltered);

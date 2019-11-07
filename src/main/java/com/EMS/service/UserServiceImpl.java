@@ -1,9 +1,6 @@
 package com.EMS.service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -283,6 +280,13 @@ public class UserServiceImpl implements UserService {
 		return modles;
 	}
 	//Renjith
-	
+	//Nisha
+	@Override
+	public List<UserModel> getUserByRegion(Date startDate, Date endDate, Long regionId) {
+		// TODO Auto-generated method stub
+		List<UserModel> modles = userRepository.getUserlistByregion(startDate,endDate,regionId);
+		return modles;
+	}
+	//Nisha
 
 }

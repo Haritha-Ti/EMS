@@ -1,5 +1,6 @@
 package com.EMS.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -77,4 +78,8 @@ public interface UserService {
 	//Renjith
 	public List<UserModel> getUserByRegionAndDepartment(Long regionId);
 	//Renjith
+
+	//Nisha
+	List<UserModel> getUserByRegion(Date startDate, Date endDate, Long regionId);
+	//nisha
 }
