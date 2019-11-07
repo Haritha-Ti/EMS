@@ -13,7 +13,7 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "TASKTRACK_APPROVAL_FINAL")
-public class TaskTrackApprovalFinal {
+public class TaskTrackApprovalFinal extends BaseEntity{
 
 	@Id
 	@Column(name = "id")
