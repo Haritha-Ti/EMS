@@ -21,7 +21,6 @@ import javax.mail.internet.MimeMessage;
 
 import java.time.YearMonth;
 
-
 import com.EMS.repository.*;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
@@ -90,8 +89,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Autowired
 	private ProjectRepository project_repositary;
 
-	@Autowired ActivityLogRepository activitylogrepository;
-	
+	@Autowired
+	ActivityLogRepository activitylogrepository;
+
 	@Override
 	public Boolean checkIsUserExists(Long id) {
 		Boolean exist = tasktrackRepository.existsByUser(id);
@@ -101,21 +101,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Override
 	public List<JSONObject> getTimeTrackUserTaskDetails(Long id, Date startDate, Date endDate, List<Object[]> userList,
 
-		List<JSONObject> loggedJsonArray,List<JSONObject> billableJsonArrayLogged,List<JSONObject> timeTrackJSONData, Boolean isExist,Long projectId) {
+			List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArrayLogged,
+			List<JSONObject> timeTrackJSONData, Boolean isExist, Long projectId) {
 		List<JSONObject> billableJsonArray;
 		List<JSONObject> overTimeArray;
 		if (isExist) {
 			JSONObject userListObject = new JSONObject();
 
-			userList =getUserListByProject(id, startDate, endDate,projectId);
-			//System.out.println("userList  : "+userList);
+			userList = getUserListByProject(id, startDate, endDate, projectId);
+			// System.out.println("userList : "+userList);
 			loggedJsonArray = new ArrayList<>();
 
 			String name = null;
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				intMonth = (cal.get(Calendar.MONTH) + 1);
 				intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -155,118 +156,111 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("userId", id);
 			userListObject.put("month", intMonth);
 			userListObject.put("logged", loggedJsonArray);
-			//System.out.println("logged has data  : "+loggedJsonArray);
+			// System.out.println("logged has data : "+loggedJsonArray);
 			name = null;
 			cal.setTime(startDate);
 			int monthIndex = (cal.get(Calendar.MONTH) + 1);
 			int yearIndex = cal.get(Calendar.YEAR);
 
-			List<TaskTrackApproval> approvalUserList =getUserListForApproval(id,projectId,monthIndex,yearIndex);
-			
-			overTimeArray=new ArrayList<>();
+			List<TaskTrackApproval> approvalUserList = getUserListForApproval(id, projectId, monthIndex, yearIndex);
+
+			overTimeArray = new ArrayList<>();
 			billableJsonArray = new ArrayList<>();
-			billableJsonArrayLogged=new ArrayList<>();
+			billableJsonArrayLogged = new ArrayList<>();
 
 			diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 			intMonth = 0;
 			intday = 0;
 			Double hours = 0.0;
-			if (approvalUserList != null && approvalUserList.size() > 0) 
-			{
+			if (approvalUserList != null && approvalUserList.size() > 0) {
 				JSONObject jsonObject = new JSONObject();
-				
 
 				for (TaskTrackApproval item : approvalUserList) {
 					cal.setTime(startDate);
 
-
-					for (int i = 0; i < diffInDays; i++)
-					{
+					for (int i = 0; i < diffInDays; i++) {
 
 						intMonth = (cal.get(Calendar.MONTH) + 1);
 						intday = cal.get(Calendar.DAY_OF_MONTH);
-						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-								+ ((intday < 10) ? "0" + intday : "" + intday);
+						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth)
+								+ "-" + ((intday < 10) ? "0" + intday : "" + intday);
 
-						if(i==0)
-							hours=(Double)item.getDay1();
-						else if(i==1)
-							hours=(Double)item.getDay2();
-						else if(i==2)
-							hours=(Double)item.getDay3();
-						else if(i==3)
-							hours=(Double)item.getDay4();
-						else if(i==4)
-							hours=(Double)item.getDay5();
-						else if(i==5)
-							hours=(Double)item.getDay6();
-						else if(i==6)
-							hours=(Double)item.getDay7();
-						else if(i==7)
-							hours=(Double)item.getDay8();
-						else if(i==8)
-							hours=(Double)item.getDay9();
-						else if(i==9)
-							hours=(Double)item.getDay10();
-						else if(i==10)
-							hours=(Double)item.getDay11();
-						else if(i==11)
-							hours=(Double)item.getDay12();
-						else if(i==12)
-							hours=(Double)item.getDay13();
-						else if(i==13)
-							hours=(Double)item.getDay14();
-						else if(i==14)
-							hours=(Double)item.getDay15();
-						else if(i==15)
-							hours=(Double)item.getDay16();
-						else if(i==16)
-							hours=(Double)item.getDay17();
-						else if(i==17)
-							hours=(Double)item.getDay18();
-						else if(i==18)
-							hours=(Double)item.getDay19();
-						else if(i==19)
-							hours=(Double)item.getDay20();
-						else if(i==20)
-							hours=(Double)item.getDay21();
-						else if(i==21)
-							hours=(Double)item.getDay22();
-						else if(i==22)
-							hours=(Double)item.getDay23();
-						else if(i==23)
-							hours=(Double)item.getDay24();
-						else if(i==24)
-							hours=(Double)item.getDay25();
-						else if(i==25)
-							hours=(Double)item.getDay26();
-						else if(i==26)
-							hours=(Double)item.getDay27();
-						else if(i==27)
-							hours=(Double)item.getDay28();
-						else if(i==28)
-							hours=(Double)item.getDay29();
-						else if(i==29)
-							hours=(Double)item.getDay30();
-						else if(i==30)
-							hours=(Double)item.getDay31();
+						if (i == 0)
+							hours = (Double) item.getDay1();
+						else if (i == 1)
+							hours = (Double) item.getDay2();
+						else if (i == 2)
+							hours = (Double) item.getDay3();
+						else if (i == 3)
+							hours = (Double) item.getDay4();
+						else if (i == 4)
+							hours = (Double) item.getDay5();
+						else if (i == 5)
+							hours = (Double) item.getDay6();
+						else if (i == 6)
+							hours = (Double) item.getDay7();
+						else if (i == 7)
+							hours = (Double) item.getDay8();
+						else if (i == 8)
+							hours = (Double) item.getDay9();
+						else if (i == 9)
+							hours = (Double) item.getDay10();
+						else if (i == 10)
+							hours = (Double) item.getDay11();
+						else if (i == 11)
+							hours = (Double) item.getDay12();
+						else if (i == 12)
+							hours = (Double) item.getDay13();
+						else if (i == 13)
+							hours = (Double) item.getDay14();
+						else if (i == 14)
+							hours = (Double) item.getDay15();
+						else if (i == 15)
+							hours = (Double) item.getDay16();
+						else if (i == 16)
+							hours = (Double) item.getDay17();
+						else if (i == 17)
+							hours = (Double) item.getDay18();
+						else if (i == 18)
+							hours = (Double) item.getDay19();
+						else if (i == 19)
+							hours = (Double) item.getDay20();
+						else if (i == 20)
+							hours = (Double) item.getDay21();
+						else if (i == 21)
+							hours = (Double) item.getDay22();
+						else if (i == 22)
+							hours = (Double) item.getDay23();
+						else if (i == 23)
+							hours = (Double) item.getDay24();
+						else if (i == 24)
+							hours = (Double) item.getDay25();
+						else if (i == 25)
+							hours = (Double) item.getDay26();
+						else if (i == 26)
+							hours = (Double) item.getDay27();
+						else if (i == 27)
+							hours = (Double) item.getDay28();
+						else if (i == 28)
+							hours = (Double) item.getDay29();
+						else if (i == 29)
+							hours = (Double) item.getDay30();
+						else if (i == 30)
+							hours = (Double) item.getDay31();
 
 						name = (String) item.getFirstName() + " " + item.getLastName();
 
-						if(item.getProjectType().equals("Billable")) 
-						{
+						if (item.getProjectType().equals("Billable")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							billableJsonArrayLogged.add(jsonObject);
 						}
 
-						if(item.getProjectType().equals("Overtime"))
-						{
+						if (item.getProjectType().equals("Overtime")) {
 
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							overTimeArray.add(jsonObject);
-
 
 						}
 
@@ -274,43 +268,37 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					}
 
-
 					/*-------------------------*/
-					
 
-					if(!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty() && billableJsonArray.size()<diffInDays)
-					{
-						//System.out.println("OT : "+overTimeArray);
-					//	System.out.println("BL : "+billableJsonArray);
-					//	System.out.println("OTS : "+overTimeArray.size());
-						//System.out.println("BLS : "+billableJsonArray.size());
-						
+					if (!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty()
+							&& billableJsonArray.size() < diffInDays) {
+						// System.out.println("OT : "+overTimeArray);
+						// System.out.println("BL : "+billableJsonArray);
+						// System.out.println("OTS : "+overTimeArray.size());
+						// System.out.println("BLS : "+billableJsonArray.size());
+
 						cal.setTime(startDate);
-						for (int i = 0; i < diffInDays; i++)
-						{
-							JSONObject jsonOverTime=new JSONObject();
-							JSONObject jsonBillable=new JSONObject();
-							JSONObject jsonTotal=new JSONObject();
+						for (int i = 0; i < diffInDays; i++) {
+							JSONObject jsonOverTime = new JSONObject();
+							JSONObject jsonBillable = new JSONObject();
+							JSONObject jsonTotal = new JSONObject();
 
-							Double billable=0.0;
-							Double overTime=0.0;
+							Double billable = 0.0;
+							Double overTime = 0.0;
 
-
-							intMonth = (cal.get(Calendar.MONTH)+1);
+							intMonth = (cal.get(Calendar.MONTH) + 1);
 							intday = cal.get(Calendar.DAY_OF_MONTH);
-							String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							String vl = cal.get(Calendar.YEAR) + "-"
+									+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
 									+ ((intday < 10) ? "0" + intday : "" + intday);
 
 							jsonBillable = billableJsonArrayLogged.get(i);
-							if(jsonBillable.get(vl)!=null)
-							{
-								billable=(Double)jsonBillable.get(vl);
+							if (jsonBillable.get(vl) != null) {
+								billable = (Double) jsonBillable.get(vl);
 							}
 
-
 							jsonOverTime = overTimeArray.get(i);
-							if(jsonOverTime.get(vl)!=null)
-							{
+							if (jsonOverTime.get(vl) != null) {
 								overTime = (Double) jsonOverTime.get(vl);
 							}
 
@@ -322,14 +310,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 					}
 					/*-------------------------*/
-					//System.out.println("Data 0: "+billableJsonArray);
-					//System.out.println("Data 0: "+billableJsonArray.size());
-
+					// System.out.println("Data 0: "+billableJsonArray);
+					// System.out.println("Data 0: "+billableJsonArray.size());
 
 				}
 
-			}
-			else {
+			} else {
 				cal.setTime(startDate);
 				for (int i = 0; i < diffInDays; i++) {
 
@@ -348,8 +334,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 			userListObject.put("billable", billableJsonArray);
 
-
-
 			timeTrackJSONData.add(userListObject);
 
 		} else {
@@ -363,7 +347,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				JSONObject jsonObject = new JSONObject();
 
@@ -382,20 +366,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("month", intMonth);
 			userListObject.put("logged", loggedJsonArray);
 			userListObject.put("billable", billableJsonArray);
-			//System.out.println("logged is empty  : "+loggedJsonArray);
+			// System.out.println("logged is empty : "+loggedJsonArray);
 			timeTrackJSONData.add(userListObject);
 		}
 		return timeTrackJSONData;
 	}
 
-
 	@Override
-	public List<JSONObject> getTimeTrackUserTaskDetailsByProject(Long id, Date startDate, Date endDate, List<Object[]> userList,
-																 List<JSONObject> loggedJsonArray,List<JSONObject> billableJsonArray,List<JSONObject> nonBillableJsonArray,List<JSONObject> timeTrackJSONData, Boolean isExist,Long projectId) {
+	public List<JSONObject> getTimeTrackUserTaskDetailsByProject(Long id, Date startDate, Date endDate,
+			List<Object[]> userList, List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArray,
+			List<JSONObject> nonBillableJsonArray, List<JSONObject> timeTrackJSONData, Boolean isExist,
+			Long projectId) {
 		if (isExist) {
 			JSONObject userListObject = new JSONObject();
 
-			userList =getUserListByProject(id, startDate, endDate,projectId);
+			userList = getUserListByProject(id, startDate, endDate, projectId);
 
 			loggedJsonArray = new ArrayList<>();
 
@@ -403,7 +388,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				intMonth = (cal.get(Calendar.MONTH) + 1);
 				intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -449,10 +434,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			int monthIndex = (cal.get(Calendar.MONTH) + 1);
 			int yearIndex = cal.get(Calendar.YEAR);
 
-			List<TaskTrackApproval> approvalUserList =getUserListForApproval(id,projectId,monthIndex,yearIndex);
+			List<TaskTrackApproval> approvalUserList = getUserListForApproval(id, projectId, monthIndex, yearIndex);
 			billableJsonArray = new ArrayList<>();
 			nonBillableJsonArray = new ArrayList<>();
-
 
 			diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 			intMonth = 0;
@@ -468,80 +452,80 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						intMonth = (cal.get(Calendar.MONTH) + 1);
 						intday = cal.get(Calendar.DAY_OF_MONTH);
-						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-								+ ((intday < 10) ? "0" + intday : "" + intday);
+						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth)
+								+ "-" + ((intday < 10) ? "0" + intday : "" + intday);
 
-						if(i==0)
-							hours=(Double)item.getDay1();
-						else if(i==1)
-							hours=(Double)item.getDay2();
-						else if(i==2)
-							hours=(Double)item.getDay3();
-						else if(i==3)
-							hours=(Double)item.getDay4();
-						else if(i==4)
-							hours=(Double)item.getDay5();
-						else if(i==5)
-							hours=(Double)item.getDay6();
-						else if(i==6)
-							hours=(Double)item.getDay7();
-						else if(i==7)
-							hours=(Double)item.getDay8();
-						else if(i==8)
-							hours=(Double)item.getDay9();
-						else if(i==9)
-							hours=(Double)item.getDay10();
-						else if(i==10)
-							hours=(Double)item.getDay11();
-						else if(i==11)
-							hours=(Double)item.getDay12();
-						else if(i==12)
-							hours=(Double)item.getDay13();
-						else if(i==13)
-							hours=(Double)item.getDay14();
-						else if(i==14)
-							hours=(Double)item.getDay15();
-						else if(i==15)
-							hours=(Double)item.getDay16();
-						else if(i==16)
-							hours=(Double)item.getDay17();
-						else if(i==17)
-							hours=(Double)item.getDay18();
-						else if(i==18)
-							hours=(Double)item.getDay19();
-						else if(i==19)
-							hours=(Double)item.getDay20();
-						else if(i==20)
-							hours=(Double)item.getDay21();
-						else if(i==21)
-							hours=(Double)item.getDay22();
-						else if(i==22)
-							hours=(Double)item.getDay23();
-						else if(i==23)
-							hours=(Double)item.getDay24();
-						else if(i==24)
-							hours=(Double)item.getDay25();
-						else if(i==25)
-							hours=(Double)item.getDay26();
-						else if(i==26)
-							hours=(Double)item.getDay27();
-						else if(i==27)
-							hours=(Double)item.getDay28();
-						else if(i==28)
-							hours=(Double)item.getDay29();
-						else if(i==29)
-							hours=(Double)item.getDay30();
-						else if(i==30)
-							hours=(Double)item.getDay31();
+						if (i == 0)
+							hours = (Double) item.getDay1();
+						else if (i == 1)
+							hours = (Double) item.getDay2();
+						else if (i == 2)
+							hours = (Double) item.getDay3();
+						else if (i == 3)
+							hours = (Double) item.getDay4();
+						else if (i == 4)
+							hours = (Double) item.getDay5();
+						else if (i == 5)
+							hours = (Double) item.getDay6();
+						else if (i == 6)
+							hours = (Double) item.getDay7();
+						else if (i == 7)
+							hours = (Double) item.getDay8();
+						else if (i == 8)
+							hours = (Double) item.getDay9();
+						else if (i == 9)
+							hours = (Double) item.getDay10();
+						else if (i == 10)
+							hours = (Double) item.getDay11();
+						else if (i == 11)
+							hours = (Double) item.getDay12();
+						else if (i == 12)
+							hours = (Double) item.getDay13();
+						else if (i == 13)
+							hours = (Double) item.getDay14();
+						else if (i == 14)
+							hours = (Double) item.getDay15();
+						else if (i == 15)
+							hours = (Double) item.getDay16();
+						else if (i == 16)
+							hours = (Double) item.getDay17();
+						else if (i == 17)
+							hours = (Double) item.getDay18();
+						else if (i == 18)
+							hours = (Double) item.getDay19();
+						else if (i == 19)
+							hours = (Double) item.getDay20();
+						else if (i == 20)
+							hours = (Double) item.getDay21();
+						else if (i == 21)
+							hours = (Double) item.getDay22();
+						else if (i == 22)
+							hours = (Double) item.getDay23();
+						else if (i == 23)
+							hours = (Double) item.getDay24();
+						else if (i == 24)
+							hours = (Double) item.getDay25();
+						else if (i == 25)
+							hours = (Double) item.getDay26();
+						else if (i == 26)
+							hours = (Double) item.getDay27();
+						else if (i == 27)
+							hours = (Double) item.getDay28();
+						else if (i == 28)
+							hours = (Double) item.getDay29();
+						else if (i == 29)
+							hours = (Double) item.getDay30();
+						else if (i == 30)
+							hours = (Double) item.getDay31();
 
 						name = (String) item.getFirstName() + " " + item.getLastName();
 
-						if(item.getProjectType().equals("Billable")) {
+						if (item.getProjectType().equals("Billable")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							billableJsonArray.add(jsonObject);
 						}
-						if(item.getProjectType().equals("Non-Billable")) {
+						if (item.getProjectType().equals("Non-Billable")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							nonBillableJsonArray.add(jsonObject);
@@ -551,8 +535,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					}
 				}
-			}
-			else {
+			} else {
 				cal.setTime(startDate);
 				for (int i = 0; i < diffInDays; i++) {
 
@@ -573,8 +556,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("billable", billableJsonArray);
 			userListObject.put("nonbillable", nonBillableJsonArray);
 
-
-
 			timeTrackJSONData.add(userListObject);
 
 		} else {
@@ -588,7 +569,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				JSONObject jsonObject = new JSONObject();
 
@@ -616,13 +597,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public List<JSONObject> getTimeTrackUserProjectTaskDetails(Long projectId,String projectName, Date startDate, Date endDate, List<Object[]> projectList,
-															   List<JSONObject> loggedJsonArray,List<JSONObject> billableJsonArray,List<JSONObject> nonBillableJsonArray,List<JSONObject> timeTrackJSONData, Boolean isExist,Long userId) {
+	public List<JSONObject> getTimeTrackUserProjectTaskDetails(Long projectId, String projectName, Date startDate,
+			Date endDate, List<Object[]> projectList, List<JSONObject> loggedJsonArray,
+			List<JSONObject> billableJsonArray, List<JSONObject> nonBillableJsonArray,
+			List<JSONObject> timeTrackJSONData, Boolean isExist, Long userId) {
 		if (isExist) {
 
 			JSONObject userListObject = new JSONObject();
 
-			projectList =getUserListByProject(userId, startDate, endDate,projectId);
+			projectList = getUserListByProject(userId, startDate, endDate, projectId);
 
 			loggedJsonArray = new ArrayList<>();
 
@@ -630,7 +613,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				intMonth = (cal.get(Calendar.MONTH) + 1);
 				intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -666,10 +649,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 
 			}
-			if(projectName !=null) {
+			if (projectName != null) {
 				userListObject.put("projectName", projectName);
-			}
-			else {
+			} else {
 				userListObject.put("userName", name);
 			}
 			userListObject.put("userId", userId);
@@ -681,10 +663,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			int monthIndex = (cal.get(Calendar.MONTH) + 1);
 			int yearIndex = cal.get(Calendar.YEAR);
 
-			List<TaskTrackApproval> approvalUserList =getUserListForApproval(userId,projectId,monthIndex,yearIndex);
+			List<TaskTrackApproval> approvalUserList = getUserListForApproval(userId, projectId, monthIndex, yearIndex);
 			billableJsonArray = new ArrayList<>();
 			nonBillableJsonArray = new ArrayList<>();
-
 
 			diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 			intMonth = 0;
@@ -700,80 +681,80 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						intMonth = (cal.get(Calendar.MONTH) + 1);
 						intday = cal.get(Calendar.DAY_OF_MONTH);
-						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-								+ ((intday < 10) ? "0" + intday : "" + intday);
+						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth)
+								+ "-" + ((intday < 10) ? "0" + intday : "" + intday);
 
-						if(i==0)
-							hours=(Double)item.getDay1();
-						else if(i==1)
-							hours=(Double)item.getDay2();
-						else if(i==2)
-							hours=(Double)item.getDay3();
-						else if(i==3)
-							hours=(Double)item.getDay4();
-						else if(i==4)
-							hours=(Double)item.getDay5();
-						else if(i==5)
-							hours=(Double)item.getDay6();
-						else if(i==6)
-							hours=(Double)item.getDay7();
-						else if(i==7)
-							hours=(Double)item.getDay8();
-						else if(i==8)
-							hours=(Double)item.getDay9();
-						else if(i==9)
-							hours=(Double)item.getDay10();
-						else if(i==10)
-							hours=(Double)item.getDay11();
-						else if(i==11)
-							hours=(Double)item.getDay12();
-						else if(i==12)
-							hours=(Double)item.getDay13();
-						else if(i==13)
-							hours=(Double)item.getDay14();
-						else if(i==14)
-							hours=(Double)item.getDay15();
-						else if(i==15)
-							hours=(Double)item.getDay16();
-						else if(i==16)
-							hours=(Double)item.getDay17();
-						else if(i==17)
-							hours=(Double)item.getDay18();
-						else if(i==18)
-							hours=(Double)item.getDay19();
-						else if(i==19)
-							hours=(Double)item.getDay20();
-						else if(i==20)
-							hours=(Double)item.getDay21();
-						else if(i==21)
-							hours=(Double)item.getDay22();
-						else if(i==22)
-							hours=(Double)item.getDay23();
-						else if(i==23)
-							hours=(Double)item.getDay24();
-						else if(i==24)
-							hours=(Double)item.getDay25();
-						else if(i==25)
-							hours=(Double)item.getDay26();
-						else if(i==26)
-							hours=(Double)item.getDay27();
-						else if(i==27)
-							hours=(Double)item.getDay28();
-						else if(i==28)
-							hours=(Double)item.getDay29();
-						else if(i==29)
-							hours=(Double)item.getDay30();
-						else if(i==30)
-							hours=(Double)item.getDay31();
+						if (i == 0)
+							hours = (Double) item.getDay1();
+						else if (i == 1)
+							hours = (Double) item.getDay2();
+						else if (i == 2)
+							hours = (Double) item.getDay3();
+						else if (i == 3)
+							hours = (Double) item.getDay4();
+						else if (i == 4)
+							hours = (Double) item.getDay5();
+						else if (i == 5)
+							hours = (Double) item.getDay6();
+						else if (i == 6)
+							hours = (Double) item.getDay7();
+						else if (i == 7)
+							hours = (Double) item.getDay8();
+						else if (i == 8)
+							hours = (Double) item.getDay9();
+						else if (i == 9)
+							hours = (Double) item.getDay10();
+						else if (i == 10)
+							hours = (Double) item.getDay11();
+						else if (i == 11)
+							hours = (Double) item.getDay12();
+						else if (i == 12)
+							hours = (Double) item.getDay13();
+						else if (i == 13)
+							hours = (Double) item.getDay14();
+						else if (i == 14)
+							hours = (Double) item.getDay15();
+						else if (i == 15)
+							hours = (Double) item.getDay16();
+						else if (i == 16)
+							hours = (Double) item.getDay17();
+						else if (i == 17)
+							hours = (Double) item.getDay18();
+						else if (i == 18)
+							hours = (Double) item.getDay19();
+						else if (i == 19)
+							hours = (Double) item.getDay20();
+						else if (i == 20)
+							hours = (Double) item.getDay21();
+						else if (i == 21)
+							hours = (Double) item.getDay22();
+						else if (i == 22)
+							hours = (Double) item.getDay23();
+						else if (i == 23)
+							hours = (Double) item.getDay24();
+						else if (i == 24)
+							hours = (Double) item.getDay25();
+						else if (i == 25)
+							hours = (Double) item.getDay26();
+						else if (i == 26)
+							hours = (Double) item.getDay27();
+						else if (i == 27)
+							hours = (Double) item.getDay28();
+						else if (i == 28)
+							hours = (Double) item.getDay29();
+						else if (i == 29)
+							hours = (Double) item.getDay30();
+						else if (i == 30)
+							hours = (Double) item.getDay31();
 
 						name = (String) item.getFirstName() + " " + item.getLastName();
 
-						if(item.getProjectType().equals("Billable")) {
+						if (item.getProjectType().equals("Billable")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							billableJsonArray.add(jsonObject);
 						}
-						if(item.getProjectType().equals("Non-Billable")) {
+						if (item.getProjectType().equals("Non-Billable")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							nonBillableJsonArray.add(jsonObject);
@@ -782,8 +763,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					}
 				}
-			}
-			else {
+			} else {
 				cal.setTime(startDate);
 				for (int i = 0; i < diffInDays; i++) {
 
@@ -803,8 +783,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("billable", billableJsonArray);
 			userListObject.put("nonbillable", nonBillableJsonArray);
 
-
-
 			timeTrackJSONData.add(userListObject);
 
 		} else {
@@ -819,7 +797,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				JSONObject jsonObject = new JSONObject();
 
@@ -847,13 +825,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	private List<Object[]> getUserListByProject(Long id, Date startDate, Date endDate, Long projectId) {
-		List<Object[]> userTaskList = taskRepository.getUserListByProject(id,startDate,endDate,projectId);
+		List<Object[]> userTaskList = taskRepository.getUserListByProject(id, startDate, endDate, projectId);
 		return userTaskList;
 	}
 
 	@Override
-	public JSONObject getApprovedUserTaskDetails(Long id, Date startDate, Date endDate, List<TaskTrackApproval> userList,
-												 List<JSONObject> jsonArray, List<JSONObject> jsonDataRes1, Boolean isExist,Long projectId) {
+	public JSONObject getApprovedUserTaskDetails(Long id, Date startDate, Date endDate,
+			List<TaskTrackApproval> userList, List<JSONObject> jsonArray, List<JSONObject> jsonDataRes1,
+			Boolean isExist, Long projectId) {
 		JSONObject userListObject = new JSONObject();
 
 		List<JSONObject> billableArray = new ArrayList<>();
@@ -867,19 +846,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			cal.setTime(startDate);
 			int monthIndex = (cal.get(Calendar.MONTH) + 1);
 			int yearIndex = cal.get(Calendar.YEAR);
-			userList =getUserListForApproval(id,projectId,monthIndex,yearIndex);
+			userList = getUserListForApproval(id, projectId, monthIndex, yearIndex);
 
 			jsonArray = new ArrayList<>();
 
 			String name = null;
-			Long billableId = null,nonBillableId=null,beachId=null,overtimeId=null,updatedBy=null;
+			Long billableId = null, nonBillableId = null, beachId = null, overtimeId = null, updatedBy = null;
 
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 
 			Double hours = 0.0;
 			if (userList != null && userList.size() > 0) {
-				
+
 				JSONObject jsonObject = new JSONObject();
 
 				for (TaskTrackApproval item : userList) {
@@ -889,94 +868,91 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						intMonth = (cal.get(Calendar.MONTH) + 1);
 						intday = cal.get(Calendar.DAY_OF_MONTH);
-						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-								+ ((intday < 10) ? "0" + intday : "" + intday);
+						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth)
+								+ "-" + ((intday < 10) ? "0" + intday : "" + intday);
 
-						if(i==0)
-							hours=(Double)item.getDay1();
-						else if(i==1)
-							hours=(Double)item.getDay2();
-						else if(i==2)
-							hours=(Double)item.getDay3();
-						else if(i==3)
-							hours=(Double)item.getDay4();
-						else if(i==4)
-							hours=(Double)item.getDay5();
-						else if(i==5)
-							hours=(Double)item.getDay6();
-						else if(i==6)
-							hours=(Double)item.getDay7();
-						else if(i==7)
-							hours=(Double)item.getDay8();
-						else if(i==8)
-							hours=(Double)item.getDay9();
-						else if(i==9)
-							hours=(Double)item.getDay10();
-						else if(i==10)
-							hours=(Double)item.getDay11();
-						else if(i==11)
-							hours=(Double)item.getDay12();
-						else if(i==12)
-							hours=(Double)item.getDay13();
-						else if(i==13)
-							hours=(Double)item.getDay14();
-						else if(i==14)
-							hours=(Double)item.getDay15();
-						else if(i==15)
-							hours=(Double)item.getDay16();
-						else if(i==16)
-							hours=(Double)item.getDay17();
-						else if(i==17)
-							hours=(Double)item.getDay18();
-						else if(i==18)
-							hours=(Double)item.getDay19();
-						else if(i==19)
-							hours=(Double)item.getDay20();
-						else if(i==20)
-							hours=(Double)item.getDay21();
-						else if(i==21)
-							hours=(Double)item.getDay22();
-						else if(i==22)
-							hours=(Double)item.getDay23();
-						else if(i==23)
-							hours=(Double)item.getDay24();
-						else if(i==24)
-							hours=(Double)item.getDay25();
-						else if(i==25)
-							hours=(Double)item.getDay26();
-						else if(i==26)
-							hours=(Double)item.getDay27();
-						else if(i==27)
-							hours=(Double)item.getDay28();
-						else if(i==28)
-							hours=(Double)item.getDay29();
-						else if(i==29)
-							hours=(Double)item.getDay30();
-						else if(i==30)
-							hours=(Double)item.getDay31();
+						if (i == 0)
+							hours = (Double) item.getDay1();
+						else if (i == 1)
+							hours = (Double) item.getDay2();
+						else if (i == 2)
+							hours = (Double) item.getDay3();
+						else if (i == 3)
+							hours = (Double) item.getDay4();
+						else if (i == 4)
+							hours = (Double) item.getDay5();
+						else if (i == 5)
+							hours = (Double) item.getDay6();
+						else if (i == 6)
+							hours = (Double) item.getDay7();
+						else if (i == 7)
+							hours = (Double) item.getDay8();
+						else if (i == 8)
+							hours = (Double) item.getDay9();
+						else if (i == 9)
+							hours = (Double) item.getDay10();
+						else if (i == 10)
+							hours = (Double) item.getDay11();
+						else if (i == 11)
+							hours = (Double) item.getDay12();
+						else if (i == 12)
+							hours = (Double) item.getDay13();
+						else if (i == 13)
+							hours = (Double) item.getDay14();
+						else if (i == 14)
+							hours = (Double) item.getDay15();
+						else if (i == 15)
+							hours = (Double) item.getDay16();
+						else if (i == 16)
+							hours = (Double) item.getDay17();
+						else if (i == 17)
+							hours = (Double) item.getDay18();
+						else if (i == 18)
+							hours = (Double) item.getDay19();
+						else if (i == 19)
+							hours = (Double) item.getDay20();
+						else if (i == 20)
+							hours = (Double) item.getDay21();
+						else if (i == 21)
+							hours = (Double) item.getDay22();
+						else if (i == 22)
+							hours = (Double) item.getDay23();
+						else if (i == 23)
+							hours = (Double) item.getDay24();
+						else if (i == 24)
+							hours = (Double) item.getDay25();
+						else if (i == 25)
+							hours = (Double) item.getDay26();
+						else if (i == 26)
+							hours = (Double) item.getDay27();
+						else if (i == 27)
+							hours = (Double) item.getDay28();
+						else if (i == 28)
+							hours = (Double) item.getDay29();
+						else if (i == 29)
+							hours = (Double) item.getDay30();
+						else if (i == 30)
+							hours = (Double) item.getDay31();
 
 						name = (String) item.getFirstName() + " " + item.getLastName();
 						updatedBy = item.getUpdatedBy();
 
-						if(item.getProjectType().equals("Billable")) {
+						if (item.getProjectType().equals("Billable")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							billableArray.add(jsonObject);
 							billableId = item.getId();
-						}
-						else if(item.getProjectType().equals("Non-Billable")) {
+						} else if (item.getProjectType().equals("Non-Billable")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							nonbillableArray.add(jsonObject);
 							nonBillableId = item.getId();
-						}
-						else if(item.getProjectType().equals("Beach")) {
+						} else if (item.getProjectType().equals("Beach")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							beachArray.add(jsonObject);
 							beachId = item.getId();
-						}
-						else if(item.getProjectType().equals("Overtime")) {
+						} else if (item.getProjectType().equals("Overtime")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							overTimeArray.add(jsonObject);
@@ -986,9 +962,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					}
 				}
-			}
-			else {
-				
+			} else {
+
 				cal.setTime(startDate);
 				for (int i = 0; i < diffInDays; i++) {
 
@@ -1012,7 +987,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("userName", name);
 			userListObject.put("userId", id);
 			userListObject.put("month", intMonth);
-			userListObject.put("billable", billableArray);;
+			userListObject.put("billable", billableArray);
+			;
 			userListObject.put("nonBillable", nonbillableArray);
 			userListObject.put("beach", beachArray);
 			userListObject.put("overtime", overTimeArray);
@@ -1023,16 +999,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("updatedBy", updatedBy);
 			jsonDataRes1.add(userListObject);
 
-		}
-		else {
- 
+		} else {
+
 			String uName = userService.getUserName(id);
 			String name = String.valueOf(uName).replace(",", " ");
 
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				JSONObject jsonObject = new JSONObject();
 
@@ -1051,7 +1026,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("userName", name);
 			userListObject.put("userId", id);
 			userListObject.put("month", intMonth);
-			userListObject.put("billable", billableArray);;
+			userListObject.put("billable", billableArray);
+			;
 			userListObject.put("nonBillable", nonbillableArray);
 			userListObject.put("beach", beachArray);
 			userListObject.put("overtime", overTimeArray);
@@ -1064,9 +1040,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		return userListObject;
 	}
-	public List<TaskTrackApproval> getUserListForApproval(Long id,Long projectId,Integer monthIndex,Integer yearIndex) {
 
-		List<TaskTrackApproval> userList = timeTrackApprovalRepository.getUserListForApproval(id,projectId,monthIndex,yearIndex);
+	public List<TaskTrackApproval> getUserListForApproval(Long id, Long projectId, Integer monthIndex,
+			Integer yearIndex) {
+
+		List<TaskTrackApproval> userList = timeTrackApprovalRepository.getUserListForApproval(id, projectId, monthIndex,
+				yearIndex);
 
 		return userList;
 	}
@@ -1119,7 +1098,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	@Override
 	public JSONObject getApproveddatalevel2(Long userId, Date startDate, Date endDate, List<TaskTrackApproval> userList,
-											List<JSONObject> jsonArray, List<JSONObject> approvalJSONData, Boolean isExist, Long projectId) {
+			List<JSONObject> jsonArray, List<JSONObject> approvalJSONData, Boolean isExist, Long projectId) {
 
 		List<JSONObject> billableArray = new ArrayList<>();
 		List<JSONObject> overTimeArray = new ArrayList<>();
@@ -1131,14 +1110,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		cal.setTime(startDate);
 		int monthIndex = (cal.get(Calendar.MONTH) + 1);
 		int yearIndex = cal.get(Calendar.YEAR);
-		List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,monthIndex,yearIndex,projectId);
+		List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId, monthIndex,
+				yearIndex, projectId);
 		jsonArray = new ArrayList<>();
 
 		String name = null;
-		Long billableId = null,nonBillableId=null,beachId=null,overtimeId=null,updatedBy=null;
+		Long billableId = null, nonBillableId = null, beachId = null, overtimeId = null, updatedBy = null;
 
 		int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-		int intMonth = 0,intday = 0;
+		int intMonth = 0, intday = 0;
 
 		Double hours = 0.0;
 		if (approvedData != null && approvedData.size() > 0) {
@@ -1154,91 +1134,88 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
 							+ ((intday < 10) ? "0" + intday : "" + intday);
 
-					if(i==0)
-						hours=(Double)item.getDay1();
-					else if(i==1)
-						hours=(Double)item.getDay2();
-					else if(i==2)
-						hours=(Double)item.getDay3();
-					else if(i==3)
-						hours=(Double)item.getDay4();
-					else if(i==4)
-						hours=(Double)item.getDay5();
-					else if(i==5)
-						hours=(Double)item.getDay6();
-					else if(i==6)
-						hours=(Double)item.getDay7();
-					else if(i==7)
-						hours=(Double)item.getDay8();
-					else if(i==8)
-						hours=(Double)item.getDay9();
-					else if(i==9)
-						hours=(Double)item.getDay10();
-					else if(i==10)
-						hours=(Double)item.getDay11();
-					else if(i==11)
-						hours=(Double)item.getDay12();
-					else if(i==12)
-						hours=(Double)item.getDay13();
-					else if(i==13)
-						hours=(Double)item.getDay14();
-					else if(i==14)
-						hours=(Double)item.getDay15();
-					else if(i==15)
-						hours=(Double)item.getDay16();
-					else if(i==16)
-						hours=(Double)item.getDay17();
-					else if(i==17)
-						hours=(Double)item.getDay18();
-					else if(i==18)
-						hours=(Double)item.getDay19();
-					else if(i==19)
-						hours=(Double)item.getDay20();
-					else if(i==20)
-						hours=(Double)item.getDay21();
-					else if(i==21)
-						hours=(Double)item.getDay22();
-					else if(i==22)
-						hours=(Double)item.getDay23();
-					else if(i==23)
-						hours=(Double)item.getDay24();
-					else if(i==24)
-						hours=(Double)item.getDay25();
-					else if(i==25)
-						hours=(Double)item.getDay26();
-					else if(i==26)
-						hours=(Double)item.getDay27();
-					else if(i==27)
-						hours=(Double)item.getDay28();
-					else if(i==28)
-						hours=(Double)item.getDay29();
-					else if(i==29)
-						hours=(Double)item.getDay30();
-					else if(i==30)
-						hours=(Double)item.getDay31();
+					if (i == 0)
+						hours = (Double) item.getDay1();
+					else if (i == 1)
+						hours = (Double) item.getDay2();
+					else if (i == 2)
+						hours = (Double) item.getDay3();
+					else if (i == 3)
+						hours = (Double) item.getDay4();
+					else if (i == 4)
+						hours = (Double) item.getDay5();
+					else if (i == 5)
+						hours = (Double) item.getDay6();
+					else if (i == 6)
+						hours = (Double) item.getDay7();
+					else if (i == 7)
+						hours = (Double) item.getDay8();
+					else if (i == 8)
+						hours = (Double) item.getDay9();
+					else if (i == 9)
+						hours = (Double) item.getDay10();
+					else if (i == 10)
+						hours = (Double) item.getDay11();
+					else if (i == 11)
+						hours = (Double) item.getDay12();
+					else if (i == 12)
+						hours = (Double) item.getDay13();
+					else if (i == 13)
+						hours = (Double) item.getDay14();
+					else if (i == 14)
+						hours = (Double) item.getDay15();
+					else if (i == 15)
+						hours = (Double) item.getDay16();
+					else if (i == 16)
+						hours = (Double) item.getDay17();
+					else if (i == 17)
+						hours = (Double) item.getDay18();
+					else if (i == 18)
+						hours = (Double) item.getDay19();
+					else if (i == 19)
+						hours = (Double) item.getDay20();
+					else if (i == 20)
+						hours = (Double) item.getDay21();
+					else if (i == 21)
+						hours = (Double) item.getDay22();
+					else if (i == 22)
+						hours = (Double) item.getDay23();
+					else if (i == 23)
+						hours = (Double) item.getDay24();
+					else if (i == 24)
+						hours = (Double) item.getDay25();
+					else if (i == 25)
+						hours = (Double) item.getDay26();
+					else if (i == 26)
+						hours = (Double) item.getDay27();
+					else if (i == 27)
+						hours = (Double) item.getDay28();
+					else if (i == 28)
+						hours = (Double) item.getDay29();
+					else if (i == 29)
+						hours = (Double) item.getDay30();
+					else if (i == 30)
+						hours = (Double) item.getDay31();
 
 					name = (String) item.getUser().getFirstName() + " " + item.getUser().getLastName();
 					updatedBy = item.getUpdatedBy();
 
-					if(item.getProjectType().equals("Billable")) {
+					if (item.getProjectType().equals("Billable")) {
 						jsonObject = new JSONObject();
 						jsonObject.put(vl, hours);
 						billableArray.add(jsonObject);
 						billableId = item.getId();
-					}
-					else if(item.getProjectType().equals("Non-Billable")) {
+					} else if (item.getProjectType().equals("Non-Billable")) {
 						jsonObject = new JSONObject();
 						jsonObject.put(vl, hours);
 						nonbillableArray.add(jsonObject);
 						nonBillableId = item.getId();
-					}
-					else if(item.getProjectType().equals("Beach")) {
+					} else if (item.getProjectType().equals("Beach")) {
 						jsonObject = new JSONObject();
 						jsonObject.put(vl, hours);
 						beachArray.add(jsonObject);
 						beachId = item.getId();
-					}
-					else if(item.getProjectType().equals("Overtime")) {
+					} else if (item.getProjectType().equals("Overtime")) {
 						jsonObject = new JSONObject();
 						jsonObject.put(vl, hours);
 						overTimeArray.add(jsonObject);
@@ -1248,8 +1225,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 				}
 			}
-		}
-		else {
+		} else {
 			cal.setTime(startDate);
 			for (int i = 0; i < diffInDays; i++) {
 
@@ -1273,7 +1249,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		userListObject.put("userName", name);
 		userListObject.put("userId", userId);
 		userListObject.put("month", intMonth);
-		userListObject.put("billable", billableArray);;
+		userListObject.put("billable", billableArray);
+		;
 		userListObject.put("nonBillable", nonbillableArray);
 		userListObject.put("beach", beachArray);
 		userListObject.put("overtime", overTimeArray);
@@ -1284,10 +1261,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		userListObject.put("updatedBy", updatedBy);
 		jsonDataRes1.add(userListObject);
 
-
-
 		return userListObject;
-		//return null;
+		// return null;
 	}
 
 	@Override
@@ -1297,7 +1272,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public JSONObject getApproveddatalevel2toFinance(Long userId,Long logUser, int monthIndex, int yearIndex, Long projectId) {
+	public JSONObject getApproveddatalevel2toFinance(Long userId, Long logUser, int monthIndex, int yearIndex,
+			Long projectId) {
 		// TODO Auto-generated method stub
 
 		int flagExist = 0;
@@ -1306,14 +1282,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		JSONObject jsonDataMessageDetails = new JSONObject();
 		boolean timesheet_button = false;
 		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, logUser);
-		
+
 		String status = null;
-		if((boolean) testValidation.get("data")) {
+		if ((boolean) testValidation.get("data")) {
 
-			List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,monthIndex,yearIndex,projectId);
+			List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId, monthIndex,
+					yearIndex, projectId);
 
-			List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId,monthIndex,yearIndex,projectId);
-			if(!data.isEmpty()) {
+			List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId, monthIndex, yearIndex,
+					projectId);
+			if (!data.isEmpty()) {
 
 				flagExist = 1;
 
@@ -1321,16 +1299,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			YearMonth yearMonthObject = YearMonth.of(yearIndex, monthIndex);
 			int totaldays = yearMonthObject.lengthOfMonth();
-		//	Date fdate = new Date();
+			// Date fdate = new Date();
 			String forwarded_date = null;
 			Date date1 = null;
-			if (approvedData != null && approvedData.size() > 0)
-			{
+			if (approvedData != null && approvedData.size() > 0) {
 
-				if(flagExist == 0)
-				{
-					status="HM";
-					forwarded_date = yearIndex+"-"+monthIndex+"-"+"15";
+				if (flagExist == 0) {
+					status = "HM";
+					forwarded_date = yearIndex + "-" + monthIndex + "-" + "15";
 					try {
 						date1 = new SimpleDateFormat("yyyy-MM-dd").parse(forwarded_date);
 					} catch (ParseException e) {
@@ -1342,7 +1318,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 						TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
 						level2.setForwarded_date(date1);
-						//level2.setStatus("");
+						// level2.setStatus("");
 						UserModel user = userService.getUserDetailsById(userId);
 						ProjectModel project = projectService.getProjectId(projectId);
 						finance.setProject(project);
@@ -1367,30 +1343,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						finance.setDay14(item.getDay14());
 						finance.setDay15(item.getDay15());
 						finance.setUser(user);
-						//cal.setTime(startDate);
+						// cal.setTime(startDate);
 						taskTrackFinanceRepository.save(finance);
 						timeTrackApprovalLevel2.save(level2);
 					}
-				}
-				else {
+				} else {
 
-					status ="FM";
-					for(TaskTrackApprovalFinance eachdata : data ) {
-						 forwarded_date = yearIndex+"-"+monthIndex+"-"+totaldays;
-						 try {
+					status = "FM";
+					for (TaskTrackApprovalFinance eachdata : data) {
+						forwarded_date = yearIndex + "-" + monthIndex + "-" + totaldays;
+						try {
 							date1 = new SimpleDateFormat("yyyy-MM-dd").parse(forwarded_date);
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 
-						if(eachdata.getStatus().equalsIgnoreCase("HM")) {
-
+						if (eachdata.getStatus().equalsIgnoreCase("HM")) {
 
 							for (TaskTrackApprovalLevel2 item : approvedData) {
 
-
-								if(eachdata.getProjectType().equalsIgnoreCase("Non-Billable") && item.getProjectType().equalsIgnoreCase("Non-Billable")) {
+								if (eachdata.getProjectType().equalsIgnoreCase("Non-Billable")
+										&& item.getProjectType().equalsIgnoreCase("Non-Billable")) {
 
 									TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
 									for (int i = 15; i < totaldays; i++) {
@@ -1433,50 +1407,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 									}
 								}
-								if(eachdata.getProjectType().equalsIgnoreCase("Billable") && item.getProjectType().equalsIgnoreCase("Billable")) {
-									TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
-									for (int i = 15; i < totaldays; i++) {
-
-										if (i == 15)
-											eachdata.setDay16(item.getDay16());
-										else if (i == 16)
-											eachdata.setDay17(item.getDay17());
-										else if (i == 17)
-											eachdata.setDay18(item.getDay18());
-										else if (i == 18)
-											eachdata.setDay19(item.getDay19());
-										else if (i == 19)
-											eachdata.setDay20(item.getDay20());
-										else if (i == 20)
-											eachdata.setDay21(item.getDay21());
-										else if (i == 21)
-											eachdata.setDay22(item.getDay22());
-										else if (i == 22)
-											eachdata.setDay23(item.getDay23());
-										else if (i == 23)
-											eachdata.setDay24(item.getDay24());
-										else if (i == 24)
-											eachdata.setDay25(item.getDay25());
-										else if (i == 25)
-											eachdata.setDay26(item.getDay26());
-										else if (i == 26)
-											eachdata.setDay27(item.getDay27());
-										else if (i == 27)
-											eachdata.setDay28(item.getDay28());
-										else if (i == 28)
-											eachdata.setDay29(item.getDay29());
-										else if (i == 29)
-											eachdata.setDay30(item.getDay30());
-										else if (i == 30)
-											eachdata.setDay31(item.getDay31());
-										eachdata.setStatus(status);
-										level2.setForwarded_date(date1);
-										timeTrackApprovalLevel2.save(level2);
-
-
-									}
-								}
-								if(eachdata.getProjectType().equalsIgnoreCase("Overtime") && item.getProjectType().equalsIgnoreCase("Overtime")) {
+								if (eachdata.getProjectType().equalsIgnoreCase("Billable")
+										&& item.getProjectType().equalsIgnoreCase("Billable")) {
 									TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
 									for (int i = 15; i < totaldays; i++) {
 
@@ -1518,7 +1450,51 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 									}
 								}
-								if(eachdata.getProjectType().equalsIgnoreCase("Beach") && item.getProjectType().equalsIgnoreCase("Beach")) {
+								if (eachdata.getProjectType().equalsIgnoreCase("Overtime")
+										&& item.getProjectType().equalsIgnoreCase("Overtime")) {
+									TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
+									for (int i = 15; i < totaldays; i++) {
+
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+										level2.setForwarded_date(date1);
+										timeTrackApprovalLevel2.save(level2);
+
+									}
+								}
+								if (eachdata.getProjectType().equalsIgnoreCase("Beach")
+										&& item.getProjectType().equalsIgnoreCase("Beach")) {
 
 									TaskTrackApprovalLevel2 level2 = tasktrackApprovalService.findById2(item.getId());
 									for (int i = 15; i < totaldays; i++) {
@@ -1565,151 +1541,138 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 					}
 
-
 				}
 			}
-			
+
 			Object[] approved_date = timeTrackApprovalLevel2.getapprovedDates(monthIndex, yearIndex, projectId, userId);
 			// adding closetime button drishya
-			
+
 			int approved_dayindex = 0;
-           	if(approved_date != null)
-           	{
-           		if(approved_date[0] != null) {
-           			Date approved_date_2 = (Date) approved_date[0];
-           		Calendar cal = Calendar.getInstance();
-              cal.setTime(approved_date_2);
-             approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
-             if((approved_dayindex >= 15) && (status.equalsIgnoreCase(""))) {
-					
-					timesheet_button = true;
+			if (approved_date != null) {
+				if (approved_date[0] != null) {
+					Date approved_date_2 = (Date) approved_date[0];
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(approved_date_2);
+					approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
+					if ((approved_dayindex >= 15) && (status.equalsIgnoreCase(""))) {
+
+						timesheet_button = true;
+					} else if ((approved_dayindex >= totaldays) && (status.equalsIgnoreCase("HM"))) {
+
+						timesheet_button = true;
+					}
 				}
-				else if((approved_dayindex >= totaldays) && (status.equalsIgnoreCase("HM"))) {
-					
-					timesheet_button = true;
+			}
+
+			// for showing status
+			// Level 2 approver name
+
+			ProjectModel projectdetails = null;
+			boolean flaglevel2 = true;
+			if (projectId != null) {
+				// System.out.println("Here____________________________");
+				projectdetails = getProjectDetails(projectId);
+			}
+			if (projectdetails != null) {
+				if (projectdetails.getOnsite_lead() != null)
+
+				{
+					System.out.println("------------------------------------------------1");
+
+					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()
+							+ " " + projectdetails.getOnsite_lead().getLastName());
+				} else {
+
+					flaglevel2 = false;
+					jsonDataMessageDetails.put("Level2_Approvar_Name", "");
 				}
-           		}
-           	}
-			 
 
-         // for showing status
-     		// Level 2 approver name 	 
-    			 
-    			 ProjectModel projectdetails = null;
-    		boolean flaglevel2 = true;
-    		if(projectId != null) {
-    			//System.out.println("Here____________________________");
-    			 projectdetails = getProjectDetails(projectId);
-    			}
-    		if(projectdetails != null) {
-    			if(projectdetails.getOnsite_lead() != null)
-    			
-    				{
-    				System.out.println("------------------------------------------------1");
-    			
-    				jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ " " +projectdetails.getOnsite_lead().getLastName());
-    				}
-    			else
-    			{
-    				
-    				flaglevel2 = false;
-    				jsonDataMessageDetails.put("Level2_Approvar_Name", "");
-    			}
-    			
-    			// level2 forwarded 
-    			String frowardedDate = "";
-    			String frowardedDateLevel2 = "";
-    			String finance_status_message = "Timesheet not yet submitted to finance";
-    			String forwarded_ToLevel2_Status = "";
-    			if(flaglevel2) {
-    				forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
-    			}
-    			 // getb finance status of the current project added on 11/10
-    			
-    			 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, monthIndex, yearIndex);
-    			 
-    			 if(finance_status != null) {
-    				 System.out.println("---------------------------------------0");
-    				 if(finance_status.length > 0 ) {
-    				 System.out.println("---------------------------------------1");
-    					if(finance_status[0].equals("HM")) {
-    						 System.out.println("---------------------------------------2");	
-    						finance_status_message = "Submitted mid report";
-    					}
-    					else if(finance_status[0].equals("FM")) {
-    						 System.out.println("---------------------------------------3");	
-    						finance_status_message = "Submitted Final report";
-    					}
-    					
-    				 }
-    			 }
-    			 jsonDataMessageDetails.put("Status",finance_status_message);
-    			 //
-    				// level2 forwarded 
-    				
-    			 List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId,userId,monthIndex,yearIndex);
-    			  if(!level1.isEmpty()) {
-    				 // System.out.println("forwarded_date"+level1.get(0));
-    				 if(level1 != null) {
-    					for(Object[] fl : level1) {
-    						if(fl != null)
-    						{ 
-    							if(fl[0] != null) {
-    							Date fdate = (Date) fl[0];				
-    						  System.out.println("---------------------------------------4");	
-    						  String pattern1 = "MM-dd-yyyy"; 
-    							 DateFormat df1 = new SimpleDateFormat(pattern1);
-    							 String forw = df1.format(fdate);
-    						  forwarded_ToLevel2_Status = "Data upto "+forw+" has been forwarded to Level2";
-    							}
-    							if(fl[1] != null) {
-    							Date fdates = (Date) fl[1];
-    						  
-    							}
-    						}
-    					}
-    				 }	  						 //System.out.println("frowardedDate___________"+frowardedDate);
+				// level2 forwarded
+				String frowardedDate = "";
+				String frowardedDateLevel2 = "";
+				String finance_status_message = "Timesheet not yet submitted to finance";
+				String forwarded_ToLevel2_Status = "";
+				if (flaglevel2) {
+					forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
+				}
+				// getb finance status of the current project added on 11/10
 
+				Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId,
+						monthIndex, yearIndex);
 
-    			 }
-    			  jsonDataMessageDetails.put("Forwarded_status",forwarded_ToLevel2_Status);
-    		}
-     			
-     			//end
-			
+				if (finance_status != null) {
+					System.out.println("---------------------------------------0");
+					if (finance_status.length > 0) {
+						System.out.println("---------------------------------------1");
+						if (finance_status[0].equals("HM")) {
+							System.out.println("---------------------------------------2");
+							finance_status_message = "Submitted mid report";
+						} else if (finance_status[0].equals("FM")) {
+							System.out.println("---------------------------------------3");
+							finance_status_message = "Submitted Final report";
+						}
+
+					}
+				}
+				jsonDataMessageDetails.put("Status", finance_status_message);
+				//
+				// level2 forwarded
+
+				List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId, userId, monthIndex,
+						yearIndex);
+				if (!level1.isEmpty()) {
+					// System.out.println("forwarded_date"+level1.get(0));
+					if (level1 != null) {
+						for (Object[] fl : level1) {
+							if (fl != null) {
+								if (fl[0] != null) {
+									Date fdate = (Date) fl[0];
+									System.out.println("---------------------------------------4");
+									String pattern1 = "MM-dd-yyyy";
+									DateFormat df1 = new SimpleDateFormat(pattern1);
+									String forw = df1.format(fdate);
+									forwarded_ToLevel2_Status = "Data upto " + forw + " has been forwarded to Level2";
+								}
+								if (fl[1] != null) {
+									Date fdates = (Date) fl[1];
+
+								}
+							}
+						}
+					} // System.out.println("frowardedDate___________"+frowardedDate);
+
+				}
+				jsonDataMessageDetails.put("Forwarded_status", forwarded_ToLevel2_Status);
+			}
+
+			// end
+
 			//
-			String displyDay=null;
+			String displyDay = null;
 			String mon;
-			
-			//adding 0 before month if it is less than 10th month
-			if(monthIndex<10)
-			{
-				mon="0"+monthIndex;
+
+			// adding 0 before month if it is less than 10th month
+			if (monthIndex < 10) {
+				mon = "0" + monthIndex;
+			} else {
+				mon = "" + monthIndex;
 			}
-			else
+
+			// return 15 if mhalf month
+			if (status.equals("HM")) {
+
+				displyDay = yearIndex + "-" + mon + "-15";
+			} else if (status.equals("FM")) // return month end if Full Month
 			{
-				mon=""+monthIndex;
-			}
-			
-			//return 15 if mhalf month
-			if(status.equals("HM"))
-			{
-				
-				displyDay=yearIndex+"-"+mon+"-15";
-			}
-			else if(status.equals("FM")) // return month end if  Full Month
-			{
-				displyDay=yearIndex+"-"+mon+"-"+totaldays;
+				displyDay = yearIndex + "-" + mon + "-" + totaldays;
 			}
 			userListObject.put("data", "success");
 			userListObject.put("status", "success");
 			userListObject.put("message", "forwarded to finance");
-			userListObject.put("forwadedDate",displyDay);
+			userListObject.put("forwadedDate", displyDay);
 			userListObject.put("buttonStatus", status);
 			userListObject.put("timesheet_button", timesheet_button);
-		}
-		else
-		{
+		} else {
 			userListObject.put("data", "failed");
 			userListObject.put("status", "success");
 			userListObject.put("message", testValidation.get("message"));
@@ -1721,7 +1684,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public JSONObject getApproveddatalevel1toFinance(Long userId,Long logUser, int monthIndex, int  yearIndex, Long projectId) {
+	public JSONObject getApproveddatalevel1toFinance(Long userId, Long logUser, int monthIndex, int yearIndex,
+			Long projectId) {
 		// TODO Auto-generated method stub
 
 		JSONObject testValidation = new JSONObject();
@@ -1730,13 +1694,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		boolean timesheet_button = false;
 		testValidation = checkPreviousTimeSheetsareClosed(monthIndex, yearIndex, projectId, logUser);
 		JSONObject userListObject = new JSONObject();
-		if((boolean) testValidation.get("data")) {
+		if ((boolean) testValidation.get("data")) {
 			int flagExist = 0;
-			List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,monthIndex,yearIndex,projectId);
+			List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId, monthIndex, yearIndex,
+					projectId);
 
-
-			List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId,monthIndex,yearIndex,projectId);
-			if(!data.isEmpty()) {
+			List<TaskTrackApprovalFinance> data = taskTrackFinanceRepository.getDatas(userId, monthIndex, yearIndex,
+					projectId);
+			if (!data.isEmpty()) {
 
 				flagExist = 1;
 
@@ -1744,28 +1709,27 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			YearMonth yearMonthObject = YearMonth.of(yearIndex, monthIndex);
 			int totaldays = yearMonthObject.lengthOfMonth();
-			//Date fdate = new Date();
+			// Date fdate = new Date();
 			String forwarded_date = null;
 			Date date1 = null;
 
 			if (approvedData != null && approvedData.size() > 0) {
 
-				if(flagExist == 0)
-				{
+				if (flagExist == 0) {
 					status = "HM";
-					forwarded_date = yearIndex+"-"+monthIndex+"-"+"15";
+					forwarded_date = yearIndex + "-" + monthIndex + "-" + "15";
 					try {
 						date1 = new SimpleDateFormat("yyyy-MM-dd").parse(forwarded_date);
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}  
+					}
 
 					for (TaskTrackApproval item : approvedData) {
 						TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 						TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
-						//level1.setForwarded_date(yesterday);
-					//	level1.setForwarded_finance(date1);
+						// level1.setForwarded_date(yesterday);
+						// level1.setForwarded_finance(date1);
 						UserModel user = userService.getUserDetailsById(userId);
 						ProjectModel project = projectService.getProjectId(projectId);
 						finance.setProject(project);
@@ -1790,27 +1754,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						finance.setDay14(item.getDay14());
 						finance.setDay15(item.getDay15());
 						finance.setUser(user);
-						//cal.setTime(startDate);
+						// cal.setTime(startDate);
 						taskTrackFinanceRepository.save(finance);
 						timeTrackApprovalJPARepository.save(level1);
 					}
-				}
-				else {
+				} else {
 					status = "FM";
 
-					for(TaskTrackApprovalFinance eachdata : data ) {
-						if(eachdata.getStatus().equalsIgnoreCase("HM")) {
+					for (TaskTrackApprovalFinance eachdata : data) {
+						if (eachdata.getStatus().equalsIgnoreCase("HM")) {
 
-							 forwarded_date = yearIndex+"-"+monthIndex+"-"+totaldays;
-							 try {
+							forwarded_date = yearIndex + "-" + monthIndex + "-" + totaldays;
+							try {
 								date1 = new SimpleDateFormat("yyyy-MM-dd").parse(forwarded_date);
 							} catch (ParseException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
-							};
-							
+							}
+							;
+
 							for (TaskTrackApproval item : approvedData) {
-								if(eachdata.getProjectType().equalsIgnoreCase("Non-Billable") && item.getProjectType().equalsIgnoreCase("Non-Billable")) {
+								if (eachdata.getProjectType().equalsIgnoreCase("Non-Billable")
+										&& item.getProjectType().equalsIgnoreCase("Non-Billable")) {
 
 									TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
 									for (int i = 15; i < totaldays; i++) {
@@ -1848,12 +1813,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if (i == 30)
 											eachdata.setDay31(item.getDay31());
 										eachdata.setStatus(status);
-										//level1.setForwarded_finance(date1);
+										// level1.setForwarded_finance(date1);
 										timeTrackApprovalJPARepository.save(level1);
 
 									}
 								}
-								if(eachdata.getProjectType().equalsIgnoreCase("Billable") && item.getProjectType().equalsIgnoreCase("Billable")) {
+								if (eachdata.getProjectType().equalsIgnoreCase("Billable")
+										&& item.getProjectType().equalsIgnoreCase("Billable")) {
 
 									TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
 									for (int i = 15; i < totaldays; i++) {
@@ -1891,56 +1857,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if (i == 30)
 											eachdata.setDay31(item.getDay31());
 										eachdata.setStatus(status);
-										//level1.setForwarded_finance(date1);
-										timeTrackApprovalJPARepository.save(level1);
-										
-
-									}
-								}
-								if(eachdata.getProjectType().equalsIgnoreCase("Overtime") && item.getProjectType().equalsIgnoreCase("Overtime")) {
-
-									TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
-									for (int i = 15; i < totaldays; i++) {
-
-										if (i == 15)
-											eachdata.setDay16(item.getDay16());
-										else if (i == 16)
-											eachdata.setDay17(item.getDay17());
-										else if (i == 17)
-											eachdata.setDay18(item.getDay18());
-										else if (i == 18)
-											eachdata.setDay19(item.getDay19());
-										else if (i == 19)
-											eachdata.setDay20(item.getDay20());
-										else if (i == 20)
-											eachdata.setDay21(item.getDay21());
-										else if (i == 21)
-											eachdata.setDay22(item.getDay22());
-										else if (i == 22)
-											eachdata.setDay23(item.getDay23());
-										else if (i == 23)
-											eachdata.setDay24(item.getDay24());
-										else if (i == 24)
-											eachdata.setDay25(item.getDay25());
-										else if (i == 25)
-											eachdata.setDay26(item.getDay26());
-										else if (i == 26)
-											eachdata.setDay27(item.getDay27());
-										else if (i == 27)
-											eachdata.setDay28(item.getDay28());
-										else if (i == 28)
-											eachdata.setDay29(item.getDay29());
-										else if (i == 29)
-											eachdata.setDay30(item.getDay30());
-										else if (i == 30)
-											eachdata.setDay31(item.getDay31());
-										eachdata.setStatus(status);
-									//	level1.setForwarded_finance(date1);
+										// level1.setForwarded_finance(date1);
 										timeTrackApprovalJPARepository.save(level1);
 
 									}
 								}
-								if(eachdata.getProjectType().equalsIgnoreCase("Beach") && item.getProjectType().equalsIgnoreCase("Beach")) {
+								if (eachdata.getProjectType().equalsIgnoreCase("Overtime")
+										&& item.getProjectType().equalsIgnoreCase("Overtime")) {
 
 									TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
 									for (int i = 15; i < totaldays; i++) {
@@ -1978,7 +1901,51 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if (i == 30)
 											eachdata.setDay31(item.getDay31());
 										eachdata.setStatus(status);
-									//	level1.setForwarded_finance(date1);
+										// level1.setForwarded_finance(date1);
+										timeTrackApprovalJPARepository.save(level1);
+
+									}
+								}
+								if (eachdata.getProjectType().equalsIgnoreCase("Beach")
+										&& item.getProjectType().equalsIgnoreCase("Beach")) {
+
+									TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
+									for (int i = 15; i < totaldays; i++) {
+
+										if (i == 15)
+											eachdata.setDay16(item.getDay16());
+										else if (i == 16)
+											eachdata.setDay17(item.getDay17());
+										else if (i == 17)
+											eachdata.setDay18(item.getDay18());
+										else if (i == 18)
+											eachdata.setDay19(item.getDay19());
+										else if (i == 19)
+											eachdata.setDay20(item.getDay20());
+										else if (i == 20)
+											eachdata.setDay21(item.getDay21());
+										else if (i == 21)
+											eachdata.setDay22(item.getDay22());
+										else if (i == 22)
+											eachdata.setDay23(item.getDay23());
+										else if (i == 23)
+											eachdata.setDay24(item.getDay24());
+										else if (i == 24)
+											eachdata.setDay25(item.getDay25());
+										else if (i == 25)
+											eachdata.setDay26(item.getDay26());
+										else if (i == 26)
+											eachdata.setDay27(item.getDay27());
+										else if (i == 27)
+											eachdata.setDay28(item.getDay28());
+										else if (i == 28)
+											eachdata.setDay29(item.getDay29());
+										else if (i == 29)
+											eachdata.setDay30(item.getDay30());
+										else if (i == 30)
+											eachdata.setDay31(item.getDay31());
+										eachdata.setStatus(status);
+										// level1.setForwarded_finance(date1);
 										timeTrackApprovalJPARepository.save(level1);
 
 									}
@@ -1988,181 +1955,168 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 					}
 				}
-			
-			// add timesheet_button  drishya
-				
+
+				// add timesheet_button drishya
+
 				int approved_dayindex = 0;
-				Object[] approvedDate = timeTrackApprovalJPARepository.getapprovedDates(monthIndex, yearIndex, projectId, userId);
-				
-               	if(approvedDate != null)
-               	{
-               		if(approvedDate[0] != null) {
-               			Date approved_date_1 = (Date) approvedDate[0];
-               		
-               		Calendar cal = Calendar.getInstance();
-                  cal.setTime(approved_date_1);
-                 approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
-                 if((approved_dayindex >= 15) && (status.equalsIgnoreCase(""))) {
-                	
-						timesheet_button = true;
+				Object[] approvedDate = timeTrackApprovalJPARepository.getapprovedDates(monthIndex, yearIndex,
+						projectId, userId);
+
+				if (approvedDate != null) {
+					if (approvedDate[0] != null) {
+						Date approved_date_1 = (Date) approvedDate[0];
+
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(approved_date_1);
+						approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
+						if ((approved_dayindex >= 15) && (status.equalsIgnoreCase(""))) {
+
+							timesheet_button = true;
+						} else if ((approved_dayindex >= totaldays) && (status.equalsIgnoreCase("HM"))) {
+
+							timesheet_button = true;
+						}
 					}
-					else if((approved_dayindex >= totaldays) && (status.equalsIgnoreCase("HM"))) {
-						
-						timesheet_button = true;
+				}
+
+				// for showing status
+				// Level 2 approver name
+
+				ProjectModel projectdetails = null;
+				boolean flaglevel2 = true;
+				if (projectId != null) {
+					// System.out.println("Here____________________________");
+					projectdetails = getProjectDetails(projectId);
+				}
+				if (projectdetails != null) {
+					if (projectdetails.getOnsite_lead() != null)
+
+					{
+						System.out.println("------------------------------------------------1");
+
+						jsonDataMessageDetails.put("Level2_Approvar_Name",
+								projectdetails.getOnsite_lead().getFirstName() + " "
+										+ projectdetails.getOnsite_lead().getLastName());
+					} else {
+
+						flaglevel2 = false;
+						jsonDataMessageDetails.put("Level2_Approvar_Name", "");
 					}
-               		}
-               	}
-				 
-               
-             // for showing status
-         		// Level 2 approver name 	 
-        			 
-        			 ProjectModel projectdetails = null;
-        		boolean flaglevel2 = true;
-        		if(projectId != null) {
-        			//System.out.println("Here____________________________");
-        			 projectdetails = getProjectDetails(projectId);
-        			}
-        		if(projectdetails != null) {
-        			if(projectdetails.getOnsite_lead() != null)
-        			
-        				{
-        				System.out.println("------------------------------------------------1");
-        			
-        				jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ " " +projectdetails.getOnsite_lead().getLastName());
-        				}
-        			else
-        			{
-        				
-        				flaglevel2 = false;
-        				jsonDataMessageDetails.put("Level2_Approvar_Name", "");
-        			}
-        			
-        			// level2 forwarded 
-        			String frowardedDate = "";
-        			String frowardedDateLevel2 = "";
-        			String finance_status_message = "Timesheet not yet submitted to finance";
-        			String forwarded_ToLevel2_Status = "";
-        			if(flaglevel2) {
-        				forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
-        			}
-        			 // getb finance status of the current project added on 11/10
-        			
-        			 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, monthIndex, yearIndex);
-        			 
-        			 if(finance_status != null) {
-        				 System.out.println("---------------------------------------0");
-        				 if(finance_status.length > 0 ) {
-        				 System.out.println("---------------------------------------1");
-        					if(finance_status[0].equals("HM")) {
-        						 System.out.println("---------------------------------------2");	
-        						finance_status_message = "Submitted mid report";
-        					}
-        					else if(finance_status[0].equals("FM")) {
-        						 System.out.println("---------------------------------------3");	
-        						finance_status_message = "Submitted Final report";
-        					}
-        					
-        				 }
-        			 }
-        			 jsonDataMessageDetails.put("Status",finance_status_message);
-        			 //
-        				// level2 forwarded 
-        				
-        			 List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId,userId,monthIndex,yearIndex);
-        			  if(!level1.isEmpty()) {
-        				 // System.out.println("forwarded_date"+level1.get(0));
-        				 if(level1 != null) {
-        					for(Object[] fl : level1) {
-        						if(fl != null)
-        						{ 
-        							if(fl[0] != null) {
-        							Date fdate = (Date) fl[0];				
-        						  System.out.println("---------------------------------------4");	
-        						  String pattern1 = "MM-dd-yyyy"; 
-        							 DateFormat df1 = new SimpleDateFormat(pattern1);
-        							 String forw = df1.format(fdate);
-        						  forwarded_ToLevel2_Status = "Data upto "+forw+" has been forwarded to Level2";
-        							}
-        							if(fl[1] != null) {
-        							Date fdates = (Date) fl[1];
-        						  
-        							}
-        						}
-        					}
-        				 }	  						 //System.out.println("frowardedDate___________"+frowardedDate);
 
+					// level2 forwarded
+					String frowardedDate = "";
+					String frowardedDateLevel2 = "";
+					String finance_status_message = "Timesheet not yet submitted to finance";
+					String forwarded_ToLevel2_Status = "";
+					if (flaglevel2) {
+						forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
+					}
+					// getb finance status of the current project added on 11/10
 
-        			 }
-        			  jsonDataMessageDetails.put("Forwarded_status",forwarded_ToLevel2_Status);
-        		}
-         			
-         			//end
+					Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId,
+							userId, monthIndex, yearIndex);
 
-				
-			//		
-			String displyDay=null;
-			String mon;
-			
-			//adding 0 before month if it is less than 10th month
-			if(monthIndex<10)
-			{
-				mon="0"+monthIndex;
-			}
-			else
-			{
-				mon=""+monthIndex;
-			}
-			
-			//return 15 if mhalf month
-			
-			if(status!=null && status.equals("HM"))
-			{
-				
-				displyDay=yearIndex+"-"+mon+"-15";
-			}
-			else if(status!=null  && status.equals("FM")) // return month end if  Full Month
-			{
-				displyDay=yearIndex+"-"+mon+"-"+totaldays;
-			}
+					if (finance_status != null) {
+						System.out.println("---------------------------------------0");
+						if (finance_status.length > 0) {
+							System.out.println("---------------------------------------1");
+							if (finance_status[0].equals("HM")) {
+								System.out.println("---------------------------------------2");
+								finance_status_message = "Submitted mid report";
+							} else if (finance_status[0].equals("FM")) {
+								System.out.println("---------------------------------------3");
+								finance_status_message = "Submitted Final report";
+							}
 
-			userListObject.put("data", "success");
-			userListObject.put("status", "success");
-			userListObject.put("message", "forwarded to finance");
-			userListObject.put("forwadedDate",displyDay);
-			userListObject.put("buttonStatus", status);
-			userListObject.put("timesheet_button",timesheet_button);
-			userListObject.put("message_details",jsonDataMessageDetails);
-			}//---Rinu--//
+						}
+					}
+					jsonDataMessageDetails.put("Status", finance_status_message);
+					//
+					// level2 forwarded
+
+					List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId, userId, monthIndex,
+							yearIndex);
+					if (!level1.isEmpty()) {
+						// System.out.println("forwarded_date"+level1.get(0));
+						if (level1 != null) {
+							for (Object[] fl : level1) {
+								if (fl != null) {
+									if (fl[0] != null) {
+										Date fdate = (Date) fl[0];
+										System.out.println("---------------------------------------4");
+										String pattern1 = "MM-dd-yyyy";
+										DateFormat df1 = new SimpleDateFormat(pattern1);
+										String forw = df1.format(fdate);
+										forwarded_ToLevel2_Status = "Data upto " + forw
+												+ " has been forwarded to Level2";
+									}
+									if (fl[1] != null) {
+										Date fdates = (Date) fl[1];
+
+									}
+								}
+							}
+						} // System.out.println("frowardedDate___________"+frowardedDate);
+
+					}
+					jsonDataMessageDetails.put("Forwarded_status", forwarded_ToLevel2_Status);
+				}
+
+				// end
+
+				//
+				String displyDay = null;
+				String mon;
+
+				// adding 0 before month if it is less than 10th month
+				if (monthIndex < 10) {
+					mon = "0" + monthIndex;
+				} else {
+					mon = "" + monthIndex;
+				}
+
+				// return 15 if mhalf month
+
+				if (status != null && status.equals("HM")) {
+
+					displyDay = yearIndex + "-" + mon + "-15";
+				} else if (status != null && status.equals("FM")) // return month end if Full Month
+				{
+					displyDay = yearIndex + "-" + mon + "-" + totaldays;
+				}
+
+				userListObject.put("data", "success");
+				userListObject.put("status", "success");
+				userListObject.put("message", "forwarded to finance");
+				userListObject.put("forwadedDate", displyDay);
+				userListObject.put("buttonStatus", status);
+				userListObject.put("timesheet_button", timesheet_button);
+				userListObject.put("message_details", jsonDataMessageDetails);
+			} // ---Rinu--//
 			else // no data found
 			{
-				String displyDay=null;
+				String displyDay = null;
 				String mon;
-				
-				//adding 0 before month if it is less than 10th month
-				if(monthIndex<10)
-				{
-					mon="0"+monthIndex;
+
+				// adding 0 before month if it is less than 10th month
+				if (monthIndex < 10) {
+					mon = "0" + monthIndex;
+				} else {
+					mon = "" + monthIndex;
 				}
-				else
-				{
-					mon=""+monthIndex;
-				}
-				
-				displyDay=yearIndex+"-"+mon+"-15";
-				
+
+				displyDay = yearIndex + "-" + mon + "-15";
+
 				userListObject.put("data", "failed");
 				userListObject.put("status", "success");
 				userListObject.put("message", "No Data Found in Approval section!!");
-				userListObject.put("forwadedDate",displyDay);
+				userListObject.put("forwadedDate", displyDay);
 				userListObject.put("buttonStatus", status);
-				userListObject.put("timesheet_button",timesheet_button);
+				userListObject.put("timesheet_button", timesheet_button);
 				return userListObject;
-				
+
 			}
-		}
-		else 
-		{
+		} else {
 			userListObject.put("data", "failed");
 			userListObject.put("status", "success");
 			userListObject.put("message", testValidation.get("message"));
@@ -2174,8 +2128,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	@Override
 	public List<JSONObject> getTimeTrackUserTaskDetailsLevel2(Long id, Date startDate, Date endDate,
-															  List<Object[]> userList, List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArrayLogged,
-															  List<JSONObject> timeTrackJSONData, Boolean isExist, Long projectId) {
+			List<Object[]> userList, List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArrayLogged,
+			List<JSONObject> timeTrackJSONData, Boolean isExist, Long projectId) {
 
 		List<JSONObject> billableJsonArray;
 		List<JSONObject> overTimeArray;
@@ -2184,7 +2138,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (isExist) {
 			JSONObject userListObject = new JSONObject();
 
-			userList =getUserListByProject(id, startDate, endDate,projectId);
+			userList = getUserListByProject(id, startDate, endDate, projectId);
 
 			loggedJsonArray = new ArrayList<>();
 
@@ -2192,7 +2146,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				intMonth = (cal.get(Calendar.MONTH) + 1);
 				intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -2232,18 +2186,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("userId", id);
 			userListObject.put("month", intMonth);
 			userListObject.put("logged", loggedJsonArray);
-			//System.out.println("logged has data  : "+loggedJsonArray);
+			// System.out.println("logged has data : "+loggedJsonArray);
 			name = null;
 			cal.setTime(startDate);
 			int monthIndex = (cal.get(Calendar.MONTH) + 1);
 			int yearIndex = cal.get(Calendar.YEAR);
 
-			List<TaskTrackApprovalLevel2> approvalUserList =getUserListForApprovalLevel2(id,projectId,monthIndex,yearIndex);
+			List<TaskTrackApprovalLevel2> approvalUserList = getUserListForApprovalLevel2(id, projectId, monthIndex,
+					yearIndex);
 			billableJsonArray = new ArrayList<>();
-			billableJsonArrayLogged=new ArrayList<>();
-			overTimeArray=new ArrayList<>();
-
-
+			billableJsonArrayLogged = new ArrayList<>();
+			overTimeArray = new ArrayList<>();
 
 			diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 			intMonth = 0;
@@ -2260,95 +2213,87 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						intMonth = (cal.get(Calendar.MONTH) + 1);
 						intday = cal.get(Calendar.DAY_OF_MONTH);
-						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-								+ ((intday < 10) ? "0" + intday : "" + intday);
+						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth)
+								+ "-" + ((intday < 10) ? "0" + intday : "" + intday);
 
-						if(i==0)
-							hours=(Double)item.getDay1();
-						else if(i==1)
-							hours=(Double)item.getDay2();
-						else if(i==2)
-							hours=(Double)item.getDay3();
-						else if(i==3)
-							hours=(Double)item.getDay4();
-						else if(i==4)
-							hours=(Double)item.getDay5();
-						else if(i==5)
-							hours=(Double)item.getDay6();
-						else if(i==6)
-							hours=(Double)item.getDay7();
-						else if(i==7)
-							hours=(Double)item.getDay8();
-						else if(i==8)
-							hours=(Double)item.getDay9();
-						else if(i==9)
-							hours=(Double)item.getDay10();
-						else if(i==10)
-							hours=(Double)item.getDay11();
-						else if(i==11)
-							hours=(Double)item.getDay12();
-						else if(i==12)
-							hours=(Double)item.getDay13();
-						else if(i==13)
-							hours=(Double)item.getDay14();
-						else if(i==14)
-							hours=(Double)item.getDay15();
-						else if(i==15)
-							hours=(Double)item.getDay16();
-						else if(i==16)
-							hours=(Double)item.getDay17();
-						else if(i==17)
-							hours=(Double)item.getDay18();
-						else if(i==18)
-							hours=(Double)item.getDay19();
-						else if(i==19)
-							hours=(Double)item.getDay20();
-						else if(i==20)
-							hours=(Double)item.getDay21();
-						else if(i==21)
-							hours=(Double)item.getDay22();
-						else if(i==22)
-							hours=(Double)item.getDay23();
-						else if(i==23)
-							hours=(Double)item.getDay24();
-						else if(i==24)
-							hours=(Double)item.getDay25();
-						else if(i==25)
-							hours=(Double)item.getDay26();
-						else if(i==26)
-							hours=(Double)item.getDay27();
-						else if(i==27)
-							hours=(Double)item.getDay28();
-						else if(i==28)
-							hours=(Double)item.getDay29();
-						else if(i==29)
-							hours=(Double)item.getDay30();
-						else if(i==30)
-							hours=(Double)item.getDay31();
+						if (i == 0)
+							hours = (Double) item.getDay1();
+						else if (i == 1)
+							hours = (Double) item.getDay2();
+						else if (i == 2)
+							hours = (Double) item.getDay3();
+						else if (i == 3)
+							hours = (Double) item.getDay4();
+						else if (i == 4)
+							hours = (Double) item.getDay5();
+						else if (i == 5)
+							hours = (Double) item.getDay6();
+						else if (i == 6)
+							hours = (Double) item.getDay7();
+						else if (i == 7)
+							hours = (Double) item.getDay8();
+						else if (i == 8)
+							hours = (Double) item.getDay9();
+						else if (i == 9)
+							hours = (Double) item.getDay10();
+						else if (i == 10)
+							hours = (Double) item.getDay11();
+						else if (i == 11)
+							hours = (Double) item.getDay12();
+						else if (i == 12)
+							hours = (Double) item.getDay13();
+						else if (i == 13)
+							hours = (Double) item.getDay14();
+						else if (i == 14)
+							hours = (Double) item.getDay15();
+						else if (i == 15)
+							hours = (Double) item.getDay16();
+						else if (i == 16)
+							hours = (Double) item.getDay17();
+						else if (i == 17)
+							hours = (Double) item.getDay18();
+						else if (i == 18)
+							hours = (Double) item.getDay19();
+						else if (i == 19)
+							hours = (Double) item.getDay20();
+						else if (i == 20)
+							hours = (Double) item.getDay21();
+						else if (i == 21)
+							hours = (Double) item.getDay22();
+						else if (i == 22)
+							hours = (Double) item.getDay23();
+						else if (i == 23)
+							hours = (Double) item.getDay24();
+						else if (i == 24)
+							hours = (Double) item.getDay25();
+						else if (i == 25)
+							hours = (Double) item.getDay26();
+						else if (i == 26)
+							hours = (Double) item.getDay27();
+						else if (i == 27)
+							hours = (Double) item.getDay28();
+						else if (i == 28)
+							hours = (Double) item.getDay29();
+						else if (i == 29)
+							hours = (Double) item.getDay30();
+						else if (i == 30)
+							hours = (Double) item.getDay31();
 
 						name = (String) item.getFirstName() + " " + item.getLastName();
 
-
-						if(item.getProjectType().equals("Billable"))
-						{
+						if (item.getProjectType().equals("Billable")) {
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							billableJsonArrayLogged.add(jsonObject);
 						}
 
-						if(item.getProjectType().equals("Overtime"))
-						{
+						if (item.getProjectType().equals("Overtime")) {
 
 							jsonObject = new JSONObject();
 							jsonObject.put(vl, hours);
 							overTimeArray.add(jsonObject);
 
-
 						}
-
-
-
-
 
 						cal.add(Calendar.DATE, 1);
 
@@ -2356,36 +2301,30 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					/*-------------------------*/
 
-					if(!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty() &&billableJsonArray.size()<diffInDays )
-					{
+					if (!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty()
+							&& billableJsonArray.size() < diffInDays) {
 						cal.setTime(startDate);
-						for (int i = 0; i < diffInDays; i++)
-						{
-							JSONObject jsonOverTime=new JSONObject();
-							JSONObject jsonBillable=new JSONObject();
-							JSONObject jsonTotal=new JSONObject();
+						for (int i = 0; i < diffInDays; i++) {
+							JSONObject jsonOverTime = new JSONObject();
+							JSONObject jsonBillable = new JSONObject();
+							JSONObject jsonTotal = new JSONObject();
 
-							Double billable=0.0;
-							Double overTime=0.0;
+							Double billable = 0.0;
+							Double overTime = 0.0;
 
-
-							intMonth = (cal.get(Calendar.MONTH)+1);
+							intMonth = (cal.get(Calendar.MONTH) + 1);
 							intday = cal.get(Calendar.DAY_OF_MONTH);
-							String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							String vl = cal.get(Calendar.YEAR) + "-"
+									+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
 									+ ((intday < 10) ? "0" + intday : "" + intday);
 
 							jsonBillable = billableJsonArrayLogged.get(i);
-							if(jsonBillable.get(vl)!=null)
-							{
-								billable=(Double)jsonBillable.get(vl);
+							if (jsonBillable.get(vl) != null) {
+								billable = (Double) jsonBillable.get(vl);
 							}
 
-
-
-
 							jsonOverTime = overTimeArray.get(i);
-							if(jsonOverTime.get(vl)!=null)
-							{
+							if (jsonOverTime.get(vl) != null) {
 								overTime = (Double) jsonOverTime.get(vl);
 							}
 
@@ -2398,8 +2337,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					/*-------------------------*/
 				}
-			}
-			else {
+			} else {
 				cal.setTime(startDate);
 				for (int i = 0; i < diffInDays; i++) {
 
@@ -2418,8 +2356,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 			userListObject.put("billable", billableJsonArray);
 
-
-
 			timeTrackJSONData.add(userListObject);
 
 		} else {
@@ -2433,7 +2369,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0,intday = 0;
+			int intMonth = 0, intday = 0;
 			for (int i = 0; i < diffInDays; i++) {
 				JSONObject jsonObject = new JSONObject();
 
@@ -2452,33 +2388,35 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			userListObject.put("month", intMonth);
 			userListObject.put("logged", loggedJsonArray);
 			userListObject.put("billable", billableJsonArray);
-			//System.out.println("logged is empty  : "+loggedJsonArray);
+			// System.out.println("logged is empty : "+loggedJsonArray);
 			timeTrackJSONData.add(userListObject);
 		}
 		return timeTrackJSONData;
 	}
 
-	public List<TaskTrackApprovalLevel2> getUserListForApprovalLevel2(Long id,Long projectId,Integer monthIndex,Integer yearIndex) {
+	public List<TaskTrackApprovalLevel2> getUserListForApprovalLevel2(Long id, Long projectId, Integer monthIndex,
+			Integer yearIndex) {
 
-		List<TaskTrackApprovalLevel2> userList = timeTrackApprovalLevel2.getUserListForApproval(id,projectId,monthIndex,yearIndex);
+		List<TaskTrackApprovalLevel2> userList = timeTrackApprovalLevel2.getUserListForApproval(id, projectId,
+				monthIndex, yearIndex);
 
 		return userList;
 	}
 
 	@Override
-	public List<Object> getForwardedDate(Long projectId, Long userId, int intMonth,int years) {
+	public List<Object> getForwardedDate(Long projectId, Long userId, int intMonth, int years) {
 		// TODO Auto-generated method stub
-		return timeTrackApprovalJPARepository.getForwardedDate(projectId,userId,intMonth,years);
+		return timeTrackApprovalJPARepository.getForwardedDate(projectId, userId, intMonth, years);
 	}
 
 	@Override
-	public List<Object> getForwardedDateLevel2(Long projectId, Long userId, int intMonth,int year) {
+	public List<Object> getForwardedDateLevel2(Long projectId, Long userId, int intMonth, int year) {
 		// TODO Auto-generated method stub
-		return timeTrackApprovalLevel2.getForwardedDateLevel2(projectId,userId,intMonth,year);
+		return timeTrackApprovalLevel2.getForwardedDateLevel2(projectId, userId, intMonth, year);
 	}
 
 	@Override
-	public ObjectNode saveLevel2FromLevel1(Long projectId, Long userId,Long logUser, Date startDate, Date endDate) {
+	public ObjectNode saveLevel2FromLevel1(Long projectId, Long userId, Long logUser, Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
 
 		TaskTrackApprovalLevel2 tta2 = new TaskTrackApprovalLevel2();
@@ -2487,7 +2425,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ObjectNode ids = objectMapper.createObjectNode();
 		ObjectNode jsonDataMessageDetails = objectMapper.createObjectNode();
 		cal.setTime(startDate);
-		int intMonth = 0,intday = 0;
+		int intMonth = 0, intday = 0;
 		intMonth = (cal.get(Calendar.MONTH) + 1);
 		int yearIndex = cal.get(Calendar.YEAR);
 		intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -2497,20 +2435,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long beach_id = null;
 		Long overtime_id = null;
 
-
 		Date current_date = new Date();
 		Calendar current = Calendar.getInstance();
 		current.setTime(current_date);
 		int intCurrentMonth = 0;
 		intCurrentMonth = (current.get(Calendar.MONTH) + 1);
-		//System.out.println("currentMonth ------------------------------------>"+(current.get(Calendar.MONTH) + 1));
+		// System.out.println("currentMonth
+		// ------------------------------------>"+(current.get(Calendar.MONTH) + 1));
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(endDate);
 		int day = 0;
 		day = c.get(Calendar.DAY_OF_MONTH);
 		int totaldays = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
-		//System.out.println("total days"+totaldays);
+		// System.out.println("total days"+totaldays);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(endDate);
 		calendar.add(Calendar.DATE, -1);
@@ -2520,12 +2458,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		String status = "";
 		int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-		if(intCurrentMonth > intMonth ) {
+		if (intCurrentMonth > intMonth) {
 
 			diffInDays = diffInDays + 1;
 			status = "FM";
-		}
-		else {
+		} else {
 
 			status = "HM";
 			endDate = yesterday;
@@ -2533,30 +2470,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 		JSONObject testValidation = new JSONObject();
 		testValidation = checkPreviousTimeSheetsareClosed(intMonth, yearIndex, projectId, logUser);
-		
-		if((boolean) testValidation.get("data")) {
-			List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId,intMonth,yearIndex,projectId);
-			int fflag = 1;
-			//   int eflag = 0;
 
+		if ((boolean) testValidation.get("data")) {
+			List<TaskTrackApproval> approvedData = tasktrackRepository.getApprovedData(userId, intMonth, yearIndex,
+					projectId);
+			int fflag = 1;
+			// int eflag = 0;
 
 			if (approvedData.size() > 0) {
 
-				if(!timeTrackApprovalLevel2.getApprovedData(userId, intMonth, yearIndex, projectId).isEmpty())
-				{
-					fflag=2;
+				if (!timeTrackApprovalLevel2.getApprovedData(userId, intMonth, yearIndex, projectId).isEmpty()) {
+					fflag = 2;
 				}
 
-
 				for (TaskTrackApproval item : approvedData) {
-					if(fflag == 1) {
+					if (fflag == 1) {
 						TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
 						TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
-						System.out.println("------------------------------------->"+endDate);
-						//level1.setForwarded_date(endDate);
-						//level1.setStatus(status);
-						//System.out.println("Current_Date"+dateobj);
-						//level1.setApproved_date(endDate);
+						System.out.println("------------------------------------->" + endDate);
+						// level1.setForwarded_date(endDate);
+						// level1.setStatus(status);
+						// System.out.println("Current_Date"+dateobj);
+						// level1.setApproved_date(endDate);
 						UserModel user = userService.getUserDetailsById(userId);
 						ProjectModel project = projectService.getProjectId(projectId);
 						level2.setProject(project);
@@ -2564,102 +2499,102 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						level2.setTasktrack_level1_Id(level1);
 						level2.setStatus(status);
 
-						//level2.setForwarded_date(yesterday);
+						// level2.setForwarded_date(yesterday);
 						level2.setMonth(intMonth);
 						level2.setYear(yearIndex);
 						for (int i = 0; i < diffInDays - 1; i++) {
-							if(i==0)
+							if (i == 0)
 								level2.setDay1(item.getDay1());
-							else if(i==1)
+							else if (i == 1)
 								level2.setDay2(item.getDay2());
-							else if(i==2)
+							else if (i == 2)
 								level2.setDay3(item.getDay3());
-							else if(i==3)
+							else if (i == 3)
 								level2.setDay4(item.getDay4());
-							else if(i==4)
+							else if (i == 4)
 								level2.setDay5(item.getDay5());
-							else if(i==5)
+							else if (i == 5)
 								level2.setDay6(item.getDay6());
-							else if(i==6)
+							else if (i == 6)
 								level2.setDay7(item.getDay7());
-							else if(i==7)
+							else if (i == 7)
 								level2.setDay8(item.getDay8());
-							else if(i==8)
+							else if (i == 8)
 								level2.setDay9(item.getDay9());
-							else if(i==9)
+							else if (i == 9)
 								level2.setDay10(item.getDay10());
-							else if(i==10)
+							else if (i == 10)
 								level2.setDay11(item.getDay11());
-							else if(i==11)
+							else if (i == 11)
 								level2.setDay12(item.getDay12());
-							else if(i==12)
+							else if (i == 12)
 								level2.setDay13(item.getDay13());
-							else if(i==13)
+							else if (i == 13)
 								level2.setDay14(item.getDay14());
-							else if(i==14)
+							else if (i == 14)
 								level2.setDay15(item.getDay15());
-							else if(i==15)
+							else if (i == 15)
 								level2.setDay16(item.getDay16());
-							else if(i==16)
+							else if (i == 16)
 								level2.setDay17(item.getDay17());
-							else if(i==17)
+							else if (i == 17)
 								level2.setDay18(item.getDay18());
-							else if(i==18)
+							else if (i == 18)
 								level2.setDay19(item.getDay19());
-							else if(i==19)
+							else if (i == 19)
 								level2.setDay20(item.getDay20());
-							else if(i==20)
+							else if (i == 20)
 								level2.setDay21(item.getDay21());
-							else if(i==21)
+							else if (i == 21)
 								level2.setDay22(item.getDay22());
-							else if(i==22)
+							else if (i == 22)
 								level2.setDay23(item.getDay23());
-							else if(i==23)
+							else if (i == 23)
 								level2.setDay24(item.getDay24());
-							else if(i==24)
+							else if (i == 24)
 								level2.setDay25(item.getDay25());
-							else if(i==25)
+							else if (i == 25)
 								level2.setDay26(item.getDay26());
-							else if(i==26)
+							else if (i == 26)
 								level2.setDay27(item.getDay27());
-							else if(i==27)
+							else if (i == 27)
 								level2.setDay28(item.getDay28());
-							else if(i==28)
+							else if (i == 28)
 								level2.setDay29(item.getDay29());
-							else if(i==29)
+							else if (i == 29)
 								level2.setDay30(item.getDay30());
-							else if(i==30)
+							else if (i == 30)
 								level2.setDay31(item.getDay31());
 						}
 						level2.setUser(user);
 						cal.setTime(startDate);
 						tta2 = timeTrackApprovalLevel2.save(level2);
-						if(tta2.getProjectType().equalsIgnoreCase("Billable")){
+						if (tta2.getProjectType().equalsIgnoreCase("Billable")) {
 							billable_id = tta2.getId();
-						}
-						else if(tta2.getProjectType().equalsIgnoreCase("Non-Billable")) {
+						} else if (tta2.getProjectType().equalsIgnoreCase("Non-Billable")) {
 							nonbillable_id = tta2.getId();
 						}
 
-						else if(tta2.getProjectType().equalsIgnoreCase("Beach")) {
+						else if (tta2.getProjectType().equalsIgnoreCase("Beach")) {
 
 							beach_id = tta2.getId();
-						}
-						else if(tta2.getProjectType().equalsIgnoreCase("Overtime")) {
+						} else if (tta2.getProjectType().equalsIgnoreCase("Overtime")) {
 
 							overtime_id = tta2.getId();
 						}
 					}
 
-					else if(fflag == 2) {
+					else if (fflag == 2) {
 
-						List<TaskTrackApprovalLevel2> level2data = timeTrackApprovalLevel2.getApprovedData(userId, intMonth, yearIndex, projectId);
+						List<TaskTrackApprovalLevel2> level2data = timeTrackApprovalLevel2.getApprovedData(userId,
+								intMonth, yearIndex, projectId);
 
 						if (level2data != null && level2data.size() > 0) {
 
-							for(TaskTrackApprovalLevel2 item1:level2data) {
+							for (TaskTrackApprovalLevel2 item1 : level2data) {
 
-							//	Date previous_forwardedDate =  item1.getTasktrack_level1_Id().getForwarded_date();
+								// Date previous_forwardedDate =
+								// item1.getTasktrack_level1_Id().getForwarded_date();
 								Calendar caldays = Calendar.getInstance();
 								/*
 								 * if(previous_forwardedDate != null) {
@@ -2668,288 +2603,292 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								 * 
 								 * }
 								 */
-								
+
 								Calendar caldayss = Calendar.getInstance();
 								caldays.setTime(endDate);
-								int dayf = 0; int daypf = 0;
+								int dayf = 0;
+								int daypf = 0;
 								daypf = cal.get(Calendar.DAY_OF_MONTH);
 								dayf = caldayss.get(Calendar.DAY_OF_MONTH);
-								if(item.getProjectType().equalsIgnoreCase("Billable") && item1.getProjectType().equalsIgnoreCase("Billable"))	{
+								if (item.getProjectType().equalsIgnoreCase("Billable")
+										&& item1.getProjectType().equalsIgnoreCase("Billable")) {
 									for (int i = daypf; i < dayf; i++) {
-										if(i==1)
+										if (i == 1)
 											item1.setDay1(item.getDay1());
-										else if(i==2)
+										else if (i == 2)
 											item1.setDay2(item.getDay2());
-										else if(i==3)
+										else if (i == 3)
 											item1.setDay3(item.getDay3());
-										else if(i==4)
+										else if (i == 4)
 											item1.setDay4(item.getDay4());
-										else if(i==5)
+										else if (i == 5)
 											item1.setDay5(item.getDay5());
-										else if(i==6)
+										else if (i == 6)
 											item1.setDay6(item.getDay6());
-										else if(i==7)
+										else if (i == 7)
 											item1.setDay7(item.getDay7());
-										else if(i==8)
+										else if (i == 8)
 											item1.setDay8(item.getDay8());
-										else if(i==9)
+										else if (i == 9)
 											item1.setDay9(item.getDay9());
-										else if(i==10)
+										else if (i == 10)
 											item1.setDay10(item.getDay10());
-										else if(i==11)
+										else if (i == 11)
 											item1.setDay11(item.getDay11());
-										else if(i==12)
+										else if (i == 12)
 											item1.setDay12(item.getDay12());
-										else if(i==13)
+										else if (i == 13)
 											item1.setDay13(item.getDay13());
-										else if(i==14)
+										else if (i == 14)
 											item1.setDay14(item.getDay14());
-										else if(i==15)
+										else if (i == 15)
 											item1.setDay15(item.getDay15());
-										else if(i==16)
+										else if (i == 16)
 											item1.setDay16(item.getDay16());
-										else if(i==17)
+										else if (i == 17)
 											item1.setDay17(item.getDay17());
-										else if(i==18)
+										else if (i == 18)
 											item1.setDay18(item.getDay18());
-										else if(i==19)
+										else if (i == 19)
 											item1.setDay19(item.getDay19());
-										else if(i==20)
+										else if (i == 20)
 											item1.setDay20(item.getDay20());
-										else if(i==21)
+										else if (i == 21)
 											item1.setDay21(item.getDay21());
-										else if(i==22)
+										else if (i == 22)
 											item1.setDay22(item.getDay22());
-										else if(i==23)
+										else if (i == 23)
 											item1.setDay23(item.getDay23());
-										else if(i==24)
+										else if (i == 24)
 											item1.setDay24(item.getDay24());
-										else if(i==25)
+										else if (i == 25)
 											item1.setDay25(item.getDay25());
-										else if(i==26)
+										else if (i == 26)
 											item1.setDay26(item.getDay26());
-										else if(i==27)
+										else if (i == 27)
 											item1.setDay27(item.getDay27());
-										else if(i==28)
+										else if (i == 28)
 											item1.setDay28(item.getDay28());
-										else if(i==29)
+										else if (i == 29)
 											item1.setDay29(item.getDay29());
-										else if(i==30)
+										else if (i == 30)
 											item1.setDay30(item.getDay30());
-										else if(i==31)
+										else if (i == 31)
 											item1.setDay31(item.getDay31());
 										tta2 = timeTrackApprovalLevel2.save(item1);
 										billable_id = tta2.getId();
 									}
 								}
 
-								if(item.getProjectType().equalsIgnoreCase("Non-Billable") && item1.getProjectType().equalsIgnoreCase("Non-Billable"))	{
+								if (item.getProjectType().equalsIgnoreCase("Non-Billable")
+										&& item1.getProjectType().equalsIgnoreCase("Non-Billable")) {
 									for (int i = daypf; i < dayf; i++) {
-										if(i==1)
+										if (i == 1)
 											item1.setDay1(item.getDay1());
-										else if(i==2)
+										else if (i == 2)
 											item1.setDay2(item.getDay2());
-										else if(i==3)
+										else if (i == 3)
 											item1.setDay3(item.getDay3());
-										else if(i==4)
+										else if (i == 4)
 											item1.setDay4(item.getDay4());
-										else if(i==5)
+										else if (i == 5)
 											item1.setDay5(item.getDay5());
-										else if(i==6)
+										else if (i == 6)
 											item1.setDay6(item.getDay6());
-										else if(i==7)
+										else if (i == 7)
 											item1.setDay7(item.getDay7());
-										else if(i==8)
+										else if (i == 8)
 											item1.setDay8(item.getDay8());
-										else if(i==9)
+										else if (i == 9)
 											item1.setDay9(item.getDay9());
-										else if(i==10)
+										else if (i == 10)
 											item1.setDay10(item.getDay10());
-										else if(i==11)
+										else if (i == 11)
 											item1.setDay11(item.getDay11());
-										else if(i==12)
+										else if (i == 12)
 											item1.setDay12(item.getDay12());
-										else if(i==13)
+										else if (i == 13)
 											item1.setDay13(item.getDay13());
-										else if(i==14)
+										else if (i == 14)
 											item1.setDay14(item.getDay14());
-										else if(i==15)
+										else if (i == 15)
 											item1.setDay15(item.getDay15());
-										else if(i==16)
+										else if (i == 16)
 											item1.setDay16(item.getDay16());
-										else if(i==17)
+										else if (i == 17)
 											item1.setDay17(item.getDay17());
-										else if(i==18)
+										else if (i == 18)
 											item1.setDay18(item.getDay18());
-										else if(i==19)
+										else if (i == 19)
 											item1.setDay19(item.getDay19());
-										else if(i==20)
+										else if (i == 20)
 											item1.setDay20(item.getDay20());
-										else if(i==21)
+										else if (i == 21)
 											item1.setDay21(item.getDay21());
-										else if(i==22)
+										else if (i == 22)
 											item1.setDay22(item.getDay22());
-										else if(i==23)
+										else if (i == 23)
 											item1.setDay23(item.getDay23());
-										else if(i==24)
+										else if (i == 24)
 											item1.setDay24(item.getDay24());
-										else if(i==25)
+										else if (i == 25)
 											item1.setDay25(item.getDay25());
-										else if(i==26)
+										else if (i == 26)
 											item1.setDay26(item.getDay26());
-										else if(i==27)
+										else if (i == 27)
 											item1.setDay27(item.getDay27());
-										else if(i==28)
+										else if (i == 28)
 											item1.setDay28(item.getDay28());
-										else if(i==29)
+										else if (i == 29)
 											item1.setDay29(item.getDay29());
-										else if(i==30)
+										else if (i == 30)
 											item1.setDay30(item.getDay30());
-										else if(i==31)
+										else if (i == 31)
 											item1.setDay31(item.getDay31());
 										tta2 = timeTrackApprovalLevel2.save(item1);
 										nonbillable_id = tta2.getId();
 									}
 								}
-								if(item.getProjectType().equalsIgnoreCase("Beach") && item1.getProjectType().equalsIgnoreCase("Beach"))	{
+								if (item.getProjectType().equalsIgnoreCase("Beach")
+										&& item1.getProjectType().equalsIgnoreCase("Beach")) {
 									for (int i = daypf; i < dayf; i++) {
-										if(i==1)
+										if (i == 1)
 											item1.setDay1(item.getDay1());
-										else if(i==2)
+										else if (i == 2)
 											item1.setDay2(item.getDay2());
-										else if(i==3)
+										else if (i == 3)
 											item1.setDay3(item.getDay3());
-										else if(i==4)
+										else if (i == 4)
 											item1.setDay4(item.getDay4());
-										else if(i==5)
+										else if (i == 5)
 											item1.setDay5(item.getDay5());
-										else if(i==6)
+										else if (i == 6)
 											item1.setDay6(item.getDay6());
-										else if(i==7)
+										else if (i == 7)
 											item1.setDay7(item.getDay7());
-										else if(i==8)
+										else if (i == 8)
 											item1.setDay8(item.getDay8());
-										else if(i==9)
+										else if (i == 9)
 											item1.setDay9(item.getDay9());
-										else if(i==10)
+										else if (i == 10)
 											item1.setDay10(item.getDay10());
-										else if(i==11)
+										else if (i == 11)
 											item1.setDay11(item.getDay11());
-										else if(i==12)
+										else if (i == 12)
 											item1.setDay12(item.getDay12());
-										else if(i==13)
+										else if (i == 13)
 											item1.setDay13(item.getDay13());
-										else if(i==14)
+										else if (i == 14)
 											item1.setDay14(item.getDay14());
-										else if(i==15)
+										else if (i == 15)
 											item1.setDay15(item.getDay15());
-										else if(i==16)
+										else if (i == 16)
 											item1.setDay16(item.getDay16());
-										else if(i==17)
+										else if (i == 17)
 											item1.setDay17(item.getDay17());
-										else if(i==18)
+										else if (i == 18)
 											item1.setDay18(item.getDay18());
-										else if(i==19)
+										else if (i == 19)
 											item1.setDay19(item.getDay19());
-										else if(i==20)
+										else if (i == 20)
 											item1.setDay20(item.getDay20());
-										else if(i==21)
+										else if (i == 21)
 											item1.setDay21(item.getDay21());
-										else if(i==22)
+										else if (i == 22)
 											item1.setDay22(item.getDay22());
-										else if(i==23)
+										else if (i == 23)
 											item1.setDay23(item.getDay23());
-										else if(i==24)
+										else if (i == 24)
 											item1.setDay24(item.getDay24());
-										else if(i==25)
+										else if (i == 25)
 											item1.setDay25(item.getDay25());
-										else if(i==26)
+										else if (i == 26)
 											item1.setDay26(item.getDay26());
-										else if(i==27)
+										else if (i == 27)
 											item1.setDay27(item.getDay27());
-										else if(i==28)
+										else if (i == 28)
 											item1.setDay28(item.getDay28());
-										else if(i==29)
+										else if (i == 29)
 											item1.setDay29(item.getDay29());
-										else if(i==30)
+										else if (i == 30)
 											item1.setDay30(item.getDay30());
-										else if(i==31)
+										else if (i == 31)
 											item1.setDay31(item.getDay31());
 										tta2 = timeTrackApprovalLevel2.save(item1);
 										beach_id = tta2.getId();
 									}
 								}
-								if(item.getProjectType().equalsIgnoreCase("Overtime") && item1.getProjectType().equalsIgnoreCase("Overtime"))	{
+								if (item.getProjectType().equalsIgnoreCase("Overtime")
+										&& item1.getProjectType().equalsIgnoreCase("Overtime")) {
 									for (int i = daypf; i < dayf; i++) {
-										if(i==1)
+										if (i == 1)
 											item1.setDay1(item.getDay1());
-										else if(i==2)
+										else if (i == 2)
 											item1.setDay2(item.getDay2());
-										else if(i==3)
+										else if (i == 3)
 											item1.setDay3(item.getDay3());
-										else if(i==4)
+										else if (i == 4)
 											item1.setDay4(item.getDay4());
-										else if(i==5)
+										else if (i == 5)
 											item1.setDay5(item.getDay5());
-										else if(i==6)
+										else if (i == 6)
 											item1.setDay6(item.getDay6());
-										else if(i==7)
+										else if (i == 7)
 											item1.setDay7(item.getDay7());
-										else if(i==8)
+										else if (i == 8)
 											item1.setDay8(item.getDay8());
-										else if(i==9)
+										else if (i == 9)
 											item1.setDay9(item.getDay9());
-										else if(i==10)
+										else if (i == 10)
 											item1.setDay10(item.getDay10());
-										else if(i==11)
+										else if (i == 11)
 											item1.setDay11(item.getDay11());
-										else if(i==12)
+										else if (i == 12)
 											item1.setDay12(item.getDay12());
-										else if(i==13)
+										else if (i == 13)
 											item1.setDay13(item.getDay13());
-										else if(i==14)
+										else if (i == 14)
 											item1.setDay14(item.getDay14());
-										else if(i==15)
+										else if (i == 15)
 											item1.setDay15(item.getDay15());
-										else if(i==16)
+										else if (i == 16)
 											item1.setDay16(item.getDay16());
-										else if(i==17)
+										else if (i == 17)
 											item1.setDay17(item.getDay17());
-										else if(i==18)
+										else if (i == 18)
 											item1.setDay18(item.getDay18());
-										else if(i==19)
+										else if (i == 19)
 											item1.setDay19(item.getDay19());
-										else if(i==20)
+										else if (i == 20)
 											item1.setDay20(item.getDay20());
-										else if(i==21)
+										else if (i == 21)
 											item1.setDay21(item.getDay21());
-										else if(i==22)
+										else if (i == 22)
 											item1.setDay22(item.getDay22());
-										else if(i==23)
+										else if (i == 23)
 											item1.setDay23(item.getDay23());
-										else if(i==24)
+										else if (i == 24)
 											item1.setDay24(item.getDay24());
-										else if(i==25)
+										else if (i == 25)
 											item1.setDay25(item.getDay25());
-										else if(i==26)
+										else if (i == 26)
 											item1.setDay26(item.getDay26());
-										else if(i==27)
+										else if (i == 27)
 											item1.setDay27(item.getDay27());
-										else if(i==28)
+										else if (i == 28)
 											item1.setDay28(item.getDay28());
-										else if(i==29)
+										else if (i == 29)
 											item1.setDay29(item.getDay29());
-										else if(i==30)
+										else if (i == 30)
 											item1.setDay30(item.getDay30());
-										else if(i==31)
+										else if (i == 31)
 											item1.setDay31(item.getDay31());
 
 										tta2 = timeTrackApprovalLevel2.save(item1);
 										overtime_id = tta2.getId();
-										//System.out.println("Overtime"+overtime_id);
+										// System.out.println("Overtime"+overtime_id);
 									}
 								}
-
 
 							}
 
@@ -2958,15 +2897,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 
 			}
-       //forward button and approve button status
+			// forward button and approve button status
 			boolean approve_button = true;
 			boolean forward_button = false;
-			
-		TaskTrackApproval forward_approved =  timeTrackApprovalJPARepository.getapprovedDates2(intMonth,yearIndex, projectId, userId);
-		 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
-			if(forward_approved != null) {
-				//System.out.println("Forwarded---------------"+forward_approved.getApproved_date());
-				//System.out.println("approve---------------"+forward_approved.getForwarded_date());
+
+			TaskTrackApproval forward_approved = timeTrackApprovalJPARepository.getapprovedDates2(intMonth, yearIndex,
+					projectId, userId);
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			if (forward_approved != null) {
+				// System.out.println("Forwarded---------------"+forward_approved.getApproved_date());
+				// System.out.println("approve---------------"+forward_approved.getForwarded_date());
 				/*
 				 * if(forward_approved.getForwarded_date() != null) {
 				 * System.out.println(" 1------------------------->"); Calendar cl =
@@ -3008,96 +2948,93 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				 * 
 				 * }
 				 */
-			
+
 			}
-	   //
-			
+			//
+
 			// for showing status
-	 		// Level 2 approver name 	 
-				 
-				 ProjectModel projectdetails = null;
+			// Level 2 approver name
+
+			ProjectModel projectdetails = null;
 			boolean flaglevel2 = true;
-			if(projectId != null) {
-				//System.out.println("Here____________________________");
-				 projectdetails = getProjectDetails(projectId);
-				}
-			if(projectdetails != null) {
-				if(projectdetails.getOnsite_lead() != null)
-				
-					{
-					System.out.println("------------------------------------------------1");
-				
-					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()+ " " +projectdetails.getOnsite_lead().getLastName());
-					}
-				else
+			if (projectId != null) {
+				// System.out.println("Here____________________________");
+				projectdetails = getProjectDetails(projectId);
+			}
+			if (projectdetails != null) {
+				if (projectdetails.getOnsite_lead() != null)
+
 				{
-					
+					System.out.println("------------------------------------------------1");
+
+					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()
+							+ " " + projectdetails.getOnsite_lead().getLastName());
+				} else {
+
 					flaglevel2 = false;
 					jsonDataMessageDetails.put("Level2_Approvar_Name", "");
 				}
-				
-				// level2 forwarded 
+
+				// level2 forwarded
 				String frowardedDate = "";
 				String frowardedDateLevel2 = "";
 				String finance_status_message = "Timesheet not yet submitted to finance";
 				String forwarded_ToLevel2_Status = "";
-				if(flaglevel2) {
+				if (flaglevel2) {
 					forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
 				}
-				 // getb finance status of the current project added on 11/10
-				
-				 Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId, intMonth, yearIndex);
-				 
-				 if(finance_status != null) {
-					 System.out.println("---------------------------------------0");
-					 if(finance_status.length > 0 ) {
-					 System.out.println("---------------------------------------1");
-						if(finance_status[0].equals("HM")) {
-							 System.out.println("---------------------------------------2");	
+				// getb finance status of the current project added on 11/10
+
+				Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId,
+						intMonth, yearIndex);
+
+				if (finance_status != null) {
+					System.out.println("---------------------------------------0");
+					if (finance_status.length > 0) {
+						System.out.println("---------------------------------------1");
+						if (finance_status[0].equals("HM")) {
+							System.out.println("---------------------------------------2");
 							finance_status_message = "Submitted mid report";
-						}
-						else if(finance_status[0].equals("FM")) {
-							 System.out.println("---------------------------------------3");	
+						} else if (finance_status[0].equals("FM")) {
+							System.out.println("---------------------------------------3");
 							finance_status_message = "Submitted Final report";
 						}
-						
-					 }
-				 }
-				 jsonDataMessageDetails.put("Status",finance_status_message);
-				 //
-					// level2 forwarded 
-					
-				 List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId,userId,intMonth,yearIndex);
-				  if(!level1.isEmpty()) {
-					 // System.out.println("forwarded_date"+level1.get(0));
-					 if(level1 != null) {
-						for(Object[] fl : level1) {
-							if(fl != null)
-							{ 
-								if(fl[0] != null) {
-								Date fdate = (Date) fl[0];				
-							  System.out.println("---------------------------------------4");	
-							  String pattern1 = "MM-dd-yyyy"; 
-								 DateFormat df1 = new SimpleDateFormat(pattern1);
-								 String forw = df1.format(fdate);
-							  forwarded_ToLevel2_Status = "Data upto "+forw+" has been forwarded to Level2";
+
+					}
+				}
+				jsonDataMessageDetails.put("Status", finance_status_message);
+				//
+				// level2 forwarded
+
+				List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId, userId, intMonth,
+						yearIndex);
+				if (!level1.isEmpty()) {
+					// System.out.println("forwarded_date"+level1.get(0));
+					if (level1 != null) {
+						for (Object[] fl : level1) {
+							if (fl != null) {
+								if (fl[0] != null) {
+									Date fdate = (Date) fl[0];
+									System.out.println("---------------------------------------4");
+									String pattern1 = "MM-dd-yyyy";
+									DateFormat df1 = new SimpleDateFormat(pattern1);
+									String forw = df1.format(fdate);
+									forwarded_ToLevel2_Status = "Data upto " + forw + " has been forwarded to Level2";
 								}
-								if(fl[1] != null) {
-								Date fdates = (Date) fl[1];
-							  
+								if (fl[1] != null) {
+									Date fdates = (Date) fl[1];
+
 								}
 							}
 						}
-					 }	  						 //System.out.println("frowardedDate___________"+frowardedDate);
+					} // System.out.println("frowardedDate___________"+frowardedDate);
 
-
-				 }
-				  jsonDataMessageDetails.put("Forwarded_status",forwarded_ToLevel2_Status);
+				}
+				jsonDataMessageDetails.put("Forwarded_status", forwarded_ToLevel2_Status);
 			}
-	 			
-	 			//end
-			
-			
+
+			// end
+
 			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 			ids.put("billable_id", billable_id);
 			ids.put("nonbillable_id", nonbillable_id);
@@ -3106,173 +3043,161 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			response.put("data", "");
 			response.put("status", "success");
 			response.put("message", "forwarded to level2");
-			response.put("forwardedDate",(outputFormat.format(endDate)).toString());
+			response.put("forwardedDate", (outputFormat.format(endDate)).toString());
 			response.set("ids", ids);
 			response.put("approve_button", approve_button);
 			response.put("forward_button", forward_button);
 			response.put("message_details", jsonDataMessageDetails);
-		}
-		else {
+		} else {
 			response.put("data", "");
 			response.put("status", "failed");
-			response.put("message", (String)testValidation.get("message"));
+			response.put("message", (String) testValidation.get("message"));
 		}
 		return response;
 	}
 
-
-	public ArrayList<JSONObject>  getFinanceDataByProject(int month, int year, Long projectId) {
+	public ArrayList<JSONObject> getFinanceDataByProject(int month, int year, Long projectId) {
 
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
 		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProject(month, year, projectId);
 		String intmonth;
-		if(month<10){
-			intmonth ="0"+month;
+		if (month < 10) {
+			intmonth = "0" + month;
+		} else {
+			intmonth = String.valueOf(month);
 		}
-		else{
-			intmonth =String.valueOf(month);
-		}
-		for(Object[] item : financeData) {
+		for (Object[] item : financeData) {
 			JSONObject node = new JSONObject();
 			List<JSONObject> billableArray = new ArrayList<>();
 			List<JSONObject> userArray = new ArrayList<>();
 
-			node.put("userId",item[0]);
-			node.put("firstName",item[1]);
-			node.put("lastName",item[2]);
-			node.put("status",item[3]);
-			for(int i=1;i<=daysInMonth;i++)
-			{
+			node.put("userId", item[0]);
+			node.put("firstName", item[1]);
+			node.put("lastName", item[2]);
+			node.put("status", item[3]);
+			for (int i = 1; i <= daysInMonth; i++) {
 				String j;
-				if(i<10){
-					j ="0"+i;
-				}
-				else{
-					j =String.valueOf(i);
+				if (i < 10) {
+					j = "0" + i;
+				} else {
+					j = String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year+"-"+intmonth+"-"+j,item[i+3]);
+				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 3]);
 				billableArray.add(billableNode);
 			}
-			node.put("billable",billableArray);
+			node.put("billable", billableArray);
 			resultData.add(node);
 		}
 
 		return resultData;
 	}
 
-	public ArrayList<JSONObject>  getFinanceDataByUser(int month, int year, Long userId) {
-
+	public ArrayList<JSONObject> getFinanceDataByUser(int month, int year, Long userId) {
 
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
 		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUser(month, year, userId);
 		String intmonth;
-		if(month<10){
-			intmonth ="0"+month;
+		if (month < 10) {
+			intmonth = "0" + month;
+		} else {
+			intmonth = String.valueOf(month);
 		}
-		else{
-			intmonth =String.valueOf(month);
-		}
-		for(Object[] item : financeData) {
+		for (Object[] item : financeData) {
 			JSONObject node = new JSONObject();
 			List<JSONObject> billableArray = new ArrayList<>();
-			node.put("projectId",item[0]);
-			node.put("projectName",item[1]);
-			node.put("status",item[2]);
-			for(int i=1;i<=daysInMonth;i++)
-			{
+			node.put("projectId", item[0]);
+			node.put("projectName", item[1]);
+			node.put("status", item[2]);
+			for (int i = 1; i <= daysInMonth; i++) {
 				String j;
-				if(i<10){
-					j ="0"+i;
-				}
-				else{
-					j =String.valueOf(i);
+				if (i < 10) {
+					j = "0" + i;
+				} else {
+					j = String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year+"-"+intmonth+"-"+j,item[i+2]);
+				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 2]);
 				billableArray.add(billableNode);
 			}
-			node.put("billable",billableArray);
+			node.put("billable", billableArray);
 			resultData.add(node);
 		}
 
 		return resultData;
 	}
 
-	public ArrayList<JSONObject>  getFinanceDataByUserAndProject(int month, int year, Long userId, Long projectId) {
-
+	public ArrayList<JSONObject> getFinanceDataByUserAndProject(int month, int year, Long userId, Long projectId) {
 
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUserAndProject(month, year, userId, projectId);
+		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUserAndProject(month, year, userId,
+				projectId);
 		String intmonth;
-		if(month<10){
-			intmonth ="0"+month;
+		if (month < 10) {
+			intmonth = "0" + month;
+		} else {
+			intmonth = String.valueOf(month);
 		}
-		else{
-			intmonth =String.valueOf(month);
-		}
-		for(Object[] item : financeData) {
+		for (Object[] item : financeData) {
 			JSONObject node = new JSONObject();
 			List<JSONObject> billableArray = new ArrayList<>();
-			node.put("projectId",item[0]);
-			node.put("projectName",item[1]);
-			node.put("userId",item[2]);
-			node.put("firstName",item[3]);
-			node.put("lastName",item[4]);
-			node.put("status",item[5]);
-			for(int i=1;i<=daysInMonth;i++)
-			{
+			node.put("projectId", item[0]);
+			node.put("projectName", item[1]);
+			node.put("userId", item[2]);
+			node.put("firstName", item[3]);
+			node.put("lastName", item[4]);
+			node.put("status", item[5]);
+			for (int i = 1; i <= daysInMonth; i++) {
 				String j;
-				if(i<10){
-					j ="0"+i;
-				}
-				else{
-					j =String.valueOf(i);
+				if (i < 10) {
+					j = "0" + i;
+				} else {
+					j = String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year+"-"+intmonth+"-"+j,item[i+5]);
+				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 5]);
 				billableArray.add(billableNode);
 			}
-			node.put("billable",billableArray);
+			node.put("billable", billableArray);
 			resultData.add(node);
 		}
 
 		return resultData;
 	}
 
-
 	@Override
 	public List<Object[]> getForwardedDates(Long projectId, Long userId, int intMonth, int yearIndex) {
 		// TODO Auto-generated method stub
-		return timeTrackApprovalJPARepository.getForwardedDates(projectId, userId, intMonth,yearIndex);
+		return timeTrackApprovalJPARepository.getForwardedDates(projectId, userId, intMonth, yearIndex);
 	}
 
 	@Override
-	public List<TaskTrackApprovalLevel2> getUserIdByProjectAndDateForLevel2(Long projectId, Date startDate, Date endDate) {
+	public List<TaskTrackApprovalLevel2> getUserIdByProjectAndDateForLevel2(Long projectId, Date startDate,
+			Date endDate) {
 		// TODO Auto-generated method stub
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(startDate);
-		int intMonth = 0,intday = 0;
+		int intMonth = 0, intday = 0;
 		intMonth = (cal.get(Calendar.MONTH) + 1);
 		int yearIndex = cal.get(Calendar.YEAR);
-		return timeTrackApprovalLevel2.getUserIdByProjectAndDateForLevel2(projectId,intMonth,yearIndex);
+		return timeTrackApprovalLevel2.getUserIdByProjectAndDateForLevel2(projectId, intMonth, yearIndex);
 	}
 
-	public JSONObject checkPreviousTimeSheetsareClosed(int month, int year, Long projectId, Long approverId){
+	public JSONObject checkPreviousTimeSheetsareClosed(int month, int year, Long projectId, Long approverId) {
 
-		UserModel user =  userRepository.getOne(approverId);
+		UserModel user = userRepository.getOne(approverId);
 		JSONObject jsonDataRes = new JSONObject();
-		String message=null;
-		Boolean status=true;
+		String message = null;
+		Boolean status = true;
 
 		Long role = user.getRole().getroleId();
-		//int prevmonth = month-1;
+		// int prevmonth = month-1;
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(year, month, 1);
 		calendar.add(Calendar.MONTH, -1);
@@ -3282,122 +3207,99 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Integer prevMonth = calendar.get(Calendar.MONTH);
 		Integer prevMonthYear = calendar.get(Calendar.YEAR);
 		Long approverrowcount = null;
-		String fromdate = prevMonthYear+"-"+((prevMonth < 10) ? "0" + prevMonth : "" + prevMonth) +"-01";
+		String fromdate = prevMonthYear + "-" + ((prevMonth < 10) ? "0" + prevMonth : "" + prevMonth) + "-01";
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
 		LocalDate date = LocalDate.parse(fromdate, dateFormat);
 		ValueRange range = date.range(ChronoField.DAY_OF_MONTH);
 		Long max = range.getMaximum();
 		String todate = String.format("%s-%s-%d", prevMonthYear, prevMonth, max);
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate =null;
+		Date startDate = null;
 		Date endDate = null;
 
 		try {
-			 startDate = outputFormat.parse(fromdate);
+			startDate = outputFormat.parse(fromdate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		try {
-			 endDate = outputFormat.parse(todate);
+			endDate = outputFormat.parse(todate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		int allocated = tasktrackRepository.checkprojectallocated(projectId, startDate, endDate);
-		System.out.println("projectId"+projectId+"startdate" + startDate+"enddate"+ endDate);
-		if(allocated>0) {
+		System.out.println("projectId" + projectId + "startdate" + startDate + "enddate" + endDate);
+		if (allocated > 0) {
 			int expectedRows = allocated * 4;
-			System.out.println("expected rows"+expectedRows);
-			System.out.println("allocated rows"+allocated);
+			System.out.println("expected rows" + expectedRows);
+			System.out.println("allocated rows" + allocated);
 			if (role == 2)
-				
+
 			{
 				ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 				approverrowcount = timeTrackApprovalJPARepository.getCountOfRows(prevMonth, prevMonthYear, projectId);
-				if(expectedRows ==approverrowcount)
-				{
+				if (expectedRows == approverrowcount) {
 					if (projectData.getOnsite_lead() == null) {
-						if (expectedRows == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth, prevMonthYear, projectId))
-						{
-							if (expectedRows == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth, prevMonthYear, projectId))
-							{
+						if (expectedRows == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth, prevMonthYear,
+								projectId)) {
+							if (expectedRows == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth, prevMonthYear,
+									projectId)) {
 								message = "No pending timesheet found";
 								status = true;
 
-							}
-							else
-							{
+							} else {
 								message = "Pending previous full month timesheet found";
 								status = false;
 							}
-						}
-						else
-						{
+						} else {
 							message = "Pending previous half month timesheet found";
 							status = false;
 						}
-					}
-					else
-					{
-						if (expectedRows == timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth, prevMonthYear, projectId))
-						{
-							if (expectedRows == timeTrackApprovalLevel2.getCountOfRowsFM(prevMonth, prevMonthYear, projectId))
-							{
+					} else {
+						if (expectedRows == timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth, prevMonthYear,
+								projectId)) {
+							if (expectedRows == timeTrackApprovalLevel2.getCountOfRowsFM(prevMonth, prevMonthYear,
+									projectId)) {
 								message = "No pending timesheet found";
 								status = true;
-							}
-							else
-							{
+							} else {
 								message = "Pending previous full month timesheet found";
 								status = false;
 							}
-						}
-						else
-						{
+						} else {
 							message = "Pending previous half month timesheet found";
 							status = false;
 						}
 
 					}
-				}
-				else
-				{
+				} else {
 					message = "Pending previous month timesheet approval found";
 					status = false;
 				}
-			}
-			else if (role == 7)
-			{
+			} else if (role == 7) {
 				approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHM(prevMonth, prevMonthYear, projectId);
-				if (expectedRows == approverrowcount)
-				{
-					if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth, prevMonthYear, projectId))
-					{
-						if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth, prevMonthYear, projectId))
-						{
+				if (expectedRows == approverrowcount) {
+					if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHM(prevMonth, prevMonthYear,
+							projectId)) {
+						if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsFM(prevMonth, prevMonthYear,
+								projectId)) {
 							message = "No pending timesheet found";
 							status = true;
-						}
-						else
-						{
+						} else {
 							message = "Pending previous full month timesheet found";
 							status = false;
 						}
-					}
-					else
-					{
+					} else {
 						message = "Pending previous half month timesheet found";
 						status = false;
 					}
 
-				}
-				else
-				{
+				} else {
 					message = "Pending previous month timesheet approval found";
 					status = false;
 				}
 			}
-		}
-		else{
+		} else {
 			message = "No pending timesheet found";
 			status = true;
 
@@ -3413,12 +3315,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return jsonDataRes;
 	}
 
-	public JSONObject halfCycleCheck(Long projectId,Long userId,Long approverId,Date endDate) throws ParseException {
+	public JSONObject halfCycleCheck(Long projectId, Long userId, Long approverId, Date endDate) throws ParseException {
 
 		JSONObject jsonDataRes = new JSONObject();
-		UserModel user =  userRepository.getOne(approverId);
-		String message=null;
-		Boolean status=true;
+		UserModel user = userRepository.getOne(approverId);
+		String message = null;
+		Boolean status = true;
 		Long approverrowcount = null;
 		boolean timesheet_button = false;
 		boolean approve_button = true;
@@ -3429,106 +3331,90 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		df = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(endDate);
-		int day=calendar.get(Calendar.DAY_OF_MONTH);
-		int month = (calendar.get(Calendar.MONTH)+1);
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		int month = (calendar.get(Calendar.MONTH) + 1);
 		int year = calendar.get(Calendar.YEAR);
-		String fromdate = year+"-"+((month < 10) ? "0" + month : "" + month) +"-01";
+		String fromdate = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-01";
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date startdDate = outputFormat.parse(fromdate);
-		List<Tasktrack> logData = tasktrackRepository.getByDate(startdDate,endDate,userId);
+		List<Tasktrack> logData = tasktrackRepository.getByDate(startdDate, endDate, userId);
 		String financeStatus = "";
 
 		Calendar cal = Calendar.getInstance();
 		int approved_dayindex = 0;
-		if(day>15)
-		{
-			if(!logData.isEmpty()) {
+		if (day > 15) {
+			if (!logData.isEmpty()) {
 				if (role == 2) {
-						
+
 					ProjectModel projectData = projectRepository.getProjectDetails(projectId);
-					approverrowcount = timeTrackApprovalJPARepository.getCountOfRowsByUser(month, year, projectId, userId);
-					Object[] approvedDate = timeTrackApprovalJPARepository.getapprovedDates(month, year, projectId, userId);
-					
+					approverrowcount = timeTrackApprovalJPARepository.getCountOfRowsByUser(month, year, projectId,
+							userId);
+					Object[] approvedDate = timeTrackApprovalJPARepository.getapprovedDates(month, year, projectId,
+							userId);
+
 					Date approved_date = null;
-                     YearMonth yearMonthObject = YearMonth.of(year, month);
-         			int totaldays = yearMonthObject.lengthOfMonth();
-					
+					YearMonth yearMonthObject = YearMonth.of(year, month);
+					int totaldays = yearMonthObject.lengthOfMonth();
+
 					if (projectData.getOnsite_lead() == null) {
 
-						if(approverrowcount==0)
-						{
+						if (approverrowcount == 0) {
 							financeStatus = "";
 							message = "Log not approved yet";
 							status = false;
-						}
-						else if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year, projectId, userId))
-						{
-							
-							if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year, projectId, userId))
-							{
+						} else if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year,
+								projectId, userId)) {
+
+							if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year,
+									projectId, userId)) {
 								financeStatus = "FM";
 								message = "No pending logs found";
 								status = true;
-							}
-							else
-							{
+							} else {
 								financeStatus = "HM";
 								message = "Pending full month logs found ";
 								status = true;
 							}
-						}
-						else
-						{
+						} else {
 							financeStatus = "";
 							message = "Pending half month logs found";
 							status = false;
 						}
-					}
-					else
-					{
-						if (approverrowcount == timeTrackApprovalLevel2.getCountOfRowsHMByUser(month, year, projectId, userId))
-						{
+					} else {
+						if (approverrowcount == timeTrackApprovalLevel2.getCountOfRowsHMByUser(month, year, projectId,
+								userId)) {
 							financeStatus = "";
 							message = "No pending logs found";
 							status = true;
-						}
-						else
-						{
+						} else {
 							financeStatus = "";
 							message = "Pending half month logs found";
 							status = false;
 						}
-						
 
 					}
-					
-					 if(approvedDate.length != 0 )
-					 {
-                    	if(approvedDate[0] != null)
-                    	{
-                    	approved_date = (Date) approvedDate[0];
-                       cal.setTime(approved_date);
-                      approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
-                      if((approved_dayindex >= 15) && (financeStatus.equalsIgnoreCase(""))) {
-  						
-  						timesheet_button = true;
-  					}
-  					else if((approved_dayindex >= totaldays) && (financeStatus.equalsIgnoreCase("HM"))) {
-  						
-  						timesheet_button = true;
-  					}
-  					
-                    	}
-					 }
-					 
 
-			 			
-				 		TaskTrackApproval forward_approved =  timeTrackApprovalJPARepository.getapprovedDates2(month,year, projectId, userId);
+					if (approvedDate.length != 0) {
+						if (approvedDate[0] != null) {
+							approved_date = (Date) approvedDate[0];
+							cal.setTime(approved_date);
+							approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
+							if ((approved_dayindex >= 15) && (financeStatus.equalsIgnoreCase(""))) {
 
-				 		 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
-				 			if(forward_approved != null) {
-				 				
-				 				
+								timesheet_button = true;
+							} else if ((approved_dayindex >= totaldays) && (financeStatus.equalsIgnoreCase("HM"))) {
+
+								timesheet_button = true;
+							}
+
+						}
+					}
+
+					TaskTrackApproval forward_approved = timeTrackApprovalJPARepository.getapprovedDates2(month, year,
+							projectId, userId);
+
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					if (forward_approved != null) {
 
 						/*
 						 * if(forward_approved.getApproved_date() != null) {
@@ -3537,7 +3423,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						 * approved_till_date = dateFormat.format(forward_approved.getApproved_date());
 						 * }
 						 */
-			 					
+
 						/*
 						 * System.out.println("Forwarded---------------"+forward_approved.
 						 * getApproved_date());
@@ -3571,7 +3457,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						 * 
 						 * forward_button = true; } }
 						 */
-				 			
+
 						/*
 						 * if(forward_approved.getApproved_date() != null &&
 						 * forward_approved.getForwarded_date() != null) {
@@ -3582,141 +3468,110 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						 * System.out.println("forward button ------------------------->"+forward_button
 						 * ); forward_button = true; } }
 						 */
-				 			
-				 				
-				 				
-				 				
-				 			}
-                    
-					
-					
-				}
-				else if (role == 7)
-				{
+
+					}
+
+				} else if (role == 7) {
 
 					approverrowcount = timeTrackApprovalLevel2.getCountOfRowsHMByUser(month, year, projectId, userId);
 					Object[] approvedDate = timeTrackApprovalLevel2.getapprovedDates(month, year, projectId, userId);
-					Date approved_date = null; 
-                    YearMonth yearMonthObject = YearMonth.of(year, month);
-        			int totaldays = yearMonthObject.lengthOfMonth();
-					if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year, projectId, userId))
-					{
-						if(approverrowcount==0)
-						{
+					Date approved_date = null;
+					YearMonth yearMonthObject = YearMonth.of(year, month);
+					int totaldays = yearMonthObject.lengthOfMonth();
+					if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsHMByUser(month, year, projectId,
+							userId)) {
+						if (approverrowcount == 0) {
 							financeStatus = "";
 							message = "Log not approved yet";
 							status = false;
-						}
-						else if(approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year, projectId, userId))
-						{
+						} else if (approverrowcount == taskTrackFinanceRepository.getCountOfRowsFMByUser(month, year,
+								projectId, userId)) {
 							financeStatus = "FM";
 							message = "No pending logs found";
 							status = true;
-						}
-						else
-						{
+						} else {
 							financeStatus = "HM";
 							message = "Pending full month logs found ";
 							status = true;
 						}
-					}
-					else
-					{
+					} else {
 						financeStatus = "";
 						message = "Pending half month logs found";
 						status = false;
 					}
 
-					 if(approvedDate.length != 0 )
-					 {
-                    	if(approvedDate[0] != null)
-                    	{
-                    	approved_date = (Date) approvedDate[0];
-                       cal.setTime(approved_date);
-                      approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
-                      if((approved_dayindex >= 15) && (financeStatus.equalsIgnoreCase(""))) {
-  						
-  						timesheet_button = true;
-  					}
-  					else if((approved_dayindex >= totaldays) && (financeStatus.equalsIgnoreCase("HM"))) {
-  						
-  						timesheet_button = true;
-  					}
-  					
-                    	}
-					 }
-					
-					 TaskTrackApprovalLevel2	 forward_approved =  timeTrackApprovalLevel2.getapprovedDates2(month,year, projectId, userId);
-						if(forward_approved != null) {
-							
-							 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
-							if(forward_approved.getApproved_date() != null) {
-		 						
-								
-		 		                 approved_till_date = dateFormat.format(forward_approved.getApproved_date()); 	
-		 					}
-		 			
-							
-							if(forward_approved.getForwarded_date() != null) {
-			 					System.out.println(" 1------------------------->");				
-			 					 Calendar cl = Calendar.getInstance();
-			 					    // passing month-1 because 0-->jan, 1-->feb... 11-->dec
-			 					 cl.set(year, month - 1, 1);
-			 					 cl.set(Calendar.DATE, cl.getActualMaximum(Calendar.DATE));
-			 					 Date monthend_date = cl.getTime();
-			 					 Date forwarded_date = (Date) forward_approved.getApproved_date();
-			 					 
-			 		                String forwarded_date_s = dateFormat.format(forwarded_date);  
-			 		                String monthend_date_s = dateFormat.format(monthend_date);  
-			 					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
-			 					 
-			 					System.out.println("Month end------------------>"+monthend_date);
-			 					
-			 					 if(forwarded_date_s.equals(monthend_date_s)) {
-			 						approve_button = false;
-			 					}
-			 					 else if (forwarded_date.after(monthend_date) ) {
-			 						
-			 						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
-			 						approve_button = false;
-			 					}
-			 					
-			 				}	
-							
-							
-						}	
-					
-					 
-					
+					if (approvedDate.length != 0) {
+						if (approvedDate[0] != null) {
+							approved_date = (Date) approvedDate[0];
+							cal.setTime(approved_date);
+							approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
+							if ((approved_dayindex >= 15) && (financeStatus.equalsIgnoreCase(""))) {
+
+								timesheet_button = true;
+							} else if ((approved_dayindex >= totaldays) && (financeStatus.equalsIgnoreCase("HM"))) {
+
+								timesheet_button = true;
+							}
+
+						}
+					}
+
+					TaskTrackApprovalLevel2 forward_approved = timeTrackApprovalLevel2.getapprovedDates2(month, year,
+							projectId, userId);
+					if (forward_approved != null) {
+
+						DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+						if (forward_approved.getApproved_date() != null) {
+
+							approved_till_date = dateFormat.format(forward_approved.getApproved_date());
+						}
+
+						if (forward_approved.getForwarded_date() != null) {
+							System.out.println(" 1------------------------->");
+							Calendar cl = Calendar.getInstance();
+							// passing month-1 because 0-->jan, 1-->feb... 11-->dec
+							cl.set(year, month - 1, 1);
+							cl.set(Calendar.DATE, cl.getActualMaximum(Calendar.DATE));
+							Date monthend_date = cl.getTime();
+							Date forwarded_date = (Date) forward_approved.getApproved_date();
+
+							String forwarded_date_s = dateFormat.format(forwarded_date);
+							String monthend_date_s = dateFormat.format(monthend_date);
+							System.out.println(forwarded_date_s + "-----------" + monthend_date_s);
+
+							System.out.println("Month end------------------>" + monthend_date);
+
+							if (forwarded_date_s.equals(monthend_date_s)) {
+								approve_button = false;
+							} else if (forwarded_date.after(monthend_date)) {
+
+								System.out.println("approve_button ------------------------->"
+										+ forwarded_date.compareTo(monthend_date));
+								approve_button = false;
+							}
+
+						}
+
+					}
+
 				}
-			}
-			else
-			{
+			} else {
 				financeStatus = "";
 				message = "Pending half month logs found";
 				status = false;
 			}
 
-
 		}
-		//List<AllocationModel> =
-		
-		
-		
-		
-		
-		
-		
-		
+		// List<AllocationModel> =
 
 		jsonDataRes.put("data", status);
 		jsonDataRes.put("status", "success");
 		jsonDataRes.put("message", message);
 		jsonDataRes.put("financeStatus", financeStatus);
 		jsonDataRes.put("timesheet_button", timesheet_button);
-		jsonDataRes.put("approve_button",approve_button);
-		jsonDataRes.put("forward_button",forward_button);
-		jsonDataRes.put("approved_till_date",approved_till_date);
+		jsonDataRes.put("approve_button", approve_button);
+		jsonDataRes.put("forward_button", forward_button);
+		jsonDataRes.put("approved_till_date", approved_till_date);
 
 		return jsonDataRes;
 
@@ -3725,940 +3580,701 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Override
 	public Object[] getFinanceStatusOfCurrentProject(Long projectId, Long userId, int intMonth, int yearIndex) {
 		// TODO Auto-generated method stub
-		return taskTrackFinanceRepository.getFinanceStatusOfCurrentProject(projectId,userId,intMonth,yearIndex);
+		return taskTrackFinanceRepository.getFinanceStatusOfCurrentProject(projectId, userId, intMonth, yearIndex);
 	}
 
 	@Override
-	public ObjectNode reApproveDatasofLevel1(Long projectId, Long userId, int month, int year,HashMap<String, Object> billableArray,HashMap<String, Object> nonbillableArray,HashMap<String, Object> beachArray,HashMap<String, Object> overtimeArray,Long billableId,Long nonbillableId,Long overtimeId,Long beachId,Long logUser) {
+	public ObjectNode reApproveDatasofLevel1(Long projectId, Long userId, int month, int year,
+			HashMap<String, Object> billableArray, HashMap<String, Object> nonbillableArray,
+			HashMap<String, Object> beachArray, HashMap<String, Object> overtimeArray, Long billableId,
+			Long nonbillableId, Long overtimeId, Long beachId, Long logUser) {
 		// TODO Auto-generated method stub
-		System.out.println("------"+projectId+"----"+userId+"------"+month+"---------"+year);
+		System.out.println("------" + projectId + "----" + userId + "------" + month + "---------" + year);
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
-		double hours =0;
+		double hours = 0;
 		Date from_date = null;
 		Date to_date = null;
 		String message = "successfully saved";
 		String status = "success";
 		// find approved date and forwarded date to decide editable columns
 		List<Object[]> dates = timeTrackApprovalJPARepository.getForwardedDates(projectId, userId, month, year);
-		System.out.println("outside data size greater-----------------------------"+dates.size());
+		System.out.println("outside data size greater-----------------------------" + dates.size());
 		try {
-		if(dates.size() > 0) {
-			System.out.println("inside data size greater-----------------------------");
-			for(Object[] date : dates) {
-			if((date[2] != null && date[1] != null) || (date[0] != null && date[2] != null)) {
-			// if forwarded nd approved dates not null	
-				System.out.println("inside  both forwarded finance  and aproved datesr-----------------------------");
-				Date approved_Date = (Date) date[2];
-				Date forwarded_Date = null;
-				if(date[0] != null)
-				{
-					 forwarded_Date = (Date) date[0];
+			if (dates.size() > 0) {
+				System.out.println("inside data size greater-----------------------------");
+				for (Object[] date : dates) {
+					if ((date[2] != null && date[1] != null) || (date[0] != null && date[2] != null)) {
+						// if forwarded nd approved dates not null
+						System.out.println(
+								"inside  both forwarded finance  and aproved datesr-----------------------------");
+						Date approved_Date = (Date) date[2];
+						Date forwarded_Date = null;
+						if (date[0] != null) {
+							forwarded_Date = (Date) date[0];
+						} else if (date[1] != null) {
+
+							forwarded_Date = (Date) date[1];
+						}
+						from_date = forwarded_Date;
+						to_date = approved_Date;
+						Calendar approved = Calendar.getInstance();
+						approved.setTime(approved_Date);
+						Calendar frowarded = Calendar.getInstance();
+						frowarded.setTime(forwarded_Date);
+						int forwardeddate = frowarded.get(Calendar.DAY_OF_MONTH);
+						int approveddate = approved.get(Calendar.DAY_OF_MONTH);
+						System.out.println("approved_Date-------------------------" + approveddate
+								+ "forwardeddate----------------" + forwardeddate);
+						if (approveddate > forwardeddate) {
+
+							System.out.println("approved greater than forwarded------------>");
+
+							if (billableId != null) {
+								TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
+								for (int i = forwardeddate + 1; i <= approveddate; i++) {
+									String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+											+ ((i < 10) ? "0" + i : "" + i);
+									System.out.println("dates--------->" + dateString);
+									if (billableArray.get(dateString) != null) {
+										hours = Double.valueOf(billableArray.get(dateString).toString());
+										if (i == 1) {
+											taskTrackApproval.setDay1(hours);
+										} else if (i == 2) {
+											taskTrackApproval.setDay2(hours);
+										} else if (i == 3) {
+											taskTrackApproval.setDay3(hours);
+										} else if (i == 4) {
+											taskTrackApproval.setDay4(hours);
+										} else if (i == 5) {
+											taskTrackApproval.setDay5(hours);
+										} else if (i == 6) {
+											taskTrackApproval.setDay6(hours);
+										} else if (i == 7) {
+											taskTrackApproval.setDay7(hours);
+										} else if (i == 8) {
+											taskTrackApproval.setDay8(hours);
+										} else if (i == 9) {
+											taskTrackApproval.setDay9(hours);
+										} else if (i == 10) {
+											taskTrackApproval.setDay10(hours);
+										} else if (i == 11) {
+											taskTrackApproval.setDay11(hours);
+										} else if (i == 12) {
+											taskTrackApproval.setDay12(hours);
+										} else if (i == 13) {
+											taskTrackApproval.setDay13(hours);
+										} else if (i == 14) {
+											taskTrackApproval.setDay14(hours);
+										} else if (i == 15) {
+											taskTrackApproval.setDay15(hours);
+										} else if (i == 16) {
+											taskTrackApproval.setDay16(hours);
+										} else if (i == 17) {
+											taskTrackApproval.setDay17(hours);
+										} else if (i == 18) {
+											taskTrackApproval.setDay18(hours);
+										} else if (i == 19) {
+											taskTrackApproval.setDay19(hours);
+										} else if (i == 20) {
+											taskTrackApproval.setDay20(hours);
+										} else if (i == 21) {
+											taskTrackApproval.setDay21(hours);
+										} else if (i == 22) {
+											taskTrackApproval.setDay22(hours);
+										} else if (i == 23) {
+											taskTrackApproval.setDay23(hours);
+										} else if (i == 24) {
+											taskTrackApproval.setDay24(hours);
+										} else if (i == 25) {
+											taskTrackApproval.setDay25(hours);
+										} else if (i == 26) {
+											taskTrackApproval.setDay26(hours);
+										} else if (i == 27) {
+											taskTrackApproval.setDay27(hours);
+										} else if (i == 28) {
+											taskTrackApproval.setDay28(hours);
+										} else if (i == 29) {
+											taskTrackApproval.setDay29(hours);
+										} else if (i == 30) {
+											taskTrackApproval.setDay30(hours);
+										} else if (i == 31) {
+											taskTrackApproval.setDay31(hours);
+										}
+									}
+								}
+								tasktrackApprovalService.updateData(taskTrackApproval);
+							}
+							if (nonbillableId != null) {
+								TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);
+								for (int i = forwardeddate + 1; i <= approveddate; i++) {
+									String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+											+ ((i < 10) ? "0" + i : "" + i);
+									if (nonbillableArray.get(dateString) != null) {
+										hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+										if (i == 1) {
+											taskTrackApproval.setDay1(hours);
+										} else if (i == 2) {
+											taskTrackApproval.setDay2(hours);
+										} else if (i == 3) {
+											taskTrackApproval.setDay3(hours);
+										} else if (i == 4) {
+											taskTrackApproval.setDay4(hours);
+										} else if (i == 5) {
+											taskTrackApproval.setDay5(hours);
+										} else if (i == 6) {
+											taskTrackApproval.setDay6(hours);
+										} else if (i == 7) {
+											taskTrackApproval.setDay7(hours);
+										} else if (i == 8) {
+											taskTrackApproval.setDay8(hours);
+										} else if (i == 9) {
+											taskTrackApproval.setDay9(hours);
+										} else if (i == 10) {
+											taskTrackApproval.setDay10(hours);
+										} else if (i == 11) {
+											taskTrackApproval.setDay11(hours);
+										} else if (i == 12) {
+											taskTrackApproval.setDay12(hours);
+										} else if (i == 13) {
+											taskTrackApproval.setDay13(hours);
+										} else if (i == 14) {
+											taskTrackApproval.setDay14(hours);
+										} else if (i == 15) {
+											taskTrackApproval.setDay15(hours);
+										} else if (i == 16) {
+											taskTrackApproval.setDay16(hours);
+										} else if (i == 17) {
+											taskTrackApproval.setDay17(hours);
+										} else if (i == 18) {
+											taskTrackApproval.setDay18(hours);
+										} else if (i == 19) {
+											taskTrackApproval.setDay19(hours);
+										} else if (i == 20) {
+											taskTrackApproval.setDay20(hours);
+										} else if (i == 21) {
+											taskTrackApproval.setDay21(hours);
+										} else if (i == 22) {
+											taskTrackApproval.setDay22(hours);
+										} else if (i == 23) {
+											taskTrackApproval.setDay23(hours);
+										} else if (i == 24) {
+											taskTrackApproval.setDay24(hours);
+										} else if (i == 25) {
+											taskTrackApproval.setDay25(hours);
+										} else if (i == 26) {
+											taskTrackApproval.setDay26(hours);
+										} else if (i == 27) {
+											taskTrackApproval.setDay27(hours);
+										} else if (i == 28) {
+											taskTrackApproval.setDay28(hours);
+										} else if (i == 29) {
+											taskTrackApproval.setDay29(hours);
+										} else if (i == 30) {
+											taskTrackApproval.setDay30(hours);
+										} else if (i == 31) {
+											taskTrackApproval.setDay31(hours);
+										}
+									}
+								}
+								tasktrackApprovalService.updateData(taskTrackApproval);
+							}
+							if (overtimeId != null) {
+								TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
+								for (int i = forwardeddate + 1; i <= approveddate; i++) {
+									String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+											+ ((i < 10) ? "0" + i : "" + i);
+									if (overtimeArray.get(dateString) != null) {
+										hours = Double.valueOf(overtimeArray.get(dateString).toString());
+										if (i == 1) {
+											taskTrackApproval.setDay1(hours);
+										} else if (i == 2) {
+											taskTrackApproval.setDay2(hours);
+										} else if (i == 3) {
+											taskTrackApproval.setDay3(hours);
+										} else if (i == 4) {
+											taskTrackApproval.setDay4(hours);
+										} else if (i == 5) {
+											taskTrackApproval.setDay5(hours);
+										} else if (i == 6) {
+											taskTrackApproval.setDay6(hours);
+										} else if (i == 7) {
+											taskTrackApproval.setDay7(hours);
+										} else if (i == 8) {
+											taskTrackApproval.setDay8(hours);
+										} else if (i == 9) {
+											taskTrackApproval.setDay9(hours);
+										} else if (i == 10) {
+											taskTrackApproval.setDay10(hours);
+										} else if (i == 11) {
+											taskTrackApproval.setDay11(hours);
+										} else if (i == 12) {
+											taskTrackApproval.setDay12(hours);
+										} else if (i == 13) {
+											taskTrackApproval.setDay13(hours);
+										} else if (i == 14) {
+											taskTrackApproval.setDay14(hours);
+										} else if (i == 15) {
+											taskTrackApproval.setDay15(hours);
+										} else if (i == 16) {
+											taskTrackApproval.setDay16(hours);
+										} else if (i == 17) {
+											taskTrackApproval.setDay17(hours);
+										} else if (i == 18) {
+											taskTrackApproval.setDay18(hours);
+										} else if (i == 19) {
+											taskTrackApproval.setDay19(hours);
+										} else if (i == 20) {
+											taskTrackApproval.setDay20(hours);
+										} else if (i == 21) {
+											taskTrackApproval.setDay21(hours);
+										} else if (i == 22) {
+											taskTrackApproval.setDay22(hours);
+										} else if (i == 23) {
+											taskTrackApproval.setDay23(hours);
+										} else if (i == 24) {
+											taskTrackApproval.setDay24(hours);
+										} else if (i == 25) {
+											taskTrackApproval.setDay25(hours);
+										} else if (i == 26) {
+											taskTrackApproval.setDay26(hours);
+										} else if (i == 27) {
+											taskTrackApproval.setDay27(hours);
+										} else if (i == 28) {
+											taskTrackApproval.setDay28(hours);
+										} else if (i == 29) {
+											taskTrackApproval.setDay29(hours);
+										} else if (i == 30) {
+											taskTrackApproval.setDay30(hours);
+										} else if (i == 31) {
+											taskTrackApproval.setDay31(hours);
+										}
+									}
+								}
+								tasktrackApprovalService.updateData(taskTrackApproval);
+							}
+							if (beachId != null) {
+								TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
+								for (int i = forwardeddate + 1; i <= approveddate; i++) {
+									String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+											+ ((i < 10) ? "0" + i : "" + i);
+									if (beachArray.get(dateString) != null) {
+										hours = Double.valueOf(beachArray.get(dateString).toString());
+										if (i == 1) {
+											taskTrackApproval.setDay1(hours);
+										} else if (i == 2) {
+											taskTrackApproval.setDay2(hours);
+										} else if (i == 3) {
+											taskTrackApproval.setDay3(hours);
+										} else if (i == 4) {
+											taskTrackApproval.setDay4(hours);
+										} else if (i == 5) {
+											taskTrackApproval.setDay5(hours);
+										} else if (i == 6) {
+											taskTrackApproval.setDay6(hours);
+										} else if (i == 7) {
+											taskTrackApproval.setDay7(hours);
+										} else if (i == 8) {
+											taskTrackApproval.setDay8(hours);
+										} else if (i == 9) {
+											taskTrackApproval.setDay9(hours);
+										} else if (i == 10) {
+											taskTrackApproval.setDay10(hours);
+										} else if (i == 11) {
+											taskTrackApproval.setDay11(hours);
+										} else if (i == 12) {
+											taskTrackApproval.setDay12(hours);
+										} else if (i == 13) {
+											taskTrackApproval.setDay13(hours);
+										} else if (i == 14) {
+											taskTrackApproval.setDay14(hours);
+										} else if (i == 15) {
+											taskTrackApproval.setDay15(hours);
+										} else if (i == 16) {
+											taskTrackApproval.setDay16(hours);
+										} else if (i == 17) {
+											taskTrackApproval.setDay17(hours);
+										} else if (i == 18) {
+											taskTrackApproval.setDay18(hours);
+										} else if (i == 19) {
+											taskTrackApproval.setDay19(hours);
+										} else if (i == 20) {
+											taskTrackApproval.setDay20(hours);
+										} else if (i == 21) {
+											taskTrackApproval.setDay21(hours);
+										} else if (i == 22) {
+											taskTrackApproval.setDay22(hours);
+										} else if (i == 23) {
+											taskTrackApproval.setDay23(hours);
+										} else if (i == 24) {
+											taskTrackApproval.setDay24(hours);
+										} else if (i == 25) {
+											taskTrackApproval.setDay25(hours);
+										} else if (i == 26) {
+											taskTrackApproval.setDay26(hours);
+										} else if (i == 27) {
+											taskTrackApproval.setDay27(hours);
+										} else if (i == 28) {
+											taskTrackApproval.setDay28(hours);
+										} else if (i == 29) {
+											taskTrackApproval.setDay29(hours);
+										} else if (i == 30) {
+											taskTrackApproval.setDay30(hours);
+										} else if (i == 31) {
+											taskTrackApproval.setDay31(hours);
+										}
+									}
+								}
+								tasktrackApprovalService.updateData(taskTrackApproval);
+							}
+
+						}
+
+					}
+
+					else if (date[2] != null) {
+						System.out.println("inside  aproved datesr only-----------------------------");
+						Date approved_Date = (Date) date[2];
+						from_date = new SimpleDateFormat("dd-MM-yyyy").parse("01-" + month + "-" + year);
+						to_date = approved_Date;
+						Calendar approved = Calendar.getInstance();
+						approved.setTime(approved_Date);
+						int approveddate = approved.get(Calendar.DAY_OF_MONTH);
+						// approved date not null
+						if (billableId != null) {
+							TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
+							for (int i = 1; i <= approveddate; i++) {
+								String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+										+ ((i < 10) ? "0" + i : "" + i);
+								System.out.println("----------" + dateString);
+								if (billableArray.get(dateString) != null) {
+									hours = Double.valueOf(billableArray.get(dateString).toString());
+									if (i == 1) {
+										taskTrackApproval.setDay1(hours);
+									} else if (i == 2) {
+										taskTrackApproval.setDay2(hours);
+									} else if (i == 3) {
+										taskTrackApproval.setDay3(hours);
+									} else if (i == 4) {
+										taskTrackApproval.setDay4(hours);
+									} else if (i == 5) {
+										taskTrackApproval.setDay5(hours);
+									} else if (i == 6) {
+										taskTrackApproval.setDay6(hours);
+									} else if (i == 7) {
+										taskTrackApproval.setDay7(hours);
+									} else if (i == 8) {
+										taskTrackApproval.setDay8(hours);
+									} else if (i == 9) {
+										taskTrackApproval.setDay9(hours);
+									} else if (i == 10) {
+										taskTrackApproval.setDay10(hours);
+									} else if (i == 11) {
+										taskTrackApproval.setDay11(hours);
+									} else if (i == 12) {
+										taskTrackApproval.setDay12(hours);
+									} else if (i == 13) {
+										taskTrackApproval.setDay13(hours);
+									} else if (i == 14) {
+										taskTrackApproval.setDay14(hours);
+									} else if (i == 15) {
+										taskTrackApproval.setDay15(hours);
+									} else if (i == 16) {
+										taskTrackApproval.setDay16(hours);
+									} else if (i == 17) {
+										taskTrackApproval.setDay17(hours);
+									} else if (i == 18) {
+										taskTrackApproval.setDay18(hours);
+									} else if (i == 19) {
+										taskTrackApproval.setDay19(hours);
+									} else if (i == 20) {
+										taskTrackApproval.setDay20(hours);
+									} else if (i == 21) {
+										taskTrackApproval.setDay21(hours);
+									} else if (i == 22) {
+										taskTrackApproval.setDay22(hours);
+									} else if (i == 23) {
+										taskTrackApproval.setDay23(hours);
+									} else if (i == 24) {
+										taskTrackApproval.setDay24(hours);
+									} else if (i == 25) {
+										taskTrackApproval.setDay25(hours);
+									} else if (i == 26) {
+										taskTrackApproval.setDay26(hours);
+									} else if (i == 27) {
+										taskTrackApproval.setDay27(hours);
+									} else if (i == 28) {
+										taskTrackApproval.setDay28(hours);
+									} else if (i == 29) {
+										taskTrackApproval.setDay29(hours);
+									} else if (i == 30) {
+										taskTrackApproval.setDay30(hours);
+									} else if (i == 31) {
+										taskTrackApproval.setDay31(hours);
+									}
+								}
+							}
+							tasktrackApprovalService.updateData(taskTrackApproval);
+						}
+						if (nonbillableId != null) {
+							TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);
+							for (int i = 1; i <= approveddate; i++) {
+								String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+										+ ((i < 10) ? "0" + i : "" + i);
+								if (nonbillableArray.get(dateString) != null) {
+									hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+									if (i == 1) {
+										taskTrackApproval.setDay1(hours);
+									} else if (i == 2) {
+										taskTrackApproval.setDay2(hours);
+									} else if (i == 3) {
+										taskTrackApproval.setDay3(hours);
+									} else if (i == 4) {
+										taskTrackApproval.setDay4(hours);
+									} else if (i == 5) {
+										taskTrackApproval.setDay5(hours);
+									} else if (i == 6) {
+										taskTrackApproval.setDay6(hours);
+									} else if (i == 7) {
+										taskTrackApproval.setDay7(hours);
+									} else if (i == 8) {
+										taskTrackApproval.setDay8(hours);
+									} else if (i == 9) {
+										taskTrackApproval.setDay9(hours);
+									} else if (i == 10) {
+										taskTrackApproval.setDay10(hours);
+									} else if (i == 11) {
+										taskTrackApproval.setDay11(hours);
+									} else if (i == 12) {
+										taskTrackApproval.setDay12(hours);
+									} else if (i == 13) {
+										taskTrackApproval.setDay13(hours);
+									} else if (i == 14) {
+										taskTrackApproval.setDay14(hours);
+									} else if (i == 15) {
+										taskTrackApproval.setDay15(hours);
+									} else if (i == 16) {
+										taskTrackApproval.setDay16(hours);
+									} else if (i == 17) {
+										taskTrackApproval.setDay17(hours);
+									} else if (i == 18) {
+										taskTrackApproval.setDay18(hours);
+									} else if (i == 19) {
+										taskTrackApproval.setDay19(hours);
+									} else if (i == 20) {
+										taskTrackApproval.setDay20(hours);
+									} else if (i == 21) {
+										taskTrackApproval.setDay21(hours);
+									} else if (i == 22) {
+										taskTrackApproval.setDay22(hours);
+									} else if (i == 23) {
+										taskTrackApproval.setDay23(hours);
+									} else if (i == 24) {
+										taskTrackApproval.setDay24(hours);
+									} else if (i == 25) {
+										taskTrackApproval.setDay25(hours);
+									} else if (i == 26) {
+										taskTrackApproval.setDay26(hours);
+									} else if (i == 27) {
+										taskTrackApproval.setDay27(hours);
+									} else if (i == 28) {
+										taskTrackApproval.setDay28(hours);
+									} else if (i == 29) {
+										taskTrackApproval.setDay29(hours);
+									} else if (i == 30) {
+										taskTrackApproval.setDay30(hours);
+									} else if (i == 31) {
+										taskTrackApproval.setDay31(hours);
+									}
+								}
+							}
+							tasktrackApprovalService.updateData(taskTrackApproval);
+						}
+						if (overtimeId != null) {
+							TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
+							for (int i = 1; i <= approveddate; i++) {
+								String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+										+ ((i < 10) ? "0" + i : "" + i);
+								if (overtimeArray.get(dateString) != null) {
+									hours = Double.valueOf(overtimeArray.get(dateString).toString());
+									if (i == 1) {
+										taskTrackApproval.setDay1(hours);
+									} else if (i == 2) {
+										taskTrackApproval.setDay2(hours);
+									} else if (i == 3) {
+										taskTrackApproval.setDay3(hours);
+									} else if (i == 4) {
+										taskTrackApproval.setDay4(hours);
+									} else if (i == 5) {
+										taskTrackApproval.setDay5(hours);
+									} else if (i == 6) {
+										taskTrackApproval.setDay6(hours);
+									} else if (i == 7) {
+										taskTrackApproval.setDay7(hours);
+									} else if (i == 8) {
+										taskTrackApproval.setDay8(hours);
+									} else if (i == 9) {
+										taskTrackApproval.setDay9(hours);
+									} else if (i == 10) {
+										taskTrackApproval.setDay10(hours);
+									} else if (i == 11) {
+										taskTrackApproval.setDay11(hours);
+									} else if (i == 12) {
+										taskTrackApproval.setDay12(hours);
+									} else if (i == 13) {
+										taskTrackApproval.setDay13(hours);
+									} else if (i == 14) {
+										taskTrackApproval.setDay14(hours);
+									} else if (i == 15) {
+										taskTrackApproval.setDay15(hours);
+									} else if (i == 16) {
+										taskTrackApproval.setDay16(hours);
+									} else if (i == 17) {
+										taskTrackApproval.setDay17(hours);
+									} else if (i == 18) {
+										taskTrackApproval.setDay18(hours);
+									} else if (i == 19) {
+										taskTrackApproval.setDay19(hours);
+									} else if (i == 20) {
+										taskTrackApproval.setDay20(hours);
+									} else if (i == 21) {
+										taskTrackApproval.setDay21(hours);
+									} else if (i == 22) {
+										taskTrackApproval.setDay22(hours);
+									} else if (i == 23) {
+										taskTrackApproval.setDay23(hours);
+									} else if (i == 24) {
+										taskTrackApproval.setDay24(hours);
+									} else if (i == 25) {
+										taskTrackApproval.setDay25(hours);
+									} else if (i == 26) {
+										taskTrackApproval.setDay26(hours);
+									} else if (i == 27) {
+										taskTrackApproval.setDay27(hours);
+									} else if (i == 28) {
+										taskTrackApproval.setDay28(hours);
+									} else if (i == 29) {
+										taskTrackApproval.setDay29(hours);
+									} else if (i == 30) {
+										taskTrackApproval.setDay30(hours);
+									} else if (i == 31) {
+										taskTrackApproval.setDay31(hours);
+									}
+								}
+							}
+							tasktrackApprovalService.updateData(taskTrackApproval);
+
+						}
+						if (beachId != null) {
+							TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
+							for (int i = 1; i <= approveddate; i++) {
+								String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+										+ ((i < 10) ? "0" + i : "" + i);
+								if (beachArray.get(dateString) != null) {
+									hours = Double.valueOf(beachArray.get(dateString).toString());
+									if (i == 1) {
+										taskTrackApproval.setDay1(hours);
+									} else if (i == 2) {
+										taskTrackApproval.setDay2(hours);
+									} else if (i == 3) {
+										taskTrackApproval.setDay3(hours);
+									} else if (i == 4) {
+										taskTrackApproval.setDay4(hours);
+									} else if (i == 5) {
+										taskTrackApproval.setDay5(hours);
+									} else if (i == 6) {
+										taskTrackApproval.setDay6(hours);
+									} else if (i == 7) {
+										taskTrackApproval.setDay7(hours);
+									} else if (i == 8) {
+										taskTrackApproval.setDay8(hours);
+									} else if (i == 9) {
+										taskTrackApproval.setDay9(hours);
+									} else if (i == 10) {
+										taskTrackApproval.setDay10(hours);
+									} else if (i == 11) {
+										taskTrackApproval.setDay11(hours);
+									} else if (i == 12) {
+										taskTrackApproval.setDay12(hours);
+									} else if (i == 13) {
+										taskTrackApproval.setDay13(hours);
+									} else if (i == 14) {
+										taskTrackApproval.setDay14(hours);
+									} else if (i == 15) {
+										taskTrackApproval.setDay15(hours);
+									} else if (i == 16) {
+										taskTrackApproval.setDay16(hours);
+									} else if (i == 17) {
+										taskTrackApproval.setDay17(hours);
+									} else if (i == 18) {
+										taskTrackApproval.setDay18(hours);
+									} else if (i == 19) {
+										taskTrackApproval.setDay19(hours);
+									} else if (i == 20) {
+										taskTrackApproval.setDay20(hours);
+									} else if (i == 21) {
+										taskTrackApproval.setDay21(hours);
+									} else if (i == 22) {
+										taskTrackApproval.setDay22(hours);
+									} else if (i == 23) {
+										taskTrackApproval.setDay23(hours);
+									} else if (i == 24) {
+										taskTrackApproval.setDay24(hours);
+									} else if (i == 25) {
+										taskTrackApproval.setDay25(hours);
+									} else if (i == 26) {
+										taskTrackApproval.setDay26(hours);
+									} else if (i == 27) {
+										taskTrackApproval.setDay27(hours);
+									} else if (i == 28) {
+										taskTrackApproval.setDay28(hours);
+									} else if (i == 29) {
+										taskTrackApproval.setDay29(hours);
+									} else if (i == 30) {
+										taskTrackApproval.setDay30(hours);
+									} else if (i == 31) {
+										taskTrackApproval.setDay31(hours);
+									}
+								}
+							}
+							tasktrackApprovalService.updateData(taskTrackApproval);
+						}
+
+					} else {
+						message = "Not yet approved";
+						status = "failed";
+					}
+
 				}
-				else if(date[1] != null) {
-					
-					forwarded_Date = (Date) date[1];
-				}
-				from_date = forwarded_Date;
-				to_date = approved_Date;
-				Calendar approved = Calendar.getInstance();
-				approved.setTime(approved_Date);
-				Calendar frowarded = Calendar.getInstance();
-				frowarded.setTime(forwarded_Date);
-				int forwardeddate =  frowarded.get(Calendar.DAY_OF_MONTH);
-				int approveddate = approved.get(Calendar.DAY_OF_MONTH);
-				System.out.println("approved_Date-------------------------"+approveddate+"forwardeddate----------------"+forwardeddate);
-				if(approveddate > forwardeddate) {
-					
-					System.out.println("approved greater than forwarded------------>");
-						
-					if(billableId!=null) {
-						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);	
-						for(int i = forwardeddate+1 ; i <= approveddate ; i++ ) {
-							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-									+ ((i < 10) ? "0" + i : "" + i);
-							System.out.println("dates--------->"+dateString);
-							if(billableArray.get(dateString)!=null) {						
-								hours = Double.valueOf(billableArray.get(dateString).toString());	
-								if(i==1) {
-									taskTrackApproval.setDay1(hours);
-								}
-								else if(i==2) {
-									taskTrackApproval.setDay2(hours);
-								}
-								else if(i==3) {
-									taskTrackApproval.setDay3(hours);
-								}
-								else if(i==4) {
-									taskTrackApproval.setDay4(hours);
-								}
-								else if(i==5) {
-									taskTrackApproval.setDay5(hours);
-								}
-								else if(i==6) {
-									taskTrackApproval.setDay6(hours);
-								}
-								else if(i==7) {
-									taskTrackApproval.setDay7(hours);
-								}
-								else if(i==8) {
-									taskTrackApproval.setDay8(hours);
-								}
-								else if(i==9) {
-									taskTrackApproval.setDay9(hours);
-								}
-								else if(i==10) {
-									taskTrackApproval.setDay10(hours);
-								}
-								else if(i==11) {
-									taskTrackApproval.setDay11(hours);
-								}
-								else if(i==12) {
-									taskTrackApproval.setDay12(hours);
-								}
-								else if(i==13) {
-									taskTrackApproval.setDay13(hours);
-								}
-								else if(i==14) {
-									taskTrackApproval.setDay14(hours);
-								}
-								else if(i==15) {
-									taskTrackApproval.setDay15(hours);
-								}
-								else if(i==16) {
-									taskTrackApproval.setDay16(hours);
-								}
-								else if(i==17) {
-									taskTrackApproval.setDay17(hours);
-								}
-								else if(i==18) {
-									taskTrackApproval.setDay18(hours);
-								}
-								else if(i==19) {
-									taskTrackApproval.setDay19(hours);
-								}
-								else if(i==20) {
-									taskTrackApproval.setDay20(hours);
-								}
-								else if(i==21) {
-									taskTrackApproval.setDay21(hours);
-								}
-								else if(i==22) {
-									taskTrackApproval.setDay22(hours);
-								}
-								else if(i==23) {
-									taskTrackApproval.setDay23(hours);
-								}
-								else if(i==24) {
-									taskTrackApproval.setDay24(hours);
-								}
-								else if(i==25) {
-									taskTrackApproval.setDay25(hours);
-								}
-								else if(i==26) {
-									taskTrackApproval.setDay26(hours);
-								}
-								else if(i==27) {
-									taskTrackApproval.setDay27(hours);
-								}
-								else if(i==28) {
-									taskTrackApproval.setDay28(hours);
-								}
-								else if(i==29) {
-									taskTrackApproval.setDay29(hours);
-								}
-								else if(i==30) {
-									taskTrackApproval.setDay30(hours);
-								}
-								else if(i==31) {
-									taskTrackApproval.setDay31(hours);
-								}
-							}
-						}
-						tasktrackApprovalService.updateData(taskTrackApproval);	
-					}	
-					if(nonbillableId!=null) {
-						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);	
-						for(int i = forwardeddate+1 ; i <= approveddate ; i++ ) {
-							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-									+ ((i < 10) ? "0" + i : "" + i);
-							if(nonbillableArray.get(dateString)!=null) {						
-								hours = Double.valueOf(nonbillableArray.get(dateString).toString());	
-								if(i==1) {
-									taskTrackApproval.setDay1(hours);
-								}
-								else if(i==2) {
-									taskTrackApproval.setDay2(hours);
-								}
-								else if(i==3) {
-									taskTrackApproval.setDay3(hours);
-								}
-								else if(i==4) {
-									taskTrackApproval.setDay4(hours);
-								}
-								else if(i==5) {
-									taskTrackApproval.setDay5(hours);
-								}
-								else if(i==6) {
-									taskTrackApproval.setDay6(hours);
-								}
-								else if(i==7) {
-									taskTrackApproval.setDay7(hours);
-								}
-								else if(i==8) {
-									taskTrackApproval.setDay8(hours);
-								}
-								else if(i==9) {
-									taskTrackApproval.setDay9(hours);
-								}
-								else if(i==10) {
-									taskTrackApproval.setDay10(hours);
-								}
-								else if(i==11) {
-									taskTrackApproval.setDay11(hours);
-								}
-								else if(i==12) {
-									taskTrackApproval.setDay12(hours);
-								}
-								else if(i==13) {
-									taskTrackApproval.setDay13(hours);
-								}
-								else if(i==14) {
-									taskTrackApproval.setDay14(hours);
-								}
-								else if(i==15) {
-									taskTrackApproval.setDay15(hours);
-								}
-								else if(i==16) {
-									taskTrackApproval.setDay16(hours);
-								}
-								else if(i==17) {
-									taskTrackApproval.setDay17(hours);
-								}
-								else if(i==18) {
-									taskTrackApproval.setDay18(hours);
-								}
-								else if(i==19) {
-									taskTrackApproval.setDay19(hours);
-								}
-								else if(i==20) {
-									taskTrackApproval.setDay20(hours);
-								}
-								else if(i==21) {
-									taskTrackApproval.setDay21(hours);
-								}
-								else if(i==22) {
-									taskTrackApproval.setDay22(hours);
-								}
-								else if(i==23) {
-									taskTrackApproval.setDay23(hours);
-								}
-								else if(i==24) {
-									taskTrackApproval.setDay24(hours);
-								}
-								else if(i==25) {
-									taskTrackApproval.setDay25(hours);
-								}
-								else if(i==26) {
-									taskTrackApproval.setDay26(hours);
-								}
-								else if(i==27) {
-									taskTrackApproval.setDay27(hours);
-								}
-								else if(i==28) {
-									taskTrackApproval.setDay28(hours);
-								}
-								else if(i==29) {
-									taskTrackApproval.setDay29(hours);
-								}
-								else if(i==30) {
-									taskTrackApproval.setDay30(hours);
-								}
-								else if(i==31) {
-									taskTrackApproval.setDay31(hours);
-								}
-							}
-						}
-						tasktrackApprovalService.updateData(taskTrackApproval);	
-					}
-					if(overtimeId!=null) {
-						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);	
-						for(int i = forwardeddate+1 ; i <= approveddate ; i++ ) {
-							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-									+ ((i < 10) ? "0" + i : "" + i);
-							if(overtimeArray.get(dateString)!=null) {						
-								hours = Double.valueOf(overtimeArray.get(dateString).toString());	
-								if(i==1) {
-									taskTrackApproval.setDay1(hours);
-								}
-								else if(i==2) {
-									taskTrackApproval.setDay2(hours);
-								}
-								else if(i==3) {
-									taskTrackApproval.setDay3(hours);
-								}
-								else if(i==4) {
-									taskTrackApproval.setDay4(hours);
-								}
-								else if(i==5) {
-									taskTrackApproval.setDay5(hours);
-								}
-								else if(i==6) {
-									taskTrackApproval.setDay6(hours);
-								}
-								else if(i==7) {
-									taskTrackApproval.setDay7(hours);
-								}
-								else if(i==8) {
-									taskTrackApproval.setDay8(hours);
-								}
-								else if(i==9) {
-									taskTrackApproval.setDay9(hours);
-								}
-								else if(i==10) {
-									taskTrackApproval.setDay10(hours);
-								}
-								else if(i==11) {
-									taskTrackApproval.setDay11(hours);
-								}
-								else if(i==12) {
-									taskTrackApproval.setDay12(hours);
-								}
-								else if(i==13) {
-									taskTrackApproval.setDay13(hours);
-								}
-								else if(i==14) {
-									taskTrackApproval.setDay14(hours);
-								}
-								else if(i==15) {
-									taskTrackApproval.setDay15(hours);
-								}
-								else if(i==16) {
-									taskTrackApproval.setDay16(hours);
-								}
-								else if(i==17) {
-									taskTrackApproval.setDay17(hours);
-								}
-								else if(i==18) {
-									taskTrackApproval.setDay18(hours);
-								}
-								else if(i==19) {
-									taskTrackApproval.setDay19(hours);
-								}
-								else if(i==20) {
-									taskTrackApproval.setDay20(hours);
-								}
-								else if(i==21) {
-									taskTrackApproval.setDay21(hours);
-								}
-								else if(i==22) {
-									taskTrackApproval.setDay22(hours);
-								}
-								else if(i==23) {
-									taskTrackApproval.setDay23(hours);
-								}
-								else if(i==24) {
-									taskTrackApproval.setDay24(hours);
-								}
-								else if(i==25) {
-									taskTrackApproval.setDay25(hours);
-								}
-								else if(i==26) {
-									taskTrackApproval.setDay26(hours);
-								}
-								else if(i==27) {
-									taskTrackApproval.setDay27(hours);
-								}
-								else if(i==28) {
-									taskTrackApproval.setDay28(hours);
-								}
-								else if(i==29) {
-									taskTrackApproval.setDay29(hours);
-								}
-								else if(i==30) {
-									taskTrackApproval.setDay30(hours);
-								}
-								else if(i==31) {
-									taskTrackApproval.setDay31(hours);
-								}
-							}
-						}
-						tasktrackApprovalService.updateData(taskTrackApproval);	
-					}
-					if(beachId!=null) {
-						TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);	
-						for(int i = forwardeddate+1 ; i <= approveddate ; i++ ) {
-							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-									+ ((i < 10) ? "0" + i : "" + i);
-							if(beachArray.get(dateString)!=null) {						
-								hours = Double.valueOf(beachArray.get(dateString).toString());	
-								if(i==1) {
-									taskTrackApproval.setDay1(hours);
-								}
-								else if(i==2) {
-									taskTrackApproval.setDay2(hours);
-								}
-								else if(i==3) {
-									taskTrackApproval.setDay3(hours);
-								}
-								else if(i==4) {
-									taskTrackApproval.setDay4(hours);
-								}
-								else if(i==5) {
-									taskTrackApproval.setDay5(hours);
-								}
-								else if(i==6) {
-									taskTrackApproval.setDay6(hours);
-								}
-								else if(i==7) {
-									taskTrackApproval.setDay7(hours);
-								}
-								else if(i==8) {
-									taskTrackApproval.setDay8(hours);
-								}
-								else if(i==9) {
-									taskTrackApproval.setDay9(hours);
-								}
-								else if(i==10) {
-									taskTrackApproval.setDay10(hours);
-								}
-								else if(i==11) {
-									taskTrackApproval.setDay11(hours);
-								}
-								else if(i==12) {
-									taskTrackApproval.setDay12(hours);
-								}
-								else if(i==13) {
-									taskTrackApproval.setDay13(hours);
-								}
-								else if(i==14) {
-									taskTrackApproval.setDay14(hours);
-								}
-								else if(i==15) {
-									taskTrackApproval.setDay15(hours);
-								}
-								else if(i==16) {
-									taskTrackApproval.setDay16(hours);
-								}
-								else if(i==17) {
-									taskTrackApproval.setDay17(hours);
-								}
-								else if(i==18) {
-									taskTrackApproval.setDay18(hours);
-								}
-								else if(i==19) {
-									taskTrackApproval.setDay19(hours);
-								}
-								else if(i==20) {
-									taskTrackApproval.setDay20(hours);
-								}
-								else if(i==21) {
-									taskTrackApproval.setDay21(hours);
-								}
-								else if(i==22) {
-									taskTrackApproval.setDay22(hours);
-								}
-								else if(i==23) {
-									taskTrackApproval.setDay23(hours);
-								}
-								else if(i==24) {
-									taskTrackApproval.setDay24(hours);
-								}
-								else if(i==25) {
-									taskTrackApproval.setDay25(hours);
-								}
-								else if(i==26) {
-									taskTrackApproval.setDay26(hours);
-								}
-								else if(i==27) {
-									taskTrackApproval.setDay27(hours);
-								}
-								else if(i==28) {
-									taskTrackApproval.setDay28(hours);
-								}
-								else if(i==29) {
-									taskTrackApproval.setDay29(hours);
-								}
-								else if(i==30) {
-									taskTrackApproval.setDay30(hours);
-								}
-								else if(i==31) {
-									taskTrackApproval.setDay31(hours);
-								}
-							}
-						}
-						tasktrackApprovalService.updateData(taskTrackApproval);	
-					}
-					
-				}
-				
-			}
-			
-			else if(date[2] != null) {
-				System.out.println("inside  aproved datesr only-----------------------------");
-				Date approved_Date = (Date) date[2];	
-				from_date = new SimpleDateFormat("dd-MM-yyyy").parse( "01-"+month+"-"+year); 
-				to_date = approved_Date;
-				Calendar approved = Calendar.getInstance();
-				approved.setTime(approved_Date);
-				int approveddate = approved.get(Calendar.DAY_OF_MONTH);
-				// approved date not null 
-				if(billableId!= null) {
-					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);	
-					for(int i = 1 ; i <= approveddate ; i++ ) {
-						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-								+ ((i < 10) ? "0" + i : "" + i);
-						System.out.println("----------"+dateString);
-						if(billableArray.get(dateString)!=null) {						
-							hours = Double.valueOf(billableArray.get(dateString).toString());	
-						if(i==1) {
-							taskTrackApproval.setDay1(hours);
-						}
-						else if(i==2) {
-							taskTrackApproval.setDay2(hours);
-						}
-						else if(i==3) {
-							taskTrackApproval.setDay3(hours);
-						}
-						else if(i==4) {
-							taskTrackApproval.setDay4(hours);
-						}
-						else if(i==5) {
-							taskTrackApproval.setDay5(hours);
-						}
-						else if(i==6) {
-							taskTrackApproval.setDay6(hours);
-						}
-						else if(i==7) {
-							taskTrackApproval.setDay7(hours);
-						}
-						else if(i==8) {
-							taskTrackApproval.setDay8(hours);
-						}
-						else if(i==9) {
-							taskTrackApproval.setDay9(hours);
-						}
-						else if(i==10) {
-							taskTrackApproval.setDay10(hours);
-						}
-						else if(i==11) {
-							taskTrackApproval.setDay11(hours);
-						}
-						else if(i==12) {
-							taskTrackApproval.setDay12(hours);
-						}
-						else if(i==13) {
-							taskTrackApproval.setDay13(hours);
-						}
-						else if(i==14) {
-							taskTrackApproval.setDay14(hours);
-						}
-						else if(i==15) {
-							taskTrackApproval.setDay15(hours);
-						}
-						else if(i==16) {
-							taskTrackApproval.setDay16(hours);
-						}
-						else if(i==17) {
-							taskTrackApproval.setDay17(hours);
-						}
-						else if(i==18) {
-							taskTrackApproval.setDay18(hours);
-						}
-						else if(i==19) {
-							taskTrackApproval.setDay19(hours);
-						}
-						else if(i==20) {
-							taskTrackApproval.setDay20(hours);
-						}
-						else if(i==21) {
-							taskTrackApproval.setDay21(hours);
-						}
-						else if(i==22) {
-							taskTrackApproval.setDay22(hours);
-						}
-						else if(i==23) {
-							taskTrackApproval.setDay23(hours);
-						}
-						else if(i==24) {
-							taskTrackApproval.setDay24(hours);
-						}
-						else if(i==25) {
-							taskTrackApproval.setDay25(hours);
-						}
-						else if(i==26) {
-							taskTrackApproval.setDay26(hours);
-						}
-						else if(i==27) {
-							taskTrackApproval.setDay27(hours);
-						}
-						else if(i==28) {
-							taskTrackApproval.setDay28(hours);
-						}
-						else if(i==29) {
-							taskTrackApproval.setDay29(hours);
-						}
-						else if(i==30) {
-							taskTrackApproval.setDay30(hours);
-						}
-						else if(i==31) {
-							taskTrackApproval.setDay31(hours);
-						}
-						}
-					}
-					tasktrackApprovalService.updateData(taskTrackApproval);	
-				}	
-				if(nonbillableId!=null) {
-					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);	
-					for(int i = 1 ; i <= approveddate ; i++ ) {
-						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-								+ ((i < 10) ? "0" + i : "" + i);
-						if(nonbillableArray.get(dateString)!=null) {						
-							hours = Double.valueOf(nonbillableArray.get(dateString).toString());	
-							if(i==1) {
-								taskTrackApproval.setDay1(hours);
-							}
-							else if(i==2) {
-								taskTrackApproval.setDay2(hours);
-							}
-							else if(i==3) {
-								taskTrackApproval.setDay3(hours);
-							}
-							else if(i==4) {
-								taskTrackApproval.setDay4(hours);
-							}
-							else if(i==5) {
-								taskTrackApproval.setDay5(hours);
-							}
-							else if(i==6) {
-								taskTrackApproval.setDay6(hours);
-							}
-							else if(i==7) {
-								taskTrackApproval.setDay7(hours);
-							}
-							else if(i==8) {
-								taskTrackApproval.setDay8(hours);
-							}
-							else if(i==9) {
-								taskTrackApproval.setDay9(hours);
-							}
-							else if(i==10) {
-								taskTrackApproval.setDay10(hours);
-							}
-							else if(i==11) {
-								taskTrackApproval.setDay11(hours);
-							}
-							else if(i==12) {
-								taskTrackApproval.setDay12(hours);
-							}
-							else if(i==13) {
-								taskTrackApproval.setDay13(hours);
-							}
-							else if(i==14) {
-								taskTrackApproval.setDay14(hours);
-							}
-							else if(i==15) {
-								taskTrackApproval.setDay15(hours);
-							}
-							else if(i==16) {
-								taskTrackApproval.setDay16(hours);
-							}
-							else if(i==17) {
-								taskTrackApproval.setDay17(hours);
-							}
-							else if(i==18) {
-								taskTrackApproval.setDay18(hours);
-							}
-							else if(i==19) {
-								taskTrackApproval.setDay19(hours);
-							}
-							else if(i==20) {
-								taskTrackApproval.setDay20(hours);
-							}
-							else if(i==21) {
-								taskTrackApproval.setDay21(hours);
-							}
-							else if(i==22) {
-								taskTrackApproval.setDay22(hours);
-							}
-							else if(i==23) {
-								taskTrackApproval.setDay23(hours);
-							}
-							else if(i==24) {
-								taskTrackApproval.setDay24(hours);
-							}
-							else if(i==25) {
-								taskTrackApproval.setDay25(hours);
-							}
-							else if(i==26) {
-								taskTrackApproval.setDay26(hours);
-							}
-							else if(i==27) {
-								taskTrackApproval.setDay27(hours);
-							}
-							else if(i==28) {
-								taskTrackApproval.setDay28(hours);
-							}
-							else if(i==29) {
-								taskTrackApproval.setDay29(hours);
-							}
-							else if(i==30) {
-								taskTrackApproval.setDay30(hours);
-							}
-							else if(i==31) {
-								taskTrackApproval.setDay31(hours);
-							}
-						}
-					}
-					tasktrackApprovalService.updateData(taskTrackApproval);	
-				}
-				if(overtimeId!=null) {
-					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);	
-					for(int i = 1 ; i <= approveddate ; i++ ) {
-						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-								+ ((i < 10) ? "0" + i : "" + i);
-						if(overtimeArray.get(dateString)!=null) {						
-							hours = Double.valueOf(overtimeArray.get(dateString).toString());	
-							if(i==1) {
-								taskTrackApproval.setDay1(hours);
-							}
-							else if(i==2) {
-								taskTrackApproval.setDay2(hours);
-							}
-							else if(i==3) {
-								taskTrackApproval.setDay3(hours);
-							}
-							else if(i==4) {
-								taskTrackApproval.setDay4(hours);
-							}
-							else if(i==5) {
-								taskTrackApproval.setDay5(hours);
-							}
-							else if(i==6) {
-								taskTrackApproval.setDay6(hours);
-							}
-							else if(i==7) {
-								taskTrackApproval.setDay7(hours);
-							}
-							else if(i==8) {
-								taskTrackApproval.setDay8(hours);
-							}
-							else if(i==9) {
-								taskTrackApproval.setDay9(hours);
-							}
-							else if(i==10) {
-								taskTrackApproval.setDay10(hours);
-							}
-							else if(i==11) {
-								taskTrackApproval.setDay11(hours);
-							}
-							else if(i==12) {
-								taskTrackApproval.setDay12(hours);
-							}
-							else if(i==13) {
-								taskTrackApproval.setDay13(hours);
-							}
-							else if(i==14) {
-								taskTrackApproval.setDay14(hours);
-							}
-							else if(i==15) {
-								taskTrackApproval.setDay15(hours);
-							}
-							else if(i==16) {
-								taskTrackApproval.setDay16(hours);
-							}
-							else if(i==17) {
-								taskTrackApproval.setDay17(hours);
-							}
-							else if(i==18) {
-								taskTrackApproval.setDay18(hours);
-							}
-							else if(i==19) {
-								taskTrackApproval.setDay19(hours);
-							}
-							else if(i==20) {
-								taskTrackApproval.setDay20(hours);
-							}
-							else if(i==21) {
-								taskTrackApproval.setDay21(hours);
-							}
-							else if(i==22) {
-								taskTrackApproval.setDay22(hours);
-							}
-							else if(i==23) {
-								taskTrackApproval.setDay23(hours);
-							}
-							else if(i==24) {
-								taskTrackApproval.setDay24(hours);
-							}
-							else if(i==25) {
-								taskTrackApproval.setDay25(hours);
-							}
-							else if(i==26) {
-								taskTrackApproval.setDay26(hours);
-							}
-							else if(i==27) {
-								taskTrackApproval.setDay27(hours);
-							}
-							else if(i==28) {
-								taskTrackApproval.setDay28(hours);
-							}
-							else if(i==29) {
-								taskTrackApproval.setDay29(hours);
-							}
-							else if(i==30) {
-								taskTrackApproval.setDay30(hours);
-							}
-							else if(i==31) {
-								taskTrackApproval.setDay31(hours);
-							}
-						}
-					}
-					tasktrackApprovalService.updateData(taskTrackApproval);	
-					
-				}
-				if(beachId!=null) {
-					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);	
-					for(int i = 1 ; i <= approveddate ; i++ ) {
-						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-								+ ((i < 10) ? "0" + i : "" + i);
-						if(beachArray.get(dateString)!=null) {						
-							hours = Double.valueOf(beachArray.get(dateString).toString());	
-							if(i==1) {
-								taskTrackApproval.setDay1(hours);
-							}
-							else if(i==2) {
-								taskTrackApproval.setDay2(hours);
-							}
-							else if(i==3) {
-								taskTrackApproval.setDay3(hours);
-							}
-							else if(i==4) {
-								taskTrackApproval.setDay4(hours);
-							}
-							else if(i==5) {
-								taskTrackApproval.setDay5(hours);
-							}
-							else if(i==6) {
-								taskTrackApproval.setDay6(hours);
-							}
-							else if(i==7) {
-								taskTrackApproval.setDay7(hours);
-							}
-							else if(i==8) {
-								taskTrackApproval.setDay8(hours);
-							}
-							else if(i==9) {
-								taskTrackApproval.setDay9(hours);
-							}
-							else if(i==10) {
-								taskTrackApproval.setDay10(hours);
-							}
-							else if(i==11) {
-								taskTrackApproval.setDay11(hours);
-							}
-							else if(i==12) {
-								taskTrackApproval.setDay12(hours);
-							}
-							else if(i==13) {
-								taskTrackApproval.setDay13(hours);
-							}
-							else if(i==14) {
-								taskTrackApproval.setDay14(hours);
-							}
-							else if(i==15) {
-								taskTrackApproval.setDay15(hours);
-							}
-							else if(i==16) {
-								taskTrackApproval.setDay16(hours);
-							}
-							else if(i==17) {
-								taskTrackApproval.setDay17(hours);
-							}
-							else if(i==18) {
-								taskTrackApproval.setDay18(hours);
-							}
-							else if(i==19) {
-								taskTrackApproval.setDay19(hours);
-							}
-							else if(i==20) {
-								taskTrackApproval.setDay20(hours);
-							}
-							else if(i==21) {
-								taskTrackApproval.setDay21(hours);
-							}
-							else if(i==22) {
-								taskTrackApproval.setDay22(hours);
-							}
-							else if(i==23) {
-								taskTrackApproval.setDay23(hours);
-							}
-							else if(i==24) {
-								taskTrackApproval.setDay24(hours);
-							}
-							else if(i==25) {
-								taskTrackApproval.setDay25(hours);
-							}
-							else if(i==26) {
-								taskTrackApproval.setDay26(hours);
-							}
-							else if(i==27) {
-								taskTrackApproval.setDay27(hours);
-							}
-							else if(i==28) {
-								taskTrackApproval.setDay28(hours);
-							}
-							else if(i==29) {
-								taskTrackApproval.setDay29(hours);
-							}
-							else if(i==30) {
-								taskTrackApproval.setDay30(hours);
-							}
-							else if(i==31) {
-								taskTrackApproval.setDay31(hours);
-							}
-						}
-					}
-					tasktrackApprovalService.updateData(taskTrackApproval);	
-				}
-				
-			}
-			else {
+
+			} else {
 				message = "Not yet approved";
 				status = "failed";
 			}
-			
-			}
-			
-		}
-		else {
-			message = "Not yet approved";
-			status = "failed";
-		}
-		
-		// data insertion to activity log
-		Date current = new Date();
-		ActivityLog activity = new ActivityLog();
-		activity.setAction("Reapproved time sheet");
-		UserModel user = userRepository.getActiveUser(logUser);
-		UserModel user2 =  userRepository.getActiveUser(userId);
-		activity.setUser(user2);
-		activity.setAction_by(user);
-		activity.setAction_on(current);
-		activity.setFrom_date(from_date);
-		activity.setTo_date(to_date);
-		activity.setMonth(month);
-		ProjectModel project = project_repositary.getOne(projectId);
-		activity.setProject(project);
-		activity.setYear(year);
-		activitylogrepository.save(activity);
-		
-		jsonDataRes.put("status", status);
-		//jsonDataRes.put("code", httpstatus.getStatus());
-		jsonDataRes.put("message", message);
-		}catch(Exception e) {
+
+			// data insertion to activity log
+			Date current = new Date();
+			ActivityLog activity = new ActivityLog();
+			activity.setAction("Reapproved time sheet");
+			UserModel user = userRepository.getActiveUser(logUser);
+			UserModel user2 = userRepository.getActiveUser(userId);
+			activity.setUser(user2);
+			activity.setAction_by(user);
+			activity.setAction_on(current);
+			activity.setFrom_date(from_date);
+			activity.setTo_date(to_date);
+			activity.setMonth(month);
+			ProjectModel project = project_repositary.getOne(projectId);
+			activity.setProject(project);
+			activity.setYear(year);
+			activitylogrepository.save(activity);
+
+			jsonDataRes.put("status", status);
+			// jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", message);
+		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");
-			//jsonDataRes.put("code", httpstatus.getStatus());
+			// jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "failed. " + e);
 		}
 
@@ -4671,1078 +4287,777 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			HashMap<String, Object> beachArray, HashMap<String, Object> overtimeArray, Long billableId,
 			Long nonbillableId, Long overtimeId, Long beachId, Long logUser) {
 		// TODO Auto-generated method stub
-		int month1= month;
+		int month1 = month;
 		int year1 = year;
-		
-		System.out.println("------"+projectId+"----"+userId+"------"+month+"---------"+year);
+
+		System.out.println("------" + projectId + "----" + userId + "------" + month + "---------" + year);
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
-		double hours =0;
+		double hours = 0;
 		Date from_date = null;
 		Date to_date = null;
 		String message = "successfully saved";
 		// find approved date and forwarded date to decide editable columns
-		TaskTrackApprovalLevel2 dates = timeTrackApprovalLevel2.getapprovedDates2(month1, year1,projectId, userId);
-		//System.out.println("outside data size greater-----------------------------"+dates.size());
+		TaskTrackApprovalLevel2 dates = timeTrackApprovalLevel2.getapprovedDates2(month1, year1, projectId, userId);
+		// System.out.println("outside data size
+		// greater-----------------------------"+dates.size());
 		try {
-		if(dates != null) {
-			System.out.println("inside data size greater-----------------------------");		
-			if(dates.getApproved_date() != null && dates.getForwarded_date() != null) {
-			// if forwarded nd approved dates not null	
-				System.out.println("inside  both forwarded finance  and aproved datesr-----------------------------");
-				Date approved_Date = (Date) dates.getApproved_date();
-				Date forwarded_Date = null;
-	
-				forwarded_Date = (Date) dates.getForwarded_date();
-				
-				from_date = forwarded_Date;
-				to_date = approved_Date;
-				Calendar approved = Calendar.getInstance();
-				approved.setTime(approved_Date);
-				Calendar frowarded = Calendar.getInstance();
-				frowarded.setTime(forwarded_Date);
-				int forwardeddate =  frowarded.get(Calendar.DAY_OF_MONTH);
-				int approveddate = approved.get(Calendar.DAY_OF_MONTH);
-				System.out.println("approved_Date-------------------------"+approveddate+"forwardeddate----------------"+forwardeddate);
-				if(approveddate > forwardeddate) {
-					
-					System.out.println("approved greater than forwarded------------>");
-						
-					if(billableId!=null) {
-						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(billableId);	
-						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
-							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-									+ ((i < 10) ? "0" + i : "" + i);
-							System.out.println("dates--------->"+dateString);
-							if(billableArray.get(dateString)!=null) {						
-								hours = Double.valueOf(billableArray.get(dateString).toString());	
-								if(i==1) {
-									taskTrackApproval.setDay1(hours);
-								}
-								else if(i==2) {
-									taskTrackApproval.setDay2(hours);
-								}
-								else if(i==3) {
-									taskTrackApproval.setDay3(hours);
-								}
-								else if(i==4) {
-									taskTrackApproval.setDay4(hours);
-								}
-								else if(i==5) {
-									taskTrackApproval.setDay5(hours);
-								}
-								else if(i==6) {
-									taskTrackApproval.setDay6(hours);
-								}
-								else if(i==7) {
-									taskTrackApproval.setDay7(hours);
-								}
-								else if(i==8) {
-									taskTrackApproval.setDay8(hours);
-								}
-								else if(i==9) {
-									taskTrackApproval.setDay9(hours);
-								}
-								else if(i==10) {
-									taskTrackApproval.setDay10(hours);
-								}
-								else if(i==11) {
-									taskTrackApproval.setDay11(hours);
-								}
-								else if(i==12) {
-									taskTrackApproval.setDay12(hours);
-								}
-								else if(i==13) {
-									taskTrackApproval.setDay13(hours);
-								}
-								else if(i==14) {
-									taskTrackApproval.setDay14(hours);
-								}
-								else if(i==15) {
-									taskTrackApproval.setDay15(hours);
-								}
-								else if(i==16) {
-									taskTrackApproval.setDay16(hours);
-								}
-								else if(i==17) {
-									taskTrackApproval.setDay17(hours);
-								}
-								else if(i==18) {
-									taskTrackApproval.setDay18(hours);
-								}
-								else if(i==19) {
-									taskTrackApproval.setDay19(hours);
-								}
-								else if(i==20) {
-									taskTrackApproval.setDay20(hours);
-								}
-								else if(i==21) {
-									taskTrackApproval.setDay21(hours);
-								}
-								else if(i==22) {
-									taskTrackApproval.setDay22(hours);
-								}
-								else if(i==23) {
-									taskTrackApproval.setDay23(hours);
-								}
-								else if(i==24) {
-									taskTrackApproval.setDay24(hours);
-								}
-								else if(i==25) {
-									taskTrackApproval.setDay25(hours);
-								}
-								else if(i==26) {
-									taskTrackApproval.setDay26(hours);
-								}
-								else if(i==27) {
-									taskTrackApproval.setDay27(hours);
-								}
-								else if(i==28) {
-									taskTrackApproval.setDay28(hours);
-								}
-								else if(i==29) {
-									taskTrackApproval.setDay29(hours);
-								}
-								else if(i==30) {
-									taskTrackApproval.setDay30(hours);
-								}
-								else if(i==31) {
-									taskTrackApproval.setDay31(hours);
+			if (dates != null) {
+				System.out.println("inside data size greater-----------------------------");
+				if (dates.getApproved_date() != null && dates.getForwarded_date() != null) {
+					// if forwarded nd approved dates not null
+					System.out
+							.println("inside  both forwarded finance  and aproved datesr-----------------------------");
+					Date approved_Date = (Date) dates.getApproved_date();
+					Date forwarded_Date = null;
+
+					forwarded_Date = (Date) dates.getForwarded_date();
+
+					from_date = forwarded_Date;
+					to_date = approved_Date;
+					Calendar approved = Calendar.getInstance();
+					approved.setTime(approved_Date);
+					Calendar frowarded = Calendar.getInstance();
+					frowarded.setTime(forwarded_Date);
+					int forwardeddate = frowarded.get(Calendar.DAY_OF_MONTH);
+					int approveddate = approved.get(Calendar.DAY_OF_MONTH);
+					System.out.println("approved_Date-------------------------" + approveddate
+							+ "forwardeddate----------------" + forwardeddate);
+					if (approveddate > forwardeddate) {
+
+						System.out.println("approved greater than forwarded------------>");
+
+						if (billableId != null) {
+							TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(billableId);
+							for (int i = forwardeddate + 1; i < approveddate; i++) {
+								String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+										+ ((i < 10) ? "0" + i : "" + i);
+								System.out.println("dates--------->" + dateString);
+								if (billableArray.get(dateString) != null) {
+									hours = Double.valueOf(billableArray.get(dateString).toString());
+									if (i == 1) {
+										taskTrackApproval.setDay1(hours);
+									} else if (i == 2) {
+										taskTrackApproval.setDay2(hours);
+									} else if (i == 3) {
+										taskTrackApproval.setDay3(hours);
+									} else if (i == 4) {
+										taskTrackApproval.setDay4(hours);
+									} else if (i == 5) {
+										taskTrackApproval.setDay5(hours);
+									} else if (i == 6) {
+										taskTrackApproval.setDay6(hours);
+									} else if (i == 7) {
+										taskTrackApproval.setDay7(hours);
+									} else if (i == 8) {
+										taskTrackApproval.setDay8(hours);
+									} else if (i == 9) {
+										taskTrackApproval.setDay9(hours);
+									} else if (i == 10) {
+										taskTrackApproval.setDay10(hours);
+									} else if (i == 11) {
+										taskTrackApproval.setDay11(hours);
+									} else if (i == 12) {
+										taskTrackApproval.setDay12(hours);
+									} else if (i == 13) {
+										taskTrackApproval.setDay13(hours);
+									} else if (i == 14) {
+										taskTrackApproval.setDay14(hours);
+									} else if (i == 15) {
+										taskTrackApproval.setDay15(hours);
+									} else if (i == 16) {
+										taskTrackApproval.setDay16(hours);
+									} else if (i == 17) {
+										taskTrackApproval.setDay17(hours);
+									} else if (i == 18) {
+										taskTrackApproval.setDay18(hours);
+									} else if (i == 19) {
+										taskTrackApproval.setDay19(hours);
+									} else if (i == 20) {
+										taskTrackApproval.setDay20(hours);
+									} else if (i == 21) {
+										taskTrackApproval.setDay21(hours);
+									} else if (i == 22) {
+										taskTrackApproval.setDay22(hours);
+									} else if (i == 23) {
+										taskTrackApproval.setDay23(hours);
+									} else if (i == 24) {
+										taskTrackApproval.setDay24(hours);
+									} else if (i == 25) {
+										taskTrackApproval.setDay25(hours);
+									} else if (i == 26) {
+										taskTrackApproval.setDay26(hours);
+									} else if (i == 27) {
+										taskTrackApproval.setDay27(hours);
+									} else if (i == 28) {
+										taskTrackApproval.setDay28(hours);
+									} else if (i == 29) {
+										taskTrackApproval.setDay29(hours);
+									} else if (i == 30) {
+										taskTrackApproval.setDay30(hours);
+									} else if (i == 31) {
+										taskTrackApproval.setDay31(hours);
+									}
 								}
 							}
+							tasktrackApprovalService.updateDatas(taskTrackApproval);
 						}
-						tasktrackApprovalService.updateDatas(taskTrackApproval);	
-					}	
-					if(nonbillableId!=null) {
-						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(nonbillableId);	
-						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
-							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-									+ ((i < 10) ? "0" + i : "" + i);
-							if(nonbillableArray.get(dateString)!=null) {						
-								hours = Double.valueOf(nonbillableArray.get(dateString).toString());	
-								if(i==1) {
-									taskTrackApproval.setDay1(hours);
-								}
-								else if(i==2) {
-									taskTrackApproval.setDay2(hours);
-								}
-								else if(i==3) {
-									taskTrackApproval.setDay3(hours);
-								}
-								else if(i==4) {
-									taskTrackApproval.setDay4(hours);
-								}
-								else if(i==5) {
-									taskTrackApproval.setDay5(hours);
-								}
-								else if(i==6) {
-									taskTrackApproval.setDay6(hours);
-								}
-								else if(i==7) {
-									taskTrackApproval.setDay7(hours);
-								}
-								else if(i==8) {
-									taskTrackApproval.setDay8(hours);
-								}
-								else if(i==9) {
-									taskTrackApproval.setDay9(hours);
-								}
-								else if(i==10) {
-									taskTrackApproval.setDay10(hours);
-								}
-								else if(i==11) {
-									taskTrackApproval.setDay11(hours);
-								}
-								else if(i==12) {
-									taskTrackApproval.setDay12(hours);
-								}
-								else if(i==13) {
-									taskTrackApproval.setDay13(hours);
-								}
-								else if(i==14) {
-									taskTrackApproval.setDay14(hours);
-								}
-								else if(i==15) {
-									taskTrackApproval.setDay15(hours);
-								}
-								else if(i==16) {
-									taskTrackApproval.setDay16(hours);
-								}
-								else if(i==17) {
-									taskTrackApproval.setDay17(hours);
-								}
-								else if(i==18) {
-									taskTrackApproval.setDay18(hours);
-								}
-								else if(i==19) {
-									taskTrackApproval.setDay19(hours);
-								}
-								else if(i==20) {
-									taskTrackApproval.setDay20(hours);
-								}
-								else if(i==21) {
-									taskTrackApproval.setDay21(hours);
-								}
-								else if(i==22) {
-									taskTrackApproval.setDay22(hours);
-								}
-								else if(i==23) {
-									taskTrackApproval.setDay23(hours);
-								}
-								else if(i==24) {
-									taskTrackApproval.setDay24(hours);
-								}
-								else if(i==25) {
-									taskTrackApproval.setDay25(hours);
-								}
-								else if(i==26) {
-									taskTrackApproval.setDay26(hours);
-								}
-								else if(i==27) {
-									taskTrackApproval.setDay27(hours);
-								}
-								else if(i==28) {
-									taskTrackApproval.setDay28(hours);
-								}
-								else if(i==29) {
-									taskTrackApproval.setDay29(hours);
-								}
-								else if(i==30) {
-									taskTrackApproval.setDay30(hours);
-								}
-								else if(i==31) {
-									taskTrackApproval.setDay31(hours);
+						if (nonbillableId != null) {
+							TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService
+									.findById2(nonbillableId);
+							for (int i = forwardeddate + 1; i < approveddate; i++) {
+								String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+										+ ((i < 10) ? "0" + i : "" + i);
+								if (nonbillableArray.get(dateString) != null) {
+									hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+									if (i == 1) {
+										taskTrackApproval.setDay1(hours);
+									} else if (i == 2) {
+										taskTrackApproval.setDay2(hours);
+									} else if (i == 3) {
+										taskTrackApproval.setDay3(hours);
+									} else if (i == 4) {
+										taskTrackApproval.setDay4(hours);
+									} else if (i == 5) {
+										taskTrackApproval.setDay5(hours);
+									} else if (i == 6) {
+										taskTrackApproval.setDay6(hours);
+									} else if (i == 7) {
+										taskTrackApproval.setDay7(hours);
+									} else if (i == 8) {
+										taskTrackApproval.setDay8(hours);
+									} else if (i == 9) {
+										taskTrackApproval.setDay9(hours);
+									} else if (i == 10) {
+										taskTrackApproval.setDay10(hours);
+									} else if (i == 11) {
+										taskTrackApproval.setDay11(hours);
+									} else if (i == 12) {
+										taskTrackApproval.setDay12(hours);
+									} else if (i == 13) {
+										taskTrackApproval.setDay13(hours);
+									} else if (i == 14) {
+										taskTrackApproval.setDay14(hours);
+									} else if (i == 15) {
+										taskTrackApproval.setDay15(hours);
+									} else if (i == 16) {
+										taskTrackApproval.setDay16(hours);
+									} else if (i == 17) {
+										taskTrackApproval.setDay17(hours);
+									} else if (i == 18) {
+										taskTrackApproval.setDay18(hours);
+									} else if (i == 19) {
+										taskTrackApproval.setDay19(hours);
+									} else if (i == 20) {
+										taskTrackApproval.setDay20(hours);
+									} else if (i == 21) {
+										taskTrackApproval.setDay21(hours);
+									} else if (i == 22) {
+										taskTrackApproval.setDay22(hours);
+									} else if (i == 23) {
+										taskTrackApproval.setDay23(hours);
+									} else if (i == 24) {
+										taskTrackApproval.setDay24(hours);
+									} else if (i == 25) {
+										taskTrackApproval.setDay25(hours);
+									} else if (i == 26) {
+										taskTrackApproval.setDay26(hours);
+									} else if (i == 27) {
+										taskTrackApproval.setDay27(hours);
+									} else if (i == 28) {
+										taskTrackApproval.setDay28(hours);
+									} else if (i == 29) {
+										taskTrackApproval.setDay29(hours);
+									} else if (i == 30) {
+										taskTrackApproval.setDay30(hours);
+									} else if (i == 31) {
+										taskTrackApproval.setDay31(hours);
+									}
 								}
 							}
+							tasktrackApprovalService.updateDatas(taskTrackApproval);
 						}
-						tasktrackApprovalService.updateDatas(taskTrackApproval);	
+						if (overtimeId != null) {
+							TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(overtimeId);
+							for (int i = forwardeddate + 1; i < approveddate; i++) {
+								String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+										+ ((i < 10) ? "0" + i : "" + i);
+								if (overtimeArray.get(dateString) != null) {
+									hours = Double.valueOf(overtimeArray.get(dateString).toString());
+									if (i == 1) {
+										taskTrackApproval.setDay1(hours);
+									} else if (i == 2) {
+										taskTrackApproval.setDay2(hours);
+									} else if (i == 3) {
+										taskTrackApproval.setDay3(hours);
+									} else if (i == 4) {
+										taskTrackApproval.setDay4(hours);
+									} else if (i == 5) {
+										taskTrackApproval.setDay5(hours);
+									} else if (i == 6) {
+										taskTrackApproval.setDay6(hours);
+									} else if (i == 7) {
+										taskTrackApproval.setDay7(hours);
+									} else if (i == 8) {
+										taskTrackApproval.setDay8(hours);
+									} else if (i == 9) {
+										taskTrackApproval.setDay9(hours);
+									} else if (i == 10) {
+										taskTrackApproval.setDay10(hours);
+									} else if (i == 11) {
+										taskTrackApproval.setDay11(hours);
+									} else if (i == 12) {
+										taskTrackApproval.setDay12(hours);
+									} else if (i == 13) {
+										taskTrackApproval.setDay13(hours);
+									} else if (i == 14) {
+										taskTrackApproval.setDay14(hours);
+									} else if (i == 15) {
+										taskTrackApproval.setDay15(hours);
+									} else if (i == 16) {
+										taskTrackApproval.setDay16(hours);
+									} else if (i == 17) {
+										taskTrackApproval.setDay17(hours);
+									} else if (i == 18) {
+										taskTrackApproval.setDay18(hours);
+									} else if (i == 19) {
+										taskTrackApproval.setDay19(hours);
+									} else if (i == 20) {
+										taskTrackApproval.setDay20(hours);
+									} else if (i == 21) {
+										taskTrackApproval.setDay21(hours);
+									} else if (i == 22) {
+										taskTrackApproval.setDay22(hours);
+									} else if (i == 23) {
+										taskTrackApproval.setDay23(hours);
+									} else if (i == 24) {
+										taskTrackApproval.setDay24(hours);
+									} else if (i == 25) {
+										taskTrackApproval.setDay25(hours);
+									} else if (i == 26) {
+										taskTrackApproval.setDay26(hours);
+									} else if (i == 27) {
+										taskTrackApproval.setDay27(hours);
+									} else if (i == 28) {
+										taskTrackApproval.setDay28(hours);
+									} else if (i == 29) {
+										taskTrackApproval.setDay29(hours);
+									} else if (i == 30) {
+										taskTrackApproval.setDay30(hours);
+									} else if (i == 31) {
+										taskTrackApproval.setDay31(hours);
+									}
+								}
+							}
+							tasktrackApprovalService.updateDatas(taskTrackApproval);
+						}
+						if (beachId != null) {
+							TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(beachId);
+							for (int i = forwardeddate + 1; i < approveddate; i++) {
+								String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+										+ ((i < 10) ? "0" + i : "" + i);
+								if (beachArray.get(dateString) != null) {
+									hours = Double.valueOf(beachArray.get(dateString).toString());
+									if (i == 1) {
+										taskTrackApproval.setDay1(hours);
+									} else if (i == 2) {
+										taskTrackApproval.setDay2(hours);
+									} else if (i == 3) {
+										taskTrackApproval.setDay3(hours);
+									} else if (i == 4) {
+										taskTrackApproval.setDay4(hours);
+									} else if (i == 5) {
+										taskTrackApproval.setDay5(hours);
+									} else if (i == 6) {
+										taskTrackApproval.setDay6(hours);
+									} else if (i == 7) {
+										taskTrackApproval.setDay7(hours);
+									} else if (i == 8) {
+										taskTrackApproval.setDay8(hours);
+									} else if (i == 9) {
+										taskTrackApproval.setDay9(hours);
+									} else if (i == 10) {
+										taskTrackApproval.setDay10(hours);
+									} else if (i == 11) {
+										taskTrackApproval.setDay11(hours);
+									} else if (i == 12) {
+										taskTrackApproval.setDay12(hours);
+									} else if (i == 13) {
+										taskTrackApproval.setDay13(hours);
+									} else if (i == 14) {
+										taskTrackApproval.setDay14(hours);
+									} else if (i == 15) {
+										taskTrackApproval.setDay15(hours);
+									} else if (i == 16) {
+										taskTrackApproval.setDay16(hours);
+									} else if (i == 17) {
+										taskTrackApproval.setDay17(hours);
+									} else if (i == 18) {
+										taskTrackApproval.setDay18(hours);
+									} else if (i == 19) {
+										taskTrackApproval.setDay19(hours);
+									} else if (i == 20) {
+										taskTrackApproval.setDay20(hours);
+									} else if (i == 21) {
+										taskTrackApproval.setDay21(hours);
+									} else if (i == 22) {
+										taskTrackApproval.setDay22(hours);
+									} else if (i == 23) {
+										taskTrackApproval.setDay23(hours);
+									} else if (i == 24) {
+										taskTrackApproval.setDay24(hours);
+									} else if (i == 25) {
+										taskTrackApproval.setDay25(hours);
+									} else if (i == 26) {
+										taskTrackApproval.setDay26(hours);
+									} else if (i == 27) {
+										taskTrackApproval.setDay27(hours);
+									} else if (i == 28) {
+										taskTrackApproval.setDay28(hours);
+									} else if (i == 29) {
+										taskTrackApproval.setDay29(hours);
+									} else if (i == 30) {
+										taskTrackApproval.setDay30(hours);
+									} else if (i == 31) {
+										taskTrackApproval.setDay31(hours);
+									}
+								}
+							}
+							tasktrackApprovalService.updateDatas(taskTrackApproval);
+						}
+
 					}
-					if(overtimeId!=null) {
-						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(overtimeId);	
-						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
-							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-									+ ((i < 10) ? "0" + i : "" + i);
-							if(overtimeArray.get(dateString)!=null) {						
-								hours = Double.valueOf(overtimeArray.get(dateString).toString());	
-								if(i==1) {
-									taskTrackApproval.setDay1(hours);
-								}
-								else if(i==2) {
-									taskTrackApproval.setDay2(hours);
-								}
-								else if(i==3) {
-									taskTrackApproval.setDay3(hours);
-								}
-								else if(i==4) {
-									taskTrackApproval.setDay4(hours);
-								}
-								else if(i==5) {
-									taskTrackApproval.setDay5(hours);
-								}
-								else if(i==6) {
-									taskTrackApproval.setDay6(hours);
-								}
-								else if(i==7) {
-									taskTrackApproval.setDay7(hours);
-								}
-								else if(i==8) {
-									taskTrackApproval.setDay8(hours);
-								}
-								else if(i==9) {
-									taskTrackApproval.setDay9(hours);
-								}
-								else if(i==10) {
-									taskTrackApproval.setDay10(hours);
-								}
-								else if(i==11) {
-									taskTrackApproval.setDay11(hours);
-								}
-								else if(i==12) {
-									taskTrackApproval.setDay12(hours);
-								}
-								else if(i==13) {
-									taskTrackApproval.setDay13(hours);
-								}
-								else if(i==14) {
-									taskTrackApproval.setDay14(hours);
-								}
-								else if(i==15) {
-									taskTrackApproval.setDay15(hours);
-								}
-								else if(i==16) {
-									taskTrackApproval.setDay16(hours);
-								}
-								else if(i==17) {
-									taskTrackApproval.setDay17(hours);
-								}
-								else if(i==18) {
-									taskTrackApproval.setDay18(hours);
-								}
-								else if(i==19) {
-									taskTrackApproval.setDay19(hours);
-								}
-								else if(i==20) {
-									taskTrackApproval.setDay20(hours);
-								}
-								else if(i==21) {
-									taskTrackApproval.setDay21(hours);
-								}
-								else if(i==22) {
-									taskTrackApproval.setDay22(hours);
-								}
-								else if(i==23) {
-									taskTrackApproval.setDay23(hours);
-								}
-								else if(i==24) {
-									taskTrackApproval.setDay24(hours);
-								}
-								else if(i==25) {
-									taskTrackApproval.setDay25(hours);
-								}
-								else if(i==26) {
-									taskTrackApproval.setDay26(hours);
-								}
-								else if(i==27) {
-									taskTrackApproval.setDay27(hours);
-								}
-								else if(i==28) {
-									taskTrackApproval.setDay28(hours);
-								}
-								else if(i==29) {
-									taskTrackApproval.setDay29(hours);
-								}
-								else if(i==30) {
-									taskTrackApproval.setDay30(hours);
-								}
-								else if(i==31) {
-									taskTrackApproval.setDay31(hours);
-								}
-							}
-						}
-						tasktrackApprovalService.updateDatas(taskTrackApproval);	
-					}
-					if(beachId!=null) {
-						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(beachId);	
-						for(int i = forwardeddate+1 ; i < approveddate ; i++ ) {
-							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-									+ ((i < 10) ? "0" + i : "" + i);
-							if(beachArray.get(dateString)!=null) {						
-								hours = Double.valueOf(beachArray.get(dateString).toString());	
-								if(i==1) {
-									taskTrackApproval.setDay1(hours);
-								}
-								else if(i==2) {
-									taskTrackApproval.setDay2(hours);
-								}
-								else if(i==3) {
-									taskTrackApproval.setDay3(hours);
-								}
-								else if(i==4) {
-									taskTrackApproval.setDay4(hours);
-								}
-								else if(i==5) {
-									taskTrackApproval.setDay5(hours);
-								}
-								else if(i==6) {
-									taskTrackApproval.setDay6(hours);
-								}
-								else if(i==7) {
-									taskTrackApproval.setDay7(hours);
-								}
-								else if(i==8) {
-									taskTrackApproval.setDay8(hours);
-								}
-								else if(i==9) {
-									taskTrackApproval.setDay9(hours);
-								}
-								else if(i==10) {
-									taskTrackApproval.setDay10(hours);
-								}
-								else if(i==11) {
-									taskTrackApproval.setDay11(hours);
-								}
-								else if(i==12) {
-									taskTrackApproval.setDay12(hours);
-								}
-								else if(i==13) {
-									taskTrackApproval.setDay13(hours);
-								}
-								else if(i==14) {
-									taskTrackApproval.setDay14(hours);
-								}
-								else if(i==15) {
-									taskTrackApproval.setDay15(hours);
-								}
-								else if(i==16) {
-									taskTrackApproval.setDay16(hours);
-								}
-								else if(i==17) {
-									taskTrackApproval.setDay17(hours);
-								}
-								else if(i==18) {
-									taskTrackApproval.setDay18(hours);
-								}
-								else if(i==19) {
-									taskTrackApproval.setDay19(hours);
-								}
-								else if(i==20) {
-									taskTrackApproval.setDay20(hours);
-								}
-								else if(i==21) {
-									taskTrackApproval.setDay21(hours);
-								}
-								else if(i==22) {
-									taskTrackApproval.setDay22(hours);
-								}
-								else if(i==23) {
-									taskTrackApproval.setDay23(hours);
-								}
-								else if(i==24) {
-									taskTrackApproval.setDay24(hours);
-								}
-								else if(i==25) {
-									taskTrackApproval.setDay25(hours);
-								}
-								else if(i==26) {
-									taskTrackApproval.setDay26(hours);
-								}
-								else if(i==27) {
-									taskTrackApproval.setDay27(hours);
-								}
-								else if(i==28) {
-									taskTrackApproval.setDay28(hours);
-								}
-								else if(i==29) {
-									taskTrackApproval.setDay29(hours);
-								}
-								else if(i==30) {
-									taskTrackApproval.setDay30(hours);
-								}
-								else if(i==31) {
-									taskTrackApproval.setDay31(hours);
-								}
-							}
-						}
-						tasktrackApprovalService.updateDatas(taskTrackApproval);	
-					}
-					
+
 				}
-				
+
+				else if (dates.getApproved_date() != null) {
+					System.out.println("inside  aproved datesr only-----------------------------");
+					Date approved_Date = (Date) dates.getApproved_date();
+					from_date = new SimpleDateFormat("dd-MM-yyyy").parse("01-" + month + "-" + year);
+					to_date = approved_Date;
+					Calendar approved = Calendar.getInstance();
+					approved.setTime(approved_Date);
+					int approveddate = approved.get(Calendar.DAY_OF_MONTH);
+					// approved date not null
+					if (billableId != null) {
+						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(billableId);
+						for (int i = 1; i < approveddate; i++) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							System.out.println("----------" + dateString);
+							if (billableArray.get(dateString) != null) {
+								hours = Double.valueOf(billableArray.get(dateString).toString());
+								if (i == 1) {
+									taskTrackApproval.setDay1(hours);
+								} else if (i == 2) {
+									taskTrackApproval.setDay2(hours);
+								} else if (i == 3) {
+									taskTrackApproval.setDay3(hours);
+								} else if (i == 4) {
+									taskTrackApproval.setDay4(hours);
+								} else if (i == 5) {
+									taskTrackApproval.setDay5(hours);
+								} else if (i == 6) {
+									taskTrackApproval.setDay6(hours);
+								} else if (i == 7) {
+									taskTrackApproval.setDay7(hours);
+								} else if (i == 8) {
+									taskTrackApproval.setDay8(hours);
+								} else if (i == 9) {
+									taskTrackApproval.setDay9(hours);
+								} else if (i == 10) {
+									taskTrackApproval.setDay10(hours);
+								} else if (i == 11) {
+									taskTrackApproval.setDay11(hours);
+								} else if (i == 12) {
+									taskTrackApproval.setDay12(hours);
+								} else if (i == 13) {
+									taskTrackApproval.setDay13(hours);
+								} else if (i == 14) {
+									taskTrackApproval.setDay14(hours);
+								} else if (i == 15) {
+									taskTrackApproval.setDay15(hours);
+								} else if (i == 16) {
+									taskTrackApproval.setDay16(hours);
+								} else if (i == 17) {
+									taskTrackApproval.setDay17(hours);
+								} else if (i == 18) {
+									taskTrackApproval.setDay18(hours);
+								} else if (i == 19) {
+									taskTrackApproval.setDay19(hours);
+								} else if (i == 20) {
+									taskTrackApproval.setDay20(hours);
+								} else if (i == 21) {
+									taskTrackApproval.setDay21(hours);
+								} else if (i == 22) {
+									taskTrackApproval.setDay22(hours);
+								} else if (i == 23) {
+									taskTrackApproval.setDay23(hours);
+								} else if (i == 24) {
+									taskTrackApproval.setDay24(hours);
+								} else if (i == 25) {
+									taskTrackApproval.setDay25(hours);
+								} else if (i == 26) {
+									taskTrackApproval.setDay26(hours);
+								} else if (i == 27) {
+									taskTrackApproval.setDay27(hours);
+								} else if (i == 28) {
+									taskTrackApproval.setDay28(hours);
+								} else if (i == 29) {
+									taskTrackApproval.setDay29(hours);
+								} else if (i == 30) {
+									taskTrackApproval.setDay30(hours);
+								} else if (i == 31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateDatas(taskTrackApproval);
+					}
+					if (nonbillableId != null) {
+						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(nonbillableId);
+						for (int i = 1; i < approveddate; i++) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if (nonbillableArray.get(dateString) != null) {
+								hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+								if (i == 1) {
+									taskTrackApproval.setDay1(hours);
+								} else if (i == 2) {
+									taskTrackApproval.setDay2(hours);
+								} else if (i == 3) {
+									taskTrackApproval.setDay3(hours);
+								} else if (i == 4) {
+									taskTrackApproval.setDay4(hours);
+								} else if (i == 5) {
+									taskTrackApproval.setDay5(hours);
+								} else if (i == 6) {
+									taskTrackApproval.setDay6(hours);
+								} else if (i == 7) {
+									taskTrackApproval.setDay7(hours);
+								} else if (i == 8) {
+									taskTrackApproval.setDay8(hours);
+								} else if (i == 9) {
+									taskTrackApproval.setDay9(hours);
+								} else if (i == 10) {
+									taskTrackApproval.setDay10(hours);
+								} else if (i == 11) {
+									taskTrackApproval.setDay11(hours);
+								} else if (i == 12) {
+									taskTrackApproval.setDay12(hours);
+								} else if (i == 13) {
+									taskTrackApproval.setDay13(hours);
+								} else if (i == 14) {
+									taskTrackApproval.setDay14(hours);
+								} else if (i == 15) {
+									taskTrackApproval.setDay15(hours);
+								} else if (i == 16) {
+									taskTrackApproval.setDay16(hours);
+								} else if (i == 17) {
+									taskTrackApproval.setDay17(hours);
+								} else if (i == 18) {
+									taskTrackApproval.setDay18(hours);
+								} else if (i == 19) {
+									taskTrackApproval.setDay19(hours);
+								} else if (i == 20) {
+									taskTrackApproval.setDay20(hours);
+								} else if (i == 21) {
+									taskTrackApproval.setDay21(hours);
+								} else if (i == 22) {
+									taskTrackApproval.setDay22(hours);
+								} else if (i == 23) {
+									taskTrackApproval.setDay23(hours);
+								} else if (i == 24) {
+									taskTrackApproval.setDay24(hours);
+								} else if (i == 25) {
+									taskTrackApproval.setDay25(hours);
+								} else if (i == 26) {
+									taskTrackApproval.setDay26(hours);
+								} else if (i == 27) {
+									taskTrackApproval.setDay27(hours);
+								} else if (i == 28) {
+									taskTrackApproval.setDay28(hours);
+								} else if (i == 29) {
+									taskTrackApproval.setDay29(hours);
+								} else if (i == 30) {
+									taskTrackApproval.setDay30(hours);
+								} else if (i == 31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateDatas(taskTrackApproval);
+					}
+					if (overtimeId != null) {
+						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(overtimeId);
+						for (int i = 1; i < approveddate; i++) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if (overtimeArray.get(dateString) != null) {
+								hours = Double.valueOf(overtimeArray.get(dateString).toString());
+								if (i == 1) {
+									taskTrackApproval.setDay1(hours);
+								} else if (i == 2) {
+									taskTrackApproval.setDay2(hours);
+								} else if (i == 3) {
+									taskTrackApproval.setDay3(hours);
+								} else if (i == 4) {
+									taskTrackApproval.setDay4(hours);
+								} else if (i == 5) {
+									taskTrackApproval.setDay5(hours);
+								} else if (i == 6) {
+									taskTrackApproval.setDay6(hours);
+								} else if (i == 7) {
+									taskTrackApproval.setDay7(hours);
+								} else if (i == 8) {
+									taskTrackApproval.setDay8(hours);
+								} else if (i == 9) {
+									taskTrackApproval.setDay9(hours);
+								} else if (i == 10) {
+									taskTrackApproval.setDay10(hours);
+								} else if (i == 11) {
+									taskTrackApproval.setDay11(hours);
+								} else if (i == 12) {
+									taskTrackApproval.setDay12(hours);
+								} else if (i == 13) {
+									taskTrackApproval.setDay13(hours);
+								} else if (i == 14) {
+									taskTrackApproval.setDay14(hours);
+								} else if (i == 15) {
+									taskTrackApproval.setDay15(hours);
+								} else if (i == 16) {
+									taskTrackApproval.setDay16(hours);
+								} else if (i == 17) {
+									taskTrackApproval.setDay17(hours);
+								} else if (i == 18) {
+									taskTrackApproval.setDay18(hours);
+								} else if (i == 19) {
+									taskTrackApproval.setDay19(hours);
+								} else if (i == 20) {
+									taskTrackApproval.setDay20(hours);
+								} else if (i == 21) {
+									taskTrackApproval.setDay21(hours);
+								} else if (i == 22) {
+									taskTrackApproval.setDay22(hours);
+								} else if (i == 23) {
+									taskTrackApproval.setDay23(hours);
+								} else if (i == 24) {
+									taskTrackApproval.setDay24(hours);
+								} else if (i == 25) {
+									taskTrackApproval.setDay25(hours);
+								} else if (i == 26) {
+									taskTrackApproval.setDay26(hours);
+								} else if (i == 27) {
+									taskTrackApproval.setDay27(hours);
+								} else if (i == 28) {
+									taskTrackApproval.setDay28(hours);
+								} else if (i == 29) {
+									taskTrackApproval.setDay29(hours);
+								} else if (i == 30) {
+									taskTrackApproval.setDay30(hours);
+								} else if (i == 31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateDatas(taskTrackApproval);
+
+					}
+					if (beachId != null) {
+						TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(beachId);
+						for (int i = 1; i < approveddate; i++) {
+							String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
+									+ ((i < 10) ? "0" + i : "" + i);
+							if (beachArray.get(dateString) != null) {
+								hours = Double.valueOf(beachArray.get(dateString).toString());
+								if (i == 1) {
+									taskTrackApproval.setDay1(hours);
+								} else if (i == 2) {
+									taskTrackApproval.setDay2(hours);
+								} else if (i == 3) {
+									taskTrackApproval.setDay3(hours);
+								} else if (i == 4) {
+									taskTrackApproval.setDay4(hours);
+								} else if (i == 5) {
+									taskTrackApproval.setDay5(hours);
+								} else if (i == 6) {
+									taskTrackApproval.setDay6(hours);
+								} else if (i == 7) {
+									taskTrackApproval.setDay7(hours);
+								} else if (i == 8) {
+									taskTrackApproval.setDay8(hours);
+								} else if (i == 9) {
+									taskTrackApproval.setDay9(hours);
+								} else if (i == 10) {
+									taskTrackApproval.setDay10(hours);
+								} else if (i == 11) {
+									taskTrackApproval.setDay11(hours);
+								} else if (i == 12) {
+									taskTrackApproval.setDay12(hours);
+								} else if (i == 13) {
+									taskTrackApproval.setDay13(hours);
+								} else if (i == 14) {
+									taskTrackApproval.setDay14(hours);
+								} else if (i == 15) {
+									taskTrackApproval.setDay15(hours);
+								} else if (i == 16) {
+									taskTrackApproval.setDay16(hours);
+								} else if (i == 17) {
+									taskTrackApproval.setDay17(hours);
+								} else if (i == 18) {
+									taskTrackApproval.setDay18(hours);
+								} else if (i == 19) {
+									taskTrackApproval.setDay19(hours);
+								} else if (i == 20) {
+									taskTrackApproval.setDay20(hours);
+								} else if (i == 21) {
+									taskTrackApproval.setDay21(hours);
+								} else if (i == 22) {
+									taskTrackApproval.setDay22(hours);
+								} else if (i == 23) {
+									taskTrackApproval.setDay23(hours);
+								} else if (i == 24) {
+									taskTrackApproval.setDay24(hours);
+								} else if (i == 25) {
+									taskTrackApproval.setDay25(hours);
+								} else if (i == 26) {
+									taskTrackApproval.setDay26(hours);
+								} else if (i == 27) {
+									taskTrackApproval.setDay27(hours);
+								} else if (i == 28) {
+									taskTrackApproval.setDay28(hours);
+								} else if (i == 29) {
+									taskTrackApproval.setDay29(hours);
+								} else if (i == 30) {
+									taskTrackApproval.setDay30(hours);
+								} else if (i == 31) {
+									taskTrackApproval.setDay31(hours);
+								}
+							}
+						}
+						tasktrackApprovalService.updateDatas(taskTrackApproval);
+					}
+
+				} else {
+					message = "Not yet approved";
+
+				}
+
 			}
-			
-			else if(dates.getApproved_date() != null) {
-				System.out.println("inside  aproved datesr only-----------------------------");
-				Date approved_Date = (Date) dates.getApproved_date();	
-				from_date = new SimpleDateFormat("dd-MM-yyyy").parse( "01-"+month+"-"+year); 
-				to_date = approved_Date;
-				Calendar approved = Calendar.getInstance();
-				approved.setTime(approved_Date);
-				int approveddate = approved.get(Calendar.DAY_OF_MONTH);
-				// approved date not null 
-				if(billableId!= null) {
-					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(billableId);	
-					for(int i = 1 ; i < approveddate ; i++ ) {
-						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-								+ ((i < 10) ? "0" + i : "" + i);
-						System.out.println("----------"+dateString);
-						if(billableArray.get(dateString)!=null) {						
-							hours = Double.valueOf(billableArray.get(dateString).toString());	
-						if(i==1) {
-							taskTrackApproval.setDay1(hours);
-						}
-						else if(i==2) {
-							taskTrackApproval.setDay2(hours);
-						}
-						else if(i==3) {
-							taskTrackApproval.setDay3(hours);
-						}
-						else if(i==4) {
-							taskTrackApproval.setDay4(hours);
-						}
-						else if(i==5) {
-							taskTrackApproval.setDay5(hours);
-						}
-						else if(i==6) {
-							taskTrackApproval.setDay6(hours);
-						}
-						else if(i==7) {
-							taskTrackApproval.setDay7(hours);
-						}
-						else if(i==8) {
-							taskTrackApproval.setDay8(hours);
-						}
-						else if(i==9) {
-							taskTrackApproval.setDay9(hours);
-						}
-						else if(i==10) {
-							taskTrackApproval.setDay10(hours);
-						}
-						else if(i==11) {
-							taskTrackApproval.setDay11(hours);
-						}
-						else if(i==12) {
-							taskTrackApproval.setDay12(hours);
-						}
-						else if(i==13) {
-							taskTrackApproval.setDay13(hours);
-						}
-						else if(i==14) {
-							taskTrackApproval.setDay14(hours);
-						}
-						else if(i==15) {
-							taskTrackApproval.setDay15(hours);
-						}
-						else if(i==16) {
-							taskTrackApproval.setDay16(hours);
-						}
-						else if(i==17) {
-							taskTrackApproval.setDay17(hours);
-						}
-						else if(i==18) {
-							taskTrackApproval.setDay18(hours);
-						}
-						else if(i==19) {
-							taskTrackApproval.setDay19(hours);
-						}
-						else if(i==20) {
-							taskTrackApproval.setDay20(hours);
-						}
-						else if(i==21) {
-							taskTrackApproval.setDay21(hours);
-						}
-						else if(i==22) {
-							taskTrackApproval.setDay22(hours);
-						}
-						else if(i==23) {
-							taskTrackApproval.setDay23(hours);
-						}
-						else if(i==24) {
-							taskTrackApproval.setDay24(hours);
-						}
-						else if(i==25) {
-							taskTrackApproval.setDay25(hours);
-						}
-						else if(i==26) {
-							taskTrackApproval.setDay26(hours);
-						}
-						else if(i==27) {
-							taskTrackApproval.setDay27(hours);
-						}
-						else if(i==28) {
-							taskTrackApproval.setDay28(hours);
-						}
-						else if(i==29) {
-							taskTrackApproval.setDay29(hours);
-						}
-						else if(i==30) {
-							taskTrackApproval.setDay30(hours);
-						}
-						else if(i==31) {
-							taskTrackApproval.setDay31(hours);
-						}
-						}
-					}
-					tasktrackApprovalService.updateDatas(taskTrackApproval);	
-				}	
-				if(nonbillableId!=null) {
-					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(nonbillableId);	
-					for(int i = 1 ; i < approveddate ; i++ ) {
-						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-								+ ((i < 10) ? "0" + i : "" + i);
-						if(nonbillableArray.get(dateString)!=null) {						
-							hours = Double.valueOf(nonbillableArray.get(dateString).toString());	
-							if(i==1) {
-								taskTrackApproval.setDay1(hours);
-							}
-							else if(i==2) {
-								taskTrackApproval.setDay2(hours);
-							}
-							else if(i==3) {
-								taskTrackApproval.setDay3(hours);
-							}
-							else if(i==4) {
-								taskTrackApproval.setDay4(hours);
-							}
-							else if(i==5) {
-								taskTrackApproval.setDay5(hours);
-							}
-							else if(i==6) {
-								taskTrackApproval.setDay6(hours);
-							}
-							else if(i==7) {
-								taskTrackApproval.setDay7(hours);
-							}
-							else if(i==8) {
-								taskTrackApproval.setDay8(hours);
-							}
-							else if(i==9) {
-								taskTrackApproval.setDay9(hours);
-							}
-							else if(i==10) {
-								taskTrackApproval.setDay10(hours);
-							}
-							else if(i==11) {
-								taskTrackApproval.setDay11(hours);
-							}
-							else if(i==12) {
-								taskTrackApproval.setDay12(hours);
-							}
-							else if(i==13) {
-								taskTrackApproval.setDay13(hours);
-							}
-							else if(i==14) {
-								taskTrackApproval.setDay14(hours);
-							}
-							else if(i==15) {
-								taskTrackApproval.setDay15(hours);
-							}
-							else if(i==16) {
-								taskTrackApproval.setDay16(hours);
-							}
-							else if(i==17) {
-								taskTrackApproval.setDay17(hours);
-							}
-							else if(i==18) {
-								taskTrackApproval.setDay18(hours);
-							}
-							else if(i==19) {
-								taskTrackApproval.setDay19(hours);
-							}
-							else if(i==20) {
-								taskTrackApproval.setDay20(hours);
-							}
-							else if(i==21) {
-								taskTrackApproval.setDay21(hours);
-							}
-							else if(i==22) {
-								taskTrackApproval.setDay22(hours);
-							}
-							else if(i==23) {
-								taskTrackApproval.setDay23(hours);
-							}
-							else if(i==24) {
-								taskTrackApproval.setDay24(hours);
-							}
-							else if(i==25) {
-								taskTrackApproval.setDay25(hours);
-							}
-							else if(i==26) {
-								taskTrackApproval.setDay26(hours);
-							}
-							else if(i==27) {
-								taskTrackApproval.setDay27(hours);
-							}
-							else if(i==28) {
-								taskTrackApproval.setDay28(hours);
-							}
-							else if(i==29) {
-								taskTrackApproval.setDay29(hours);
-							}
-							else if(i==30) {
-								taskTrackApproval.setDay30(hours);
-							}
-							else if(i==31) {
-								taskTrackApproval.setDay31(hours);
-							}
-						}
-					}
-					tasktrackApprovalService.updateDatas(taskTrackApproval);	
-				}
-				if(overtimeId!=null) {
-					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(overtimeId);	
-					for(int i = 1 ; i < approveddate ; i++ ) {
-						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-								+ ((i < 10) ? "0" + i : "" + i);
-						if(overtimeArray.get(dateString)!=null) {						
-							hours = Double.valueOf(overtimeArray.get(dateString).toString());	
-							if(i==1) {
-								taskTrackApproval.setDay1(hours);
-							}
-							else if(i==2) {
-								taskTrackApproval.setDay2(hours);
-							}
-							else if(i==3) {
-								taskTrackApproval.setDay3(hours);
-							}
-							else if(i==4) {
-								taskTrackApproval.setDay4(hours);
-							}
-							else if(i==5) {
-								taskTrackApproval.setDay5(hours);
-							}
-							else if(i==6) {
-								taskTrackApproval.setDay6(hours);
-							}
-							else if(i==7) {
-								taskTrackApproval.setDay7(hours);
-							}
-							else if(i==8) {
-								taskTrackApproval.setDay8(hours);
-							}
-							else if(i==9) {
-								taskTrackApproval.setDay9(hours);
-							}
-							else if(i==10) {
-								taskTrackApproval.setDay10(hours);
-							}
-							else if(i==11) {
-								taskTrackApproval.setDay11(hours);
-							}
-							else if(i==12) {
-								taskTrackApproval.setDay12(hours);
-							}
-							else if(i==13) {
-								taskTrackApproval.setDay13(hours);
-							}
-							else if(i==14) {
-								taskTrackApproval.setDay14(hours);
-							}
-							else if(i==15) {
-								taskTrackApproval.setDay15(hours);
-							}
-							else if(i==16) {
-								taskTrackApproval.setDay16(hours);
-							}
-							else if(i==17) {
-								taskTrackApproval.setDay17(hours);
-							}
-							else if(i==18) {
-								taskTrackApproval.setDay18(hours);
-							}
-							else if(i==19) {
-								taskTrackApproval.setDay19(hours);
-							}
-							else if(i==20) {
-								taskTrackApproval.setDay20(hours);
-							}
-							else if(i==21) {
-								taskTrackApproval.setDay21(hours);
-							}
-							else if(i==22) {
-								taskTrackApproval.setDay22(hours);
-							}
-							else if(i==23) {
-								taskTrackApproval.setDay23(hours);
-							}
-							else if(i==24) {
-								taskTrackApproval.setDay24(hours);
-							}
-							else if(i==25) {
-								taskTrackApproval.setDay25(hours);
-							}
-							else if(i==26) {
-								taskTrackApproval.setDay26(hours);
-							}
-							else if(i==27) {
-								taskTrackApproval.setDay27(hours);
-							}
-							else if(i==28) {
-								taskTrackApproval.setDay28(hours);
-							}
-							else if(i==29) {
-								taskTrackApproval.setDay29(hours);
-							}
-							else if(i==30) {
-								taskTrackApproval.setDay30(hours);
-							}
-							else if(i==31) {
-								taskTrackApproval.setDay31(hours);
-							}
-						}
-					}
-					tasktrackApprovalService.updateDatas(taskTrackApproval);	
-					
-				}
-				if(beachId!=null) {
-					TaskTrackApprovalLevel2 taskTrackApproval = tasktrackApprovalService.findById2(beachId);	
-					for(int i = 1 ; i < approveddate ; i++ ) {
-						String dateString = year + "-" + ((month < 10) ? "0" + month : "" + month) + "-"
-								+ ((i < 10) ? "0" + i : "" + i);
-						if(beachArray.get(dateString)!=null) {						
-							hours = Double.valueOf(beachArray.get(dateString).toString());	
-							if(i==1) {
-								taskTrackApproval.setDay1(hours);
-							}
-							else if(i==2) {
-								taskTrackApproval.setDay2(hours);
-							}
-							else if(i==3) {
-								taskTrackApproval.setDay3(hours);
-							}
-							else if(i==4) {
-								taskTrackApproval.setDay4(hours);
-							}
-							else if(i==5) {
-								taskTrackApproval.setDay5(hours);
-							}
-							else if(i==6) {
-								taskTrackApproval.setDay6(hours);
-							}
-							else if(i==7) {
-								taskTrackApproval.setDay7(hours);
-							}
-							else if(i==8) {
-								taskTrackApproval.setDay8(hours);
-							}
-							else if(i==9) {
-								taskTrackApproval.setDay9(hours);
-							}
-							else if(i==10) {
-								taskTrackApproval.setDay10(hours);
-							}
-							else if(i==11) {
-								taskTrackApproval.setDay11(hours);
-							}
-							else if(i==12) {
-								taskTrackApproval.setDay12(hours);
-							}
-							else if(i==13) {
-								taskTrackApproval.setDay13(hours);
-							}
-							else if(i==14) {
-								taskTrackApproval.setDay14(hours);
-							}
-							else if(i==15) {
-								taskTrackApproval.setDay15(hours);
-							}
-							else if(i==16) {
-								taskTrackApproval.setDay16(hours);
-							}
-							else if(i==17) {
-								taskTrackApproval.setDay17(hours);
-							}
-							else if(i==18) {
-								taskTrackApproval.setDay18(hours);
-							}
-							else if(i==19) {
-								taskTrackApproval.setDay19(hours);
-							}
-							else if(i==20) {
-								taskTrackApproval.setDay20(hours);
-							}
-							else if(i==21) {
-								taskTrackApproval.setDay21(hours);
-							}
-							else if(i==22) {
-								taskTrackApproval.setDay22(hours);
-							}
-							else if(i==23) {
-								taskTrackApproval.setDay23(hours);
-							}
-							else if(i==24) {
-								taskTrackApproval.setDay24(hours);
-							}
-							else if(i==25) {
-								taskTrackApproval.setDay25(hours);
-							}
-							else if(i==26) {
-								taskTrackApproval.setDay26(hours);
-							}
-							else if(i==27) {
-								taskTrackApproval.setDay27(hours);
-							}
-							else if(i==28) {
-								taskTrackApproval.setDay28(hours);
-							}
-							else if(i==29) {
-								taskTrackApproval.setDay29(hours);
-							}
-							else if(i==30) {
-								taskTrackApproval.setDay30(hours);
-							}
-							else if(i==31) {
-								taskTrackApproval.setDay31(hours);
-							}
-						}
-					}
-					tasktrackApprovalService.updateDatas(taskTrackApproval);	
-				}
-				
-			}
-			else {
-				message = "Not yet approved";
-				
-			}
-			
-		
-			
-		}
-		
-		// data insertion to activity log
-		Date current = new Date();
-		ActivityLog activity = new ActivityLog();
-		activity.setAction("Reapproved time sheet");
-		UserModel user = userRepository.getActiveUser(logUser);
-		UserModel user2 =  userRepository.getActiveUser(userId);
-		activity.setUser(user2);
-		activity.setAction_by(user);
-		activity.setAction_on(current);
-		activity.setFrom_date(from_date);
-		activity.setTo_date(to_date);
-		activity.setMonth(month);
-		ProjectModel project = project_repositary.getOne(projectId);
-		activity.setProject(project);
-		activity.setYear(year);
-		activitylogrepository.save(activity);
-		
-		jsonDataRes.put("status", "success");
-		//jsonDataRes.put("code", httpstatus.getStatus());
-		jsonDataRes.put("message", message);
-		}catch(Exception e) {
+
+			// data insertion to activity log
+			Date current = new Date();
+			ActivityLog activity = new ActivityLog();
+			activity.setAction("Reapproved time sheet");
+			UserModel user = userRepository.getActiveUser(logUser);
+			UserModel user2 = userRepository.getActiveUser(userId);
+			activity.setUser(user2);
+			activity.setAction_by(user);
+			activity.setAction_on(current);
+			activity.setFrom_date(from_date);
+			activity.setTo_date(to_date);
+			activity.setMonth(month);
+			ProjectModel project = project_repositary.getOne(projectId);
+			activity.setProject(project);
+			activity.setYear(year);
+			activitylogrepository.save(activity);
+
+			jsonDataRes.put("status", "success");
+			// jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", message);
+		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "failure");
-			//jsonDataRes.put("code", httpstatus.getStatus());
+			// jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "failed. " + e);
 		}
 		return jsonDataRes;
 	}
 
 	@Override
-	public ObjectNode mailRejectTimesheetDetailstoLevel1andClear(Long projectId, Long userId, Long month, Long year,String message) {
+	public ObjectNode mailRejectTimesheetDetailstoLevel1andClear(Long projectId, Long userId, Long month, Long year,
+			String message) {
 		// TODO Auto-generated method stub
-		
-	//	int month1 = month.intValue();
-		//int year1 = year.intValue();
-		ObjectNode jsonDataRes = objectMapper.createObjectNode();
-		//1.clear recently added data.
-		//List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,month1,year1,projectId);
-		//TaskTrackApproval forwardtolevel2 = timeTrackApprovalJPARepository.getapprovedDates2(month1, year1, projectId, userId);
-		//TaskTrackApprovalLevel2 dates = timeTrackApprovalLevel2.getapprovedDates2(month1, year1,projectId, userId);
-		
-	/*	if(forwardtolevel2 != null && dates != null) {
-		
-			if(dates.getApproved_date() != null && forwardtolevel2.getForwarded_date() != null) {
-			if(dates.getApproved_date().before(forwardtolevel2.getForwarded_date())) {
-			
-			//do clear the rejected datas
-			Calendar approved = Calendar.getInstance();
-		    approved.setTime(dates.getApproved_date());
-		    int approved_date = approved.get(Calendar.DAY_OF_MONTH);
-		    
-		    Calendar forwarded_level1 = Calendar.getInstance();
-		    forwarded_level1.setTime(forwardtolevel2.getForwarded_date());
-		    int forwarded = forwarded_level1.get(Calendar.DAY_OF_MONTH);
-		    System.out.println("forwarded-------------->"+forwarded+"approved----------->"+approved_date);
-		  
-		    if(approvedData.size() > 0) {
-		    for(TaskTrackApprovalLevel2 data: approvedData) {	
-		    	System.out.println("Here-------------------------------------------->1");
-		    	TaskTrackApprovalLevel2 taskTrackApproval = timeTrackApprovalLevel2.getOne(data.getId());
-		    	TaskTrackApproval level1 = tasktrackApprovalService.findById(taskTrackApproval.getTasktrack_level1_Id().getId());
-		    	level1.setForwarded_date(dates.getApproved_date());
-		    	timeTrackApprovalJPARepository.save(level1);
-		    		for(int i = approved_date+1; i<= forwarded ; i++) {
-		    			
-		    			if(i==1) {
-							taskTrackApproval.setDay1(null);
-						}
-						else if(i==2) {
-							taskTrackApproval.setDay2(null);
-						}
-						else if(i==3) {
-							taskTrackApproval.setDay3(null);
-						}
-						else if(i==4) {
-							taskTrackApproval.setDay4(null);
-						}
-						else if(i==5) {
-							taskTrackApproval.setDay5(null);
-						}
-						else if(i==6) {
-							taskTrackApproval.setDay6(null);
-						}
-						else if(i==7) {
-							taskTrackApproval.setDay7(null);
-						}
-						else if(i==8) {
-							taskTrackApproval.setDay8(null);
-						}
-						else if(i==9) {
-							taskTrackApproval.setDay9(null);
-						}
-						else if(i==10) {
-							taskTrackApproval.setDay10(null);
-						}
-						else if(i==11) {
-							taskTrackApproval.setDay11(null);
-						}
-						else if(i==12) {
-							taskTrackApproval.setDay12(null);
-						}
-						else if(i==13) {
-							taskTrackApproval.setDay13(null);
-						}
-						else if(i==14) {
-							taskTrackApproval.setDay14(null);
-						}
-						else if(i==15) {
-							taskTrackApproval.setDay15(null);
-						}
-						else if(i==16) {
-							taskTrackApproval.setDay16(null);
-						}
-						else if(i==17) {
-							taskTrackApproval.setDay17(null);
-						}
-						else if(i==18) {
-							taskTrackApproval.setDay18(null);
-						}
-						else if(i==19) {
-							taskTrackApproval.setDay19(null);
-						}
-						else if(i==20) {
-							taskTrackApproval.setDay20(null);
-						}
-						else if(i==21) {
-							taskTrackApproval.setDay21(null);
-						}
-						else if(i==22) {
-							taskTrackApproval.setDay22(null);
-						}
-						else if(i==23) {
-							taskTrackApproval.setDay23(null);
-						}
-						else if(i==24) {
-							taskTrackApproval.setDay24(null);
-						}
-						else if(i==25) {
-							taskTrackApproval.setDay25(null);
-						}
-						else if(i==26) {
-							taskTrackApproval.setDay26(null);
-						}
-						else if(i==27) {
-							taskTrackApproval.setDay27(null);
-						}
-						else if(i==28) {
-							taskTrackApproval.setDay28(null);
-						}
-						else if(i==29) {
-							taskTrackApproval.setDay29(null);
-						}
-						else if(i==30) {
-							taskTrackApproval.setDay30(null);
-						}
-						else if(i==31) {
-							taskTrackApproval.setDay31(null);
-						}
-		    			
-		    		}
 
-		    		tasktrackApprovalService.updateDatas(taskTrackApproval);	
-		    }
-			}
-		    jsonDataRes.put("status", "success");
-  			//jsonDataRes.put("code", httpstatus.getStatus());
-  			jsonDataRes.put("message", "Cleared Data");
-		}
-			
-          else {
-        	  jsonDataRes.put("status", "failure");
-  			//jsonDataRes.put("code", httpstatus.getStatus());
-  			jsonDataRes.put("message", "failed. " + "Cannot Reject data");
-			// set cannot reject data
-		   }
-		}*/
+		// int month1 = month.intValue();
+		// int year1 = year.intValue();
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		// 1.clear recently added data.
+		// List<TaskTrackApprovalLevel2> approvedData =
+		// timeTrackApprovalLevel2.getApprovedData(userId,month1,year1,projectId);
+		// TaskTrackApproval forwardtolevel2 =
+		// timeTrackApprovalJPARepository.getapprovedDates2(month1, year1, projectId,
+		// userId);
+		// TaskTrackApprovalLevel2 dates =
+		// timeTrackApprovalLevel2.getapprovedDates2(month1, year1,projectId, userId);
+
+		/*
+		 * if(forwardtolevel2 != null && dates != null) {
+		 * 
+		 * if(dates.getApproved_date() != null && forwardtolevel2.getForwarded_date() !=
+		 * null) {
+		 * if(dates.getApproved_date().before(forwardtolevel2.getForwarded_date())) {
+		 * 
+		 * //do clear the rejected datas Calendar approved = Calendar.getInstance();
+		 * approved.setTime(dates.getApproved_date()); int approved_date =
+		 * approved.get(Calendar.DAY_OF_MONTH);
+		 * 
+		 * Calendar forwarded_level1 = Calendar.getInstance();
+		 * forwarded_level1.setTime(forwardtolevel2.getForwarded_date()); int forwarded
+		 * = forwarded_level1.get(Calendar.DAY_OF_MONTH);
+		 * System.out.println("forwarded-------------->"+forwarded+
+		 * "approved----------->"+approved_date);
+		 * 
+		 * if(approvedData.size() > 0) { for(TaskTrackApprovalLevel2 data: approvedData)
+		 * { System.out.println("Here-------------------------------------------->1");
+		 * TaskTrackApprovalLevel2 taskTrackApproval =
+		 * timeTrackApprovalLevel2.getOne(data.getId()); TaskTrackApproval level1 =
+		 * tasktrackApprovalService.findById(taskTrackApproval.getTasktrack_level1_Id().
+		 * getId()); level1.setForwarded_date(dates.getApproved_date());
+		 * timeTrackApprovalJPARepository.save(level1); for(int i = approved_date+1; i<=
+		 * forwarded ; i++) {
+		 * 
+		 * if(i==1) { taskTrackApproval.setDay1(null); } else if(i==2) {
+		 * taskTrackApproval.setDay2(null); } else if(i==3) {
+		 * taskTrackApproval.setDay3(null); } else if(i==4) {
+		 * taskTrackApproval.setDay4(null); } else if(i==5) {
+		 * taskTrackApproval.setDay5(null); } else if(i==6) {
+		 * taskTrackApproval.setDay6(null); } else if(i==7) {
+		 * taskTrackApproval.setDay7(null); } else if(i==8) {
+		 * taskTrackApproval.setDay8(null); } else if(i==9) {
+		 * taskTrackApproval.setDay9(null); } else if(i==10) {
+		 * taskTrackApproval.setDay10(null); } else if(i==11) {
+		 * taskTrackApproval.setDay11(null); } else if(i==12) {
+		 * taskTrackApproval.setDay12(null); } else if(i==13) {
+		 * taskTrackApproval.setDay13(null); } else if(i==14) {
+		 * taskTrackApproval.setDay14(null); } else if(i==15) {
+		 * taskTrackApproval.setDay15(null); } else if(i==16) {
+		 * taskTrackApproval.setDay16(null); } else if(i==17) {
+		 * taskTrackApproval.setDay17(null); } else if(i==18) {
+		 * taskTrackApproval.setDay18(null); } else if(i==19) {
+		 * taskTrackApproval.setDay19(null); } else if(i==20) {
+		 * taskTrackApproval.setDay20(null); } else if(i==21) {
+		 * taskTrackApproval.setDay21(null); } else if(i==22) {
+		 * taskTrackApproval.setDay22(null); } else if(i==23) {
+		 * taskTrackApproval.setDay23(null); } else if(i==24) {
+		 * taskTrackApproval.setDay24(null); } else if(i==25) {
+		 * taskTrackApproval.setDay25(null); } else if(i==26) {
+		 * taskTrackApproval.setDay26(null); } else if(i==27) {
+		 * taskTrackApproval.setDay27(null); } else if(i==28) {
+		 * taskTrackApproval.setDay28(null); } else if(i==29) {
+		 * taskTrackApproval.setDay29(null); } else if(i==30) {
+		 * taskTrackApproval.setDay30(null); } else if(i==31) {
+		 * taskTrackApproval.setDay31(null); }
+		 * 
+		 * }
+		 * 
+		 * tasktrackApprovalService.updateDatas(taskTrackApproval); } }
+		 * jsonDataRes.put("status", "success"); //jsonDataRes.put("code",
+		 * httpstatus.getStatus()); jsonDataRes.put("message", "Cleared Data"); }
+		 * 
+		 * else { jsonDataRes.put("status", "failure"); //jsonDataRes.put("code",
+		 * httpstatus.getStatus()); jsonDataRes.put("message", "failed. " +
+		 * "Cannot Reject data"); // set cannot reject data } }
+		 */
 		/*
 		 * else if(dates.getApproved_date() == null &&
 		 * forwardtolevel2.getForwarded_date() != null) {
@@ -5799,100 +5114,94 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		 * jsonDataRes.put("status", "success"); //jsonDataRes.put("code",
 		 * httpstatus.getStatus()); jsonDataRes.put("message", "Cleared Data"); }
 		 */
-	//	}
-		
-		
-		
-		
-		//2.mail reject message to level1 approver.
-		//ObjectNode mailtolevel1 = mailRejectMessageToLevel1(projectId,message);
-		
-		
+		// }
+
+		// 2.mail reject message to level1 approver.
+		// ObjectNode mailtolevel1 = mailRejectMessageToLevel1(projectId,message);
+
 		return jsonDataRes;
 	}
-	public ObjectNode mailRejectMessageToLevel1(Long projectId,String message) {
-		
+
+	public ObjectNode mailRejectMessageToLevel1(Long projectId, String message) {
+
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
-		// find level1 approver 
-		
+		// find level1 approver
+
 		ProjectModel project = projectRepository.getProjectDetails(projectId);
-		
+
 		try {
-			String mail = sendMailTolevel1(message,project.getProjectOwner(),project.getOnsite_lead());
-			//System.out.println("------------>"+mail);
+			String mail = sendMailTolevel1(message, project.getProjectOwner(), project.getOnsite_lead());
+			// System.out.println("------------>"+mail);
 			jsonDataRes.put("status", "success");
-  			//jsonDataRes.put("code", httpstatus.getStatus());
-  			jsonDataRes.put("message", "Cleared Data");
+			// jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "Cleared Data");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			jsonDataRes.put("status", "failed");
-  			//jsonDataRes.put("code", e.printStackTrace());
-  			jsonDataRes.put("message", "Mail sent successfully");
+			// jsonDataRes.put("code", e.printStackTrace());
+			jsonDataRes.put("message", "Mail sent successfully");
 		}
-		
-		
+
 		return jsonDataRes;
 	}
 
+	public String sendMailTolevel1(String messages, UserModel user, UserModel lead)
+			throws AddressException, MessagingException {
 
-	public String sendMailTolevel1(String messages, UserModel user,UserModel lead) throws AddressException, MessagingException{
-		
 		String subject = "Rejected Timesheet";
-		StringBuilder mailBody = new StringBuilder("Hi "+user.getFirstName()+" "+user.getLastName()+",");
-		mailBody.append("<br/><br/>The time sheet submitted recently has been rejected by level2 approver "+lead.getFirstName()+" "+lead.getLastName()+" please find the below comments from them:");
-		mailBody.append("<br/><br/>"+messages+"</a>");
-		//mailBody.append("<br/><br/>This link will expire in "+Constants.EMAIL_TOKEN_EXP_DUR+" minutes");
-		
-		String to = user.getEmail();
-        String from = "noreply@titechnologies.in";  
-        String host = "smtp.gmail.com"; 
-        final String username = "noreply@titechnologies.in";
-        final String password = "Noreply!@#";  
-        
-        System.out.println("TLS Email Start"); 
-        
-        Properties properties = System.getProperties();  
-          
-        // Setup mail server 
-        properties.setProperty("mail.smtp.host", host); 
-        // SSL Port 
-        properties.put("mail.smtp.port", "465");  
-        // enable authentication 
-        properties.put("mail.smtp.auth", "true");  
-        // SSL Factory 
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");   
-  
-        // creating Session instance referenced to  
-        // Authenticator object to pass in  
-        // Session.getInstance argument 
-        Session session = Session.getDefaultInstance(properties, 
-        new javax.mail.Authenticator() { 
-            // override the getPasswordAuthentication  
-            protected PasswordAuthentication  
-                    getPasswordAuthentication() { 
-                return new PasswordAuthentication(username, password); 
-            } 
-        }); 
-    
+		StringBuilder mailBody = new StringBuilder("Hi " + user.getFirstName() + " " + user.getLastName() + ",");
+		mailBody.append("<br/><br/>The time sheet submitted recently has been rejected by level2 approver "
+				+ lead.getFirstName() + " " + lead.getLastName() + " please find the below comments from them:");
+		mailBody.append("<br/><br/>" + messages + "</a>");
+		// mailBody.append("<br/><br/>This link will expire in
+		// "+Constants.EMAIL_TOKEN_EXP_DUR+" minutes");
 
-	    // javax.mail.internet.MimeMessage class is mostly  
-	    // used for abstraction. 
-	    MimeMessage message = new MimeMessage(session);  
-	      
-	    // header field of the header. 
-	    message.setFrom(new InternetAddress(from)); 
-	    message.addRecipient(Message.RecipientType.TO,  
-	                          new InternetAddress(to)); 
-	    message.setSubject(subject); 
-	    // message.setText(mailBody);
-	    message.setContent(mailBody.toString(),"text/html");
-	  
-	    // Send message 
-	    Transport.send(message); 
-	    
-	    String msg = "Verification link has been successfully sent to your email \""+to+"\"";
-	    System.out.println(msg); 
+		String to = user.getEmail();
+		String from = "noreply@titechnologies.in";
+		String host = "smtp.gmail.com";
+		final String username = "noreply@titechnologies.in";
+		final String password = "Noreply!@#";
+
+		System.out.println("TLS Email Start");
+
+		Properties properties = System.getProperties();
+
+		// Setup mail server
+		properties.setProperty("mail.smtp.host", host);
+		// SSL Port
+		properties.put("mail.smtp.port", "465");
+		// enable authentication
+		properties.put("mail.smtp.auth", "true");
+		// SSL Factory
+		properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+		// creating Session instance referenced to
+		// Authenticator object to pass in
+		// Session.getInstance argument
+		Session session = Session.getDefaultInstance(properties, new javax.mail.Authenticator() {
+			// override the getPasswordAuthentication
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
+		// javax.mail.internet.MimeMessage class is mostly
+		// used for abstraction.
+		MimeMessage message = new MimeMessage(session);
+
+		// header field of the header.
+		message.setFrom(new InternetAddress(from));
+		message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+		message.setSubject(subject);
+		// message.setText(mailBody);
+		message.setContent(mailBody.toString(), "text/html");
+
+		// Send message
+		Transport.send(message);
+
+		String msg = "Verification link has been successfully sent to your email \"" + to + "\"";
+		System.out.println(msg);
 		return msg;
 	}
 
@@ -5903,103 +5212,1018 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
 		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByMonthYear(month, year);
 		String intmonth;
-		if(month<10){
-			intmonth ="0"+month;
+		if (month < 10) {
+			intmonth = "0" + month;
+		} else {
+			intmonth = String.valueOf(month);
 		}
-		else{
-			intmonth =String.valueOf(month);
-		}
-		for(Object[] item : financeData) {
+		for (Object[] item : financeData) {
 			JSONObject node = new JSONObject();
 			List<JSONObject> billableArray = new ArrayList<>();
 			List<JSONObject> userArray = new ArrayList<>();
 
-			node.put("userId",item[0]);
-			node.put("firstName",item[1]);
-			node.put("lastName",item[2]);
-			node.put("status",item[3]);
-			node.put("projectName",item[4]);
-			for(int i=1;i<=daysInMonth;i++)
-			{
+			node.put("userId", item[0]);
+			node.put("firstName", item[1]);
+			node.put("lastName", item[2]);
+			node.put("status", item[3]);
+			node.put("projectName", item[4]);
+			for (int i = 1; i <= daysInMonth; i++) {
 				String j;
-				if(i<10){
-					j ="0"+i;
-				}
-				else{
-					j =String.valueOf(i);
+				if (i < 10) {
+					j = "0" + i;
+				} else {
+					j = String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year+"-"+intmonth+"-"+j,item[i+4]);
+				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 4]);
 				billableArray.add(billableNode);
 			}
-			node.put("billable",billableArray);
+			node.put("billable", billableArray);
 			resultData.add(node);
 		}
 
 		return resultData;
 	}
 
-	     //Renjith
+	// Renjith
 	@Override
 	public List<TaskTrackApprovalLevel2> getNotApprovedData(int monthIndex, int yearIndex, Long projectId) {
 		return timeTrackApprovalLevel2.getNotApprovedData(monthIndex, yearIndex, projectId);
 	}
-	
-	public List<TaskTrackApprovalLevel2> getHalfMonthApprovedData( int  monthIndex, int yearIndex, Long projectId){
+
+	public List<TaskTrackApprovalLevel2> getHalfMonthApprovedData(int monthIndex, int yearIndex, Long projectId) {
 		return timeTrackApprovalLevel2.getHalfMonthApprovedData(monthIndex, yearIndex, projectId);
 	}
-	     //Renjith
-		 @Override
+
+	// Renjith
+	@Override
 	public List<TaskTrackApprovalLevel2> getMidMonthApprovedData(int monthIndex, int yearIndex, Long projectId) {
 		return timeTrackApprovalLevel2.getMidMonthData(monthIndex, yearIndex, projectId);
 	}
-		 private ProjectModel getProjectDetails(Long projectId) {
-				// TODO Auto-generated method stub
-				//System.out.println("Here____________________________");
-				return projectService.getProjectDetails(projectId);
+
+	private ProjectModel getProjectDetails(Long projectId) {
+		// TODO Auto-generated method stub
+		// System.out.println("Here____________________________");
+		return projectService.getProjectDetails(projectId);
+	}
+
+	// Renjith
+	public ArrayList<JSONObject> getFinanceDataByProjectSet(int month, int year, Set<Long> id) {
+
+		YearMonth yearMonthObject = YearMonth.of(year, month);
+		int daysInMonth = yearMonthObject.lengthOfMonth();
+		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
+		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProjectSet(month, year, id);
+		String intmonth;
+		if (month < 10) {
+			intmonth = "0" + month;
+		} else {
+			intmonth = String.valueOf(month);
+		}
+		for (Object[] item : financeData) {
+			JSONObject node = new JSONObject();
+			List<JSONObject> billableArray = new ArrayList<>();
+			List<JSONObject> userArray = new ArrayList<>();
+
+			node.put("userId", item[0]);
+			node.put("firstName", item[1]);
+			node.put("lastName", item[2]);
+			node.put("status", item[3]);
+			for (int i = 1; i <= daysInMonth; i++) {
+				String j;
+				if (i < 10) {
+					j = "0" + i;
+				} else {
+					j = String.valueOf(i);
+				}
+				JSONObject billableNode = new JSONObject();
+				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 3]);
+				billableArray.add(billableNode);
 			}
-		 
-		 //Renjith
-		 public ArrayList<JSONObject>  getFinanceDataByProjectSet(int month, int year, Set<Long> id) {
+			node.put("billable", billableArray);
+			resultData.add(node);
+		}
 
-				YearMonth yearMonthObject = YearMonth.of(year, month);
-				int daysInMonth = yearMonthObject.lengthOfMonth();
-				ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-				List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProjectSet(month, year, id);
-				String intmonth;
-				if(month<10){
-					intmonth ="0"+month;
-				}
-				else{
-					intmonth =String.valueOf(month);
-				}
-				for(Object[] item : financeData) {
-					JSONObject node = new JSONObject();
-					List<JSONObject> billableArray = new ArrayList<>();
-					List<JSONObject> userArray = new ArrayList<>();
+		return resultData;
+	}
 
-					node.put("userId",item[0]);
-					node.put("firstName",item[1]);
-					node.put("lastName",item[2]);
-					node.put("status",item[3]);
-					for(int i=1;i<=daysInMonth;i++)
-					{
-						String j;
-						if(i<10){
-							j ="0"+i;
+	@Override
+	public void saveApprovedHours(JSONObject requestData) throws Exception {
+
+		// Obtain the data from request data
+		Long billableId = null, nonBillableId = null, overtimeId = null, projectId = null, userId = null;
+		Integer year = Integer.parseInt((String) requestData.get("year"));
+		Integer month = (Integer) requestData.get("month");
+		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
+			projectId = Long.valueOf(requestData.get("projectId").toString());
+		}
+		if (requestData.get("userId") != null && requestData.get("userId") != "") {
+			userId = Long.valueOf(requestData.get("userId").toString());
+		}
+		if (requestData.get("billableId") != null && requestData.get("billableId") != "") {
+			billableId = Long.valueOf(requestData.get("billableId").toString());
+		}
+		if (requestData.get("nonBillableId") != null && requestData.get("nonBillableId") != "") {
+			nonBillableId = Long.valueOf(requestData.get("nonBillableId").toString());
+		}
+		if (requestData.get("overtimeId") != null && requestData.get("overtimeId") != "") {
+			overtimeId = Long.valueOf(requestData.get("overtimeId").toString());
+		}
+		String date1 = (String) requestData.get("startDate");
+		String date2 = (String) requestData.get("endDate");
+
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = null, endDate = null;
+		if (!date1.isEmpty()) {
+			startDate = outputFormat.parse(date1);
+		}
+		if (!date2.isEmpty()) {
+			endDate = outputFormat.parse(date2);
+		}
+
+		HashMap<String, Object> billableArray = new JSONObject();
+		HashMap<String, Object> nonbillableArray = new JSONObject();
+		HashMap<String, Object> overtimeArray = new JSONObject();
+
+		UserModel user = userService.getUserDetailsById(userId);
+		ProjectModel project = projectService.getProjectId(projectId);
+
+		if (requestData.get("billable") != null && requestData.get("billable") != "") {
+			billableArray = (HashMap<String, Object>) (requestData.get("billable"));
+		}
+		if (requestData.get("nonBillable") != null && requestData.get("nonBillable") != "") {
+			nonbillableArray = (HashMap<String, Object>) requestData.get("nonBillable");
+		}
+		if (requestData.get("overtime") != null && requestData.get("overtime") != "") {
+			overtimeArray = (HashMap<String, Object>) requestData.get("overtime");
+		}
+
+		Long billable_id = null;
+		Long nonbillable_id = null;
+		Long overtime_id = null;
+
+		Date current_date = new Date();
+		Calendar current = Calendar.getInstance();
+		current.setTime(current_date);
+		int intCurrentMonth = 0;
+		intCurrentMonth = (current.get(Calendar.MONTH) + 1);
+
+		Calendar endCal = Calendar.getInstance();
+		endCal.setTime(endDate);
+		endCal.add(Calendar.DATE, -1);
+
+		if (billableArray.size() > 0) {// Billable
+
+			Calendar startCal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			startCal.setTime(startDate);
+			double hours = 0;
+			intMonth = (startCal.get(Calendar.MONTH) + 1);
+
+			if (billableId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
+
+//					taskTrackApproval.setApprovedDate(endDate);
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = startCal.get(Calendar.DAY_OF_MONTH);
+						String dateString = startCal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (billableArray.get(dateString) != null) {
+							hours = Double.valueOf(billableArray.get(dateString).toString());
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
 						}
-						else{
-							j =String.valueOf(i);
-						}
-						JSONObject billableNode = new JSONObject();
-						billableNode.put(year+"-"+intmonth+"-"+j,item[i+3]);
-						billableArray.add(billableNode);
+						startCal.add(Calendar.DATE, 1);
 					}
-					node.put("billable",billableArray);
-					resultData.add(node);
+					if (startCal.get(Calendar.DATE) < 16) {
+						taskTrackApproval.setFirstHalfStatus("O");
+					}
+					if (endCal.get(Calendar.DATE) > 15) {
+						taskTrackApproval.setSecondHalfStatus("O");
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					billable_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Billable");
+
+				if (startCal.get(Calendar.DATE) < 16) {
+					taskTrackApproval.setFirstHalfStatus("O");
+				}
+				if (endCal.get(Calendar.DATE) > 15) {
+					taskTrackApproval.setSecondHalfStatus("O");
 				}
 
-				return resultData;
-			} 
-		 //Renjith
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (startCal.get(Calendar.MONTH) + 1);
+					intday = startCal.get(Calendar.DAY_OF_MONTH);
+					String dateString = startCal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (billableArray.get(dateString) != null) {
+						hours = Double.valueOf(billableArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+					}
+					startCal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval billable = tasktrackApprovalService.save(taskTrackApproval);
+				billable_id = billable.getId();
+
+			}
+		}
+
+		/**************************************************************/
+
+		if (nonbillableArray.size() > 0) {// Non-Billable
+
+			Calendar startCal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			startCal.setTime(startDate);
+			double hours = 0;
+			intMonth = (startCal.get(Calendar.MONTH) + 1);
+
+			if (nonBillableId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonBillableId);
+
+//					taskTrackApproval.setApprovedDate(endDate);
+
+				if (startCal.get(Calendar.DATE) < 16) {
+					taskTrackApproval.setFirstHalfStatus("O");
+				}
+				if (endCal.get(Calendar.DATE) > 15) {
+					taskTrackApproval.setSecondHalfStatus("O");
+				}
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = startCal.get(Calendar.DAY_OF_MONTH);
+						String dateString = startCal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (nonbillableArray.get(dateString) != null) {
+							hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+						}
+						startCal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					nonbillable_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Non-Billable");
+
+				if (startCal.get(Calendar.DATE) < 16) {
+					taskTrackApproval.setFirstHalfStatus("O");
+				}
+				if (endCal.get(Calendar.DATE) > 15) {
+					taskTrackApproval.setSecondHalfStatus("O");
+				}
+
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (startCal.get(Calendar.MONTH) + 1);
+					intday = startCal.get(Calendar.DAY_OF_MONTH);
+					String dateString = startCal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (nonbillableArray.get(dateString) != null) {
+						hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					startCal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval nonbillable = tasktrackApprovalService.save(taskTrackApproval);
+				nonbillable_id = nonbillable.getId();
+
+			}
+
+		}
+		/****************************************************************************************/
+
+		/*****************************************************************************************/
+
+		if (overtimeArray.size() > 0) {// OverTime
+
+			Calendar startCal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			startCal.setTime(startDate);
+			double hours = 0;
+			intMonth = (startCal.get(Calendar.MONTH) + 1);
+			if (overtimeId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
+
+//					taskTrackApproval.setApprovedDate(endDate);
+
+				if (startCal.get(Calendar.DATE) < 16) {
+					taskTrackApproval.setFirstHalfStatus("O");
+				}
+				if (endCal.get(Calendar.DATE) > 15) {
+					taskTrackApproval.setSecondHalfStatus("O");
+				}
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = startCal.get(Calendar.DAY_OF_MONTH);
+						String dateString = startCal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (overtimeArray.get(dateString) != null) {
+							hours = Double.valueOf(overtimeArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+						}
+						startCal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					overtime_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Overtime");
+
+				if (startCal.get(Calendar.DATE) < 16) {
+					taskTrackApproval.setFirstHalfStatus("O");
+				}
+				if (endCal.get(Calendar.DATE) > 15) {
+					taskTrackApproval.setSecondHalfStatus("O");
+				}
+
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (startCal.get(Calendar.MONTH) + 1);
+					intday = startCal.get(Calendar.DAY_OF_MONTH);
+					String dateString = startCal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (overtimeArray.get(dateString) != null) {
+						hours = Double.valueOf(overtimeArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					startCal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval overtime = tasktrackApprovalService.save(taskTrackApproval);
+				overtime_id = overtime.getId();
+
+			}
+		}
+	}
+
+	@Override
+	public void submitFirstHalfHoursForApproval(JSONObject requestData) throws Exception {
+
+		// Obtain the data from request data
+		Long billableId = null, nonBillableId = null, overtimeId = null, projectId = null, userId = null;
+		Integer year = Integer.parseInt((String) requestData.get("year"));
+		Integer month = (Integer) requestData.get("month");
+		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
+			projectId = Long.valueOf(requestData.get("projectId").toString());
+		}
+		if (requestData.get("userId") != null && requestData.get("userId") != "") {
+			userId = Long.valueOf(requestData.get("userId").toString());
+		}
+		if (requestData.get("billableId") != null && requestData.get("billableId") != "") {
+			billableId = Long.valueOf(requestData.get("billableId").toString());
+		}
+		if (requestData.get("nonBillableId") != null && requestData.get("nonBillableId") != "") {
+			nonBillableId = Long.valueOf(requestData.get("nonBillableId").toString());
+		}
+		if (requestData.get("overtimeId") != null && requestData.get("overtimeId") != "") {
+			overtimeId = Long.valueOf(requestData.get("overtimeId").toString());
+		}
+		String date1 = (String) requestData.get("startDate");
+		String date2 = (String) requestData.get("endDate");
+
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = null, endDate = null;
+		if (!date1.isEmpty()) {
+			startDate = outputFormat.parse(date1);
+		}
+		if (!date2.isEmpty()) {
+			endDate = outputFormat.parse(date2);
+		}
+
+		HashMap<String, Object> billableArray = new JSONObject();
+		HashMap<String, Object> nonbillableArray = new JSONObject();
+		HashMap<String, Object> overtimeArray = new JSONObject();
+
+		UserModel user = userService.getUserDetailsById(userId);
+		ProjectModel project = projectService.getProjectId(projectId);
+
+		if (requestData.get("billable") != null && requestData.get("billable") != "") {
+			billableArray = (HashMap<String, Object>) (requestData.get("billable"));
+		}
+		if (requestData.get("nonBillable") != null && requestData.get("nonBillable") != "") {
+			nonbillableArray = (HashMap<String, Object>) requestData.get("nonBillable");
+		}
+		if (requestData.get("overtime") != null && requestData.get("overtime") != "") {
+			overtimeArray = (HashMap<String, Object>) requestData.get("overtime");
+		}
+
+		Long billable_id = null;
+		Long nonbillable_id = null;
+		Long overtime_id = null;
+
+		Date current_date = new Date();
+		Calendar current = Calendar.getInstance();
+		current.setTime(current_date);
+		int intCurrentMonth = 0;
+		intCurrentMonth = (current.get(Calendar.MONTH) + 1);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(endDate);
+		calendar.add(Calendar.DATE, -1);
+
+		if (billableArray.size() > 0) {// Billable
+
+			Calendar cal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			cal.setTime(startDate);
+			double hours = 0;
+			intMonth = (cal.get(Calendar.MONTH) + 1);
+
+			if (billableId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
+				taskTrackApproval.setFirstHalfStatus("S");
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = cal.get(Calendar.DAY_OF_MONTH);
+						String dateString = cal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (billableArray.get(dateString) != null) {
+							hours = Double.valueOf(billableArray.get(dateString).toString());
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					billable_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Billable");
+				taskTrackApproval.setFirstHalfStatus("S");
+
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (cal.get(Calendar.MONTH) + 1);
+					intday = cal.get(Calendar.DAY_OF_MONTH);
+					String dateString = cal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (billableArray.get(dateString) != null) {
+						hours = Double.valueOf(billableArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval billable = tasktrackApprovalService.save(taskTrackApproval);
+				billable_id = billable.getId();
+
+			}
+		}
+
+		/**************************************************************/
+
+		if (nonbillableArray.size() > 0) {// Non-Billable
+
+			Calendar cal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			cal.setTime(startDate);
+			double hours = 0;
+			intMonth = (cal.get(Calendar.MONTH) + 1);
+
+			if (nonBillableId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonBillableId);
+
+				taskTrackApproval.setFirstHalfStatus("S");
+
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = cal.get(Calendar.DAY_OF_MONTH);
+						String dateString = cal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (nonbillableArray.get(dateString) != null) {
+							hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					nonbillable_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Non-Billable");
+				taskTrackApproval.setFirstHalfStatus("S");
+
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (cal.get(Calendar.MONTH) + 1);
+					intday = cal.get(Calendar.DAY_OF_MONTH);
+					String dateString = cal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (nonbillableArray.get(dateString) != null) {
+						hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval nonbillable = tasktrackApprovalService.save(taskTrackApproval);
+				nonbillable_id = nonbillable.getId();
+
+			}
+
+		}
+		/****************************************************************************************/
+
+		/*****************************************************************************************/
+
+		if (overtimeArray.size() > 0) {// OverTime
+
+			Calendar cal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			cal.setTime(startDate);
+			double hours = 0;
+			intMonth = (cal.get(Calendar.MONTH) + 1);
+			if (overtimeId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
+
+				taskTrackApproval.setFirstHalfStatus("S");
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = cal.get(Calendar.DAY_OF_MONTH);
+						String dateString = cal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (overtimeArray.get(dateString) != null) {
+							hours = Double.valueOf(overtimeArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					overtime_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Overtime");
+				taskTrackApproval.setFirstHalfStatus("S");
+
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (cal.get(Calendar.MONTH) + 1);
+					intday = cal.get(Calendar.DAY_OF_MONTH);
+					String dateString = cal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (overtimeArray.get(dateString) != null) {
+						hours = Double.valueOf(overtimeArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval overtime = tasktrackApprovalService.save(taskTrackApproval);
+				overtime_id = overtime.getId();
+
+			}
+		}
+	}
+
+	@Override
+	public void submitSecondHalfHoursForApproval(JSONObject requestData) throws Exception {
+
+		// Obtain the data from request data
+		Long billableId = null, nonBillableId = null, overtimeId = null, projectId = null, userId = null;
+		Integer year = Integer.parseInt((String) requestData.get("year"));
+		Integer month = (Integer) requestData.get("month");
+		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
+			projectId = Long.valueOf(requestData.get("projectId").toString());
+		}
+		if (requestData.get("userId") != null && requestData.get("userId") != "") {
+			userId = Long.valueOf(requestData.get("userId").toString());
+		}
+		if (requestData.get("billableId") != null && requestData.get("billableId") != "") {
+			billableId = Long.valueOf(requestData.get("billableId").toString());
+		}
+		if (requestData.get("nonBillableId") != null && requestData.get("nonBillableId") != "") {
+			nonBillableId = Long.valueOf(requestData.get("nonBillableId").toString());
+		}
+		if (requestData.get("overtimeId") != null && requestData.get("overtimeId") != "") {
+			overtimeId = Long.valueOf(requestData.get("overtimeId").toString());
+		}
+		String date1 = (String) requestData.get("startDate");
+		String date2 = (String) requestData.get("endDate");
+
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = null, endDate = null;
+		if (!date1.isEmpty()) {
+			startDate = outputFormat.parse(date1);
+		}
+		if (!date2.isEmpty()) {
+			endDate = outputFormat.parse(date2);
+		}
+
+		HashMap<String, Object> billableArray = new JSONObject();
+		HashMap<String, Object> nonbillableArray = new JSONObject();
+		HashMap<String, Object> overtimeArray = new JSONObject();
+
+		UserModel user = userService.getUserDetailsById(userId);
+		ProjectModel project = projectService.getProjectId(projectId);
+
+		if (requestData.get("billable") != null && requestData.get("billable") != "") {
+			billableArray = (HashMap<String, Object>) (requestData.get("billable"));
+		}
+		if (requestData.get("nonBillable") != null && requestData.get("nonBillable") != "") {
+			nonbillableArray = (HashMap<String, Object>) requestData.get("nonBillable");
+		}
+		if (requestData.get("overtime") != null && requestData.get("overtime") != "") {
+			overtimeArray = (HashMap<String, Object>) requestData.get("overtime");
+		}
+
+		Long billable_id = null;
+		Long nonbillable_id = null;
+		Long overtime_id = null;
+
+		Date current_date = new Date();
+		Calendar current = Calendar.getInstance();
+		current.setTime(current_date);
+		int intCurrentMonth = 0;
+		intCurrentMonth = (current.get(Calendar.MONTH) + 1);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(endDate);
+		calendar.add(Calendar.DATE, -1);
+
+		if (billableArray.size() > 0) {// Billable
+
+			Calendar cal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			cal.setTime(startDate);
+			double hours = 0;
+			intMonth = (cal.get(Calendar.MONTH) + 1);
+
+			if (billableId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
+				taskTrackApproval.setSecondHalfStatus("S");
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = cal.get(Calendar.DAY_OF_MONTH);
+						String dateString = cal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (billableArray.get(dateString) != null) {
+							hours = Double.valueOf(billableArray.get(dateString).toString());
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					billable_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Billable");
+				taskTrackApproval.setSecondHalfStatus("S");
+
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (cal.get(Calendar.MONTH) + 1);
+					intday = cal.get(Calendar.DAY_OF_MONTH);
+					String dateString = cal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (billableArray.get(dateString) != null) {
+						hours = Double.valueOf(billableArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval billable = tasktrackApprovalService.save(taskTrackApproval);
+				billable_id = billable.getId();
+
+			}
+		}
+
+		/**************************************************************/
+
+		if (nonbillableArray.size() > 0) {// Non-Billable
+
+			Calendar cal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			cal.setTime(startDate);
+			double hours = 0;
+			intMonth = (cal.get(Calendar.MONTH) + 1);
+
+			if (nonBillableId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonBillableId);
+
+				taskTrackApproval.setSecondHalfStatus("S");
+
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = cal.get(Calendar.DAY_OF_MONTH);
+						String dateString = cal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (nonbillableArray.get(dateString) != null) {
+							hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					nonbillable_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Non-Billable");
+				taskTrackApproval.setSecondHalfStatus("S");
+
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (cal.get(Calendar.MONTH) + 1);
+					intday = cal.get(Calendar.DAY_OF_MONTH);
+					String dateString = cal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (nonbillableArray.get(dateString) != null) {
+						hours = Double.valueOf(nonbillableArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval nonbillable = tasktrackApprovalService.save(taskTrackApproval);
+				nonbillable_id = nonbillable.getId();
+
+			}
+
+		}
+		/****************************************************************************************/
+
+		/*****************************************************************************************/
+
+		if (overtimeArray.size() > 0) {// OverTime
+
+			Calendar cal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			cal.setTime(startDate);
+			double hours = 0;
+			intMonth = (cal.get(Calendar.MONTH) + 1);
+			if (overtimeId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
+
+				taskTrackApproval.setSecondHalfStatus("S");
+				if (taskTrackApproval != null) {
+
+					for (int i = 0; i < diffInDays; i++) {
+
+						intday = cal.get(Calendar.DAY_OF_MONTH);
+						String dateString = cal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (overtimeArray.get(dateString) != null) {
+							hours = Double.valueOf(overtimeArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					overtime_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Overtime");
+				taskTrackApproval.setSecondHalfStatus("S");
+
+				taskTrackApproval.setProject(project);
+				for (int i = 0; i < diffInDays; i++) {
+
+					intMonth = (cal.get(Calendar.MONTH) + 1);
+					intday = cal.get(Calendar.DAY_OF_MONTH);
+					String dateString = cal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (overtimeArray.get(dateString) != null) {
+						hours = Double.valueOf(overtimeArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval overtime = tasktrackApprovalService.save(taskTrackApproval);
+				overtime_id = overtime.getId();
+
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @author sreejith.j
+	 * @param taskTrackApproval
+	 * @param i
+	 * @param hours
+	 */
+	private void setDayInCorrespondingModel(TaskTrackApproval taskTrackApproval, int i, double hours) throws Exception{
+
+		if (i == 0) {
+			taskTrackApproval.setDay1(hours);
+		} else if (i == 1) {
+			taskTrackApproval.setDay2(hours);
+		} else if (i == 2) {
+			taskTrackApproval.setDay3(hours);
+		} else if (i == 3) {
+			taskTrackApproval.setDay4(hours);
+		} else if (i == 4) {
+			taskTrackApproval.setDay5(hours);
+		} else if (i == 5) {
+			taskTrackApproval.setDay6(hours);
+		} else if (i == 6) {
+			taskTrackApproval.setDay7(hours);
+		} else if (i == 7) {
+			taskTrackApproval.setDay8(hours);
+		} else if (i == 8) {
+			taskTrackApproval.setDay9(hours);
+		} else if (i == 9) {
+			taskTrackApproval.setDay10(hours);
+		} else if (i == 10) {
+			taskTrackApproval.setDay11(hours);
+		} else if (i == 11) {
+			taskTrackApproval.setDay12(hours);
+		} else if (i == 12) {
+			taskTrackApproval.setDay13(hours);
+		} else if (i == 13) {
+			taskTrackApproval.setDay14(hours);
+		} else if (i == 14) {
+			taskTrackApproval.setDay15(hours);
+		} else if (i == 15) {
+			taskTrackApproval.setDay16(hours);
+		} else if (i == 16) {
+			taskTrackApproval.setDay17(hours);
+		} else if (i == 17) {
+			taskTrackApproval.setDay18(hours);
+		} else if (i == 18) {
+			taskTrackApproval.setDay19(hours);
+		} else if (i == 19) {
+			taskTrackApproval.setDay20(hours);
+		} else if (i == 20) {
+			taskTrackApproval.setDay21(hours);
+		} else if (i == 21) {
+			taskTrackApproval.setDay22(hours);
+		} else if (i == 22) {
+			taskTrackApproval.setDay23(hours);
+		} else if (i == 23) {
+			taskTrackApproval.setDay24(hours);
+		} else if (i == 24) {
+			taskTrackApproval.setDay25(hours);
+		} else if (i == 25) {
+			taskTrackApproval.setDay26(hours);
+		} else if (i == 26) {
+			taskTrackApproval.setDay27(hours);
+		} else if (i == 27) {
+			taskTrackApproval.setDay28(hours);
+		} else if (i == 28) {
+			taskTrackApproval.setDay29(hours);
+		} else if (i == 29) {
+			taskTrackApproval.setDay30(hours);
+		} else if (i == 30) {
+			taskTrackApproval.setDay31(hours);
+		}
+	}
+
 }

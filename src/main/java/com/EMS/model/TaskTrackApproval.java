@@ -45,8 +45,6 @@ public class TaskTrackApproval extends BaseEntity{
 	@Column(name = "second_half_status")
 	private String secondHalfStatus;
 	
-	private Date approvedDate;
-
 	public long getId() {
 		return id;
 	}
@@ -375,11 +373,4 @@ public class TaskTrackApproval extends BaseEntity{
 		this.secondHalfStatus = secondHalfStatus;
 	}
 
-	public Date getApprovedDate() {
-		return approvedDate;
-	}
-
-	public void setApprovedDate(Date approvedDate) {
-		this.approvedDate = approvedDate;
-	}
 }
