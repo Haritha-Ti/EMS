@@ -10,6 +10,8 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.EMS.model.*;
+import com.EMS.repository.RoleRepository;
 import org.hibernate.mapping.Array;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,16 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.EMS.model.ClientModel;
-import com.EMS.model.ContractModel;
-import com.EMS.model.DepartmentModel;
-import com.EMS.model.ProjectModel;
-import com.EMS.model.ProjectRegion;
-import com.EMS.model.Region;
-import com.EMS.model.Resources;
-import com.EMS.model.TimeZoneModel;
-import com.EMS.model.UserModel;
-import com.EMS.model.EmployeeContractors;
 import com.EMS.service.ProjectService;
 import com.EMS.service.RegionFilterService;
 import com.EMS.service.RegionService;
@@ -60,6 +52,9 @@ public class ProjectController {
 	
 	@Autowired
 	private RegionFilterService regionFilterService;
+
+	@Autowired
+	RoleRepository roleRepository;
 
 	@PostMapping("/createProject")
 	public JsonNode save_newproject(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) {
@@ -351,6 +346,7 @@ public class ProjectController {
 		ArrayNode project_array = objectMapper.createArrayNode();
 		ArrayNode client_array = objectMapper.createArrayNode();
 		ArrayNode employeeContractors_array = objectMapper.createArrayNode();
+		ArrayNode role_array = objectMapper.createArrayNode();
 
 		// json object for storing records array
 		ObjectNode array = objectMapper.createObjectNode();
@@ -548,6 +544,19 @@ public class ProjectController {
 				array.set("contractorList", employeeContractors_array);
 			}
 
+			List<RoleModel> rolelist = roleRepository.findAll();
+			if (rolelist.isEmpty())
+				array.set("contractorList", employeeContractors_array);
+			else {
+				for (RoleModel role : rolelist) {
+					ObjectNode roleobj = objectMapper.createObjectNode();
+					roleobj.put("roleId", role.getroleId());
+					roleobj.put("roleName", role.getroleName());
+					role_array.add(roleobj);
+
+				}
+				array.set("roleList", role_array);
+			}
 			// storing data on response object
 			responsedata.put("status", "success");
 			responsedata.set("data", array);
