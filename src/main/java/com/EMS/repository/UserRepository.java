@@ -112,5 +112,9 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	@Query("SELECT u FROM UserModel u WHERE  u.role.roleId in('2','3','5','11') and  department.departmentId in('1','2','3','4','8') and region.id = ?3 and (terminationDate >= ?1 or terminationDate IS NULL) and joiningDate<=?2 order by firstName")
 	List<UserModel> getUserlistByregion(Date startDate, Date endDate,Long regionId);
 	//Nisha
+	
+	//drishya
+	@Query("SELECT u FROM UserModel u WHERE u.userId = ?1")
+	UserModel getNonActiveUser(Long id);
 
 }

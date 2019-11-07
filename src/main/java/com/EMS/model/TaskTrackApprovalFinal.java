@@ -12,8 +12,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name = "TASKTRACK_APPROVAL")
-public class TaskTrackApproval extends BaseEntity{
+@Table(name = "TASKTRACK_APPROVAL_FINAL")
+public class TaskTrackApprovalFinal extends BaseEntity{
 
 	@Id
 	@Column(name = "id")

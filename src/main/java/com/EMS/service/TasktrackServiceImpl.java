@@ -20,10 +20,12 @@ import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
+import com.EMS.model.TaskTrackDaySubmissionModel;
 import com.EMS.model.Tasktrack;
 import com.EMS.repository.ProjectReportsRepository;
 import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.TaskRepository;
+import com.EMS.repository.TaskTrackDaySubmissionRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.TimeTrackApprovalRepository;
 import com.EMS.repository.UserRepository;
@@ -59,6 +61,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 	
 	@Autowired 
 	ProjectRepository projectRepository;
+	
+	@Autowired 
+	TaskTrackDaySubmissionRepository taskTrackDaySubmissionRepository;
 //	For Task track Model
 
 	@Override
@@ -472,4 +477,17 @@ public class TasktrackServiceImpl implements TasktrackService {
 	}
 		return responsedata;
 	}
+	
+	//hashir
+	
+	@Override
+    public List<TaskTrackDaySubmissionModel> saveSubmissionDays(List<TaskTrackDaySubmissionModel> taskTrackDaySubmissionList) {
+        return taskTrackDaySubmissionRepository.saveAll(taskTrackDaySubmissionList);
+    }
+    
+    @Override
+    public TaskTrackDaySubmissionModel getSubmissionDayByMonth(int month) {
+        return taskTrackDaySubmissionRepository.findByMonth(month).orElse(null);
+    }
+	
 }

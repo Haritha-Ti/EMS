@@ -1765,7 +1765,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						TaskTrackApprovalFinance finance = new TaskTrackApprovalFinance();
 						TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
 						//level1.setForwarded_date(yesterday);
-						level1.setForwarded_finance(date1);
+					//	level1.setForwarded_finance(date1);
 						UserModel user = userService.getUserDetailsById(userId);
 						ProjectModel project = projectService.getProjectId(projectId);
 						finance.setProject(project);
@@ -1848,7 +1848,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if (i == 30)
 											eachdata.setDay31(item.getDay31());
 										eachdata.setStatus(status);
-										level1.setForwarded_finance(date1);
+										//level1.setForwarded_finance(date1);
 										timeTrackApprovalJPARepository.save(level1);
 
 									}
@@ -1891,7 +1891,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if (i == 30)
 											eachdata.setDay31(item.getDay31());
 										eachdata.setStatus(status);
-										level1.setForwarded_finance(date1);
+										//level1.setForwarded_finance(date1);
 										timeTrackApprovalJPARepository.save(level1);
 										
 
@@ -1935,7 +1935,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if (i == 30)
 											eachdata.setDay31(item.getDay31());
 										eachdata.setStatus(status);
-										level1.setForwarded_finance(date1);
+									//	level1.setForwarded_finance(date1);
 										timeTrackApprovalJPARepository.save(level1);
 
 									}
@@ -1978,7 +1978,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										else if (i == 30)
 											eachdata.setDay31(item.getDay31());
 										eachdata.setStatus(status);
-										level1.setForwarded_finance(date1);
+									//	level1.setForwarded_finance(date1);
 										timeTrackApprovalJPARepository.save(level1);
 
 									}
@@ -2553,10 +2553,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						TaskTrackApprovalLevel2 level2 = new TaskTrackApprovalLevel2();
 						TaskTrackApproval level1 = tasktrackApprovalService.findById(item.getId());
 						System.out.println("------------------------------------->"+endDate);
-						level1.setForwarded_date(endDate);
-						level1.setStatus(status);
+						//level1.setForwarded_date(endDate);
+						//level1.setStatus(status);
 						//System.out.println("Current_Date"+dateobj);
-						level1.setApproved_date(endDate);
+						//level1.setApproved_date(endDate);
 						UserModel user = userService.getUserDetailsById(userId);
 						ProjectModel project = projectService.getProjectId(projectId);
 						level2.setProject(project);
@@ -2659,13 +2659,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 							for(TaskTrackApprovalLevel2 item1:level2data) {
 
-								Date previous_forwardedDate =  item1.getTasktrack_level1_Id().getForwarded_date();
+							//	Date previous_forwardedDate =  item1.getTasktrack_level1_Id().getForwarded_date();
 								Calendar caldays = Calendar.getInstance();
-								if(previous_forwardedDate != null) {
-									
-									caldays.setTime(previous_forwardedDate);  // changed on 17/10/19
-									
-								}
+								/*
+								 * if(previous_forwardedDate != null) {
+								 * 
+								 * caldays.setTime(previous_forwardedDate); // changed on 17/10/19
+								 * 
+								 * }
+								 */
 								
 								Calendar caldayss = Calendar.getInstance();
 								caldays.setTime(endDate);
@@ -2963,56 +2965,49 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		TaskTrackApproval forward_approved =  timeTrackApprovalJPARepository.getapprovedDates2(intMonth,yearIndex, projectId, userId);
 		 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
 			if(forward_approved != null) {
-				System.out.println("Forwarded---------------"+forward_approved.getApproved_date());
-				System.out.println("approve---------------"+forward_approved.getForwarded_date());
-				if(forward_approved.getForwarded_date() != null) {
-					System.out.println(" 1------------------------->");				
-					 Calendar cl = Calendar.getInstance();
-					    // passing month-1 because 0-->jan, 1-->feb... 11-->dec
-					 cl.set(yearIndex, intMonth - 1, 1);
-					 cl.set(Calendar.DATE, cl.getActualMaximum(Calendar.DATE));
-					 Date monthend_date = cl.getTime();
-					 Date forwarded_date = (Date) forward_approved.getApproved_date();
-					System.out.println("Month end------------------>"+monthend_date);
-					 
-		                String forwarded_date_s = dateFormat.format(forwarded_date);  
-		                String monthend_date_s = dateFormat.format(monthend_date);  
-					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
-					System.out.println("Month end------------------>"+monthend_date);
-					 if(forwarded_date_s.equals(monthend_date_s)) {
- 						approve_button = false;
- 					}
-					 else if (forwarded_date.after(monthend_date) ) {
- 						
- 						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
- 						approve_button = false;
- 					}
- 					
-				}	
-               else {
- 					
- 					if(forward_approved.getApproved_date() != null) {
- 						
- 						forward_button = true; 
- 					}
- 				}
-			
-				if(forward_approved.getApproved_date() != null && forward_approved.getForwarded_date() != null) {
-					 Date forwarded_date = (Date) forward_approved.getApproved_date();
-					 String forwarded_date_s = dateFormat.format(forwarded_date);  
-					Date approved_date  = (Date) forward_approved.getApproved_date();
-					 String approved_date_s = dateFormat.format(approved_date);  
-					 System.out.println(approved_date+"Dates------------------"+forwarded_date);
-					  if(forwarded_date_s.equals(approved_date_s)) {
-							
-							forward_button = false;
-						}
-					  else if (forwarded_date.before(approved_date)) {
-						System.out.println("forward button ------------------------->"+forward_button);
-						forward_button = true;
-					}
-					
-				}
+				//System.out.println("Forwarded---------------"+forward_approved.getApproved_date());
+				//System.out.println("approve---------------"+forward_approved.getForwarded_date());
+				/*
+				 * if(forward_approved.getForwarded_date() != null) {
+				 * System.out.println(" 1------------------------->"); Calendar cl =
+				 * Calendar.getInstance(); // passing month-1 because 0-->jan, 1-->feb...
+				 * 11-->dec cl.set(yearIndex, intMonth - 1, 1); cl.set(Calendar.DATE,
+				 * cl.getActualMaximum(Calendar.DATE)); Date monthend_date = cl.getTime(); Date
+				 * forwarded_date = (Date) forward_approved.getApproved_date();
+				 * System.out.println("Month end------------------>"+monthend_date);
+				 * 
+				 * String forwarded_date_s = dateFormat.format(forwarded_date); String
+				 * monthend_date_s = dateFormat.format(monthend_date);
+				 * System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
+				 * System.out.println("Month end------------------>"+monthend_date);
+				 * if(forwarded_date_s.equals(monthend_date_s)) { approve_button = false; } else
+				 * if (forwarded_date.after(monthend_date) ) {
+				 * 
+				 * System.out.println("approve_button ------------------------->"+forwarded_date
+				 * .compareTo(monthend_date)); approve_button = false; }
+				 * 
+				 * } else {
+				 * 
+				 * if(forward_approved.getApproved_date() != null) {
+				 * 
+				 * forward_button = true; } }
+				 */
+				/*
+				 * if(forward_approved.getApproved_date() != null &&
+				 * forward_approved.getForwarded_date() != null) { Date forwarded_date = (Date)
+				 * forward_approved.getApproved_date(); String forwarded_date_s =
+				 * dateFormat.format(forwarded_date); Date approved_date = (Date)
+				 * forward_approved.getApproved_date(); String approved_date_s =
+				 * dateFormat.format(approved_date);
+				 * System.out.println(approved_date+"Dates------------------"+forwarded_date);
+				 * if(forwarded_date_s.equals(approved_date_s)) {
+				 * 
+				 * forward_button = false; } else if (forwarded_date.before(approved_date)) {
+				 * System.out.println("forward button ------------------------->"+forward_button
+				 * ); forward_button = true; }
+				 * 
+				 * }
+				 */
 			
 			}
 	   //
@@ -3535,60 +3530,58 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				 				
 				 				
 
-			 					if(forward_approved.getApproved_date() != null) {
-			 						
- 
-			 		                 approved_till_date = dateFormat.format(forward_approved.getApproved_date()); 	
-			 					}
+						/*
+						 * if(forward_approved.getApproved_date() != null) {
+						 * 
+						 * 
+						 * approved_till_date = dateFormat.format(forward_approved.getApproved_date());
+						 * }
+						 */
 			 					
-				 				System.out.println("Forwarded---------------"+forward_approved.getApproved_date());
-				 				System.out.println("approve---------------"+forward_approved.getForwarded_date());
-				 				if(forward_approved.getForwarded_date() != null) {
-				 					System.out.println(" 1------------------------->");				
-				 					 Calendar cl = Calendar.getInstance();
-				 					    // passing month-1 because 0-->jan, 1-->feb... 11-->dec
-				 					 cl.set(year, month - 1, 1);
-				 					 cl.set(Calendar.DATE, cl.getActualMaximum(Calendar.DATE));
-				 					 Date monthend_date = cl.getTime();
-				 					 Date forwarded_date = (Date) forward_approved.getApproved_date();
-				 					 
-				 					 
-				 		                String forwarded_date_s = dateFormat.format(forwarded_date);  
-				 		                String monthend_date_s = dateFormat.format(monthend_date);  
-				 					 System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
-				 					 
-				 					System.out.println("Month end------------------>"+monthend_date);
-				 					
-				 					
-				 					
-				 					
-				 					 if(forwarded_date_s.equals(monthend_date_s)) {
-				 						approve_button = false;
-				 					}
-				 					 else if (forwarded_date.after(monthend_date) ) {
-				 						
-				 						System.out.println("approve_button ------------------------->"+forwarded_date.compareTo(monthend_date));
-				 						approve_button = false;
-				 					}
-				 					
-				 				}	
-				 				else {
-				 					
-				 					if(forward_approved.getApproved_date() != null) {
-				 						
-				 						forward_button = true; 
-				 					}
-				 				}
+						/*
+						 * System.out.println("Forwarded---------------"+forward_approved.
+						 * getApproved_date());
+						 * System.out.println("approve---------------"+forward_approved.
+						 * getForwarded_date()); if(forward_approved.getForwarded_date() != null) {
+						 * System.out.println(" 1------------------------->"); Calendar cl =
+						 * Calendar.getInstance(); // passing month-1 because 0-->jan, 1-->feb...
+						 * 11-->dec cl.set(year, month - 1, 1); cl.set(Calendar.DATE,
+						 * cl.getActualMaximum(Calendar.DATE)); Date monthend_date = cl.getTime(); Date
+						 * forwarded_date = (Date) forward_approved.getApproved_date();
+						 * 
+						 * 
+						 * String forwarded_date_s = dateFormat.format(forwarded_date); String
+						 * monthend_date_s = dateFormat.format(monthend_date);
+						 * System.out.println(forwarded_date_s+"-----------"+monthend_date_s);
+						 * 
+						 * System.out.println("Month end------------------>"+monthend_date);
+						 * 
+						 * 
+						 * 
+						 * 
+						 * if(forwarded_date_s.equals(monthend_date_s)) { approve_button = false; } else
+						 * if (forwarded_date.after(monthend_date) ) {
+						 * 
+						 * System.out.println("approve_button ------------------------->"+forwarded_date
+						 * .compareTo(monthend_date)); approve_button = false; }
+						 * 
+						 * } else {
+						 * 
+						 * if(forward_approved.getApproved_date() != null) {
+						 * 
+						 * forward_button = true; } }
+						 */
 				 			
-				 				if(forward_approved.getApproved_date() != null && forward_approved.getForwarded_date() != null) {
-				 					
-				 					Date approved_dates  = (Date) forward_approved.getApproved_date();
-				 					 Date forwarded_date = (Date) forward_approved.getForwarded_date();
-				 					if (approved_dates.before(forwarded_date)) {
-				 						System.out.println("forward button ------------------------->"+forward_button);
-				 						forward_button = true;
-				 					}
-				 				}
+						/*
+						 * if(forward_approved.getApproved_date() != null &&
+						 * forward_approved.getForwarded_date() != null) {
+						 * 
+						 * Date approved_dates = (Date) forward_approved.getApproved_date(); Date
+						 * forwarded_date = (Date) forward_approved.getForwarded_date(); if
+						 * (approved_dates.before(forwarded_date)) {
+						 * System.out.println("forward button ------------------------->"+forward_button
+						 * ); forward_button = true; } }
+						 */
 				 			
 				 				
 				 				
@@ -5607,15 +5600,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public ObjectNode mailRejectTimesheetDetailstoLevel1andClear(Long projectId, Long userId, Long month, Long year,String message) {
 		// TODO Auto-generated method stub
 		
-		int month1 = month.intValue();
-		int year1 = year.intValue();
+	//	int month1 = month.intValue();
+		//int year1 = year.intValue();
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		//1.clear recently added data.
-		List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,month1,year1,projectId);
-		TaskTrackApproval forwardtolevel2 = timeTrackApprovalJPARepository.getapprovedDates2(month1, year1, projectId, userId);
-		TaskTrackApprovalLevel2 dates = timeTrackApprovalLevel2.getapprovedDates2(month1, year1,projectId, userId);
+		//List<TaskTrackApprovalLevel2> approvedData = timeTrackApprovalLevel2.getApprovedData(userId,month1,year1,projectId);
+		//TaskTrackApproval forwardtolevel2 = timeTrackApprovalJPARepository.getapprovedDates2(month1, year1, projectId, userId);
+		//TaskTrackApprovalLevel2 dates = timeTrackApprovalLevel2.getapprovedDates2(month1, year1,projectId, userId);
 		
-		if(forwardtolevel2 != null && dates != null) {
+	/*	if(forwardtolevel2 != null && dates != null) {
 		
 			if(dates.getApproved_date() != null && forwardtolevel2.getForwarded_date() != null) {
 			if(dates.getApproved_date().before(forwardtolevel2.getForwarded_date())) {
@@ -5749,137 +5742,74 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
   			jsonDataRes.put("message", "failed. " + "Cannot Reject data");
 			// set cannot reject data
 		   }
-		}
-         else if(dates.getApproved_date() == null && forwardtolevel2.getForwarded_date() != null) {
-        	 System.out.println("Here-------------------------------------------->2");	
-        	 Calendar forwarded_level1 = Calendar.getInstance();
- 		    forwarded_level1.setTime(forwardtolevel2.getForwarded_date());
- 		    int forwarded = forwarded_level1.get(Calendar.DAY_OF_MONTH);
- 		  
- 		  
- 		    if(approvedData.size() > 0) {
- 		    	System.out.println("Here-------------------------------------------->3");
- 		    for(TaskTrackApprovalLevel2 data: approvedData) {		    		
- 		    	TaskTrackApprovalLevel2 taskTrackApproval = timeTrackApprovalLevel2.getOne(data.getId());
- 		    	TaskTrackApproval level1 = tasktrackApprovalService.findById(taskTrackApproval.getTasktrack_level1_Id().getId());
-		    	level1.setForwarded_date(dates.getApproved_date());
- 		    		for(int i = 1; i< forwarded ; i++) {
- 		    			
- 		    			if(i==1) {
- 							taskTrackApproval.setDay1(null);
- 						}
- 						else if(i==2) {
- 							taskTrackApproval.setDay2(null);
- 						}
- 						else if(i==3) {
- 							taskTrackApproval.setDay3(null);
- 						}
- 						else if(i==4) {
- 							taskTrackApproval.setDay4(null);
- 						}
- 						else if(i==5) {
- 							taskTrackApproval.setDay5(null);
- 						}
- 						else if(i==6) {
- 							taskTrackApproval.setDay6(null);
- 						}
- 						else if(i==7) {
- 							taskTrackApproval.setDay7(null);
- 						}
- 						else if(i==8) {
- 							taskTrackApproval.setDay8(null);
- 						}
- 						else if(i==9) {
- 							taskTrackApproval.setDay9(null);
- 						}
- 						else if(i==10) {
- 							taskTrackApproval.setDay10(null);
- 						}
- 						else if(i==11) {
- 							taskTrackApproval.setDay11(null);
- 						}
- 						else if(i==12) {
- 							taskTrackApproval.setDay12(null);
- 						}
- 						else if(i==13) {
- 							taskTrackApproval.setDay13(null);
- 						}
- 						else if(i==14) {
- 							taskTrackApproval.setDay14(null);
- 						}
- 						else if(i==15) {
- 							taskTrackApproval.setDay15(null);
- 						}
- 						else if(i==16) {
- 							taskTrackApproval.setDay16(null);
- 						}
- 						else if(i==17) {
- 							taskTrackApproval.setDay17(null);
- 						}
- 						else if(i==18) {
- 							taskTrackApproval.setDay18(null);
- 						}
- 						else if(i==19) {
- 							taskTrackApproval.setDay19(null);
- 						}
- 						else if(i==20) {
- 							taskTrackApproval.setDay20(null);
- 						}
- 						else if(i==21) {
- 							taskTrackApproval.setDay21(null);
- 						}
- 						else if(i==22) {
- 							taskTrackApproval.setDay22(null);
- 						}
- 						else if(i==23) {
- 							taskTrackApproval.setDay23(null);
- 						}
- 						else if(i==24) {
- 							taskTrackApproval.setDay24(null);
- 						}
- 						else if(i==25) {
- 							taskTrackApproval.setDay25(null);
- 						}
- 						else if(i==26) {
- 							taskTrackApproval.setDay26(null);
- 						}
- 						else if(i==27) {
- 							taskTrackApproval.setDay27(null);
- 						}
- 						else if(i==28) {
- 							taskTrackApproval.setDay28(null);
- 						}
- 						else if(i==29) {
- 							taskTrackApproval.setDay29(null);
- 						}
- 						else if(i==30) {
- 							taskTrackApproval.setDay30(null);
- 						}
- 						else if(i==31) {
- 							taskTrackApproval.setDay31(null);
- 						}
- 		    			
- 		    		}
-
- 		    		tasktrackApprovalService.updateDatas(taskTrackApproval);	
- 		    }
- 			}
- 		   jsonDataRes.put("status", "success");
- 			//jsonDataRes.put("code", httpstatus.getStatus());
- 			jsonDataRes.put("message", "Cleared Data");
-			}
-		}
+		}*/
+		/*
+		 * else if(dates.getApproved_date() == null &&
+		 * forwardtolevel2.getForwarded_date() != null) {
+		 * System.out.println("Here-------------------------------------------->2");
+		 * Calendar forwarded_level1 = Calendar.getInstance();
+		 * forwarded_level1.setTime(forwardtolevel2.getForwarded_date()); int forwarded
+		 * = forwarded_level1.get(Calendar.DAY_OF_MONTH);
+		 * 
+		 * 
+		 * if(approvedData.size() > 0) {
+		 * System.out.println("Here-------------------------------------------->3");
+		 * for(TaskTrackApprovalLevel2 data: approvedData) { TaskTrackApprovalLevel2
+		 * taskTrackApproval = timeTrackApprovalLevel2.getOne(data.getId());
+		 * TaskTrackApproval level1 =
+		 * tasktrackApprovalService.findById(taskTrackApproval.getTasktrack_level1_Id().
+		 * getId()); level1.setForwarded_date(dates.getApproved_date()); for(int i = 1;
+		 * i< forwarded ; i++) {
+		 * 
+		 * if(i==1) { taskTrackApproval.setDay1(null); } else if(i==2) {
+		 * taskTrackApproval.setDay2(null); } else if(i==3) {
+		 * taskTrackApproval.setDay3(null); } else if(i==4) {
+		 * taskTrackApproval.setDay4(null); } else if(i==5) {
+		 * taskTrackApproval.setDay5(null); } else if(i==6) {
+		 * taskTrackApproval.setDay6(null); } else if(i==7) {
+		 * taskTrackApproval.setDay7(null); } else if(i==8) {
+		 * taskTrackApproval.setDay8(null); } else if(i==9) {
+		 * taskTrackApproval.setDay9(null); } else if(i==10) {
+		 * taskTrackApproval.setDay10(null); } else if(i==11) {
+		 * taskTrackApproval.setDay11(null); } else if(i==12) {
+		 * taskTrackApproval.setDay12(null); } else if(i==13) {
+		 * taskTrackApproval.setDay13(null); } else if(i==14) {
+		 * taskTrackApproval.setDay14(null); } else if(i==15) {
+		 * taskTrackApproval.setDay15(null); } else if(i==16) {
+		 * taskTrackApproval.setDay16(null); } else if(i==17) {
+		 * taskTrackApproval.setDay17(null); } else if(i==18) {
+		 * taskTrackApproval.setDay18(null); } else if(i==19) {
+		 * taskTrackApproval.setDay19(null); } else if(i==20) {
+		 * taskTrackApproval.setDay20(null); } else if(i==21) {
+		 * taskTrackApproval.setDay21(null); } else if(i==22) {
+		 * taskTrackApproval.setDay22(null); } else if(i==23) {
+		 * taskTrackApproval.setDay23(null); } else if(i==24) {
+		 * taskTrackApproval.setDay24(null); } else if(i==25) {
+		 * taskTrackApproval.setDay25(null); } else if(i==26) {
+		 * taskTrackApproval.setDay26(null); } else if(i==27) {
+		 * taskTrackApproval.setDay27(null); } else if(i==28) {
+		 * taskTrackApproval.setDay28(null); } else if(i==29) {
+		 * taskTrackApproval.setDay29(null); } else if(i==30) {
+		 * taskTrackApproval.setDay30(null); } else if(i==31) {
+		 * taskTrackApproval.setDay31(null); }
+		 * 
+		 * }
+		 * 
+		 * tasktrackApprovalService.updateDatas(taskTrackApproval); } }
+		 * jsonDataRes.put("status", "success"); //jsonDataRes.put("code",
+		 * httpstatus.getStatus()); jsonDataRes.put("message", "Cleared Data"); }
+		 */
+	//	}
 		
 		
 		
 		
 		//2.mail reject message to level1 approver.
-		ObjectNode mailtolevel1 = mailRejectMessageToLevel1(projectId,message);
+		//ObjectNode mailtolevel1 = mailRejectMessageToLevel1(projectId,message);
 		
 		
 		return jsonDataRes;
 	}
-
 	public ObjectNode mailRejectMessageToLevel1(Long projectId,String message) {
 		
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
