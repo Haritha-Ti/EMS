@@ -114,7 +114,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	public void updateTaskByName(long id,double hours,ProjectModel projectModel,Task task) throws Exception;
 	
 	
-	@Query("select p.projectId,p.projectName,t.date,t.id,sum(t.hours) from ProjectModel p join AllocationModel a on a.project.projectId = p.projectId join UserModel u on u.userId=a.user.userId join Tasktrack t on t.project.projectId=p.projectId and t.user.userId = u.userId where u.userId=?1 and t.date>=?2 and t.date<=?3 group by 1,2,3 order by 1,3")
+	@Query("select p.projectId,p.projectName,t.date,t.id,sum(t.hours) from ProjectModel p join AllocationModel a on a.project.projectId = p.projectId join UserModel u on u.userId=a.user.userId join Tasktrack t on t.project.projectId=p.projectId and t.user.userId = u.userId where u.userId=?1 and t.date>=?2 and t.date<=?3 group by 1,2,3,4 order by 1,3")
 	public List<Object[]> getTasksFortimeTrack(long id,Date fromDate, Date toDate) throws Exception;
 	
 	
