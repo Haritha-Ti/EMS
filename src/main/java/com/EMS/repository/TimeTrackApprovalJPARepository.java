@@ -120,13 +120,13 @@ public interface TimeTrackApprovalJPARepository extends JpaRepository<TaskTrackA
 	@Query("SELECT  s FROM TaskTrackApproval s  WHERE s.month=?1 and  s.year=?2 and s.project.projectId =?3 and s.user.userId=?4 and s.projectType = 'Billable'")
 	TaskTrackApproval getapprovedDates2(int intMonth, int yearIndex, Long projectId, Long userId);
 
-	@Query(value = "SELECT id  FROM tasktrack_approval where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Billable')", nativeQuery = true)
+	@Query(value = "SELECT id  FROM tasktrack_approval where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Billable') order by id desc limit 1", nativeQuery = true)
 	Long getBillableIdForAUserForAProject(Integer month, Integer year, Long projectId, Long userId);
 	
-	@Query(value = "SELECT id FROM tasktrack_approval where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Non-Billable')", nativeQuery = true)
+	@Query(value = "SELECT id FROM tasktrack_approval where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Non-Billable') order by id desc limit 1", nativeQuery = true)
 	Long getNonBillableIdForAUserForAProject(Integer month, Integer year, Long projectId, Long userId);
 	
-	@Query(value = "SELECT id  FROM tasktrack_approval where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Overtime')", nativeQuery = true)
+	@Query(value = "SELECT id  FROM tasktrack_approval where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Overtime') order by id desc limit 1", nativeQuery = true)
 	Long getOvertimeIdForAUserForAProject(Integer month, Integer year, Long projectId, Long userId);
 
 }
