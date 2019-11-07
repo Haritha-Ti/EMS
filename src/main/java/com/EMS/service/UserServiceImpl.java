@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public UserModel getUserDetailsById(Long id) {
-		return userRepository.getActiveUser(id);
+		return userRepository.getNonActiveUser(id);
 
 	}
 

@@ -11,6 +11,7 @@ import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
+import com.EMS.model.TaskTrackDaySubmissionModel;
 import com.EMS.model.Tasktrack;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -54,6 +55,10 @@ public interface TasktrackService {
 	List<Object[]> getUserTaskList(Long id, Date startDate, Date endDate, Long projectId);
 
 	ObjectNode checkApproveLevel(Long project_Id, Long logUser);
+
+    List<TaskTrackDaySubmissionModel> saveSubmissionDays(List<TaskTrackDaySubmissionModel> taskTrackDaySubmissionList);
+    
+    TaskTrackDaySubmissionModel getSubmissionDayByMonth(int month);
 		
 }
 

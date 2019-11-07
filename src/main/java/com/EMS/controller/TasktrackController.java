@@ -47,6 +47,7 @@ import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.TaskTrackApprovalFinance;
 import com.EMS.model.TaskTrackApprovalLevel2;
+import com.EMS.model.TaskTrackDaySubmissionModel;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
 import com.EMS.repository.TaskRepository;
@@ -966,7 +967,7 @@ public class TasktrackController {
 				if (billableId != null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
-					taskTrackApproval.setApproved_date(endDate);
+					//taskTrackApproval.setApproved_date(endDate);
 					if (taskTrackApproval != null) {
 
 						for (int i = 0; i < diffInDays; i++) {
@@ -1047,7 +1048,7 @@ public class TasktrackController {
 						}
 						tasktrackApprovalService.updateData(taskTrackApproval);
 						billable_id = taskTrackApproval.getId();
-						approved_till_date = taskTrackApproval.getApproved_date();
+						//approved_till_date = taskTrackApproval.getApproved_date();
 					}
 				} else {
 
@@ -1055,7 +1056,7 @@ public class TasktrackController {
 					taskTrackApproval.setMonth(month);
 					taskTrackApproval.setYear(year);
 					taskTrackApproval.setUser(user);
-					taskTrackApproval.setApproved_date(endDate);
+					//taskTrackApproval.setApproved_date(endDate);
 					taskTrackApproval.setProjectType("Billable");
 					taskTrackApproval.setUpdatedBy(updatedBy);
 					taskTrackApproval.setProject(project);
@@ -1140,7 +1141,7 @@ public class TasktrackController {
 
 					TaskTrackApproval billable = tasktrackApprovalService.save(taskTrackApproval);
 					billable_id = billable.getId();
-					approved_till_date = taskTrackApproval.getApproved_date();
+					//approved_till_date = taskTrackApproval.getApproved_date();
 
 				}
 			}
@@ -1164,7 +1165,7 @@ public class TasktrackController {
 				if (nonbillableId != null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonbillableId);
 
-					taskTrackApproval.setApproved_date(endDate);
+				//	taskTrackApproval.setApproved_date(endDate);
 					taskTrackApproval.setUpdatedBy(updatedBy);
 					if (taskTrackApproval != null) {
 
@@ -1255,7 +1256,7 @@ public class TasktrackController {
 					taskTrackApproval.setYear(year);
 					taskTrackApproval.setUser(user);
 					taskTrackApproval.setProjectType("Non-Billable");
-					taskTrackApproval.setApproved_date(endDate);
+				//	taskTrackApproval.setApproved_date(endDate);
 					taskTrackApproval.setUpdatedBy(updatedBy);
 					taskTrackApproval.setProject(project);
 					for (int i = 0; i < diffInDays; i++) {
@@ -1361,7 +1362,7 @@ public class TasktrackController {
 				if (beachId != null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
-					taskTrackApproval.setApproved_date(endDate);
+					//taskTrackApproval.setApproved_date(endDate);
 					if (taskTrackApproval != null) {
 
 						for (int i = 0; i < diffInDays; i++) {
@@ -1452,7 +1453,7 @@ public class TasktrackController {
 					taskTrackApproval.setUser(user);
 					taskTrackApproval.setProjectType("Beach");
 					taskTrackApproval.setUpdatedBy(updatedBy);
-					taskTrackApproval.setApproved_date(endDate);
+				//	taskTrackApproval.setApproved_date(endDate);
 					taskTrackApproval.setProject(project);
 					for (int i = 0; i < diffInDays; i++) {
 
@@ -1556,7 +1557,7 @@ public class TasktrackController {
 				if (overtimeId != null) {
 					TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
 					taskTrackApproval.setUpdatedBy(updatedBy);
-					taskTrackApproval.setApproved_date(endDate);
+					//taskTrackApproval.setApproved_date(endDate);
 					if (taskTrackApproval != null) {
 
 						for (int i = 0; i < diffInDays; i++) {
@@ -1646,7 +1647,7 @@ public class TasktrackController {
 					taskTrackApproval.setUser(user);
 					taskTrackApproval.setProjectType("Overtime");
 					taskTrackApproval.setUpdatedBy(updatedBy);
-					taskTrackApproval.setApproved_date(endDate);
+				//	taskTrackApproval.setApproved_date(endDate);
 					taskTrackApproval.setProject(project);
 					for (int i = 0; i < diffInDays; i++) {
 
@@ -1775,50 +1776,45 @@ public class TasktrackController {
 					projectId, userId);
 
 			if (forward_approved != null) {
-				System.out.println("Forwarded---------------" + forward_approved.getApproved_date());
-				System.out.println("approve---------------" + forward_approved.getForwarded_date());
-				if (forward_approved.getForwarded_date() != null) {
-					System.out.println(" 1------------------------->");
-					Calendar cl = Calendar.getInstance();
-					// passing month-1 because 0-->jan, 1-->feb... 11-->dec
-					cl.set(year, month - 1, 1);
-					cl.set(Calendar.DATE, cl.getActualMaximum(Calendar.DATE));
-					Date monthend_date = cl.getTime();
-					Date forwarded_date = (Date) forward_approved.getApproved_date();
+			//	System.out.println("Forwarded---------------" + forward_approved.getApproved_date());
+				//System.out.println("approve---------------" + forward_approved.getForwarded_date());
+				/*
+				 * if (forward_approved.getForwarded_date() != null) {
+				 * System.out.println(" 1------------------------->"); Calendar cl =
+				 * Calendar.getInstance(); // passing month-1 because 0-->jan, 1-->feb...
+				 * 11-->dec cl.set(year, month - 1, 1); cl.set(Calendar.DATE,
+				 * cl.getActualMaximum(Calendar.DATE)); Date monthend_date = cl.getTime(); Date
+				 * forwarded_date = (Date) forward_approved.getApproved_date();
+				 * 
+				 * DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); String
+				 * forwarded_date_s = dateFormat.format(forwarded_date); String monthend_date_s
+				 * = dateFormat.format(monthend_date); System.out.println(forwarded_date_s +
+				 * "-----------" + monthend_date_s);
+				 * 
+				 * System.out.println("Month end------------------>" + monthend_date);
+				 * 
+				 * if (forwarded_date_s.equals(monthend_date_s)) { System.out.
+				 * println("approve_button equals of month end ------------------------->");
+				 * approve_button = false; } else if (forwarded_date.after(monthend_date)) {
+				 * 
+				 * System.out.println( "approve_button ------------------------->" +
+				 * forwarded_date.compareTo(monthend_date)); approve_button = false; } } else {
+				 * 
+				 * if (forward_approved.getApproved_date() != null) {
+				 * 
+				 * forward_button = true; } }
+				 */
 
-					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					String forwarded_date_s = dateFormat.format(forwarded_date);
-					String monthend_date_s = dateFormat.format(monthend_date);
-					System.out.println(forwarded_date_s + "-----------" + monthend_date_s);
-
-					System.out.println("Month end------------------>" + monthend_date);
-
-					if (forwarded_date_s.equals(monthend_date_s)) {
-						System.out.println("approve_button equals of month end ------------------------->");
-						approve_button = false;
-					} else if (forwarded_date.after(monthend_date)) {
-
-						System.out.println(
-								"approve_button ------------------------->" + forwarded_date.compareTo(monthend_date));
-						approve_button = false;
-					}
-				} else {
-
-					if (forward_approved.getApproved_date() != null) {
-
-						forward_button = true;
-					}
-				}
-
-				if (forward_approved.getApproved_date() != null && forward_approved.getForwarded_date() != null) {
-
-					Date approved_date = (Date) forward_approved.getApproved_date();
-					Date forwarded_date = (Date) forward_approved.getForwarded_date();
-					if (forwarded_date.before(approved_date)) {
-						System.out.println("forward button ------------------------->" + forward_button);
-						forward_button = true;
-					}
-				}
+				/*
+				 * if (forward_approved.getApproved_date() != null &&
+				 * forward_approved.getForwarded_date() != null) {
+				 * 
+				 * Date approved_date = (Date) forward_approved.getApproved_date(); Date
+				 * forwarded_date = (Date) forward_approved.getForwarded_date(); if
+				 * (forwarded_date.before(approved_date)) {
+				 * System.out.println("forward button ------------------------->" +
+				 * forward_button); forward_button = true; } }
+				 */
 
 			}
 
@@ -4016,5 +4012,37 @@ public class TasktrackController {
 		return node;
 
 	}
+
+	 //hashir
+	@PostMapping("/submissionday/save")
+    public void  saveSubmissionDays(@RequestBody List<TaskTrackDaySubmissionModel> taskTrackDaySubmissionList, HttpServletResponse httpstatus){
+       ObjectNode response = objectMapper.createObjectNode();
+       try {
+           tasktrackService.saveSubmissionDays(taskTrackDaySubmissionList);
+       }
+       catch(Exception ex) {
+           ex.printStackTrace();
+           response.put("status", "Failure");
+           response.put("code", httpstatus.getStatus());
+           response.put("message", "Exception occured.");
+       }
+       response.put("status", "success");
+       response.put("code", httpstatus.getStatus());
+       response.put("message", "successfully saved. ");
+   }
+	
+	@GetMapping("/submissionday/{month}")
+    public void  getSubmissionDay(@PathVariable("month") int month, HttpServletResponse httpstatus){
+        ObjectNode response = objectMapper.createObjectNode();
+        try {
+            tasktrackService.getSubmissionDayByMonth(month);
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+            response.put("status", "Failure");
+            response.put("code", httpstatus.getStatus());
+            response.put("message", "Exception occured.");
+        }
+   }
 
 }
