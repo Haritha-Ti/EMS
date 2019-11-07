@@ -947,6 +947,7 @@ public class TasktrackController {
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", alloc.getProjectId());
 				node.put("value", alloc.getProjectName());
+				node.put("tier", alloc.getProjectTier());
 				// get region list
 				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
 				ArrayNode regionsArray = objectMapper.createArrayNode();
@@ -2741,6 +2742,7 @@ public class TasktrackController {
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", alloc.getProjectId());
 				node.put("value", alloc.getProjectName());
+				node.put("tier", alloc.getProjectTier());
 				// get region list
 				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
 				ArrayNode regionsArray = objectMapper.createArrayNode();
@@ -2792,6 +2794,7 @@ public class TasktrackController {
 					ObjectNode node = objectMapper.createObjectNode();
 					node.put("id", (Long) alloc[1]);
 					node.put("value", (String) alloc[0]);
+					node.put("tier", (Integer)alloc[2]);
 					// get region list
 					List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
 					ArrayNode regionsArray = objectMapper.createArrayNode();
