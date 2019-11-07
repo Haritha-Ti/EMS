@@ -872,7 +872,6 @@ public class TasktrackController {
 	 */
 	@PostMapping("/saveApprovedHours")
 	public ObjectNode saveApprovedHours(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
-		System.out.println("##################In saveApprovedHours ##################");
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
 			tasktrackApprovalService.saveApprovedHours(requestData);
