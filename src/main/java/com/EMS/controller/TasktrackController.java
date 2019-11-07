@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -1025,6 +1026,7 @@ public class TasktrackController {
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", alloc.getProjectId());
 				node.put("value", alloc.getProjectName());
+				node.put("tier", alloc.getProjectTier());
 				// get region list
 				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
 				ArrayNode regionsArray = objectMapper.createArrayNode();
@@ -2819,6 +2821,7 @@ public class TasktrackController {
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", alloc.getProjectId());
 				node.put("value", alloc.getProjectName());
+				node.put("tier", alloc.getProjectTier());
 				// get region list
 				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
 				ArrayNode regionsArray = objectMapper.createArrayNode();
@@ -2870,6 +2873,7 @@ public class TasktrackController {
 					ObjectNode node = objectMapper.createObjectNode();
 					node.put("id", (Long) alloc[1]);
 					node.put("value", (String) alloc[0]);
+					node.put("tier", (Integer)alloc[2]);
 					// get region list
 					List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
 					ArrayNode regionsArray = objectMapper.createArrayNode();
@@ -2922,16 +2926,223 @@ public class TasktrackController {
 	}
 
 	@GetMapping("/submissionday/{month}")
-	public void getSubmissionDay(@PathVariable("month") int month, HttpServletResponse httpstatus) {
-		ObjectNode response = objectMapper.createObjectNode();
+
+    public void  getSubmissionDay(@PathVariable("month") int month, HttpServletResponse httpstatus){
+        ObjectNode response = objectMapper.createObjectNode();
+        try {
+            tasktrackService.getSubmissionDayByMonth(month);
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+            response.put("status", "Failure");
+            response.put("code", httpstatus.getStatus());
+            response.put("message", "Exception occured.");
+        }
+   }
+	
+	//bala
+	@PostMapping(value = "/addQuickTimeTrack", headers = "Accept=application/json")
+	public JsonNode addQuickTimeTrack(@RequestBody JsonNode taskData, HttpServletResponse status)
+			throws JSONException, ParseException {
+		ObjectNode dataResponse = objectMapper.createObjectNode();
+
 		try {
-			tasktrackService.getSubmissionDayByMonth(month);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			response.put("status", "Failure");
-			response.put("code", httpstatus.getStatus());
-			response.put("message", "Exception occured.");
+			Long uId = taskData.get("uId").asLong();
+			Boolean saveFailed = false;
+
+			if (!uId.equals(null)) {
+
+				ArrayNode arrayNode = (ArrayNode) taskData.get("taskDetails");
+				UserModel user = userService.getUserDetailsById(uId);
+
+				if (!user.equals(null)) {
+
+					for (JsonNode node : arrayNode) {
+
+						double hours = node.get("hours").asDouble();
+						/*
+						 * if(hours==0) continue;
+						 */
+
+						Long taskId = node.get("taskId").asLong();
+						if(taskId!=0) {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							sdf.setTimeZone(TimeZone.getDefault());
+							ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(taskData.get("projectId").asLong());
+								Task taskCategory = tasktrackService.getTaskByName("Quick Time Track");
+								Tasktrack tasktrack = new Tasktrack();
+								tasktrack.setTask(taskCategory);
+								tasktrack.setProject(projectModel);
+								tasktrack.setId(node.get("taskId").asLong());
+								tasktrack.setHours(node.get("hours").asDouble());
+								tasktrack.setDate(sdf.parse(node.get("date").asText()));
+								if (tasktrackServiceImpl.updateTaskByName(tasktrack)) {
+									dataResponse.put("status", "success");
+								} else {
+									dataResponse.put("status", "failure");
+								}
+							continue;
+						}
+							
+						Tasktrack tasktrack = new Tasktrack();
+						tasktrack.setUser(user);
+
+						Task task = tasktrackService.getTaskByName("Quick Time Track");
+						if (task != null)
+							tasktrack.setTask(task);
+						else {
+							saveFailed = true;
+							dataResponse.put("message", "Process failed due to invalid task Id");
+						}
+
+						tasktrack.setHours(hours);
+
+						Long projectId = taskData.get("projectId").asLong();
+						if (projectId != 0L) {
+							ProjectModel proj = projectService.findById(projectId);
+							if (proj != null)
+								tasktrack.setProject(proj);
+							else {
+								saveFailed = true;
+								dataResponse.put("message", "Process failed due to invalid project Id");
+							}
+						} else {
+							saveFailed = true;
+							dataResponse.put("message", "Process failed due to empty project Id");
+						}
+
+						tasktrack.setDescription("Quick Time Track");
+
+						if (!(node.get("date").asText().isEmpty())) {
+							String dateNew = node.get("date").asText();
+							TimeZone zone = TimeZone.getTimeZone("MST");
+							SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+							outputFormat.setTimeZone(zone);
+							Date date1;
+
+							date1 = outputFormat.parse(dateNew);
+							if (date1 != null)
+								tasktrack.setDate(date1);
+							else {
+								saveFailed = true;
+								dataResponse.put("message", "Process failed due to invalid date ");
+							}
+						} else {
+							saveFailed = true;
+							dataResponse.put("message", "Process failed due to empty date value ");
+						}
+						if (!saveFailed) {
+							tasktrackService.saveTaskDetails(tasktrack);
+							dataResponse.put("message", "success");
+
+						}
+
+					}
+
+				} else {
+					saveFailed = true;
+					dataResponse.put("message", "Not a valid user Id");
+				}
+			} else {
+				saveFailed = true;
+				dataResponse.put("message", "user id is missing");
+			}
+
+			if (saveFailed)
+				dataResponse.put("status", "Failed");
+			else
+				dataResponse.put("status", "success");
+			dataResponse.put("code", status.getStatus());
+
+		} catch (Exception e) {
+			dataResponse.put("status", "failure");
+			dataResponse.put("message", "Exception : " + e);
+			System.out.println("Exception " + e);
 		}
+
+		return dataResponse;
 	}
+		
+		@PostMapping("/getQuicktimetrack")
+		public JSONObject getQuickTimeTrack(@RequestBody JsonNode requestData) throws Exception {
+			Long userId=null;
+			Date fromDate=null,toDate=null;
+			String vl=null;
+			JSONObject object = new JSONObject();
+			JSONObject obj = new JSONObject();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			if (requestData.get("userId") != null && requestData.get("userId").asText() != "") {
+				userId = requestData.get("userId").asLong();
+			}
+			if (requestData.get("fromDate") != null && requestData.get("fromDate").asText()!=null) {
+				fromDate = sdf.parse(requestData.get("fromDate").asText());
+			}
+			if (requestData.get("toDate") != null && requestData.get("toDate").asText()!=null) {
+				toDate = sdf.parse(requestData.get("toDate").asText());
+			}
+			try {
+			List<Object[]> taskTypesList = null;
+			taskTypesList = tasktrackService.getTasksForTimeTrack(userId,fromDate,toDate);
+			ArrayList projectList = new  ArrayList();
+			ArrayList TaskDetailstList = new  JSONArray();
+			JSONObject projectObject = new  JSONObject();
+			//JSONObject singleprojectObject = new  JSONObject();
+			JSONObject TaskDetailsObject = new  JSONObject();
+			JSONObject singleprojectObject = new JSONObject();
+			String project = "";	
+			if (!taskTypesList.isEmpty()) {
+				if (taskTypesList != null) {
+					for (Object[] fl : taskTypesList) {
+						if (fl != null) {
+							projectObject = new JSONObject();
+							project = (String) fl[1];
+							Date dat = (Date) fl[2];
+							if(singleprojectObject.get(project)==null) {
+								if(TaskDetailstList.size()>0) {
+									TaskDetailstList = new JSONArray();
+								}
+								projectObject.put("id", fl[0]);
+								projectObject.put("name", project);
+								TaskDetailsObject = new JSONObject();
+								TaskDetailsObject.put("date",  sdf.format(dat));
+								TaskDetailsObject.put("taskId",  fl[3]);
+								TaskDetailsObject.put("hours",  fl[4]);
+								TaskDetailstList.add(TaskDetailsObject);
+								
+								projectObject.put("TaskDetails", TaskDetailstList);
+								singleprojectObject = new JSONObject();
+								singleprojectObject.put(project, projectObject);
+								projectList.add(singleprojectObject);
+							}
+							else {
+
+								projectObject = (JSONObject) singleprojectObject.get(project);
+								TaskDetailstList = (ArrayList) projectObject.get("TaskDetails");
+								TaskDetailsObject = new JSONObject();
+								TaskDetailsObject.put("date",  sdf.format(dat));
+								TaskDetailsObject.put("taskId",  fl[3]);
+								TaskDetailsObject.put("hours",  fl[4]);
+								TaskDetailstList.add(TaskDetailsObject);
+								projectObject.put("TaskDetails", TaskDetailstList);
+							}
+						}
+					}
+				} 
+
+			}
+			obj.put("uId",userId);
+			obj.put("projectList",projectList);
+			 object.put("data",obj);
+			 object.put("status","success");
+			}catch(Exception e) {
+				e.printStackTrace();
+				object.put("status","failure");
+				 object.put("data",obj);
+			
+			}
+			return object;
+			
+			}
+	//bala
 
 }

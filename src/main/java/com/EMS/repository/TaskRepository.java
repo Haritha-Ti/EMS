@@ -53,6 +53,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	@Query("SELECT tasks FROM TaskCategory tasks where tasks.id = ?1")
 	TaskCategory findByTaskId(Long taskId);
 
+	@Query("SELECT t from Task t where taskName = ?1 ")
+	Task getTaskByName(String taskName);
+
 
 	
 }

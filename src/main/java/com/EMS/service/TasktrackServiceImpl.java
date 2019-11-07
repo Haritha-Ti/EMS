@@ -489,5 +489,41 @@ public class TasktrackServiceImpl implements TasktrackService {
     public TaskTrackDaySubmissionModel getSubmissionDayByMonth(int month) {
         return taskTrackDaySubmissionRepository.findByMonth(month).orElse(null);
     }
+    
+    //bala
+    
+	@Override
+	public Task getTaskByName(String taskName) {
+		// TODO Auto-generated method stub
+		return taskRepository.getTaskByName(taskName);
+	}
+	
+	
+		public boolean updateTaskByName(Tasktrack task) {
+		boolean result = false;
+		try {
+			tasktrackRepository.updateTaskByName(task.getId(),task.getHours(),
+					task.getProject(), task.getTask());
+			result = true;
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+
+		return result;
+	}
+
+		@Override
+		public List<Object[]> getTasksForTimeTrack(Long userId, Date fromDate, Date toDate) {
+			List<Object[]> ls=null;
+			try {
+				 ls= tasktrackRepository.getTasksFortimeTrack(userId,fromDate,toDate);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return ls;
+			
+		}
+		//bala
 	
 }
