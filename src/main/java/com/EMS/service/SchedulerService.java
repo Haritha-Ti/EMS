@@ -51,7 +51,7 @@ public class SchedulerService {
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "unlikely-arg-type" })
-	@Scheduled(cron = "0 0 10 * * *")
+	@Scheduled(cron = "0 0 9 * * *")
 	public void create() throws Exception {
 
 		Date date = null, croneDate = null;
@@ -71,6 +71,8 @@ public class SchedulerService {
 		holidays = holidayRepo.getHolidayDateList();
 
 		List<CronModel> dates = cronRepo.getCronDates();
+		if(date != null && dates.size() > 0) {
+
 		for (CronModel item : dates) {
 			croneDate = formatter.parse(item.getCronDate().toString());
 			if (croneDate.equals(date)) {
@@ -185,6 +187,6 @@ public class SchedulerService {
 
 			}
 		}
-
+		}
 	}
 }
