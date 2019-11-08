@@ -6240,6 +6240,37 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 	}
 
+	@Override
+	public void submitForRejection(JSONObject requestData) throws Exception {
+
+		Long projectId = Long.valueOf(requestData.get("projectId").toString());
+		int month= Integer.valueOf(requestData.get("month").toString());
+		int year=Integer.valueOf(requestData.get("year").toString());
+		Long userId=Long.valueOf(requestData.get("userId").toString());
+
+
+		TaskTrackApproval taskTrackApproval=timeTrackApprovalJPARepository.getTaskTrackApprovalbyUserId(projectId,month,year,userId);
+		taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+
+
+
+	}
+
+	@Override
+	public void submitForSecondHalfRejection(JSONObject requestData) throws Exception {
+		Long projectId = Long.valueOf(requestData.get("projectId").toString());
+		int month= Integer.valueOf(requestData.get("month").toString());
+		int year=Integer.valueOf(requestData.get("year").toString());
+		Long userId=Long.valueOf(requestData.get("userId").toString());
+
+
+		TaskTrackApproval taskTrackApproval=timeTrackApprovalJPARepository.getTaskTrackApprovalbyUserId(projectId,month,year,userId);
+		taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+
+
+
+	}
+
 	/**
 	 * 
 	 * @author sreejith.j

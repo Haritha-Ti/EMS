@@ -1065,6 +1065,42 @@ public class TasktrackController {
 		}
 		return response;
 	}
+	@PostMapping("/rejectFirstHalfHours")
+	public ObjectNode rejectFirstHalfHours(@RequestBody JSONObject requestData,
+											HttpServletResponse httpstatus) {
+
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			tasktrackApprovalService.submitForRejection(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+		}
+		return jsonDataRes;
+	}
+	@PostMapping("/rejectSecondHalfHours")
+	public ObjectNode rejectSecondHalfHours(@RequestBody JSONObject requestData,
+										   HttpServletResponse httpstatus) {
+
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			tasktrackApprovalService.submitForSecondHalfRejection(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+		}
+		return jsonDataRes;
+	}
 
 	@GetMapping("/getProjectNamesForApproval")
 	public JsonNode getProjectNamesForApproval(@RequestParam("uId") Long uId) throws Exception {

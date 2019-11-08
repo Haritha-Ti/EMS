@@ -116,5 +116,11 @@ public interface TasktrackApprovalService {
 	void submitFirstHalfHoursForApproval(JSONObject requestData) throws Exception;
 
 	void submitSecondHalfHoursForApproval(JSONObject requestData) throws Exception;
-	
+
+	void submitForRejection(JSONObject requestData) throws Exception;
+
+	void submitForSecondHalfRejection(JSONObject requestData) throws Exception;
+
+
+
 }

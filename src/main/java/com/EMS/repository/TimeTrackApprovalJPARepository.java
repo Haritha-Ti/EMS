@@ -129,4 +129,6 @@ public interface TimeTrackApprovalJPARepository extends JpaRepository<TaskTrackA
 	@Query(value = "SELECT id  FROM tasktrack_approval where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Overtime') order by id desc limit 1", nativeQuery = true)
 	Long getOvertimeIdForAUserForAProject(Integer month, Integer year, Long projectId, Long userId);
 
+	@Query("SELECT a FROM TaskTrackApproval a  where a.project.projectId = ?1 and a.month = ?2 and a.year = ?3 and a.user.userId = ?4 ")
+	TaskTrackApproval getTaskTrackApprovalbyUserId(Long projectId, int intMonth, int year,Long userId);
 }
