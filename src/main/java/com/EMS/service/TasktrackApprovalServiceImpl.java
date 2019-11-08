@@ -131,16 +131,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 		String firstHalfStatus = "Open";
 		String secodHalfStatus = "Open";
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startDate);
+		int month = (cal.get(Calendar.MONTH) + 1);
+		int year = cal.get(Calendar.YEAR);
+		Double firstHalfHour = 0.0;
+		Double secondHalfHour = 0.0;
+		
 		if (isExist) {
-			Double firstHalfHour = 0.0;
-			Double secondHalfHour = 0.0;
 			String userName = null;
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			int month = (cal.get(Calendar.MONTH) + 1);
-			int year = cal.get(Calendar.YEAR);
 
 			//For Logged Details
 			List<Object[]> loggedList = getUserListByProject(userId, startDate, endDate,projectId);
@@ -251,6 +252,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			response.put("month", month);
 			response.put("logged", logged);
 			response.put("billable", billable);
+			response.put("firstHalfStatus", firstHalfStatus);
+			response.put("secodHalfStatus", secodHalfStatus);
+		}
+		else {
+			response.put("userId", userId);
+			String uName = userService.getUserName(userId);
+			String userName = String.valueOf(uName).replace(",", " ");
+			response.put("userName", userName);
+			response.put("month", month);
+			
+			JSONObject totalHour = new JSONObject();
+			totalHour.put("firstHalfTotal", firstHalfHour);
+			totalHour.put("secondHalfTotal", secondHalfHour);
+			
+			response.put("logged", totalHour);
+			response.put("billable", totalHour);
 			response.put("firstHalfStatus", firstHalfStatus);
 			response.put("secodHalfStatus", secodHalfStatus);
 		}
