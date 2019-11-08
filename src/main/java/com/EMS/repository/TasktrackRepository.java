@@ -1,5 +1,6 @@
 package com.EMS.repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -116,6 +117,41 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	
 	@Query("select p.projectId,p.projectName,t.date,t.id,sum(t.hours) from ProjectModel p join AllocationModel a on a.project.projectId = p.projectId join UserModel u on u.userId=a.user.userId join Tasktrack t on t.project.projectId=p.projectId and t.user.userId = u.userId where u.userId=?1 and t.date>=?2 and t.date<=?3 group by 1,2,3,4 order by 1,3")
 	public List<Object[]> getTasksFortimeTrack(long id,Date fromDate, Date toDate) throws Exception;
+	
+	@Query(value = "SELECT \r\n" + 
+			"pms.task_date AS \"Task Date\",COALESCE(pms.projectname,pr.project_name) AS \"Project\",\r\n" + 
+			"FullName,Email,COALESCE(pms.end_date,pr.end_date) AS \"End Date\",UserName,IsActive,IsAllocated\r\n" + 
+			"FROM\r\n" + 
+			"(\r\n" + 
+			"    SELECT \r\n" + 
+			"     date1 AS task_date,\r\n" + 
+			"    prj.project_name AS projectname,\r\n" + 
+			"    CONCAT(u.first_name,' ',u.last_name) AS FullName,\r\n" + 
+			"    t.hours AS actual_hour,u.email AS Email,prj.end_date AS end_date,u.user_name AS UserName,u.active AS IsActive,alc.active as IsAllocated,\r\n" + 
+			"    (CASE \r\n" + 
+			"        WHEN prj.project_id IS NULL THEN u.user_id \r\n" + 
+			"        ELSE NULL \r\n" + 
+			"    END) AS untracked_user\r\n" + 
+			"    FROM\r\n" + 
+			"    `user` u\r\n" + 
+			"    LEFT JOIN \r\n" + 
+			"    (\r\n" + 
+			"        SELECT \r\n" + 
+			"        user_user_id,\r\n" + 
+			"        project_project_id,\r\n" + 
+			"        `date` as date1,\r\n" + 
+			"        COALESCE(SUM(hours),0) AS hours \r\n" + 
+			"        FROM tasktrack WHERE DATE(`date`) >=?1 && DATE(`date`) <=?2 \r\n" + 
+			"        GROUP BY 1,2,3\r\n" + 
+			"    ) t ON t.user_user_id = u.user_id\r\n" + 
+			"    LEFT JOIN allocation alc ON alc.user_user_id = u.user_id AND alc.project_project_id = t.project_project_id\r\n" + 
+			"    LEFT JOIN project prj ON prj.project_id = alc.project_project_id\r\n" + 
+			")pms\r\n" + 
+			"LEFT JOIN allocation al ON al.user_user_id = pms.untracked_user\r\n" + 
+			"LEFT JOIN project pr ON pr.project_id = al.project_project_id \r\n" +  
+			"GROUP BY 1,2,3,4,5,6,7,8\r\n" + 
+			"ORDER BY 1,2,3;", nativeQuery = true)
+	List<Object[]> getTrackTaskList(LocalDate fromDate, LocalDate toDate);
 	
 	
 }
