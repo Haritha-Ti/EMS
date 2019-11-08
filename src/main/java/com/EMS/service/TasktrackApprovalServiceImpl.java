@@ -6249,8 +6249,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long userId=Long.valueOf(requestData.get("userId").toString());
 
 
-		TaskTrackApproval taskTrackApproval=timeTrackApprovalJPARepository.getTaskTrackApprovalbyUserId(projectId,month,year,userId);
-		taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+		List<TaskTrackApproval> taskTrackApproval=timeTrackApprovalJPARepository.upadateTaskTrackApprovalStatus(projectId,month,year,userId);
+		for(TaskTrackApproval approval : taskTrackApproval){
+			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+		}
+		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+
 
 
 
@@ -6263,10 +6267,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		int year=Integer.valueOf(requestData.get("year").toString());
 		Long userId=Long.valueOf(requestData.get("userId").toString());
 
-
-		TaskTrackApproval taskTrackApproval=timeTrackApprovalJPARepository.getTaskTrackApprovalbyUserId(projectId,month,year,userId);
-		taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
-
+		List<TaskTrackApproval> taskTrackApproval=timeTrackApprovalJPARepository.upadateTaskTrackApprovalStatus(projectId,month,year,userId);
+		for(TaskTrackApproval approval : taskTrackApproval){
+			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+		}
+		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
 
 
 	}
