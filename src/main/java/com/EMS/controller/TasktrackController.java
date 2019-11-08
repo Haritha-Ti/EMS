@@ -2849,10 +2849,14 @@ public class TasktrackController {
 
 	@GetMapping("/submissionday/{month}")
 
-    public void  getSubmissionDay(@PathVariable("month") int month, HttpServletResponse httpstatus){
+    public ObjectNode  getSubmissionDay(@PathVariable("month") int month, HttpServletResponse httpstatus){
         ObjectNode response = objectMapper.createObjectNode();
         try {
-            tasktrackService.getSubmissionDayByMonth(month);
+        	TaskTrackDaySubmissionModel data = tasktrackService.getSubmissionDayByMonth(month);
+        	JsonNode node = objectMapper.convertValue(data, JsonNode.class);
+        	response.put("status", "success");
+    		response.put("code", httpstatus.getStatus());
+    		response.set("payload", node);  
         }
         catch(Exception ex) {
             ex.printStackTrace();
@@ -2860,6 +2864,7 @@ public class TasktrackController {
             response.put("code", httpstatus.getStatus());
             response.put("message", "Exception occured.");
         }
+        return response;
    }
 	
 	//bala
