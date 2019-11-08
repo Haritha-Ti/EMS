@@ -149,6 +149,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			")pms\r\n" + 
 			"LEFT JOIN allocation al ON al.user_user_id = pms.untracked_user\r\n" + 
 			"LEFT JOIN project pr ON pr.project_id = al.project_project_id \r\n" +  
+			"where COALESCE(pms.projectname,pr.project_name) is not null \r\n" + 
 			"GROUP BY 1,2,3,4,5,6,7,8\r\n" + 
 			"ORDER BY 1,2,3;", nativeQuery = true)
 	List<Object[]> getTrackTaskList(LocalDate fromDate, LocalDate toDate);
