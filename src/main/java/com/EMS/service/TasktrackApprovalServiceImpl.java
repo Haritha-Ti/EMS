@@ -129,8 +129,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		
 		JSONObject response = new JSONObject();
 
-		String firstHalfStatus = "Open";
-		String secodHalfStatus = "Open";
+		String firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+		String secodHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar cal = Calendar.getInstance();
@@ -742,8 +742,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		List<JSONObject> nonbillableArray = new ArrayList<>();
 		List<Integer> correctionDays =  new ArrayList<Integer>();
 
-		String firstHalfStatus = "Open";
-		String secodHalfStatus = "Open";
+		String firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+		String secodHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		String name = null;
 		Long billableId = null;
 		Long nonBillableId = null;
@@ -755,7 +755,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		cal.setTime(startDate);
 		int monthIndex = (cal.get(Calendar.MONTH) + 1);
 		int yearIndex = cal.get(Calendar.YEAR);
-//		int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 		int startDay = cal.get(Calendar.DAY_OF_MONTH);
 		
 		if (isExist) {
@@ -909,7 +908,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						else {
 							status = secodHalfStatus;
 						}
-						if(status.equalsIgnoreCase("Correction")) {
+						if(status.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 							List<TaskTrackCorrection> corrections = taskTrackCorrectionRepository.
 									findCorrectionDays(item.getUser().getUserId(), item.getProject().getProjectId(), item.getMonth(), item.getYear(),startDay,endDay);
 							for(TaskTrackCorrection correction : corrections) {
@@ -6178,8 +6177,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long userId=Long.valueOf(requestData.get("userId").toString());
 
 
-		TaskTrackApproval taskTrackApproval=timeTrackApprovalJPARepository.getTaskTrackApprovalbyUserId(projectId,month,year,userId);
-		taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+		List<TaskTrackApproval> taskTrackApproval=timeTrackApprovalJPARepository.upadateTaskTrackApprovalStatus(projectId,month,year,userId);
+		for(TaskTrackApproval approval : taskTrackApproval){
+			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+		}
+		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+
 
 
 
@@ -6192,10 +6195,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		int year=Integer.valueOf(requestData.get("year").toString());
 		Long userId=Long.valueOf(requestData.get("userId").toString());
 
-
-		TaskTrackApproval taskTrackApproval=timeTrackApprovalJPARepository.getTaskTrackApprovalbyUserId(projectId,month,year,userId);
-		taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
-
+		List<TaskTrackApproval> taskTrackApproval=timeTrackApprovalJPARepository.upadateTaskTrackApprovalStatus(projectId,month,year,userId);
+		for(TaskTrackApproval approval : taskTrackApproval){
+			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+		}
+		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
 
 
 	}
