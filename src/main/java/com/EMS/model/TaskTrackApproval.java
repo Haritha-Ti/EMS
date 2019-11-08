@@ -13,7 +13,7 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "TASKTRACK_APPROVAL")
-public class TaskTrackApproval extends BaseEntity{
+public class TaskTrackApproval{
 
 	@Id
 	@Column(name = "id")
@@ -25,7 +25,7 @@ public class TaskTrackApproval extends BaseEntity{
 	
 	private Double day1,day2,day3,day4,day5,day6,day7,day8,day9,day10,
 			day11,day12,day13,day14,day15,day16,day17,day18,day19,day20,
-			day21,day22,day23,day24,day25,day26,day27,day28,day29,day30,day31;
+			day21,day22,day23,day24,day25,day26,day27,day28,day29,day30,day31 = 0.0d;
 	
 	@ManyToOne
 	private UserModel user;
@@ -39,12 +39,24 @@ public class TaskTrackApproval extends BaseEntity{
 	
 	private Integer month;
 	
-	@Column(name = "first_half_status")
+	@Column(name = "first_half_status", length = 10)
 	private String firstHalfStatus;
 	
-	@Column(name = "second_half_status")
+	@Column(name = "second_half_status", length = 10)
 	private String secondHalfStatus;
 	
+	private Date approvedDate;
+	
+	private Long updatedBy;
+
+	public Long getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(Long updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -70,6 +82,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay1() {
+		if(day1==null) {
+			day1 = 0.0d;
+		}
 		return day1;
 	}
 
@@ -78,6 +93,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay2() {
+		if(day2==null) {
+			day2 = 0.0d;
+		}
 		return day2;
 	}
 
@@ -86,6 +104,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay3() {
+		if(day3==null) {
+			day3 = 0.0d;
+		}
 		return day3;
 	}
 
@@ -94,6 +115,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay4() {
+		if(day4==null) {
+			day4 = 0.0d;
+		}
 		return day4;
 	}
 
@@ -102,6 +126,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay5() {
+		if(day5==null) {
+			day5 = 0.0d;
+		}
 		return day5;
 	}
 
@@ -110,6 +137,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay6() {
+		if(day6==null) {
+			day6 = 0.0d;
+		}
 		return day6;
 	}
 
@@ -118,6 +148,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay7() {
+		if(day7==null) {
+			day7 = 0.0d;
+		}
 		return day7;
 	}
 
@@ -126,6 +159,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay8() {
+		if(day8==null) {
+			day8 = 0.0d;
+		}
 		return day8;
 	}
 
@@ -134,6 +170,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay9() {
+		if(day9==null) {
+			day9 = 0.0d;
+		}
 		return day9;
 	}
 
@@ -142,6 +181,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay10() {
+		if(day10==null) {
+			day10 = 0.0d;
+		}
 		return day10;
 	}
 
@@ -150,6 +192,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay11() {
+		if(day11==null) {
+			day11 = 0.0d;
+		}
 		return day11;
 	}
 
@@ -158,6 +203,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay12() {
+		if(day12==null) {
+			day12 = 0.0d;
+		}
 		return day12;
 	}
 
@@ -166,6 +214,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay13() {
+		if(day13==null) {
+			day13 = 0.0d;
+		}
 		return day13;
 	}
 
@@ -174,6 +225,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay14() {
+		if(day14==null) {
+			day14 = 0.0d;
+		}
 		return day14;
 	}
 
@@ -182,6 +236,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay15() {
+		if(day15==null) {
+			day15 = 0.0d;
+		}
 		return day15;
 	}
 
@@ -190,6 +247,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay16() {
+		if(day16==null) {
+			day16 = 0.0d;
+		}
 		return day16;
 	}
 
@@ -198,6 +258,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay17() {
+		if(day17==null) {
+			day17 = 0.0d;
+		}
 		return day17;
 	}
 
@@ -206,6 +269,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay18() {
+		if(day18==null) {
+			day18 = 0.0d;
+		}
 		return day18;
 	}
 
@@ -214,6 +280,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay19() {
+		if(day19==null) {
+			day19 = 0.0d;
+		}
 		return day19;
 	}
 
@@ -222,6 +291,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay20() {
+		if(day20==null) {
+			day20 = 0.0d;
+		}
 		return day20;
 	}
 
@@ -230,6 +302,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay21() {
+		if(day21==null) {
+			day21 = 0.0d;
+		}
 		return day21;
 	}
 
@@ -238,6 +313,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay22() {
+		if(day22==null) {
+			day22 = 0.0d;
+		}
 		return day22;
 	}
 
@@ -246,6 +324,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay23() {
+		if(day23==null) {
+			day23 = 0.0d;
+		}
 		return day23;
 	}
 
@@ -254,6 +335,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay24() {
+		if(day24==null) {
+			day24 = 0.0d;
+		}
 		return day24;
 	}
 
@@ -262,6 +346,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay25() {
+		if(day25==null) {
+			day25 = 0.0d;
+		}
 		return day25;
 	}
 
@@ -270,6 +357,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay26() {
+		if(day26==null) {
+			day26 = 0.0d;
+		}
 		return day26;
 	}
 
@@ -278,6 +368,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay27() {
+		if(day27==null) {
+			day27 = 0.0d;
+		}
 		return day27;
 	}
 
@@ -286,6 +379,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay28() {
+		if(day28==null) {
+			day28 = 0.0d;
+		}
 		return day28;
 	}
 
@@ -294,6 +390,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay29() {
+		if(day29==null) {
+			day29 = 0.0d;
+		}
 		return day29;
 	}
 
@@ -302,6 +401,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay30() {
+		if(day30==null) {
+			day30 = 0.0d;
+		}
 		return day30;
 	}
 
@@ -310,6 +412,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public Double getDay31() {
+		if(day31==null) {
+			day31 = 0.0d;
+		}
 		return day31;
 	}
 
@@ -358,6 +463,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public String getFirstHalfStatus() {
+		if(firstHalfStatus == null) {
+			firstHalfStatus = "Open";
+		}
 		return firstHalfStatus;
 	}
 
@@ -366,6 +474,9 @@ public class TaskTrackApproval extends BaseEntity{
 	}
 
 	public String getSecondHalfStatus() {
+		if(secondHalfStatus == null) {
+			secondHalfStatus = "Open";
+		}
 		return secondHalfStatus;
 	}
 
@@ -373,4 +484,12 @@ public class TaskTrackApproval extends BaseEntity{
 		this.secondHalfStatus = secondHalfStatus;
 	}
 
+	public Date getApprovedDate() {
+		return approvedDate;
+	}
+
+	public void setApprovedDate(Date approvedDate) {
+		this.approvedDate = approvedDate;
+	}
+	
 }
