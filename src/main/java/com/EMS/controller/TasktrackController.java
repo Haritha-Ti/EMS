@@ -29,6 +29,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.Taskdetails;
+import com.EMS.exceptions.DuplicateEntryException;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.ProjectRegion;
@@ -871,19 +873,29 @@ public class TasktrackController {
 	 * @return
 	 */
 	@PostMapping("/saveApprovedHours")
-	public ObjectNode saveApprovedHours(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
+	public ResponseEntity<Object> saveApprovedHours(@RequestBody JSONObject requestData,
+			HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
 			tasktrackApprovalService.saveApprovedHours(requestData);
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "Failure");
 			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return jsonDataRes;
+		return response;
 	}
 
 	/**
@@ -894,22 +906,30 @@ public class TasktrackController {
 	 * @return
 	 */
 	@PostMapping("/submitFirstHalfHoursForApproval")
-	public ObjectNode submitFirstHalfHoursForApproval(@RequestBody JSONObject requestData,
+	public ResponseEntity<Object> submitFirstHalfHoursForApproval(@RequestBody JSONObject requestData,
 			HttpServletResponse httpstatus) {
-
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
 		try {
 			tasktrackApprovalService.submitFirstHalfHoursForApproval(requestData);
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "Failure");
 			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return jsonDataRes;
+		return response;
 	}
 
 	/**
@@ -920,22 +940,30 @@ public class TasktrackController {
 	 * @return
 	 */
 	@PostMapping("/submitSecondHalfHoursForApproval")
-	public ObjectNode submitSecondHalfHoursForApproval(@RequestBody JSONObject requestData,
+	public ResponseEntity<Object> submitSecondHalfHoursForApproval(@RequestBody JSONObject requestData,
 			HttpServletResponse httpstatus) {
-
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
 		try {
 			tasktrackApprovalService.submitSecondHalfHoursForApproval(requestData);
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "Failure");
 			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return jsonDataRes;
+		return response;
 	}
 
 	/**
@@ -946,20 +974,28 @@ public class TasktrackController {
 	 * @return
 	 */
 	@PostMapping("/saveFinalHours")
-	public ObjectNode saveFinalHours(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
-
+	public ResponseEntity<Object> saveFinalHours(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
 			taskTrackFinalService.saveFinalHours(requestData);
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "Failure");
 			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return jsonDataRes;
+		return response;
 	}
 
 	/**
@@ -970,21 +1006,30 @@ public class TasktrackController {
 	 * @return
 	 */
 	@PostMapping("/submitFirstHalfHoursAsFinal")
-	public ObjectNode submitFirstHalfHoursAsFinal(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
-
+	public ResponseEntity<Object> submitFirstHalfHoursAsFinal(@RequestBody JSONObject requestData,
+			HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
 		try {
 			taskTrackFinalService.submitFirstHalfHoursAsFinal(requestData);
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "Failure");
 			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return jsonDataRes;
+		return response;
 	}
 
 	/**
@@ -995,22 +1040,30 @@ public class TasktrackController {
 	 * @return
 	 */
 	@PostMapping("/submitSecondHalfHoursAsFinal")
-	public ObjectNode submitSecondHalfHoursAsFinal(@RequestBody JSONObject requestData,
+	public ResponseEntity<Object> submitSecondHalfHoursAsFinal(@RequestBody JSONObject requestData,
 			HttpServletResponse httpstatus) {
-
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
 		try {
 			taskTrackFinalService.submitSecondHalfHoursAsFinal(requestData);
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 			jsonDataRes.put("status", "Failure");
 			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return jsonDataRes;
+		return response;
 	}
 
 	@GetMapping("/getProjectNamesForApproval")
@@ -2872,7 +2925,7 @@ public class TasktrackController {
 					ObjectNode node = objectMapper.createObjectNode();
 					node.put("id", (Long) alloc[1]);
 					node.put("value", (String) alloc[0]);
-					node.put("tier", (Integer)alloc[2]);
+					node.put("tier", (Integer) alloc[2]);
 					// get region list
 					List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
 					ArrayNode regionsArray = objectMapper.createArrayNode();
@@ -2926,25 +2979,24 @@ public class TasktrackController {
 
 	@GetMapping("/submissionday/{month}")
 
-    public ObjectNode  getSubmissionDay(@PathVariable("month") int month, HttpServletResponse httpstatus){
-        ObjectNode response = objectMapper.createObjectNode();
-        try {
-        	TaskTrackDaySubmissionModel data = tasktrackService.getSubmissionDayByMonth(month);
-        	JsonNode node = objectMapper.convertValue(data, JsonNode.class);
-        	response.put("status", "success");
-    		response.put("code", httpstatus.getStatus());
-    		response.set("payload", node);  
-        }
-        catch(Exception ex) {
-            ex.printStackTrace();
-            response.put("status", "Failure");
-            response.put("code", httpstatus.getStatus());
-            response.put("message", "Exception occured.");
-        }
-        return response;
-   }
-	
-	//bala
+	public ObjectNode getSubmissionDay(@PathVariable("month") int month, HttpServletResponse httpstatus) {
+		ObjectNode response = objectMapper.createObjectNode();
+		try {
+			TaskTrackDaySubmissionModel data = tasktrackService.getSubmissionDayByMonth(month);
+			JsonNode node = objectMapper.convertValue(data, JsonNode.class);
+			response.put("status", "success");
+			response.put("code", httpstatus.getStatus());
+			response.set("payload", node);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			response.put("status", "Failure");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "Exception occured.");
+		}
+		return response;
+	}
+
+	// bala
 	@PostMapping(value = "/addQuickTimeTrack", headers = "Accept=application/json")
 	public JsonNode addQuickTimeTrack(@RequestBody JsonNode taskData, HttpServletResponse status)
 			throws JSONException, ParseException {
@@ -2969,25 +3021,26 @@ public class TasktrackController {
 						 */
 
 						Long taskId = node.get("taskId").asLong();
-						if(taskId!=0) {
+						if (taskId != 0) {
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							sdf.setTimeZone(TimeZone.getDefault());
-							ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(taskData.get("projectId").asLong());
-								Task taskCategory = tasktrackService.getTaskByName("Quick Time Track");
-								Tasktrack tasktrack = new Tasktrack();
-								tasktrack.setTask(taskCategory);
-								tasktrack.setProject(projectModel);
-								tasktrack.setId(node.get("taskId").asLong());
-								tasktrack.setHours(node.get("hours").asDouble());
-								tasktrack.setDate(sdf.parse(node.get("date").asText()));
-								if (tasktrackServiceImpl.updateTaskByName(tasktrack)) {
-									dataResponse.put("status", "success");
-								} else {
-									dataResponse.put("status", "failure");
-								}
+							ProjectModel projectModel = tasktrackServiceImpl
+									.getProjectModelById(taskData.get("projectId").asLong());
+							Task taskCategory = tasktrackService.getTaskByName("Quick Time Track");
+							Tasktrack tasktrack = new Tasktrack();
+							tasktrack.setTask(taskCategory);
+							tasktrack.setProject(projectModel);
+							tasktrack.setId(node.get("taskId").asLong());
+							tasktrack.setHours(node.get("hours").asDouble());
+							tasktrack.setDate(sdf.parse(node.get("date").asText()));
+							if (tasktrackServiceImpl.updateTaskByName(tasktrack)) {
+								dataResponse.put("status", "success");
+							} else {
+								dataResponse.put("status", "failure");
+							}
 							continue;
 						}
-							
+
 						Tasktrack tasktrack = new Tasktrack();
 						tasktrack.setUser(user);
 
@@ -3066,34 +3119,34 @@ public class TasktrackController {
 
 		return dataResponse;
 	}
-		
-		@PostMapping("/getQuicktimetrack")
-		public JSONObject getQuickTimeTrack(@RequestBody JsonNode requestData) throws Exception {
-			Long userId=null;
-			Date fromDate=null,toDate=null;
-			String vl=null;
-			JSONObject object = new JSONObject();
-			JSONObject obj = new JSONObject();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			if (requestData.get("userId") != null && requestData.get("userId").asText() != "") {
-				userId = requestData.get("userId").asLong();
-			}
-			if (requestData.get("fromDate") != null && requestData.get("fromDate").asText()!=null) {
-				fromDate = sdf.parse(requestData.get("fromDate").asText());
-			}
-			if (requestData.get("toDate") != null && requestData.get("toDate").asText()!=null) {
-				toDate = sdf.parse(requestData.get("toDate").asText());
-			}
-			try {
+
+	@PostMapping("/getQuicktimetrack")
+	public JSONObject getQuickTimeTrack(@RequestBody JsonNode requestData) throws Exception {
+		Long userId = null;
+		Date fromDate = null, toDate = null;
+		String vl = null;
+		JSONObject object = new JSONObject();
+		JSONObject obj = new JSONObject();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if (requestData.get("userId") != null && requestData.get("userId").asText() != "") {
+			userId = requestData.get("userId").asLong();
+		}
+		if (requestData.get("fromDate") != null && requestData.get("fromDate").asText() != null) {
+			fromDate = sdf.parse(requestData.get("fromDate").asText());
+		}
+		if (requestData.get("toDate") != null && requestData.get("toDate").asText() != null) {
+			toDate = sdf.parse(requestData.get("toDate").asText());
+		}
+		try {
 			List<Object[]> taskTypesList = null;
-			taskTypesList = tasktrackService.getTasksForTimeTrack(userId,fromDate,toDate);
-			ArrayList projectList = new  ArrayList();
-			ArrayList TaskDetailstList = new  JSONArray();
-			JSONObject projectObject = new  JSONObject();
-			//JSONObject singleprojectObject = new  JSONObject();
-			JSONObject TaskDetailsObject = new  JSONObject();
+			taskTypesList = tasktrackService.getTasksForTimeTrack(userId, fromDate, toDate);
+			ArrayList projectList = new ArrayList();
+			ArrayList TaskDetailstList = new JSONArray();
+			JSONObject projectObject = new JSONObject();
+			// JSONObject singleprojectObject = new JSONObject();
+			JSONObject TaskDetailsObject = new JSONObject();
 			JSONObject singleprojectObject = new JSONObject();
-			String project = "";	
+			String project = "";
 			if (!taskTypesList.isEmpty()) {
 				if (taskTypesList != null) {
 					for (Object[] fl : taskTypesList) {
@@ -3101,52 +3154,51 @@ public class TasktrackController {
 							projectObject = new JSONObject();
 							project = (String) fl[1];
 							Date dat = (Date) fl[2];
-							if(singleprojectObject.get(project)==null) {
-								if(TaskDetailstList.size()>0) {
+							if (singleprojectObject.get(project) == null) {
+								if (TaskDetailstList.size() > 0) {
 									TaskDetailstList = new JSONArray();
 								}
 								projectObject.put("id", fl[0]);
 								projectObject.put("name", project);
 								TaskDetailsObject = new JSONObject();
-								TaskDetailsObject.put("date",  sdf.format(dat));
-								TaskDetailsObject.put("taskId",  fl[3]);
-								TaskDetailsObject.put("hours",  fl[4]);
+								TaskDetailsObject.put("date", sdf.format(dat));
+								TaskDetailsObject.put("taskId", fl[3]);
+								TaskDetailsObject.put("hours", fl[4]);
 								TaskDetailstList.add(TaskDetailsObject);
-								
+
 								projectObject.put("TaskDetails", TaskDetailstList);
 								singleprojectObject = new JSONObject();
 								singleprojectObject.put(project, projectObject);
 								projectList.add(singleprojectObject);
-							}
-							else {
+							} else {
 
 								projectObject = (JSONObject) singleprojectObject.get(project);
 								TaskDetailstList = (ArrayList) projectObject.get("TaskDetails");
 								TaskDetailsObject = new JSONObject();
-								TaskDetailsObject.put("date",  sdf.format(dat));
-								TaskDetailsObject.put("taskId",  fl[3]);
-								TaskDetailsObject.put("hours",  fl[4]);
+								TaskDetailsObject.put("date", sdf.format(dat));
+								TaskDetailsObject.put("taskId", fl[3]);
+								TaskDetailsObject.put("hours", fl[4]);
 								TaskDetailstList.add(TaskDetailsObject);
 								projectObject.put("TaskDetails", TaskDetailstList);
 							}
 						}
 					}
-				} 
+				}
 
 			}
-			obj.put("uId",userId);
-			obj.put("projectList",projectList);
-			 object.put("data",obj);
-			 object.put("status","success");
-			}catch(Exception e) {
-				e.printStackTrace();
-				object.put("status","failure");
-				 object.put("data",obj);
-			
-			}
-			return object;
-			
-			}
-	//bala
+			obj.put("uId", userId);
+			obj.put("projectList", projectList);
+			object.put("data", obj);
+			object.put("status", "success");
+		} catch (Exception e) {
+			e.printStackTrace();
+			object.put("status", "failure");
+			object.put("data", obj);
+
+		}
+		return object;
+
+	}
+	// bala
 
 }
