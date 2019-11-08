@@ -456,23 +456,17 @@ public class TasktrackController {
 		return dataResponse;
 	}
 
+	@SuppressWarnings("unchecked")
 	@PostMapping("/getTaskTrackData")
 	public JSONObject getTaskTrackData(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus)
 			throws ParseException {
 
-		JSONObject jsonDataRes = new JSONObject();
-		JSONObject returnJsonData = new JSONObject();
-		List<JSONObject> timeTrackJSONData = new ArrayList<>();
-		List<JSONObject> loggedJsonArray = new ArrayList<>();
-		List<JSONObject> billableJsonArray = new ArrayList<>();
+		JSONObject response = new JSONObject();
 		Long projectId = null;
-
 		try {
-
 			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
 				projectId = requestdata.get("projectId").asLong();
 			}
-
 			String date1 = requestdata.get("startDate").asText();
 			String date2 = requestdata.get("endDate").asText();
 
@@ -484,28 +478,25 @@ public class TasktrackController {
 			if (!date2.isEmpty()) {
 				endDate = outputFormat.parse(date2);
 			}
-
-			List<Object[]> userIdList = null;
-
+			Integer firstHalfDay = 15;//Month split from day 15
+			JSONArray taskTrackArray = new JSONArray();
 			if (startDate != null && endDate != null) {
-				// userIdList =
-				// projectAllocationService.getUserIdByProject(projectId);
-				userIdList = projectAllocationService.getUserIdByProjectAndDate(projectId, startDate, endDate);
-				getUserDataForReport(userIdList, startDate, endDate, jsonDataRes, timeTrackJSONData, loggedJsonArray,
-						billableJsonArray, projectId);
+				Integer projectTier = requestdata.get("projectTier").asInt();
+				List<Object[]> userIdList = projectAllocationService.getUserIdByProjectAndDate(projectId, startDate, endDate);
+				taskTrackArray = getUserDataForReport(userIdList, startDate, endDate, projectId,projectTier,firstHalfDay);
 			}
 
-			jsonDataRes.put("data", timeTrackJSONData);
-			jsonDataRes.put("status", "success");
-			jsonDataRes.put("message", "success. ");
-			jsonDataRes.put("code", httpstatus.getStatus());
-		} catch (Exception e) {
-			jsonDataRes.put("status", "failure");
-			jsonDataRes.put("code", httpstatus.getStatus());
-			jsonDataRes.put("message", "failed. " + e);
+			response.put("data", taskTrackArray);
+			response.put("status", "success");
+			response.put("message", "success. ");
+			response.put("code", httpstatus.getStatus());
+		} 
+		catch (Exception e) {
+			response.put("status", "failure");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "failed. " + e);
 		}
-
-		return jsonDataRes;
+		return response;
 	}
 
 	@PostMapping("/getTaskTrackDataByProjectorUser")
@@ -588,23 +579,19 @@ public class TasktrackController {
 		return jsonDataRes;
 	}
 
-	private void getUserDataForReport(List<Object[]> userIdList, Date startDate, Date endDate, JSONObject jsonDataRes,
-			List<JSONObject> timeTrackJSONData, List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArray,
-			Long projectId) {
-
-		JSONObject resultData = new JSONObject();
-		List<JSONObject> timeTrackJsonData = new ArrayList<>();
-		List<JSONObject> approvalJsonData = new ArrayList<>();
+	@SuppressWarnings("unchecked")
+	private JSONArray getUserDataForReport(List<Object[]> userIdList, Date startDate, Date endDate,
+		Long projectId, Integer projectTier, Integer firstHalfDay) throws ParseException {
+		
+		JSONArray taskTrackArray = new JSONArray();
 		for (Object userItem : userIdList) {
-
-			Long id = (Long) userItem;
-			List<Object[]> userList = null;
-			Boolean isExist = tasktrackApprovalService.checkIsUserExists(id);
-			// Data From Time track
-			timeTrackJsonData = tasktrackApprovalService.getTimeTrackUserTaskDetails(id, startDate, endDate, userList,
-					loggedJsonArray, billableJsonArray, timeTrackJSONData, isExist, projectId);
+			Long userId = (Long) userItem;
+			Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
+			JSONObject taskTrackObject = tasktrackApprovalService.
+					getTimeTrackUserTaskDetails(userId, startDate, endDate, isExist,projectId, projectTier,firstHalfDay);
+			taskTrackArray.add(taskTrackObject);
 		}
-
+		return taskTrackArray;
 	}
 
 	private void getUserDataForReportByProjectandUser(List<Object[]> userIdList, Date startDate, Date endDate,
@@ -672,20 +659,15 @@ public class TasktrackController {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@PostMapping("/getTaskTrackDataByUserId")
 	public JSONObject getTaskTrackDataByUserId(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus)
 			throws ParseException {
 
-		JSONObject jsonDataRes = new JSONObject();
-		JSONObject jsonDataMessageDetails = new JSONObject();
-		JSONObject returnJsonData = new JSONObject();
-		List<JSONObject> timeTrackJSONData = new ArrayList<>();
-		List<JSONObject> approvalJSONData = new ArrayList<>();
-		List<JSONObject> jsonArray = new ArrayList<>();
-		Long userId = null, projectId = null;
-		boolean flaglevel2 = true;
+		JSONObject response = new JSONObject();
 		try {
-
+			Long userId = null;
+			Long projectId = null;
 			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
 				projectId = requestdata.get("projectId").asLong();
 			}
@@ -696,173 +678,41 @@ public class TasktrackController {
 			String date2 = requestdata.get("endDate").asText();
 
 			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-			Date startDate = null, endDate = null;
-			if (!date1.isEmpty()) {
+			Date startDate = null;
+			Date endDate = null;
+			if (!date1.isEmpty() && !date2.isEmpty()) {
 				startDate = outputFormat.parse(date1);
-			}
-			if (!date2.isEmpty()) {
 				endDate = outputFormat.parse(date2);
 			}
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			int intMonth = 0, intday = 0;
-			intMonth = (cal.get(Calendar.MONTH) + 1);
-			intday = cal.get(Calendar.DAY_OF_MONTH);
-			String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-					+ ((intday < 10) ? "0" + intday : "" + intday);
-
-			JSONObject jsonDataProjectDetails = new JSONObject();
-
-			ProjectModel projectdetails = null;
-
-			if (projectId != null) {
-				// System.out.println("Here____________________________");
-				projectdetails = getProjectDetails(projectId);
+			
+			Integer firstHalfDay = 15;//Month split from day 15
+			JSONObject approvaldata = new JSONObject();
+			if(startDate != null && endDate != null) {
+				Integer projectTier = requestdata.get("projectTier").asInt();
+				approvaldata = getUserDataForApproval(userId, startDate, endDate, null, null, null, null, projectId, projectTier,firstHalfDay);
 			}
-			if (projectdetails != null) {
-
-				// System.out.println("Here____________________________");
-				if (projectdetails.getProjectOwner() != null) {
-					jsonDataProjectDetails.put("approver_level_1", projectdetails.getProjectOwner().getUserId());
-				}
-
-				if (projectdetails.getOnsite_lead() != null)
-
-				{
-					System.out.println("------------------------------------------------1");
-					jsonDataProjectDetails.put("approver_level_2", projectdetails.getOnsite_lead().getUserId());
-					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()
-							+ " " + projectdetails.getOnsite_lead().getLastName());
-				} else {
-					System.out.println("------------------------------------------------2");
-					flaglevel2 = false;
-					jsonDataProjectDetails.put("approver_level_2", "");
-					jsonDataMessageDetails.put("Level2_Approvar_Name", "");
-				}
-				// timeTrackJSONData.add(jsonDataProjectDetails);
-				// TaskTrackApprovalLevel2 forwardeddate =
-				// taskTrackApprovalLevel2Repository.getForwardedDate(projectId,userId,intMonth);
-				int yearIndex = cal.get(Calendar.YEAR);
-				System.out.println("Month" + intMonth + "Year" + yearIndex);
-				String frowardedDate = "";
-				String frowardedDateLevel2 = "";
-				String finance_status_message = "Timesheet not yet submitted to finance";
-				String forwarded_ToLevel2_Status = "";
-				if (flaglevel2) {
-					forwarded_ToLevel2_Status = "Timesheet not yet forwarded to Level2";
-				}
-				String pattern = "yyyy-MM-dd";
-				DateFormat df = new SimpleDateFormat(pattern);
-
-				// getb finance status of the current project added on 11/10
-
-				Object[] finance_status = tasktrackApprovalService.getFinanceStatusOfCurrentProject(projectId, userId,
-						intMonth, yearIndex);
-
-				if (finance_status != null) {
-					System.out.println("---------------------------------------0");
-					if (finance_status.length > 0) {
-						System.out.println("---------------------------------------1");
-						if (finance_status[0].equals("HM")) {
-							System.out.println("---------------------------------------2");
-							finance_status_message = "Submitted mid report";
-						} else if (finance_status[0].equals("FM")) {
-							System.out.println("---------------------------------------3");
-							finance_status_message = "Submitted Final report";
-						}
-
-					}
-				}
-				jsonDataMessageDetails.put("Status", finance_status_message);
-				//
-
-				List<Object> level2 = tasktrackApprovalService.getForwardedDateLevel2(projectId, userId, intMonth,
-						yearIndex);
-
-				if (!level2.isEmpty()) {
-
-					// System.out.println("forwarded_date"+level2.get(0));
-					if (level2.get(0) != null) {
-
-						Date fdate = (Date) level2.get(0);
-						frowardedDateLevel2 = df.format(fdate);
-					} else {
-
-						frowardedDateLevel2 = "";
-					}
-				}
-
-				List<Object[]> level1 = tasktrackApprovalService.getForwardedDates(projectId, userId, intMonth,
-						yearIndex);
-				if (!level1.isEmpty()) {
-					// System.out.println("forwarded_date"+level1.get(0));
-					if (level1 != null) {
-						for (Object[] fl : level1) {
-							if (fl != null) {
-								if (fl[0] != null) {
-									Date fdate = (Date) fl[0];
-									frowardedDate = df.format(fdate);
-									System.out.println("---------------------------------------4");
-									String pattern1 = "MM-dd-yyyy";
-									DateFormat df1 = new SimpleDateFormat(pattern1);
-									String forw = df1.format(fdate);
-									forwarded_ToLevel2_Status = "Data upto " + forw + "has been forwarded to Level2";
-								}
-								if (fl[1] != null) {
-									Date fdates = (Date) fl[1];
-									frowardedDateLevel2 = df.format(fdates);
-								}
-							}
-						}
-					} // System.out.println("frowardedDate___________"+frowardedDate);
-
-				}
-				jsonDataMessageDetails.put("Forwarded_status", forwarded_ToLevel2_Status);
-				jsonDataProjectDetails.put("forwarded_date", frowardedDate);
-				jsonDataProjectDetails.put("forwarded_date_finance", frowardedDateLevel2);
-			}
-
-			List<Object[]> userIdList = null;
-			Long count = null;
-
-			if (startDate != null && endDate != null) {
-				userIdList = projectAllocationService.getUserIdByProject(projectId);
-				returnJsonData = getUserDataForApproval(userId, startDate, endDate, jsonDataRes, timeTrackJSONData,
-						approvalJSONData, jsonArray, projectId);
-			}
-
-			jsonDataRes.put("data", returnJsonData);
-			jsonDataRes.put("details", jsonDataProjectDetails);
-			jsonDataRes.put("status", "success");
-			jsonDataRes.put("message", "success. ");
-			jsonDataRes.put("code", httpstatus.getStatus());
-			jsonDataRes.put("message_details", jsonDataMessageDetails);
+			response.put("data", approvaldata);
+			response.put("status", "success");
+			response.put("message", "success. ");
+			response.put("code", httpstatus.getStatus());
 		} catch (Exception e) {
-			jsonDataRes.put("status", "failure");
-			jsonDataRes.put("code", httpstatus.getStatus());
-			jsonDataRes.put("message", "failed. " + e);
+			response.put("status", "failure");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "failed. " + e);
 		}
-
-		return jsonDataRes;
+		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	private JSONObject getUserDataForApproval(Long userId, Date startDate, Date endDate, JSONObject jsonDataRes,
 			List<JSONObject> timeTrackJSONData, List<JSONObject> approvalJSONData, List<JSONObject> jsonArray,
-			Long projectId) {
-
-		JSONObject resultData = new JSONObject();
-		List<JSONObject> timeTrackJsonData = new ArrayList<>();
-		JSONObject approvalJsonData = new JSONObject();
-		List<TaskTrackApproval> userList = null;
+			Long projectId, Integer projectTier, Integer firstHalfDay) {
+		
+		JSONObject response = new JSONObject();
 		Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
-		// Data From Approval table
-		approvalJsonData = tasktrackApprovalService.getApprovedUserTaskDetails(userId, startDate, endDate, userList,
-				jsonArray, approvalJSONData, isExist, projectId);
-
-		resultData.put("ApprovedData", approvalJsonData);
-
-		return resultData;
-
+		JSONObject approvalData = tasktrackApprovalService.getApprovedUserTaskDetails(userId, startDate, endDate,isExist, projectId, projectTier,firstHalfDay);
+		response.put("ApprovedData", approvalData);
+		return response;
 	}
 
 	/**
@@ -1380,7 +1230,7 @@ public class TasktrackController {
 		Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
 		// Data From Approval table
 		approvalJsonData = getUserDataForApproval(userId, startDate, endDate, jsonDataRes, timeTrackJSONData,
-				approvalJSONData, jsonArray, projectId);
+				approvalJSONData, jsonArray, projectId,null,null);
 		// approvalJsonDataLevel2 =
 		// tasktrackApprovalService.getApprovedUserTaskDetailsForLevel2(userId,
 		// startDate, endDate,userList,jsonArray, approvalJSONData,
@@ -1391,7 +1241,7 @@ public class TasktrackController {
 		// resultData.put("ApprovedData", approvalJsonData);
 		// #New Line By Rinu 25-09-2019
 		resultData.putAll(getUserDataForApproval(userId, startDate, endDate, jsonDataRes, timeTrackJSONData,
-				approvalJSONData, jsonArray, projectId));
+				approvalJSONData, jsonArray, projectId,null,null));
 		resultData.put("ApprovedData_level2", approvalJsonDataLevel2);
 
 		return resultData;
