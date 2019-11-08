@@ -18,9 +18,7 @@ public interface TasktrackApprovalService {
 
 	Boolean checkIsUserExists(Long id);
 
-	List<JSONObject> getTimeTrackUserTaskDetails(Long id, Date startDate, Date endDate, List<Object[]> userList,
-			List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArray, List<JSONObject> timeTrackJSONData,
-			Boolean isExist, Long projectId);
+	JSONObject getTimeTrackUserTaskDetails(Long userId, Date startDate, Date endDate,Boolean isExist,Long projectId, Integer projectTier,Integer firstHalfDay) throws ParseException;
 
 	List<JSONObject> getTimeTrackUserTaskDetailsByProject(Long id, Date startDate, Date endDate,
 			List<Object[]> userList, List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArray,
@@ -31,8 +29,7 @@ public interface TasktrackApprovalService {
 			List<JSONObject> billableJsonArray, List<JSONObject> nonBillableJsonArray,
 			List<JSONObject> timeTrackJSONData, Boolean isExist, Long userId);
 
-	JSONObject getApprovedUserTaskDetails(Long id, Date startDate, Date endDate, List<TaskTrackApproval> userList,
-			List<JSONObject> jsonArray, List<JSONObject> jsonDataRes1, Boolean isExist, Long projectId);
+	JSONObject getApprovedUserTaskDetails(Long id, Date startDate, Date endDate, Boolean isExist,Long projectId,Integer projectTier, Integer firstHalfDay);
 
 	TaskTrackApproval findById(Long billableId);
 
@@ -116,5 +113,11 @@ public interface TasktrackApprovalService {
 	void submitFirstHalfHoursForApproval(JSONObject requestData) throws Exception;
 
 	void submitSecondHalfHoursForApproval(JSONObject requestData) throws Exception;
-	
+
+	void submitForRejection(JSONObject requestData) throws Exception;
+
+	void submitForSecondHalfRejection(JSONObject requestData) throws Exception;
+
+
+
 }
