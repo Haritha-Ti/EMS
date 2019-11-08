@@ -57,6 +57,7 @@ import com.EMS.service.ProjectAllocationService;
 import com.EMS.service.ProjectRegionService;
 import com.EMS.service.ProjectService;
 import com.EMS.service.RegionService;
+import com.EMS.service.TaskTrackFinalService;
 import com.EMS.service.TasktrackApprovalService;
 import com.EMS.service.TasktrackService;
 import com.EMS.service.TasktrackServiceImpl;
@@ -95,6 +96,9 @@ public class TasktrackController {
 
 	@Autowired
 	TasktrackApprovalService tasktrackApprovalService;
+
+	@Autowired
+	TaskTrackFinalService taskTrackFinalService;
 
 	@Autowired
 	TaskTrackApprovalLevel2Repository taskTrackApprovalLevel2Repository;
@@ -868,7 +872,6 @@ public class TasktrackController {
 	 */
 	@PostMapping("/saveApprovedHours")
 	public ObjectNode saveApprovedHours(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
-
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		try {
 			tasktrackApprovalService.saveApprovedHours(requestData);
@@ -922,9 +925,83 @@ public class TasktrackController {
 
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
-
 		try {
 			tasktrackApprovalService.submitSecondHalfHoursForApproval(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+		}
+		return jsonDataRes;
+	}
+
+	/**
+	 * @author sreejith.j
+	 * 
+	 * @param requestData
+	 * @param httpstatus
+	 * @return
+	 */
+	@PostMapping("/saveFinalHours")
+	public ObjectNode saveFinalHours(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
+
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		try {
+			taskTrackFinalService.saveFinalHours(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+		}
+		return jsonDataRes;
+	}
+
+	/**
+	 * @author sreejith.j
+	 * 
+	 * @param requestData
+	 * @param httpstatus
+	 * @return
+	 */
+	@PostMapping("/submitFirstHalfHoursAsFinal")
+	public ObjectNode submitFirstHalfHoursAsFinal(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
+
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			taskTrackFinalService.submitFirstHalfHoursAsFinal(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+		}
+		return jsonDataRes;
+	}
+
+	/**
+	 * @author sreejith.j
+	 * 
+	 * @param requestData
+	 * @param httpstatus
+	 * @return
+	 */
+	@PostMapping("/submitSecondHalfHoursAsFinal")
+	public ObjectNode submitSecondHalfHoursAsFinal(@RequestBody JSONObject requestData,
+			HttpServletResponse httpstatus) {
+
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			taskTrackFinalService.submitSecondHalfHoursAsFinal(requestData);
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
 		} catch (Exception e) {
