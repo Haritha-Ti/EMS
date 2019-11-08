@@ -51,7 +51,7 @@ public class SchedulerService {
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "unlikely-arg-type" })
-	@Scheduled(cron = "* * * * * *")
+	@Scheduled(cron = "0 0 10 * * *")
 	public void create() throws Exception {
 
 		Date date = null, croneDate = null;
