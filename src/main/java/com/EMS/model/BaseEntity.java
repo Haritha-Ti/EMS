@@ -12,10 +12,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class BaseEntity {
 
 	@Column(name = "created_by")
-	private long createdBy;
+	private Long createdBy;
 	
 	@Column(name = "updated_by")
-	private long updatedBy;
+	private Long updatedBy;
 	
     @Column(name = "created_date")
     private Date createdDate;
