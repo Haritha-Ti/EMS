@@ -71,7 +71,7 @@ public class SchedulerService {
 		holidays = holidayRepo.getHolidayDateList();
 
 		List<CronModel> dates = cronRepo.getCronDates();
-		if(date != null && dates.size() > 0) {
+		if(dates != null && dates.size() > 0) {
 
 		for (CronModel item : dates) {
 			croneDate = formatter.parse(item.getCronDate().toString());
