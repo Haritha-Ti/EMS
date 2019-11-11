@@ -51,7 +51,7 @@ public class SchedulerService {
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "unlikely-arg-type" })
-	@Scheduled(cron = "0 0 9 * * *")
+	@Scheduled(cron = "0 30 15 * * *")
 	public void create() throws Exception {
 
 		Date date = null, croneDate = null;
@@ -146,7 +146,8 @@ public class SchedulerService {
 							
 						while (!startDate.isAfter(toDate)) {
 							
-							if(sdf.parse(projectActiveMap.get(projectName).toString()).after(sdf.parse(startDate.toString()))) {
+							if((sdf.parse(projectActiveMap.get(projectName).toString()).after(sdf.parse(startDate.toString()))) || 
+									(sdf.parse(projectActiveMap.get(projectName).toString()).equals((sdf.parse(startDate.toString()))))) {
 								if ((dateList==null || !dateList.contains(startDate.toString()))
 										&& !holidays.contains(sdf.parse(startDate.toString()))
 										&& !startDate.getDayOfWeek().equals(DayOfWeek.SATURDAY) 

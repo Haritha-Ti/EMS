@@ -30,6 +30,7 @@ import com.EMS.model.AllocationModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.ProjectRegion;
+import com.EMS.model.Region;
 import com.EMS.model.UserModel;
 import com.EMS.service.AttendanceService;
 import com.EMS.service.ProjectAllocationService;
@@ -73,6 +74,9 @@ public class ProjectAllocationController {
 	
 	@Autowired
 	private ProjectService projectservice;
+	
+	@Autowired
+	private RegionService regionservice;
 
 	// To get user, department and project list
 
@@ -1323,12 +1327,12 @@ public class ProjectAllocationController {
 
 				jsonData.set("projectData", jsonprojectObject);
 				jsonData.set("resourceList", jsonArray);
-				List<ProjectRegion> projectRegion = projectRegionService.getRegionListByProject(projectId);
-				for(ProjectRegion region : projectRegion){
+				List<Region> projectRegion = regionservice.getlist();
+				for(Region region : projectRegion){
 					ObjectNode jsonregionObject = objectMapper.createObjectNode();
-					jsonregionObject.put("region_Id",region.getRegion_Id().getId());
-					jsonregionObject.put("region_code",region.getRegion_Id().getRegion_code());
-					jsonregionObject.put("region_name",region.getRegion_Id().getRegion_name());
+					jsonregionObject.put("region_Id",region.getId());
+					jsonregionObject.put("region_code",region.getRegion_code());
+					jsonregionObject.put("region_name",region.getRegion_name());
 					regionjsonArray.add(jsonregionObject);
 				}
 				jsonData.set("regionList", regionjsonArray);
