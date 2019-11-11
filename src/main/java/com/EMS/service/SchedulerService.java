@@ -51,7 +51,7 @@ public class SchedulerService {
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "unlikely-arg-type" })
-	@Scheduled(cron = "0 30 15 * * *")
+	@Scheduled(cron = "0 35 16 * * *")
 	public void create() throws Exception {
 
 		Date date = null, croneDate = null;
@@ -172,7 +172,7 @@ public class SchedulerService {
 							
 							StringBuilder mailBody = new StringBuilder("Hi "+ userFullNameMap.get(userName) +", ");
 							mailBody.append("<br/><br/>Project: "+ projectName);
-							mailBody.append("<br/><br/>Your timtrack is pending for the foolowing days: <br/>"+sb);
+							mailBody.append("<br/><br/>Your timtrack is pending for the following days: <br/>"+sb);
 
 							Template t = freemarkerConfig.getTemplate("email_template.ftl");
 					        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "Please submit your time sheet !");
