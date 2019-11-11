@@ -14,3 +14,6 @@
 2019-11-11 18:22:59,409 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
 2019-11-11 18:22:59,563 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
 2019-11-11 18:22:59,760 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-11-11 18:23:09,808 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
+2019-11-11 18:23:11,578 INFO com.EMS.TimetrackerApplication [main] Started TimetrackerApplication in 15.561 seconds (JVM running for 20.275)
+2019-11-11 18:23:15,363 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [http-nio-8080-exec-1] Initializing Spring DispatcherServlet 'dispatcherServlet'
