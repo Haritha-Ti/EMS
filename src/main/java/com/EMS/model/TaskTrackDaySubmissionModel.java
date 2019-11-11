@@ -2,9 +2,15 @@ package com.EMS.model;
 
 import javax.persistence.*;
 
+import org.hibernate.envers.Audited;
+
+import com.EMS.listener.ModelListener;
+
+@Audited
+@EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "tasktrack_day_submission")
-public class TaskTrackDaySubmissionModel {
+public class TaskTrackDaySubmissionModel  extends Auditable<String> {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

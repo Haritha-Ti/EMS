@@ -89,10 +89,12 @@ public class LoginController {
 					&& (password.length() > 0)) {
 
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-	            String token = jwtTokenProvider.createToken(username, 
+				String token = jwtTokenProvider.createToken(username, 
 	            		this.userRepository.findByUserName(username)
 	            		.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
-	            		.getRole().getroleName());
+	            		.getRole().getroleName(),this.userRepository.findByUserName(username)
+	            		.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
+	            		.getRole().getroleId());
 
 				UserModel usercheck = login_service.login_authentication(username);
 

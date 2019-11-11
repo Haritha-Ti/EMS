@@ -92,11 +92,11 @@ public class ProjectController {
 			project.setisPOC(requestdata.get("isPOC").asInt());
 			project.setProjectTier(0);
 			UserModel createdBy = userservice.getUserDetailsById(requestdata.get("sessionId").asLong());
-			project.setCreatedBy(createdBy);
+			//project.setCreatedBy(createdBy);
 			Date createdDate = new Date();
-			project.setCreatedDate(createdDate);
-			project.setModifiedBy(null);
-			project.setModifiedDate(null);
+			//project.setCreatedDate(createdDate);
+			//project.setModifiedBy(null);
+			//project.setModifiedDate(null);
 			Long userid = null;
 
 			if(requestdata.get("projectTier").asInt() == 1) {
@@ -744,9 +744,9 @@ public class ProjectController {
 			project.setisPOC(requestdata.get("isPOC").asInt());
 			
 			UserModel modifiedBy = userservice.getUserDetailsById(requestdata.get("sessionId").asLong());
-			project.setModifiedBy(modifiedBy);
+			//project.setModifiedBy(modifiedBy);
 			Date modifiedDate = new Date();
-			project.setModifiedDate(modifiedDate);
+			//project.setModifiedDate(modifiedDate);
 			/*
 			 * Long userid = requestdata.get("approver_level_1").asLong(); UserModel
 			 * pro_owner = new UserModel();

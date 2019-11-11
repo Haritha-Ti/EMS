@@ -3,18 +3,24 @@ package com.EMS.model;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.envers.Audited;
+
+import com.EMS.listener.ModelListener;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@Audited
+@EntityListeners(ModelListener.class)
 @Entity
 @Table(name="Allocation")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class AllocationModel {
+public class AllocationModel extends  Auditable<String> {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
