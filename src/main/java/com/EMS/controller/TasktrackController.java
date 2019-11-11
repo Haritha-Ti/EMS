@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -2882,17 +2883,19 @@ public class TasktrackController {
 						/*
 						 * if(hours==0) continue;
 						 */
-
-						Long taskId = node.get("taskId").asLong();
-						if(taskId!=0) {
+						ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(taskData.get("projectId").asLong());
+						Long qTrackId = node.get("qTrackId").asLong();
+						if(qTrackId!=0) 
+						{
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							sdf.setTimeZone(TimeZone.getDefault());
-							ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(taskData.get("projectId").asLong());
+							//ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(taskData.get("projectId").asLong());
 								Task taskCategory = tasktrackService.getTaskByName("Quick Time Track");
 								Tasktrack tasktrack = new Tasktrack();
 								tasktrack.setTask(taskCategory);
 								tasktrack.setProject(projectModel);
-								tasktrack.setId(node.get("taskId").asLong());
+								tasktrack.setUser(user);
+								tasktrack.setId(qTrackId);
 								tasktrack.setHours(node.get("hours").asDouble());
 								tasktrack.setDate(sdf.parse(node.get("date").asText()));
 								if (tasktrackServiceImpl.updateTaskByName(tasktrack)) {
@@ -2905,6 +2908,9 @@ public class TasktrackController {
 							
 						Tasktrack tasktrack = new Tasktrack();
 						tasktrack.setUser(user);
+						
+
+						
 
 						Task task = tasktrackService.getTaskByName("Quick Time Track");
 						if (task != null)
@@ -2915,12 +2921,12 @@ public class TasktrackController {
 						}
 
 						tasktrack.setHours(hours);
-
+	//storing projects
 						Long projectId = taskData.get("projectId").asLong();
 						if (projectId != 0L) {
-							ProjectModel proj = projectService.findById(projectId);
-							if (proj != null)
-								tasktrack.setProject(proj);
+							//ProjectModel proj = projectService.findById(projectId);
+							if (projectModel != null)
+								tasktrack.setProject(projectModel);
 							else {
 								saveFailed = true;
 								dataResponse.put("message", "Process failed due to invalid project Id");
@@ -2929,9 +2935,9 @@ public class TasktrackController {
 							saveFailed = true;
 							dataResponse.put("message", "Process failed due to empty project Id");
 						}
-
+	//hardcoded description
 						tasktrack.setDescription("Quick Time Track");
-
+	//getting date
 						if (!(node.get("date").asText().isEmpty())) {
 							String dateNew = node.get("date").asText();
 							TimeZone zone = TimeZone.getTimeZone("MST");
@@ -2987,6 +2993,7 @@ public class TasktrackController {
 			Long userId=null;
 			Date fromDate=null,toDate=null;
 			String vl=null;
+			JSONObject json=new JSONObject();
 			JSONObject object = new JSONObject();
 			JSONObject obj = new JSONObject();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -3001,11 +3008,19 @@ public class TasktrackController {
 			}
 			try {
 			List<Object[]> taskTypesList = null;
+			List<Object[]> projectAllocationList = null;
+			projectAllocationList=projectAllocationService.getAllocationProjectForUserId(userId,fromDate,toDate);
+			Map ProjectMap = new HashMap();
+			Map ClientMap = new HashMap();
+			System.out.println("aloca"+projectAllocationList);
+			for (Object[] objAllocation :projectAllocationList) {
+				ProjectMap.put(objAllocation[1],objAllocation[0]);
+				ClientMap.put(objAllocation[1],objAllocation[2]);
+			}
 			taskTypesList = tasktrackService.getTasksForTimeTrack(userId,fromDate,toDate);
 			ArrayList projectList = new  ArrayList();
-			ArrayList TaskDetailstList = new  JSONArray();
+			ArrayList TaskDetailstList = new  ArrayList();
 			JSONObject projectObject = new  JSONObject();
-			//JSONObject singleprojectObject = new  JSONObject();
 			JSONObject TaskDetailsObject = new  JSONObject();
 			JSONObject singleprojectObject = new JSONObject();
 			String project = "";	
@@ -3015,17 +3030,21 @@ public class TasktrackController {
 						if (fl != null) {
 							projectObject = new JSONObject();
 							project = (String) fl[1];
+							ProjectMap.remove(project);
+							//remove this project from allocationTypesList
+							
 							Date dat = (Date) fl[2];
 							if(singleprojectObject.get(project)==null) {
 								if(TaskDetailstList.size()>0) {
 									TaskDetailstList = new JSONArray();
 								}
+								projectObject.put("clientName",fl[4]);
 								projectObject.put("id", fl[0]);
 								projectObject.put("name", project);
 								TaskDetailsObject = new JSONObject();
 								TaskDetailsObject.put("date",  sdf.format(dat));
-								TaskDetailsObject.put("taskId",  fl[3]);
-								TaskDetailsObject.put("hours",  fl[4]);
+								TaskDetailsObject.put("qTrackId",  fl[3]);
+								TaskDetailsObject.put("hours",  fl[5]);
 								TaskDetailstList.add(TaskDetailsObject);
 								
 								projectObject.put("TaskDetails", TaskDetailstList);
@@ -3039,16 +3058,30 @@ public class TasktrackController {
 								TaskDetailstList = (ArrayList) projectObject.get("TaskDetails");
 								TaskDetailsObject = new JSONObject();
 								TaskDetailsObject.put("date",  sdf.format(dat));
-								TaskDetailsObject.put("taskId",  fl[3]);
-								TaskDetailsObject.put("hours",  fl[4]);
+								TaskDetailsObject.put("qTrackId",  fl[3]);
+								TaskDetailsObject.put("hours",  fl[5]);
 								TaskDetailstList.add(TaskDetailsObject);
 								projectObject.put("TaskDetails", TaskDetailstList);
 							}
 						}
 					}
+					
 				} 
 
 			}
+		if(ProjectMap.size()>0) {
+				for(Object key:ProjectMap.keySet()) {
+					
+				projectObject=new JSONObject();
+				System.out.println("Adding project :"+key);
+				projectObject.put("clientName",ClientMap.get(key));
+				projectObject.put("id", ProjectMap.get(key));
+				projectObject.put("name", key);
+				projectObject.put("TaskDetails", new  ArrayList());
+				singleprojectObject = new JSONObject();
+				singleprojectObject.put(key, projectObject);
+				projectList.add(singleprojectObject);
+				}	}	
 			obj.put("uId",userId);
 			obj.put("projectList",projectList);
 			 object.put("data",obj);
@@ -3057,9 +3090,10 @@ public class TasktrackController {
 				e.printStackTrace();
 				object.put("status","failure");
 				 object.put("data",obj);
+				 
 			
 			}
-			return object;
+	 		return object;
 			
 			}
 	//bala

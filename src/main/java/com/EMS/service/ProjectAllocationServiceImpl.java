@@ -239,4 +239,10 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 		return projectAllocationRepository.getUserDataByProjectAndDate(projectId,startDate,endDate);
 	}
 
+	@Override
+	public List<Object[]> getAllocationProjectForUserId(Long userId, Date fromDate, Date toDate) {
+		// TODO Auto-generated method stub
+		return projectAllocationRepository.getAllocationProjectForUserId(userId,fromDate,toDate);
+	}
+
 }
