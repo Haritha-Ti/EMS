@@ -14,17 +14,28 @@ import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+import com.EMS.dto.MailDomainDto;
 import com.EMS.model.PasswordResetModel;
 import com.EMS.model.UserModel;
 import com.EMS.repository.PasswordResetRepository;
 import com.EMS.utility.Constants;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 @Service
 public class PasswordResetServiceImpl implements PasswordResetService{
 	
 	@Autowired
 	private PasswordResetRepository passwordResetRepository;
+	
+	@Autowired
+	EmailNotificationService emailNotificationService;
+	
+	@Autowired
+    private Configuration freemarkerConfig;
 
 	@Value("${CONTEXT_PATH}")
 	private String CONTEXT_PATH;
@@ -91,61 +102,32 @@ public class PasswordResetServiceImpl implements PasswordResetService{
 	
 	@Override
 	public String sendMail(String token, UserModel user)  throws Exception{
+		
+		String msg = "Failure";
+		MailDomainDto mailDomainDto = new MailDomainDto();
+
 		String url = CONTEXT_PATH+"/pwdVerify?token=" + token + "&userId="+user.getUserId();
 		String subject = "Reset Password";
 		StringBuilder mailBody = new StringBuilder("Hi "+user.getFirstName()+" "+user.getLastName()+",");
 		mailBody.append("<br/><br/>To reset your password click the link below:");
 		mailBody.append("<br/><br/> <a href='"+url+"'>Reset password</a>");
-		mailBody.append("<br/><br/>This link will expire in "+Constants.EMAIL_TOKEN_EXP_DUR+" minutes");
+		mailBody.append("<br/><br/>This link will expire in "+Constants.EMAIL_TOKEN_EXP_DUR+" minutes<br/><br/>");
 		
-		String to = user.getEmail();
-        String from = "noreply@titechnologies.in";  
-        String host = "smtp.gmail.com"; 
-        final String username = "noreply@titechnologies.in";
-        final String password = "Noreply!@#";  
-        
-        System.out.println("TLS Email Start"); 
-        
-        Properties properties = System.getProperties();  
-          
-        // Setup mail server 
-        properties.setProperty("mail.smtp.host", host); 
-        // SSL Port 
-        properties.put("mail.smtp.port", "465");  
-        // enable authentication 
-        properties.put("mail.smtp.auth", "true");  
-        // SSL Factory 
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");   
-  
-        // creating Session instance referenced to  
-        // Authenticator object to pass in  
-        // Session.getInstance argument 
-        Session session = Session.getDefaultInstance(properties, 
-        new javax.mail.Authenticator() { 
-            // override the getPasswordAuthentication  
-            protected PasswordAuthentication  
-                    getPasswordAuthentication() { 
-                return new PasswordAuthentication(username, password); 
-            } 
-        }); 
-    
-
-	    // javax.mail.internet.MimeMessage class is mostly  
-	    // used for abstraction. 
-	    MimeMessage message = new MimeMessage(session);  
-	      
-	    // header field of the header. 
-	    message.setFrom(new InternetAddress(from)); 
-	    message.addRecipient(Message.RecipientType.TO,  
-	                          new InternetAddress(to)); 
-	    message.setSubject(subject); 
-	    // message.setText(mailBody);
-	    message.setContent(mailBody.toString(),"text/html");
-	  
-	    // Send message 
-	    Transport.send(message); 
-	    
-	    String msg = "Verification link has been successfully sent to your email \""+to+"\"";
+		Template t = freemarkerConfig.getTemplate("email_template.ftl");
+        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "Reset Password");
+		
+		mailDomainDto.setSubject(subject);
+		mailDomainDto.setMailBody(html);
+		mailDomainDto.setTo((user.getEmail() == null)?null:user.getEmail());
+		mailDomainDto.setBcc(null);
+		mailDomainDto.setCc(null);
+		
+		String result = emailNotificationService.sendMail(token, mailDomainDto);
+		
+		if(result == "Success")
+            msg = "Verification link has been successfully sent to your email \""+user.getEmail()+"\"";
+		else
+			msg = "Unable to send mail";
 	    System.out.println(msg); 
 		return msg;
 	}

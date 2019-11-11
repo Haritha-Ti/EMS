@@ -8,43 +8,52 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
 @Table(name = "TASKTRACK_APPROVAL_FINAL")
-public class TaskTrackApprovalFinal extends BaseEntity{
+public class TaskTrackApprovalFinal{
 
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Transient
-	private String firstName,lastName;
-	
 	private Double day1,day2,day3,day4,day5,day6,day7,day8,day9,day10,
-			day11,day12,day13,day14,day15,day16,day17,day18,day19,day20,
-			day21,day22,day23,day24,day25,day26,day27,day28,day29,day30,day31;
-	
+	day11,day12,day13,day14,day15,day16,day17,day18,day19,day20,
+	day21,day22,day23,day24,day25,day26,day27,day28,day29,day30,day31 = 0.0d;
+
 	@ManyToOne
 	private UserModel user;
-	
+
+	@OneToOne
+	private TaskTrackApproval approvalId;
+
+	public TaskTrackApproval getApprovalId() {
+		return approvalId;
+	}
+
+	public void setApprovalId(TaskTrackApproval approvalId) {
+		this.approvalId = approvalId;
+	}
+
 	@ManyToOne
 	private ProjectModel project;
-	
+
 	private String projectType;
-	
+
 	private Integer year;
-	
+
 	private Integer month;
-	
-	@Column(name = "first_half_status")
+
+	@Column(name = "first_half_status", length = 10)
 	private String firstHalfStatus;
-	
-	@Column(name = "second_half_status")
+
+	@Column(name = "second_half_status", length = 10)
 	private String secondHalfStatus;
-	
+
 	private Date approvedDate;
 
 	public long getId() {
@@ -53,22 +62,6 @@ public class TaskTrackApprovalFinal extends BaseEntity{
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
 	}
 
 	public Double getDay1() {
@@ -360,6 +353,9 @@ public class TaskTrackApprovalFinal extends BaseEntity{
 	}
 
 	public String getFirstHalfStatus() {
+		if(firstHalfStatus == null) {
+			firstHalfStatus = "OPEN";
+		}
 		return firstHalfStatus;
 	}
 
@@ -368,9 +364,11 @@ public class TaskTrackApprovalFinal extends BaseEntity{
 	}
 
 	public String getSecondHalfStatus() {
+		if(secondHalfStatus == null) {
+			secondHalfStatus = "OPEN";
+		}
 		return secondHalfStatus;
 	}
-
 	public void setSecondHalfStatus(String secondHalfStatus) {
 		this.secondHalfStatus = secondHalfStatus;
 	}
@@ -382,4 +380,5 @@ public class TaskTrackApprovalFinal extends BaseEntity{
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
+	
 }

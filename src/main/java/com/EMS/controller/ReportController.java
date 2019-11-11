@@ -833,7 +833,7 @@ public class ReportController {
 				isLevels = false;
 			}
 
-			if (roleId == 4 | roleId == 5 | roleId == 6 | roleId == 9) {
+			if (roleId == 4 | roleId == 5 | roleId == 6 | roleId == 9 | roleId == 10) {
 				projectList = projectRegionService.getProjectsByRegionId(regionId);
 				isLevels = false;
 			}

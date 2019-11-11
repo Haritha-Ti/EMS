@@ -4,11 +4,18 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ValueRange;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -19,27 +26,35 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import java.time.YearMonth;
-
-import com.EMS.repository.*;
-import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.EMS.exceptions.DuplicateEntryException;
 import com.EMS.model.ActivityLog;
-import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
-import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
+import com.EMS.model.TaskTrackApprovalFinal;
 import com.EMS.model.TaskTrackApprovalFinance;
 import com.EMS.model.TaskTrackApprovalLevel2;
+import com.EMS.model.TaskTrackCorrection;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
+import com.EMS.repository.ActivityLogRepository;
+import com.EMS.repository.ProjectAllocationRepository;
+import com.EMS.repository.ProjectRepository;
+import com.EMS.repository.TaskRepository;
+import com.EMS.repository.TaskTrackApprovalFinalRepository;
+import com.EMS.repository.TaskTrackApprovalLevel2Repository;
+import com.EMS.repository.TaskTrackCorrectionRepository;
+import com.EMS.repository.TaskTrackFinalJPARepository;
 import com.EMS.repository.TaskTrackFinanceRepository;
+import com.EMS.repository.TasktrackRepository;
+import com.EMS.repository.TimeTrackApprovalJPARepository;
+import com.EMS.repository.TimeTrackApprovalRepository;
+import com.EMS.repository.UserRepository;
 import com.EMS.utility.Constants;
+import com.EMS.utility.TaskTrackApproverConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -63,6 +78,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	@Autowired
 	TimeTrackApprovalJPARepository timeTrackApprovalJPARepository;
+
+	@Autowired
+	TaskTrackFinalJPARepository taskTrackFinalJPARepository;
 //	For Task track Model
 
 	@Autowired
@@ -92,284 +110,168 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Autowired
 	ActivityLogRepository activitylogrepository;
 
+	@Autowired
+	TaskTrackApprovalFinalRepository taskTrackApprovalFinalRepository;
+	
+	@Autowired
+	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
+	
 	@Override
 	public Boolean checkIsUserExists(Long id) {
 		Boolean exist = tasktrackRepository.existsByUser(id);
 		return exist;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<JSONObject> getTimeTrackUserTaskDetails(Long id, Date startDate, Date endDate, List<Object[]> userList,
+	public JSONObject getTimeTrackUserTaskDetails(Long userId, Date startDate, Date endDate,Boolean isExist,
+		Long projectId, Integer projectTier,Integer firstHalfDay) throws ParseException{
+		
+		JSONObject response = new JSONObject();
 
-			List<JSONObject> loggedJsonArray, List<JSONObject> billableJsonArrayLogged,
-			List<JSONObject> timeTrackJSONData, Boolean isExist, Long projectId) {
-		List<JSONObject> billableJsonArray;
-		List<JSONObject> overTimeArray;
+		String firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+		String secodHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startDate);
+		int month = (cal.get(Calendar.MONTH) + 1);
+		int year = cal.get(Calendar.YEAR);
+		Double firstHalfHour = 0.0;
+		Double secondHalfHour = 0.0;
+		
 		if (isExist) {
-			JSONObject userListObject = new JSONObject();
+			String userName = null;
 
-			userList = getUserListByProject(id, startDate, endDate, projectId);
-			// System.out.println("userList : "+userList);
-			loggedJsonArray = new ArrayList<>();
-
-			String name = null;
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0, intday = 0;
-			for (int i = 0; i < diffInDays; i++) {
-				intMonth = (cal.get(Calendar.MONTH) + 1);
-				intday = cal.get(Calendar.DAY_OF_MONTH);
-				String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-						+ ((intday < 10) ? "0" + intday : "" + intday);
-
-				Double hours = 0.0;
-				if (userList != null && userList.size() > 0) {
-					JSONObject jsonObject = new JSONObject();
-					for (Object[] item : userList) {
-
-						String st = String.valueOf(item[3]);
-
-						if (st.equals(vl)) {
-							hours = hours + (Double) item[2];
-
-						}
-						name = (String) item[1] + " " + item[0];
+			//For Logged Details
+			List<Object[]> loggedList = getUserListByProject(userId, startDate, endDate,projectId);
+			if (loggedList != null && loggedList.size() > 0) {
+				Object[] user = loggedList.get(0);
+				userName = user[1] + " " + user[0];
+				for (Object[] logged : loggedList) {
+					Date date = dateFormat.parse(String.valueOf(logged[3]));
+					cal.setTime(date);
+					int day = cal.get(Calendar.DAY_OF_MONTH);
+					Double hour = Double.valueOf(logged[2].toString());
+					if(day <= firstHalfDay) {
+						firstHalfHour += hour;
 					}
-					jsonObject.put(vl, hours);
-					cal.add(Calendar.DATE, 1);
-					loggedJsonArray.add(jsonObject);
-
+					else {
+						secondHalfHour += hour;
+					}
 				}
-
-				else {
-					JSONObject jsonObject = new JSONObject();
-					String uName = userService.getUserName(id);
-					name = String.valueOf(uName).replace(",", " ");
-					jsonObject.put(vl, 0);
-					cal.add(Calendar.DATE, 1);
-					loggedJsonArray.add(jsonObject);
-				}
-
 			}
-			userListObject.put("userName", name);
-			userListObject.put("userId", id);
-			userListObject.put("month", intMonth);
-			userListObject.put("logged", loggedJsonArray);
-			// System.out.println("logged has data : "+loggedJsonArray);
-			name = null;
-			cal.setTime(startDate);
-			int monthIndex = (cal.get(Calendar.MONTH) + 1);
-			int yearIndex = cal.get(Calendar.YEAR);
-
-			List<TaskTrackApproval> approvalUserList = getUserListForApproval(id, projectId, monthIndex, yearIndex);
-
-			overTimeArray = new ArrayList<>();
-			billableJsonArray = new ArrayList<>();
-			billableJsonArrayLogged = new ArrayList<>();
-
-			diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			intMonth = 0;
-			intday = 0;
-			Double hours = 0.0;
+			
+			JSONObject logged = new JSONObject();
+			logged.put("firstHalfTotal", firstHalfHour);
+			logged.put("secondHalfTotal", secondHalfHour);
+			
+			//For Billable Details
+			List<TaskTrackApproval> approvalUserList = new ArrayList<TaskTrackApproval>();
+			if(projectTier == 1) {
+				List<TaskTrackApprovalFinal> approvalFinalList = taskTrackApprovalFinalRepository.getUserFinalApprovalList(userId,projectId,month,year);
+				for(TaskTrackApprovalFinal taskTrackFinal : approvalFinalList) {
+					approvalUserList.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
+				}
+			}
+			else {
+				approvalUserList = getUserListForApproval(userId,projectId,month,year);
+			}
+			
+			firstHalfHour = 0.0;
+			secondHalfHour = 0.0;
+			
 			if (approvalUserList != null && approvalUserList.size() > 0) {
-				JSONObject jsonObject = new JSONObject();
-
-				for (TaskTrackApproval item : approvalUserList) {
-					cal.setTime(startDate);
-
-					for (int i = 0; i < diffInDays; i++) {
-
-						intMonth = (cal.get(Calendar.MONTH) + 1);
-						intday = cal.get(Calendar.DAY_OF_MONTH);
-						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth)
-								+ "-" + ((intday < 10) ? "0" + intday : "" + intday);
-
-						if (i == 0)
-							hours = (Double) item.getDay1();
-						else if (i == 1)
-							hours = (Double) item.getDay2();
-						else if (i == 2)
-							hours = (Double) item.getDay3();
-						else if (i == 3)
-							hours = (Double) item.getDay4();
-						else if (i == 4)
-							hours = (Double) item.getDay5();
-						else if (i == 5)
-							hours = (Double) item.getDay6();
-						else if (i == 6)
-							hours = (Double) item.getDay7();
-						else if (i == 7)
-							hours = (Double) item.getDay8();
-						else if (i == 8)
-							hours = (Double) item.getDay9();
-						else if (i == 9)
-							hours = (Double) item.getDay10();
-						else if (i == 10)
-							hours = (Double) item.getDay11();
-						else if (i == 11)
-							hours = (Double) item.getDay12();
-						else if (i == 12)
-							hours = (Double) item.getDay13();
-						else if (i == 13)
-							hours = (Double) item.getDay14();
-						else if (i == 14)
-							hours = (Double) item.getDay15();
-						else if (i == 15)
-							hours = (Double) item.getDay16();
-						else if (i == 16)
-							hours = (Double) item.getDay17();
-						else if (i == 17)
-							hours = (Double) item.getDay18();
-						else if (i == 18)
-							hours = (Double) item.getDay19();
-						else if (i == 19)
-							hours = (Double) item.getDay20();
-						else if (i == 20)
-							hours = (Double) item.getDay21();
-						else if (i == 21)
-							hours = (Double) item.getDay22();
-						else if (i == 22)
-							hours = (Double) item.getDay23();
-						else if (i == 23)
-							hours = (Double) item.getDay24();
-						else if (i == 24)
-							hours = (Double) item.getDay25();
-						else if (i == 25)
-							hours = (Double) item.getDay26();
-						else if (i == 26)
-							hours = (Double) item.getDay27();
-						else if (i == 27)
-							hours = (Double) item.getDay28();
-						else if (i == 28)
-							hours = (Double) item.getDay29();
-						else if (i == 29)
-							hours = (Double) item.getDay30();
-						else if (i == 30)
-							hours = (Double) item.getDay31();
-
-						name = (String) item.getFirstName() + " " + item.getLastName();
-
-						if (item.getProjectType().equals("Billable")) {
-							jsonObject = new JSONObject();
-							jsonObject.put(vl, hours);
-							billableJsonArrayLogged.add(jsonObject);
-						}
-
-						if (item.getProjectType().equals("Overtime")) {
-
-							jsonObject = new JSONObject();
-							jsonObject.put(vl, hours);
-							overTimeArray.add(jsonObject);
-
-						}
-
-						cal.add(Calendar.DATE, 1);
-
+				List<Double> completeHourList = new ArrayList<Double>();
+				TaskTrackApproval billableData = new TaskTrackApproval();
+				TaskTrackApproval overtimeData = new TaskTrackApproval();
+				for (TaskTrackApproval task : approvalUserList) {
+					if(task.getProjectType().equalsIgnoreCase("Billable")) {
+						firstHalfStatus = task.getFirstHalfStatus();
+						secodHalfStatus = task.getSecondHalfStatus();
+						billableData = task;
 					}
-
-					/*-------------------------*/
-
-					if (!overTimeArray.isEmpty() && !billableJsonArrayLogged.isEmpty()
-							&& billableJsonArray.size() < diffInDays) {
-						// System.out.println("OT : "+overTimeArray);
-						// System.out.println("BL : "+billableJsonArray);
-						// System.out.println("OTS : "+overTimeArray.size());
-						// System.out.println("BLS : "+billableJsonArray.size());
-
-						cal.setTime(startDate);
-						for (int i = 0; i < diffInDays; i++) {
-							JSONObject jsonOverTime = new JSONObject();
-							JSONObject jsonBillable = new JSONObject();
-							JSONObject jsonTotal = new JSONObject();
-
-							Double billable = 0.0;
-							Double overTime = 0.0;
-
-							intMonth = (cal.get(Calendar.MONTH) + 1);
-							intday = cal.get(Calendar.DAY_OF_MONTH);
-							String vl = cal.get(Calendar.YEAR) + "-"
-									+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-									+ ((intday < 10) ? "0" + intday : "" + intday);
-
-							jsonBillable = billableJsonArrayLogged.get(i);
-							if (jsonBillable.get(vl) != null) {
-								billable = (Double) jsonBillable.get(vl);
-							}
-
-							jsonOverTime = overTimeArray.get(i);
-							if (jsonOverTime.get(vl) != null) {
-								overTime = (Double) jsonOverTime.get(vl);
-							}
-
-							Double totalTime = billable + overTime;
-							jsonTotal.put(vl, totalTime);
-							billableJsonArray.add(jsonTotal);
-
-							cal.add(Calendar.DATE, 1);
-						}
+					else if(task.getProjectType().equalsIgnoreCase("Overtime")) {
+						overtimeData = task;
 					}
-					/*-------------------------*/
-					// System.out.println("Data 0: "+billableJsonArray);
-					// System.out.println("Data 0: "+billableJsonArray.size());
-
 				}
+				
+				completeHourList.add(billableData.getDay1() + overtimeData.getDay1());
+				completeHourList.add(billableData.getDay2() + overtimeData.getDay2());
+				completeHourList.add(billableData.getDay4() + overtimeData.getDay4());
+				completeHourList.add(billableData.getDay5() + overtimeData.getDay5());
+				completeHourList.add(billableData.getDay6() + overtimeData.getDay6());
+				completeHourList.add(billableData.getDay7() + overtimeData.getDay7());
+				completeHourList.add(billableData.getDay8() + overtimeData.getDay8());
+				completeHourList.add(billableData.getDay9() + overtimeData.getDay9());
+				completeHourList.add(billableData.getDay10() + overtimeData.getDay10());
+				completeHourList.add(billableData.getDay11() + overtimeData.getDay11());
+				completeHourList.add(billableData.getDay12() + overtimeData.getDay12());
+				completeHourList.add(billableData.getDay12() + overtimeData.getDay12());
+				completeHourList.add(billableData.getDay13() + overtimeData.getDay13());
+				completeHourList.add(billableData.getDay14() + overtimeData.getDay14());
+				completeHourList.add(billableData.getDay15() + overtimeData.getDay15());
+				completeHourList.add(billableData.getDay16() + overtimeData.getDay16());
+				completeHourList.add(billableData.getDay17() + overtimeData.getDay17());
+				completeHourList.add(billableData.getDay18() + overtimeData.getDay18());
+				completeHourList.add(billableData.getDay19() + overtimeData.getDay19());
+				completeHourList.add(billableData.getDay20() + overtimeData.getDay20());
+				completeHourList.add(billableData.getDay21() + overtimeData.getDay21());
+				completeHourList.add(billableData.getDay22() + overtimeData.getDay22());
+				completeHourList.add(billableData.getDay23() + overtimeData.getDay23());
+				completeHourList.add(billableData.getDay24() + overtimeData.getDay24());
+				completeHourList.add(billableData.getDay25() + overtimeData.getDay25());
+				completeHourList.add(billableData.getDay26() + overtimeData.getDay26());
+				completeHourList.add(billableData.getDay27() + overtimeData.getDay27());
+				completeHourList.add(billableData.getDay28() + overtimeData.getDay28());
+				completeHourList.add(billableData.getDay29() + overtimeData.getDay29());
+				completeHourList.add(billableData.getDay30() + overtimeData.getDay30());
+				completeHourList.add(billableData.getDay31() + overtimeData.getDay31());
 
-			} else {
-				cal.setTime(startDate);
-				for (int i = 0; i < diffInDays; i++) {
-
-					intMonth = (cal.get(Calendar.MONTH) + 1);
-					intday = cal.get(Calendar.DAY_OF_MONTH);
-					String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-							+ ((intday < 10) ? "0" + intday : "" + intday);
-
-					JSONObject jsonObject = new JSONObject();
-					jsonObject.put(vl, 0);
-					billableJsonArray.add(jsonObject);
-
-					cal.add(Calendar.DATE, 1);
-
+				for (int i = 0 ; i < completeHourList.size() ; i++) {
+					if(i < firstHalfDay) {
+						firstHalfHour += completeHourList.get(i);
+					}
+					else {
+						secondHalfHour += completeHourList.get(i);
+					}
 				}
 			}
-			userListObject.put("billable", billableJsonArray);
-
-			timeTrackJSONData.add(userListObject);
-
-		} else {
-			loggedJsonArray = new ArrayList<>();
-			billableJsonArray = new ArrayList<>();
-			JSONObject userListObject = new JSONObject();
-
-			String uName = userService.getUserName(id);
-			String name = String.valueOf(uName).replace(",", " ");
-
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0, intday = 0;
-			for (int i = 0; i < diffInDays; i++) {
-				JSONObject jsonObject = new JSONObject();
-
-				intMonth = (cal.get(Calendar.MONTH) + 1);
-				intday = cal.get(Calendar.DAY_OF_MONTH);
-				String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-						+ ((intday < 10) ? "0" + intday : "" + intday);
-
-				jsonObject.put(vl, 0);
-				cal.add(Calendar.DATE, 1);
-				loggedJsonArray.add(jsonObject);
-				billableJsonArray.add(jsonObject);
+			
+			JSONObject billable = new JSONObject();
+			billable.put("firstHalfTotal", firstHalfHour);
+			billable.put("secondHalfTotal", secondHalfHour);
+			
+			if(userName == null || userName.isEmpty()) {
+				String uName = userService.getUserName(userId);
+				userName = String.valueOf(uName).replace(",", " "); 
 			}
-			userListObject.put("userName", name);
-			userListObject.put("userId", id);
-			userListObject.put("month", intMonth);
-			userListObject.put("logged", loggedJsonArray);
-			userListObject.put("billable", billableJsonArray);
-			// System.out.println("logged is empty : "+loggedJsonArray);
-			timeTrackJSONData.add(userListObject);
+			
+			response.put("userId", userId);
+			response.put("userName", userName);
+			response.put("month", month);
+			response.put("logged", logged);
+			response.put("billable", billable);
+			response.put("firstHalfStatus", firstHalfStatus);
+			response.put("secodHalfStatus", secodHalfStatus);
 		}
-		return timeTrackJSONData;
+		else {
+			response.put("userId", userId);
+			String uName = userService.getUserName(userId);
+			String userName = String.valueOf(uName).replace(",", " ");
+			response.put("userName", userName);
+			response.put("month", month);
+			
+			JSONObject totalHour = new JSONObject();
+			totalHour.put("firstHalfTotal", firstHalfHour);
+			totalHour.put("secondHalfTotal", secondHalfHour);
+			
+			response.put("logged", totalHour);
+			response.put("billable", totalHour);
+			response.put("firstHalfStatus", firstHalfStatus);
+			response.put("secodHalfStatus", secodHalfStatus);
+		}
+		return response;
 	}
 
 	@Override
@@ -829,216 +731,292 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return userTaskList;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getApprovedUserTaskDetails(Long id, Date startDate, Date endDate,
-			List<TaskTrackApproval> userList, List<JSONObject> jsonArray, List<JSONObject> jsonDataRes1,
-			Boolean isExist, Long projectId) {
-		JSONObject userListObject = new JSONObject();
+	public JSONObject getApprovedUserTaskDetails(Long userId, Date startDate, Date endDate, Boolean isExist,
+			Long projectId, Integer projectTier, Integer firstHalfDay) {
+		JSONObject response = new JSONObject();
 
+		List<JSONObject> loggedArray = new ArrayList<>();
 		List<JSONObject> billableArray = new ArrayList<>();
 		List<JSONObject> overTimeArray = new ArrayList<>();
 		List<JSONObject> nonbillableArray = new ArrayList<>();
-		List<JSONObject> beachArray = new ArrayList<>();
+		List<Integer> correctionDays =  new ArrayList<Integer>();
 
+		String firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+		String secodHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+		String name = null;
+		Long billableId = null;
+		Long nonBillableId = null;
+		Long overtimeId = null;
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(endDate);
+		int endDay = cal.get(Calendar.DAY_OF_MONTH);
+		cal.setTime(startDate);
+		int monthIndex = (cal.get(Calendar.MONTH) + 1);
+		int yearIndex = cal.get(Calendar.YEAR);
+		int startDay = cal.get(Calendar.DAY_OF_MONTH);
+		
 		if (isExist) {
+			JSONObject temporaryObject = new JSONObject();
+			//Logged Details
+			List<Object[]> loggedList = getUserListByProject(userId, startDate, endDate,projectId);
+			if (loggedList != null && loggedList.size() > 0) {
+				Object[] user = loggedList.get(0);
+				name = user[1] + " " + user[0];
+			}
+			for(int i = startDay ; i <= endDay ; i++) {
+				int month = (cal.get(Calendar.MONTH) + 1);
+				int day = cal.get(Calendar.DAY_OF_MONTH);
+				String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0"+month : ""+month) + "-"
+						+ (day < 10 ? "0"+day : ""+day);
 
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			int monthIndex = (cal.get(Calendar.MONTH) + 1);
-			int yearIndex = cal.get(Calendar.YEAR);
-			userList = getUserListForApproval(id, projectId, monthIndex, yearIndex);
+				Double hours = 0.0;
+				if (loggedList != null && loggedList.size() > 0) {
+					temporaryObject = new JSONObject();
+					for (Object[] item : loggedList) {
+						String loggedDate = String.valueOf(item[3]);
+						if (loggedDate.equals(taskDate)) {
+							hours = hours + (Double) item[2];
+						}
+					}
+					temporaryObject.put(taskDate, hours);
+					loggedArray.add(temporaryObject);
+				}
+				else {
+					temporaryObject.put(taskDate, 0);
+					loggedArray.add(temporaryObject);
+				}
+				cal.add(Calendar.DATE, 1);
+			}
 
-			jsonArray = new ArrayList<>();
-
-			String name = null;
-			Long billableId = null, nonBillableId = null, beachId = null, overtimeId = null, updatedBy = null;
-
-			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0, intday = 0;
-
+			//Approved Details
+			List<TaskTrackApproval> approvalUserList = new ArrayList<TaskTrackApproval>();
+			if(projectTier == 1) {
+				List<TaskTrackApprovalFinal> approvalFinalList = taskTrackApprovalFinalRepository.getUserFinalApprovalList(userId,projectId,monthIndex,yearIndex);
+				for(TaskTrackApprovalFinal taskTrackFinal : approvalFinalList) {
+					approvalUserList.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
+				}
+			}
+			else {
+				approvalUserList = getUserListForApproval(userId,projectId,monthIndex,yearIndex);
+			}
+			
 			Double hours = 0.0;
-			if (userList != null && userList.size() > 0) {
-
-				JSONObject jsonObject = new JSONObject();
-
-				for (TaskTrackApproval item : userList) {
+			if (approvalUserList != null && approvalUserList.size() > 0) {
+				if(name == null || name.isEmpty()) {
+					UserModel user = approvalUserList.get(0).getUser();
+					name = user.getFirstName()+" "+user.getLastName();
+				}
+				for (TaskTrackApproval item : approvalUserList) {
 					cal.setTime(startDate);
-
-					for (int i = 0; i < diffInDays; i++) {
-
-						intMonth = (cal.get(Calendar.MONTH) + 1);
-						intday = cal.get(Calendar.DAY_OF_MONTH);
-						String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth)
-								+ "-" + ((intday < 10) ? "0" + intday : "" + intday);
-
-						if (i == 0)
-							hours = (Double) item.getDay1();
-						else if (i == 1)
-							hours = (Double) item.getDay2();
-						else if (i == 2)
-							hours = (Double) item.getDay3();
-						else if (i == 3)
-							hours = (Double) item.getDay4();
-						else if (i == 4)
-							hours = (Double) item.getDay5();
-						else if (i == 5)
-							hours = (Double) item.getDay6();
-						else if (i == 6)
-							hours = (Double) item.getDay7();
-						else if (i == 7)
-							hours = (Double) item.getDay8();
-						else if (i == 8)
-							hours = (Double) item.getDay9();
-						else if (i == 9)
-							hours = (Double) item.getDay10();
-						else if (i == 10)
-							hours = (Double) item.getDay11();
-						else if (i == 11)
-							hours = (Double) item.getDay12();
-						else if (i == 12)
-							hours = (Double) item.getDay13();
-						else if (i == 13)
-							hours = (Double) item.getDay14();
-						else if (i == 14)
-							hours = (Double) item.getDay15();
-						else if (i == 15)
-							hours = (Double) item.getDay16();
-						else if (i == 16)
-							hours = (Double) item.getDay17();
-						else if (i == 17)
-							hours = (Double) item.getDay18();
-						else if (i == 18)
-							hours = (Double) item.getDay19();
-						else if (i == 19)
-							hours = (Double) item.getDay20();
-						else if (i == 20)
-							hours = (Double) item.getDay21();
-						else if (i == 21)
-							hours = (Double) item.getDay22();
-						else if (i == 22)
-							hours = (Double) item.getDay23();
-						else if (i == 23)
-							hours = (Double) item.getDay24();
-						else if (i == 24)
-							hours = (Double) item.getDay25();
-						else if (i == 25)
-							hours = (Double) item.getDay26();
-						else if (i == 26)
-							hours = (Double) item.getDay27();
-						else if (i == 27)
-							hours = (Double) item.getDay28();
-						else if (i == 28)
-							hours = (Double) item.getDay29();
-						else if (i == 29)
-							hours = (Double) item.getDay30();
-						else if (i == 30)
-							hours = (Double) item.getDay31();
-
-						name = (String) item.getFirstName() + " " + item.getLastName();
-						updatedBy = item.getUpdatedBy();
-
-						if (item.getProjectType().equals("Billable")) {
-							jsonObject = new JSONObject();
-							jsonObject.put(vl, hours);
-							billableArray.add(jsonObject);
+					for(int i = startDay ; i <= endDay ; i++) {
+						int month = (cal.get(Calendar.MONTH) + 1);
+						int day = cal.get(Calendar.DAY_OF_MONTH);
+						String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0"+month : ""+month) + "-"
+								+ (day < 10 ? "0"+day : ""+day);
+						
+						switch(i) {
+							case 1:
+								hours=(Double)item.getDay1();
+								break;
+							case 2:
+								hours=(Double)item.getDay2();
+								break;
+							case 3:
+								hours=(Double)item.getDay3();
+								break;
+							case 4:
+								hours=(Double)item.getDay4();
+								break;
+							case 5:
+								hours=(Double)item.getDay5();
+								break;
+							case 6:
+								hours=(Double)item.getDay6();
+								break;
+							case 7:
+								hours=(Double)item.getDay7();
+								break;
+							case 8:
+								hours=(Double)item.getDay8();
+								break;
+							case 9:
+								hours=(Double)item.getDay9();
+								break;
+							case 10:
+								hours=(Double)item.getDay10();
+								break;
+							case 11:
+								hours=(Double)item.getDay11();
+								break;
+							case 12:
+								hours=(Double)item.getDay12();
+								break;
+							case 13:
+								hours=(Double)item.getDay13();
+								break;
+							case 14:
+								hours=(Double)item.getDay14();
+								break;
+							case 15:
+								hours=(Double)item.getDay15();
+								break;
+							case 16:
+								hours=(Double)item.getDay16();
+								break;
+							case 17:
+								hours=(Double)item.getDay17();
+								break;
+							case 18:
+								hours=(Double)item.getDay18();
+								break;
+							case 19:
+								hours=(Double)item.getDay19();
+								break;
+							case 20:
+								hours=(Double)item.getDay20();
+								break;
+							case 21:
+								hours=(Double)item.getDay21();
+								break;
+							case 22:
+								hours=(Double)item.getDay22();
+								break;
+							case 23:
+								hours=(Double)item.getDay23();
+								break;
+							case 24:
+								hours=(Double)item.getDay24();
+								break;
+							case 25:
+								hours=(Double)item.getDay25();
+								break;
+							case 26:
+								hours=(Double)item.getDay26();
+								break;
+							case 27:
+								hours=(Double)item.getDay27();
+								break;
+							case 28:
+								hours=(Double)item.getDay28();
+								break;
+							case 29:
+								hours=(Double)item.getDay29();
+								break;
+							case 30:
+								hours=(Double)item.getDay30();
+								break;
+							case 31:
+								hours=(Double)item.getDay31();
+								break;
+						}
+	
+						if(item.getProjectType().equals("Billable")) {
+							temporaryObject = new JSONObject();
+							temporaryObject.put(taskDate, hours);
+							billableArray.add(temporaryObject);
 							billableId = item.getId();
-						} else if (item.getProjectType().equals("Non-Billable")) {
-							jsonObject = new JSONObject();
-							jsonObject.put(vl, hours);
-							nonbillableArray.add(jsonObject);
+						}
+						else if(item.getProjectType().equals("Non-Billable")) {
+							temporaryObject = new JSONObject();
+							temporaryObject.put(taskDate, hours);
+							nonbillableArray.add(temporaryObject);
 							nonBillableId = item.getId();
-						} else if (item.getProjectType().equals("Beach")) {
-							jsonObject = new JSONObject();
-							jsonObject.put(vl, hours);
-							beachArray.add(jsonObject);
-							beachId = item.getId();
-						} else if (item.getProjectType().equals("Overtime")) {
-							jsonObject = new JSONObject();
-							jsonObject.put(vl, hours);
-							overTimeArray.add(jsonObject);
+						}
+						else if(item.getProjectType().equals("Overtime")) {
+							temporaryObject = new JSONObject();
+							temporaryObject.put(taskDate, hours);
+							overTimeArray.add(temporaryObject);
 							overtimeId = item.getId();
 						}
 						cal.add(Calendar.DATE, 1);
-
+					}
+					if(item.getProjectType().equalsIgnoreCase("Billable")) {
+						firstHalfStatus = item.getFirstHalfStatus();
+						secodHalfStatus = item.getSecondHalfStatus();
+						String status = null;
+						if(startDay <= firstHalfDay){
+							status = firstHalfStatus;
+						}
+						else {
+							status = secodHalfStatus;
+						}
+						if(status.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
+							List<TaskTrackCorrection> corrections = taskTrackCorrectionRepository.
+									findCorrectionDays(item.getUser().getUserId(), item.getProject().getProjectId(), item.getMonth(), item.getYear(),startDay,endDay);
+							for(TaskTrackCorrection correction : corrections) {
+								correctionDays.add(correction.getDay());
+							}
+						}
 					}
 				}
-			} else {
-
+			}
+			else{
 				cal.setTime(startDate);
-				for (int i = 0; i < diffInDays; i++) {
-
-					intMonth = (cal.get(Calendar.MONTH) + 1);
-					intday = cal.get(Calendar.DAY_OF_MONTH);
-					String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-							+ ((intday < 10) ? "0" + intday : "" + intday);
+				for (int i = startDay ; i <= endDay ; i++) {
+					int month = (cal.get(Calendar.MONTH) + 1);
+					int day = cal.get(Calendar.DAY_OF_MONTH);
+					String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0"+month : "" +month) + "-"
+							+ (day < 10 ? "0"+day : ""+day);
 
 					JSONObject jsonObject = new JSONObject();
-					jsonObject.put(vl, 0);
+					jsonObject.put(taskDate,0);
 					billableArray.add(jsonObject);
 					nonbillableArray.add(jsonObject);
-					beachArray.add(jsonObject);
 					overTimeArray.add(jsonObject);
-
+					
 					cal.add(Calendar.DATE, 1);
-
 				}
 			}
-
-			userListObject.put("userName", name);
-			userListObject.put("userId", id);
-			userListObject.put("month", intMonth);
-			userListObject.put("billable", billableArray);
-			;
-			userListObject.put("nonBillable", nonbillableArray);
-			userListObject.put("beach", beachArray);
-			userListObject.put("overtime", overTimeArray);
-			userListObject.put("billableId", billableId);
-			userListObject.put("nonBillableId", nonBillableId);
-			userListObject.put("beachId", beachId);
-			userListObject.put("overtimeId", overtimeId);
-			userListObject.put("updatedBy", updatedBy);
-			jsonDataRes1.add(userListObject);
-
-		} else {
-
-			String uName = userService.getUserName(id);
-			String name = String.valueOf(uName).replace(",", " ");
-
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-			int intMonth = 0, intday = 0;
-			for (int i = 0; i < diffInDays; i++) {
-				JSONObject jsonObject = new JSONObject();
-
-				intMonth = (cal.get(Calendar.MONTH) + 1);
-				intday = cal.get(Calendar.DAY_OF_MONTH);
-				String vl = cal.get(Calendar.YEAR) + "-" + ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
-						+ ((intday < 10) ? "0" + intday : "" + intday);
-
-				jsonObject.put(vl, 0);
-				cal.add(Calendar.DATE, 1);
-				billableArray.add(jsonObject);
-				nonbillableArray.add(jsonObject);
-				beachArray.add(jsonObject);
-				overTimeArray.add(jsonObject);
-			}
-			userListObject.put("userName", name);
-			userListObject.put("userId", id);
-			userListObject.put("month", intMonth);
-			userListObject.put("billable", billableArray);
-			;
-			userListObject.put("nonBillable", nonbillableArray);
-			userListObject.put("beach", beachArray);
-			userListObject.put("overtime", overTimeArray);
-			userListObject.put("billableId", null);
-			userListObject.put("nonBillableId", null);
-			userListObject.put("beachId", null);
-			userListObject.put("overtimeId", null);
-			userListObject.put("updatedBy", null);
-
+			response.put("logged", loggedArray);
+			response.put("billable", billableArray);;
+			response.put("nonBillable", nonbillableArray);
+			response.put("overtime", overTimeArray);
+			response.put("billableId", billableId);
+			response.put("nonBillableId", nonBillableId);
+			response.put("overtimeId", overtimeId);
+			response.put("updatedBy", null);
 		}
-		return userListObject;
+		else {
+			cal.setTime(startDate);
+			for(int i = startDay ; i <= endDay ; i++) {
+				JSONObject temporaryObject = new JSONObject();
+				int month = (cal.get(Calendar.MONTH) + 1);
+				int day = cal.get(Calendar.DAY_OF_MONTH);
+				String vl = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0"+month : ""+month) + "-"
+						+ (day < 10 ? "0"+day : ""+day);
+
+				temporaryObject.put(vl, 0);
+				loggedArray.add(temporaryObject);
+				billableArray.add(temporaryObject);
+				nonbillableArray.add(temporaryObject);
+				overTimeArray.add(temporaryObject);
+				
+				cal.add(Calendar.DATE, 1);
+			}
+			
+			response.put("logged", loggedArray);
+			response.put("billable", billableArray);;
+			response.put("nonBillable", nonbillableArray);
+			response.put("overtime", overTimeArray);
+			response.put("billableId", null);
+			response.put("nonBillableId", null);
+			response.put("overtimeId", null);
+			response.put("updatedBy", null);
+		}
+		if(name == null || name.isEmpty()) {
+			String uName = userService.getUserName(userId);
+			name = String.valueOf(uName).replace(",", " ");
+		}
+		response.put("userName", name);
+		response.put("userId", userId);
+		response.put("month", monthIndex);
+		response.put("firstHalfStatus", firstHalfStatus);
+		response.put("secodHalfStatus", secodHalfStatus);
+		response.put("correctionDays", correctionDays);
+		return response;
 	}
 
 	public List<TaskTrackApproval> getUserListForApproval(Long id, Long projectId, Integer monthIndex,
@@ -5307,6 +5285,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return resultData;
 	}
 
+	/**
+	 * @author sreejith.j
+	 */
 	@Override
 	public void saveApprovedHours(JSONObject requestData) throws Exception {
 
@@ -5372,6 +5353,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		endCal.setTime(endDate);
 		endCal.add(Calendar.DATE, -1);
 
+		if (billableArray.size() > 0 && billableId == null) {
+			billableId = timeTrackApprovalJPARepository.getBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (billableId != null) {
+				throw new DuplicateEntryException("Duplicate entry for billable.");
+			}
+		}
+		if (nonbillableArray.size() > 0 && nonBillableId == null) {
+			nonBillableId = timeTrackApprovalJPARepository.getNonBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (nonBillableId != null) {
+				throw new DuplicateEntryException("Duplicate entry for NonBillable.");
+			}
+		}
+		if (overtimeArray.size() > 0 && overtimeId == null) {
+			overtimeId = timeTrackApprovalJPARepository.getOvertimeIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (overtimeId != null) {
+				throw new DuplicateEntryException("Duplicate entry for Overtime.");
+			}
+		}
+
 		if (billableArray.size() > 0) {// Billable
 
 			Calendar startCal = Calendar.getInstance();
@@ -5403,10 +5406,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						startCal.add(Calendar.DATE, 1);
 					}
 					if (startCal.get(Calendar.DATE) < 16) {
-						taskTrackApproval.setFirstHalfStatus("O");
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 					}
 					if (endCal.get(Calendar.DATE) > 15) {
-						taskTrackApproval.setSecondHalfStatus("O");
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 					}
 					tasktrackApprovalService.updateData(taskTrackApproval);
 					billable_id = taskTrackApproval.getId();
@@ -5420,10 +5423,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setProjectType("Billable");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					taskTrackApproval.setFirstHalfStatus("O");
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					taskTrackApproval.setSecondHalfStatus("O");
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -5467,10 +5470,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 //					taskTrackApproval.setApprovedDate(endDate);
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					taskTrackApproval.setFirstHalfStatus("O");
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					taskTrackApproval.setSecondHalfStatus("O");
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (taskTrackApproval != null) {
 
@@ -5501,10 +5504,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setProjectType("Non-Billable");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					taskTrackApproval.setFirstHalfStatus("O");
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					taskTrackApproval.setSecondHalfStatus("O");
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -5550,10 +5553,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 //					taskTrackApproval.setApprovedDate(endDate);
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					taskTrackApproval.setFirstHalfStatus("O");
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					taskTrackApproval.setSecondHalfStatus("O");
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (taskTrackApproval != null) {
 
@@ -5583,10 +5586,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setProjectType("Overtime");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					taskTrackApproval.setFirstHalfStatus("O");
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					taskTrackApproval.setSecondHalfStatus("O");
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -5614,6 +5617,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 	}
 
+	/**
+	 * @author sreejith.j
+	 */
 	@Override
 	public void submitFirstHalfHoursForApproval(JSONObject requestData) throws Exception {
 
@@ -5679,6 +5685,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		calendar.setTime(endDate);
 		calendar.add(Calendar.DATE, -1);
 
+		if (billableArray.size() > 0 && billableId == null) {
+			billableId = timeTrackApprovalJPARepository.getBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (billableId != null) {
+				throw new DuplicateEntryException("Duplicate entry for billable.");
+			}
+		}
+		if (nonbillableArray.size() > 0 && nonBillableId == null) {
+			nonBillableId = timeTrackApprovalJPARepository.getNonBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (nonBillableId != null) {
+				throw new DuplicateEntryException("Duplicate entry for NonBillable.");
+			}
+		}
+		if (overtimeArray.size() > 0 && overtimeId == null) {
+			overtimeId = timeTrackApprovalJPARepository.getOvertimeIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (overtimeId != null) {
+				throw new DuplicateEntryException("Duplicate entry for Overtime.");
+			}
+		}
+
 		if (billableArray.size() > 0) {// Billable
 
 			Calendar cal = Calendar.getInstance();
@@ -5691,7 +5719,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			if (billableId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
-				taskTrackApproval.setFirstHalfStatus("S");
+				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 
 					for (int i = 0; i < diffInDays; i++) {
@@ -5718,7 +5746,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setYear(year);
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Billable");
-				taskTrackApproval.setFirstHalfStatus("S");
+				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 
 				taskTrackApproval.setProject(project);
 				for (int i = 0; i < diffInDays; i++) {
@@ -5758,7 +5786,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			if (nonBillableId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonBillableId);
 
-				taskTrackApproval.setFirstHalfStatus("S");
+				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 
 				if (taskTrackApproval != null) {
 
@@ -5787,7 +5815,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setYear(year);
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Non-Billable");
-				taskTrackApproval.setFirstHalfStatus("S");
+				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 
 				taskTrackApproval.setProject(project);
 				for (int i = 0; i < diffInDays; i++) {
@@ -5829,7 +5857,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			if (overtimeId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
 
-				taskTrackApproval.setFirstHalfStatus("S");
+				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 
 					for (int i = 0; i < diffInDays; i++) {
@@ -5856,7 +5884,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setYear(year);
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Overtime");
-				taskTrackApproval.setFirstHalfStatus("S");
+				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 
 				taskTrackApproval.setProject(project);
 				for (int i = 0; i < diffInDays; i++) {
@@ -5883,6 +5911,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 	}
 
+	/**
+	 * @author sreejith.j
+	 */
 	@Override
 	public void submitSecondHalfHoursForApproval(JSONObject requestData) throws Exception {
 
@@ -5948,6 +5979,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		calendar.setTime(endDate);
 		calendar.add(Calendar.DATE, -1);
 
+		if (billableArray.size() > 0 && billableId == null) {
+			billableId = timeTrackApprovalJPARepository.getBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (billableId != null) {
+				throw new DuplicateEntryException("Duplicate entry for billable.");
+			}
+		}
+		if (nonbillableArray.size() > 0 && nonBillableId == null) {
+			nonBillableId = timeTrackApprovalJPARepository.getNonBillableIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (nonBillableId != null) {
+				throw new DuplicateEntryException("Duplicate entry for NonBillable.");
+			}
+		}
+		if (overtimeArray.size() > 0 && overtimeId == null) {
+			overtimeId = timeTrackApprovalJPARepository.getOvertimeIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (overtimeId != null) {
+				throw new DuplicateEntryException("Duplicate entry for Overtime.");
+			}
+		}
+
 		if (billableArray.size() > 0) {// Billable
 
 			Calendar cal = Calendar.getInstance();
@@ -5960,7 +6013,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			if (billableId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
-				taskTrackApproval.setSecondHalfStatus("S");
+				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 
 					for (int i = 0; i < diffInDays; i++) {
@@ -5987,7 +6040,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setYear(year);
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Billable");
-				taskTrackApproval.setSecondHalfStatus("S");
+				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 
 				taskTrackApproval.setProject(project);
 				for (int i = 0; i < diffInDays; i++) {
@@ -6027,7 +6080,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			if (nonBillableId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonBillableId);
 
-				taskTrackApproval.setSecondHalfStatus("S");
+				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 
 				if (taskTrackApproval != null) {
 
@@ -6056,7 +6109,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setYear(year);
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Non-Billable");
-				taskTrackApproval.setSecondHalfStatus("S");
+				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 
 				taskTrackApproval.setProject(project);
 				for (int i = 0; i < diffInDays; i++) {
@@ -6098,7 +6151,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			if (overtimeId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
 
-				taskTrackApproval.setSecondHalfStatus("S");
+				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 
 					for (int i = 0; i < diffInDays; i++) {
@@ -6125,7 +6178,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setYear(year);
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Overtime");
-				taskTrackApproval.setSecondHalfStatus("S");
+				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 
 				taskTrackApproval.setProject(project);
 				for (int i = 0; i < diffInDays; i++) {
@@ -6152,6 +6205,42 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 	}
 
+	@Override
+	public void submitForRejection(JSONObject requestData) throws Exception {
+
+		Long projectId = Long.valueOf(requestData.get("projectId").toString());
+		int month= Integer.valueOf(requestData.get("month").toString());
+		int year=Integer.valueOf(requestData.get("year").toString());
+		Long userId=Long.valueOf(requestData.get("userId").toString());
+
+
+		List<TaskTrackApproval> taskTrackApproval=timeTrackApprovalJPARepository.upadateTaskTrackApprovalStatus(projectId,month,year,userId);
+		for(TaskTrackApproval approval : taskTrackApproval){
+			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+		}
+		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+
+
+
+
+	}
+
+	@Override
+	public void submitForSecondHalfRejection(JSONObject requestData) throws Exception {
+		Long projectId = Long.valueOf(requestData.get("projectId").toString());
+		int month= Integer.valueOf(requestData.get("month").toString());
+		int year=Integer.valueOf(requestData.get("year").toString());
+		Long userId=Long.valueOf(requestData.get("userId").toString());
+
+		List<TaskTrackApproval> taskTrackApproval=timeTrackApprovalJPARepository.upadateTaskTrackApprovalStatus(projectId,month,year,userId);
+		for(TaskTrackApproval approval : taskTrackApproval){
+			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+		}
+		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+
+
+	}
+
 	/**
 	 * 
 	 * @author sreejith.j
@@ -6159,7 +6248,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	 * @param i
 	 * @param hours
 	 */
-	private void setDayInCorrespondingModel(TaskTrackApproval taskTrackApproval, int i, double hours) throws Exception{
+	private void setDayInCorrespondingModel(TaskTrackApproval taskTrackApproval, int i, double hours) throws Exception {
 
 		if (i == 0) {
 			taskTrackApproval.setDay1(hours);
@@ -6225,5 +6314,179 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			taskTrackApproval.setDay31(hours);
 		}
 	}
-
+	
+	public JSONObject getInfoForApprovalLevelTwo(Long userId, Date startDate, Date endDate,Boolean isExist,
+			Long projectId,Integer firstHalfDay) throws ParseException{
+			JSONObject response = new JSONObject();
+			String approverOneFirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+			String approverOneSecodHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+			String approverTwoFirstHalfStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
+			String approverTwoSecodHalfStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(startDate);
+			int month = (cal.get(Calendar.MONTH) + 1);
+			int year = cal.get(Calendar.YEAR);
+			Double firstHalfHour = 0.0;
+			Double secondHalfHour = 0.0;
+			if (isExist) {
+				String userName = null;
+				//For Approver 1 Data
+				List<TaskTrackApproval> approverOneData = new ArrayList<TaskTrackApproval>();
+				approverOneData = getUserListForApproval(userId,projectId,month,year);
+				firstHalfHour = 0.0;
+				secondHalfHour = 0.0;
+				if (approverOneData != null && approverOneData.size() > 0) {
+					List<Double> approverOneHourList = new ArrayList<Double>();
+					TaskTrackApproval billableData = new TaskTrackApproval();
+					TaskTrackApproval overtimeData = new TaskTrackApproval();
+					for (TaskTrackApproval task : approverOneData) {
+						if(task.getProjectType().equalsIgnoreCase("Billable")) {
+							approverOneFirstHalfStatus = task.getFirstHalfStatus();
+							approverOneSecodHalfStatus = task.getSecondHalfStatus();
+							billableData = task;
+						}
+						else if(task.getProjectType().equalsIgnoreCase("Overtime")) {
+							overtimeData = task;
+						}
+					}
+					approverOneHourList.add(billableData.getDay1() + overtimeData.getDay1());
+					approverOneHourList.add(billableData.getDay2() + overtimeData.getDay2());
+					approverOneHourList.add(billableData.getDay4() + overtimeData.getDay4());
+					approverOneHourList.add(billableData.getDay5() + overtimeData.getDay5());
+					approverOneHourList.add(billableData.getDay6() + overtimeData.getDay6());
+					approverOneHourList.add(billableData.getDay7() + overtimeData.getDay7());
+					approverOneHourList.add(billableData.getDay8() + overtimeData.getDay8());
+					approverOneHourList.add(billableData.getDay9() + overtimeData.getDay9());
+					approverOneHourList.add(billableData.getDay10() + overtimeData.getDay10());
+					approverOneHourList.add(billableData.getDay11() + overtimeData.getDay11());
+					approverOneHourList.add(billableData.getDay12() + overtimeData.getDay12());
+					approverOneHourList.add(billableData.getDay12() + overtimeData.getDay12());
+					approverOneHourList.add(billableData.getDay13() + overtimeData.getDay13());
+					approverOneHourList.add(billableData.getDay14() + overtimeData.getDay14());
+					approverOneHourList.add(billableData.getDay15() + overtimeData.getDay15());
+					approverOneHourList.add(billableData.getDay16() + overtimeData.getDay16());
+					approverOneHourList.add(billableData.getDay17() + overtimeData.getDay17());
+					approverOneHourList.add(billableData.getDay18() + overtimeData.getDay18());
+					approverOneHourList.add(billableData.getDay19() + overtimeData.getDay19());
+					approverOneHourList.add(billableData.getDay20() + overtimeData.getDay20());
+					approverOneHourList.add(billableData.getDay21() + overtimeData.getDay21());
+					approverOneHourList.add(billableData.getDay22() + overtimeData.getDay22());
+					approverOneHourList.add(billableData.getDay23() + overtimeData.getDay23());
+					approverOneHourList.add(billableData.getDay24() + overtimeData.getDay24());
+					approverOneHourList.add(billableData.getDay25() + overtimeData.getDay25());
+					approverOneHourList.add(billableData.getDay26() + overtimeData.getDay26());
+					approverOneHourList.add(billableData.getDay27() + overtimeData.getDay27());
+					approverOneHourList.add(billableData.getDay28() + overtimeData.getDay28());
+					approverOneHourList.add(billableData.getDay29() + overtimeData.getDay29());
+					approverOneHourList.add(billableData.getDay30() + overtimeData.getDay30());
+					approverOneHourList.add(billableData.getDay31() + overtimeData.getDay31());
+					for (int i = 0 ; i < approverOneHourList.size() ; i++) {
+						if(i < firstHalfDay) {
+							firstHalfHour += approverOneHourList.get(i);
+						}
+						else {
+							secondHalfHour += approverOneHourList.get(i);
+						}
+					}
+				}
+				JSONObject userHours = new JSONObject();
+				userHours.put("firstHalfTotal", firstHalfHour);
+				userHours.put("secondHalfTotal", secondHalfHour);
+				List<TaskTrackApproval> approverTwoData = new ArrayList<TaskTrackApproval>();
+				List<TaskTrackApprovalFinal> approvalFinalList = taskTrackApprovalFinalRepository.getUserFinalApprovalList(userId,projectId,month,year);
+				for(TaskTrackApprovalFinal taskTrackFinal : approvalFinalList) {
+					approverTwoData.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
+				}
+				firstHalfHour = 0.0;
+				secondHalfHour = 0.0;
+				if (approverTwoData != null && approverTwoData.size() > 0) {
+					List<Double> approverTwoHourList = new ArrayList<Double>();
+					TaskTrackApproval billableData = new TaskTrackApproval();
+					TaskTrackApproval overtimeData = new TaskTrackApproval();
+					for (TaskTrackApproval task : approverTwoData) {
+						if(task.getProjectType().equalsIgnoreCase("Billable")) {
+							approverTwoFirstHalfStatus = task.getFirstHalfStatus();
+							approverTwoSecodHalfStatus = task.getSecondHalfStatus();
+							billableData = task;
+						}
+						else if(task.getProjectType().equalsIgnoreCase("Overtime")) {
+							overtimeData = task;
+						}
+					}
+					approverTwoHourList.add(billableData.getDay1() + overtimeData.getDay1());
+					approverTwoHourList.add(billableData.getDay2() + overtimeData.getDay2());
+					approverTwoHourList.add(billableData.getDay4() + overtimeData.getDay4());
+					approverTwoHourList.add(billableData.getDay5() + overtimeData.getDay5());
+					approverTwoHourList.add(billableData.getDay6() + overtimeData.getDay6());
+					approverTwoHourList.add(billableData.getDay7() + overtimeData.getDay7());
+					approverTwoHourList.add(billableData.getDay8() + overtimeData.getDay8());
+					approverTwoHourList.add(billableData.getDay9() + overtimeData.getDay9());
+					approverTwoHourList.add(billableData.getDay10() + overtimeData.getDay10());
+					approverTwoHourList.add(billableData.getDay11() + overtimeData.getDay11());
+					approverTwoHourList.add(billableData.getDay12() + overtimeData.getDay12());
+					approverTwoHourList.add(billableData.getDay12() + overtimeData.getDay12());
+					approverTwoHourList.add(billableData.getDay13() + overtimeData.getDay13());
+					approverTwoHourList.add(billableData.getDay14() + overtimeData.getDay14());
+					approverTwoHourList.add(billableData.getDay15() + overtimeData.getDay15());
+					approverTwoHourList.add(billableData.getDay16() + overtimeData.getDay16());
+					approverTwoHourList.add(billableData.getDay17() + overtimeData.getDay17());
+					approverTwoHourList.add(billableData.getDay18() + overtimeData.getDay18());
+					approverTwoHourList.add(billableData.getDay19() + overtimeData.getDay19());
+					approverTwoHourList.add(billableData.getDay20() + overtimeData.getDay20());
+					approverTwoHourList.add(billableData.getDay21() + overtimeData.getDay21());
+					approverTwoHourList.add(billableData.getDay22() + overtimeData.getDay22());
+					approverTwoHourList.add(billableData.getDay23() + overtimeData.getDay23());
+					approverTwoHourList.add(billableData.getDay24() + overtimeData.getDay24());
+					approverTwoHourList.add(billableData.getDay25() + overtimeData.getDay25());
+					approverTwoHourList.add(billableData.getDay26() + overtimeData.getDay26());
+					approverTwoHourList.add(billableData.getDay27() + overtimeData.getDay27());
+					approverTwoHourList.add(billableData.getDay28() + overtimeData.getDay28());
+					approverTwoHourList.add(billableData.getDay29() + overtimeData.getDay29());
+					approverTwoHourList.add(billableData.getDay30() + overtimeData.getDay30());
+					approverTwoHourList.add(billableData.getDay31() + overtimeData.getDay31());
+					for (int i = 0 ; i < approverTwoHourList.size() ; i++) {
+						if(i < firstHalfDay) {
+							firstHalfHour += approverTwoHourList.get(i);
+						}
+						else {
+							secondHalfHour += approverTwoHourList.get(i);
+						}
+					}
+				}
+				JSONObject savedHour = new JSONObject();
+				savedHour.put("firstHalfTotal", firstHalfHour);
+				savedHour.put("secondHalfTotal", secondHalfHour);
+				if(userName == null || userName.isEmpty()) {
+					String uName = userService.getUserName(userId);
+					userName = String.valueOf(uName).replace(",", " ");
+				}
+				response.put("userId", userId);
+				response.put("userName", userName);
+				response.put("month", month);
+				response.put("approvalOneHours", userHours);
+				response.put("approvalTwoHours", savedHour);
+				response.put("approverOneFirstHalfStatus", approverOneFirstHalfStatus);
+				response.put("approverOneSecodHalfStatus", approverOneSecodHalfStatus);
+				response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
+				response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
+			}
+			else {
+				response.put("userId", userId);
+				String uName = userService.getUserName(userId);
+				String userName = String.valueOf(uName).replace(",", " ");
+				response.put("userName", userName);
+				response.put("month", month);
+				JSONObject totalHour = new JSONObject();
+				totalHour.put("firstHalfTotal", firstHalfHour);
+				totalHour.put("secondHalfTotal", secondHalfHour);
+				response.put("approvalOneHours", totalHour);
+				response.put("approvalTwoHours", totalHour);
+				response.put("approverOneFirstHalfStatus", approverOneFirstHalfStatus);
+				response.put("approverOneSecodHalfStatus", approverOneSecodHalfStatus);
+				response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
+				response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
+			}
+			return response;
+		}
 }
