@@ -737,6 +737,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			Long projectId, Integer projectTier, Integer firstHalfDay) {
 		JSONObject response = new JSONObject();
 
+		List<JSONObject> loggedArray = new ArrayList<>();
 		List<JSONObject> billableArray = new ArrayList<>();
 		List<JSONObject> overTimeArray = new ArrayList<>();
 		List<JSONObject> nonbillableArray = new ArrayList<>();
@@ -758,6 +759,39 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		int startDay = cal.get(Calendar.DAY_OF_MONTH);
 		
 		if (isExist) {
+			JSONObject temporaryObject = new JSONObject();
+			//Logged Details
+			List<Object[]> loggedList = getUserListByProject(userId, startDate, endDate,projectId);
+			if (loggedList != null && loggedList.size() > 0) {
+				Object[] user = loggedList.get(0);
+				name = user[1] + " " + user[0];
+			}
+			for(int i = startDay ; i <= endDay ; i++) {
+				int month = (cal.get(Calendar.MONTH) + 1);
+				int day = cal.get(Calendar.DAY_OF_MONTH);
+				String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0"+month : ""+month) + "-"
+						+ (day < 10 ? "0"+day : ""+day);
+
+				Double hours = 0.0;
+				if (loggedList != null && loggedList.size() > 0) {
+					temporaryObject = new JSONObject();
+					for (Object[] item : loggedList) {
+						String loggedDate = String.valueOf(item[3]);
+						if (loggedDate.equals(taskDate)) {
+							hours = hours + (Double) item[2];
+						}
+					}
+					temporaryObject.put(taskDate, hours);
+					loggedArray.add(temporaryObject);
+				}
+				else {
+					temporaryObject.put(taskDate, 0);
+					loggedArray.add(temporaryObject);
+				}
+				cal.add(Calendar.DATE, 1);
+			}
+
+			//Approved Details
 			List<TaskTrackApproval> approvalUserList = new ArrayList<TaskTrackApproval>();
 			if(projectTier == 1) {
 				List<TaskTrackApprovalFinal> approvalFinalList = taskTrackApprovalFinalRepository.getUserFinalApprovalList(userId,projectId,monthIndex,yearIndex);
@@ -771,9 +805,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			
 			Double hours = 0.0;
 			if (approvalUserList != null && approvalUserList.size() > 0) {
-				JSONObject jsonObject = new JSONObject();
-				TaskTrackApproval approval = approvalUserList.get(0);
-				name = approval.getUser().getFirstName() + " " + approval.getUser().getLastName();
+				if(name == null || name.isEmpty()) {
+					UserModel user = approvalUserList.get(0).getUser();
+					name = user.getFirstName()+" "+user.getLastName();
+				}
 				for (TaskTrackApproval item : approvalUserList) {
 					cal.setTime(startDate);
 					for(int i = startDay ; i <= endDay ; i++) {
@@ -879,21 +914,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 	
 						if(item.getProjectType().equals("Billable")) {
-							jsonObject = new JSONObject();
-							jsonObject.put(taskDate, hours);
-							billableArray.add(jsonObject);
+							temporaryObject = new JSONObject();
+							temporaryObject.put(taskDate, hours);
+							billableArray.add(temporaryObject);
 							billableId = item.getId();
 						}
 						else if(item.getProjectType().equals("Non-Billable")) {
-							jsonObject = new JSONObject();
-							jsonObject.put(taskDate, hours);
-							nonbillableArray.add(jsonObject);
+							temporaryObject = new JSONObject();
+							temporaryObject.put(taskDate, hours);
+							nonbillableArray.add(temporaryObject);
 							nonBillableId = item.getId();
 						}
 						else if(item.getProjectType().equals("Overtime")) {
-							jsonObject = new JSONObject();
-							jsonObject.put(taskDate, hours);
-							overTimeArray.add(jsonObject);
+							temporaryObject = new JSONObject();
+							temporaryObject.put(taskDate, hours);
+							overTimeArray.add(temporaryObject);
 							overtimeId = item.getId();
 						}
 						cal.add(Calendar.DATE, 1);
@@ -935,6 +970,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					cal.add(Calendar.DATE, 1);
 				}
 			}
+			response.put("logged", loggedArray);
 			response.put("billable", billableArray);;
 			response.put("nonBillable", nonbillableArray);
 			response.put("overtime", overTimeArray);
@@ -946,21 +982,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		else {
 			cal.setTime(startDate);
 			for(int i = startDay ; i <= endDay ; i++) {
-				JSONObject jsonObject = new JSONObject();
-
+				JSONObject temporaryObject = new JSONObject();
 				int month = (cal.get(Calendar.MONTH) + 1);
 				int day = cal.get(Calendar.DAY_OF_MONTH);
 				String vl = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0"+month : ""+month) + "-"
 						+ (day < 10 ? "0"+day : ""+day);
 
-				jsonObject.put(vl, 0);
-				billableArray.add(jsonObject);
-				nonbillableArray.add(jsonObject);
-				overTimeArray.add(jsonObject);
+				temporaryObject.put(vl, 0);
+				loggedArray.add(temporaryObject);
+				billableArray.add(temporaryObject);
+				nonbillableArray.add(temporaryObject);
+				overTimeArray.add(temporaryObject);
 				
 				cal.add(Calendar.DATE, 1);
 			}
 			
+			response.put("logged", loggedArray);
 			response.put("billable", billableArray);;
 			response.put("nonBillable", nonbillableArray);
 			response.put("overtime", overTimeArray);

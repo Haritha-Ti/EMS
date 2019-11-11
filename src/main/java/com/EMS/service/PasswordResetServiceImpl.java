@@ -114,7 +114,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
 		mailBody.append("<br/><br/>This link will expire in "+Constants.EMAIL_TOKEN_EXP_DUR+" minutes<br/><br/>");
 		
 		Template t = freemarkerConfig.getTemplate("email_template.ftl");
-        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody);
+        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "Reset Password");
 		
 		mailDomainDto.setSubject(subject);
 		mailDomainDto.setMailBody(html);
