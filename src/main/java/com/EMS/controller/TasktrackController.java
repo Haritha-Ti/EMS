@@ -3086,5 +3086,48 @@ public class TasktrackController {
 
 	}
 	// bala
+	@PostMapping("/getInfoForApprovalLevelTwo")
+	public JSONObject getInfoForApprovalLevelTwo(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
+		JSONObject response = new JSONObject();
+		Long projectId = null;
+		try {
+			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
+				projectId = requestdata.get("projectId").asLong();
+			}
+			String startDateString = requestdata.get("startDate").asText();
+			String endDateString = requestdata.get("endDate").asText();
+			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date startDate = null, endDate = null;
+			if (!startDateString.isEmpty()) {
+				startDate = outputFormat.parse(startDateString);
+			}
+			if (!endDateString.isEmpty()) {
+				endDate = outputFormat.parse(endDateString);
+			}
+			Integer firstHalfDay = 15;//Month split from day 15
+			JSONArray levelTwoData = new JSONArray();
+			if (startDate != null && endDate != null) {
+				List<Object[]> userIdList = projectAllocationService.getUserIdByProjectAndDate(projectId, startDate, endDate);
+				for (Object userItem : userIdList) {
+					Long userId = (Long) userItem;
+					Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
+					JSONObject taskTrackObject = tasktrackApprovalService.
+							getInfoForApprovalLevelTwo(userId, startDate, endDate, isExist,projectId, firstHalfDay);
+					levelTwoData.add(taskTrackObject);
+				}
+			}
+			response.put("data", levelTwoData);
+			response.put("status", "success");
+			response.put("message", "success. ");
+			response.put("code", httpstatus.getStatus());
+		}
+		catch (Exception e) {
+			response.put("status", "failure");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "failed. " + e);
+		}
+		return response;
+	}
 
 }

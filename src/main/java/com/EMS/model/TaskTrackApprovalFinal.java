@@ -353,6 +353,9 @@ public class TaskTrackApprovalFinal{
 	}
 
 	public String getFirstHalfStatus() {
+		if(firstHalfStatus == null) {
+			firstHalfStatus = "OPEN";
+		}
 		return firstHalfStatus;
 	}
 
@@ -361,9 +364,11 @@ public class TaskTrackApprovalFinal{
 	}
 
 	public String getSecondHalfStatus() {
+		if(secondHalfStatus == null) {
+			secondHalfStatus = "OPEN";
+		}
 		return secondHalfStatus;
 	}
-
 	public void setSecondHalfStatus(String secondHalfStatus) {
 		this.secondHalfStatus = secondHalfStatus;
 	}
@@ -375,4 +380,5 @@ public class TaskTrackApprovalFinal{
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
+	
 }

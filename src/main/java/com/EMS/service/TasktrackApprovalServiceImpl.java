@@ -6314,4 +6314,179 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			taskTrackApproval.setDay31(hours);
 		}
 	}
+	
+	public JSONObject getInfoForApprovalLevelTwo(Long userId, Date startDate, Date endDate,Boolean isExist,
+			Long projectId,Integer firstHalfDay) throws ParseException{
+			JSONObject response = new JSONObject();
+			String approverOneFirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+			String approverOneSecodHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+			String approverTwoFirstHalfStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
+			String approverTwoSecodHalfStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(startDate);
+			int month = (cal.get(Calendar.MONTH) + 1);
+			int year = cal.get(Calendar.YEAR);
+			Double firstHalfHour = 0.0;
+			Double secondHalfHour = 0.0;
+			if (isExist) {
+				String userName = null;
+				//For Approver 1 Data
+				List<TaskTrackApproval> approverOneData = new ArrayList<TaskTrackApproval>();
+				approverOneData = getUserListForApproval(userId,projectId,month,year);
+				firstHalfHour = 0.0;
+				secondHalfHour = 0.0;
+				if (approverOneData != null && approverOneData.size() > 0) {
+					List<Double> approverOneHourList = new ArrayList<Double>();
+					TaskTrackApproval billableData = new TaskTrackApproval();
+					TaskTrackApproval overtimeData = new TaskTrackApproval();
+					for (TaskTrackApproval task : approverOneData) {
+						if(task.getProjectType().equalsIgnoreCase("Billable")) {
+							approverOneFirstHalfStatus = task.getFirstHalfStatus();
+							approverOneSecodHalfStatus = task.getSecondHalfStatus();
+							billableData = task;
+						}
+						else if(task.getProjectType().equalsIgnoreCase("Overtime")) {
+							overtimeData = task;
+						}
+					}
+					approverOneHourList.add(billableData.getDay1() + overtimeData.getDay1());
+					approverOneHourList.add(billableData.getDay2() + overtimeData.getDay2());
+					approverOneHourList.add(billableData.getDay4() + overtimeData.getDay4());
+					approverOneHourList.add(billableData.getDay5() + overtimeData.getDay5());
+					approverOneHourList.add(billableData.getDay6() + overtimeData.getDay6());
+					approverOneHourList.add(billableData.getDay7() + overtimeData.getDay7());
+					approverOneHourList.add(billableData.getDay8() + overtimeData.getDay8());
+					approverOneHourList.add(billableData.getDay9() + overtimeData.getDay9());
+					approverOneHourList.add(billableData.getDay10() + overtimeData.getDay10());
+					approverOneHourList.add(billableData.getDay11() + overtimeData.getDay11());
+					approverOneHourList.add(billableData.getDay12() + overtimeData.getDay12());
+					approverOneHourList.add(billableData.getDay12() + overtimeData.getDay12());
+					approverOneHourList.add(billableData.getDay13() + overtimeData.getDay13());
+					approverOneHourList.add(billableData.getDay14() + overtimeData.getDay14());
+					approverOneHourList.add(billableData.getDay15() + overtimeData.getDay15());
+					approverOneHourList.add(billableData.getDay16() + overtimeData.getDay16());
+					approverOneHourList.add(billableData.getDay17() + overtimeData.getDay17());
+					approverOneHourList.add(billableData.getDay18() + overtimeData.getDay18());
+					approverOneHourList.add(billableData.getDay19() + overtimeData.getDay19());
+					approverOneHourList.add(billableData.getDay20() + overtimeData.getDay20());
+					approverOneHourList.add(billableData.getDay21() + overtimeData.getDay21());
+					approverOneHourList.add(billableData.getDay22() + overtimeData.getDay22());
+					approverOneHourList.add(billableData.getDay23() + overtimeData.getDay23());
+					approverOneHourList.add(billableData.getDay24() + overtimeData.getDay24());
+					approverOneHourList.add(billableData.getDay25() + overtimeData.getDay25());
+					approverOneHourList.add(billableData.getDay26() + overtimeData.getDay26());
+					approverOneHourList.add(billableData.getDay27() + overtimeData.getDay27());
+					approverOneHourList.add(billableData.getDay28() + overtimeData.getDay28());
+					approverOneHourList.add(billableData.getDay29() + overtimeData.getDay29());
+					approverOneHourList.add(billableData.getDay30() + overtimeData.getDay30());
+					approverOneHourList.add(billableData.getDay31() + overtimeData.getDay31());
+					for (int i = 0 ; i < approverOneHourList.size() ; i++) {
+						if(i < firstHalfDay) {
+							firstHalfHour += approverOneHourList.get(i);
+						}
+						else {
+							secondHalfHour += approverOneHourList.get(i);
+						}
+					}
+				}
+				JSONObject userHours = new JSONObject();
+				userHours.put("firstHalfTotal", firstHalfHour);
+				userHours.put("secondHalfTotal", secondHalfHour);
+				List<TaskTrackApproval> approverTwoData = new ArrayList<TaskTrackApproval>();
+				List<TaskTrackApprovalFinal> approvalFinalList = taskTrackApprovalFinalRepository.getUserFinalApprovalList(userId,projectId,month,year);
+				for(TaskTrackApprovalFinal taskTrackFinal : approvalFinalList) {
+					approverTwoData.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
+				}
+				firstHalfHour = 0.0;
+				secondHalfHour = 0.0;
+				if (approverTwoData != null && approverTwoData.size() > 0) {
+					List<Double> approverTwoHourList = new ArrayList<Double>();
+					TaskTrackApproval billableData = new TaskTrackApproval();
+					TaskTrackApproval overtimeData = new TaskTrackApproval();
+					for (TaskTrackApproval task : approverTwoData) {
+						if(task.getProjectType().equalsIgnoreCase("Billable")) {
+							approverTwoFirstHalfStatus = task.getFirstHalfStatus();
+							approverTwoSecodHalfStatus = task.getSecondHalfStatus();
+							billableData = task;
+						}
+						else if(task.getProjectType().equalsIgnoreCase("Overtime")) {
+							overtimeData = task;
+						}
+					}
+					approverTwoHourList.add(billableData.getDay1() + overtimeData.getDay1());
+					approverTwoHourList.add(billableData.getDay2() + overtimeData.getDay2());
+					approverTwoHourList.add(billableData.getDay4() + overtimeData.getDay4());
+					approverTwoHourList.add(billableData.getDay5() + overtimeData.getDay5());
+					approverTwoHourList.add(billableData.getDay6() + overtimeData.getDay6());
+					approverTwoHourList.add(billableData.getDay7() + overtimeData.getDay7());
+					approverTwoHourList.add(billableData.getDay8() + overtimeData.getDay8());
+					approverTwoHourList.add(billableData.getDay9() + overtimeData.getDay9());
+					approverTwoHourList.add(billableData.getDay10() + overtimeData.getDay10());
+					approverTwoHourList.add(billableData.getDay11() + overtimeData.getDay11());
+					approverTwoHourList.add(billableData.getDay12() + overtimeData.getDay12());
+					approverTwoHourList.add(billableData.getDay12() + overtimeData.getDay12());
+					approverTwoHourList.add(billableData.getDay13() + overtimeData.getDay13());
+					approverTwoHourList.add(billableData.getDay14() + overtimeData.getDay14());
+					approverTwoHourList.add(billableData.getDay15() + overtimeData.getDay15());
+					approverTwoHourList.add(billableData.getDay16() + overtimeData.getDay16());
+					approverTwoHourList.add(billableData.getDay17() + overtimeData.getDay17());
+					approverTwoHourList.add(billableData.getDay18() + overtimeData.getDay18());
+					approverTwoHourList.add(billableData.getDay19() + overtimeData.getDay19());
+					approverTwoHourList.add(billableData.getDay20() + overtimeData.getDay20());
+					approverTwoHourList.add(billableData.getDay21() + overtimeData.getDay21());
+					approverTwoHourList.add(billableData.getDay22() + overtimeData.getDay22());
+					approverTwoHourList.add(billableData.getDay23() + overtimeData.getDay23());
+					approverTwoHourList.add(billableData.getDay24() + overtimeData.getDay24());
+					approverTwoHourList.add(billableData.getDay25() + overtimeData.getDay25());
+					approverTwoHourList.add(billableData.getDay26() + overtimeData.getDay26());
+					approverTwoHourList.add(billableData.getDay27() + overtimeData.getDay27());
+					approverTwoHourList.add(billableData.getDay28() + overtimeData.getDay28());
+					approverTwoHourList.add(billableData.getDay29() + overtimeData.getDay29());
+					approverTwoHourList.add(billableData.getDay30() + overtimeData.getDay30());
+					approverTwoHourList.add(billableData.getDay31() + overtimeData.getDay31());
+					for (int i = 0 ; i < approverTwoHourList.size() ; i++) {
+						if(i < firstHalfDay) {
+							firstHalfHour += approverTwoHourList.get(i);
+						}
+						else {
+							secondHalfHour += approverTwoHourList.get(i);
+						}
+					}
+				}
+				JSONObject savedHour = new JSONObject();
+				savedHour.put("firstHalfTotal", firstHalfHour);
+				savedHour.put("secondHalfTotal", secondHalfHour);
+				if(userName == null || userName.isEmpty()) {
+					String uName = userService.getUserName(userId);
+					userName = String.valueOf(uName).replace(",", " ");
+				}
+				response.put("userId", userId);
+				response.put("userName", userName);
+				response.put("month", month);
+				response.put("approvalOneHours", userHours);
+				response.put("approvalTwoHours", savedHour);
+				response.put("approverOneFirstHalfStatus", approverOneFirstHalfStatus);
+				response.put("approverOneSecodHalfStatus", approverOneSecodHalfStatus);
+				response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
+				response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
+			}
+			else {
+				response.put("userId", userId);
+				String uName = userService.getUserName(userId);
+				String userName = String.valueOf(uName).replace(",", " ");
+				response.put("userName", userName);
+				response.put("month", month);
+				JSONObject totalHour = new JSONObject();
+				totalHour.put("firstHalfTotal", firstHalfHour);
+				totalHour.put("secondHalfTotal", secondHalfHour);
+				response.put("approvalOneHours", totalHour);
+				response.put("approvalTwoHours", totalHour);
+				response.put("approverOneFirstHalfStatus", approverOneFirstHalfStatus);
+				response.put("approverOneSecodHalfStatus", approverOneSecodHalfStatus);
+				response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
+				response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
+			}
+			return response;
+		}
 }
