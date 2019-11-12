@@ -968,6 +968,60 @@ public class TasktrackController {
 		return jsonDataRes;
 	}
 
+	@PostMapping("/submitFirstHalfHoursForApproval2")
+	public ResponseEntity<Object> submitFirstHalfHoursForApproval2(@RequestBody JSONObject requestData,
+																  HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			taskTrackFinalService.submitFirstHalfHoursForApproval2(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+
+	@PostMapping("/submitSecondHalfHoursForApproval2")
+	public ResponseEntity<Object> submitSecondHalfHoursForApproval2(@RequestBody JSONObject requestData,
+																   HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			taskTrackFinalService.submitSecondHalfHoursForApproval2(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+
 	@GetMapping("/getProjectNamesForApproval")
 	public JsonNode getProjectNamesForApproval(@RequestParam("uId") Long uId) throws Exception {
 		ArrayNode projectTitle = objectMapper.createArrayNode();
@@ -3155,6 +3209,8 @@ public class TasktrackController {
 			if (!endDateString.isEmpty()) {
 				endDate = outputFormat.parse(endDateString);
 			}
+			ProjectModel project = projectService.findById(projectId);
+			String approverOne = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName());
 			Integer firstHalfDay = 15;//Month split from day 15
 			JSONArray levelTwoData = new JSONArray();
 			if (startDate != null && endDate != null) {
@@ -3169,6 +3225,7 @@ public class TasktrackController {
 
 			}
 			response.put("data", levelTwoData);
+			response.put("approverOne", approverOne);
 			response.put("status", "success");
 			response.put("message", "success. ");
 			response.put("code", httpstatus.getStatus());

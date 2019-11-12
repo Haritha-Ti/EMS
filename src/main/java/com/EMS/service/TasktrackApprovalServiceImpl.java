@@ -8,14 +8,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ValueRange;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -26,11 +19,14 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.EMS.model.*;
+import com.EMS.repository.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.exceptions.DuplicateEntryException;
+
 import com.EMS.model.ActivityLog;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.TaskTrackApproval;
@@ -55,6 +51,7 @@ import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.TimeTrackApprovalJPARepository;
 import com.EMS.repository.TimeTrackApprovalRepository;
 import com.EMS.repository.UserRepository;
+
 import com.EMS.utility.Constants;
 import com.EMS.utility.TaskTrackApproverConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -120,6 +117,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	@Autowired
 	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
+
+	@Autowired
+	TaskTrackRejectionRepository taskTrackRejectionRepository;
 
 	@Override
 	public Boolean checkIsUserExists(Long id) {
@@ -6250,9 +6250,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public void submitForRejection(JSONObject requestData) throws Exception {
 
 		Long projectId = Long.valueOf(requestData.get("projectId").toString());
-		int month = Integer.valueOf(requestData.get("month").toString());
-		int year = Integer.valueOf(requestData.get("year").toString());
-		Long userId = Long.valueOf(requestData.get("userId").toString());
+		int month= Integer.valueOf(requestData.get("month").toString());
+		int year=Integer.valueOf(requestData.get("year").toString());
+		Long userId=Long.valueOf(requestData.get("userId").toString());
+		String remarks=requestData.get("remarks").toString();
 
 		List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
 				.upadateTaskTrackApprovalStatus(projectId, month, year, userId);
@@ -6260,15 +6261,26 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+		TaskTrackRejection taskTrackRejection=new TaskTrackRejection();
+		Optional<UserModel> user=userRepository.findById(userId);
+		Optional<ProjectModel> project=projectRepository.findById(projectId);
+		taskTrackRejection.setUser(user.get());
+		taskTrackRejection.setProject(project.get());
+		taskTrackRejection.setMonth(month);
+		taskTrackRejection.setYear(year);
+		taskTrackRejection.setRemark(remarks);
+		taskTrackRejectionRepository.save(taskTrackRejection);
+
 
 	}
 
 	@Override
 	public void submitForSecondHalfRejection(JSONObject requestData) throws Exception {
 		Long projectId = Long.valueOf(requestData.get("projectId").toString());
-		int month = Integer.valueOf(requestData.get("month").toString());
-		int year = Integer.valueOf(requestData.get("year").toString());
-		Long userId = Long.valueOf(requestData.get("userId").toString());
+		int month= Integer.valueOf(requestData.get("month").toString());
+		int year=Integer.valueOf(requestData.get("year").toString());
+		Long userId=Long.valueOf(requestData.get("userId").toString());
+		String remarks=requestData.get("remarks").toString();
 
 		List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
 				.upadateTaskTrackApprovalStatus(projectId, month, year, userId);
@@ -6276,6 +6288,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+		TaskTrackRejection taskTrackRejection=new TaskTrackRejection();
+		Optional<UserModel> user=userRepository.findById(userId);
+		Optional<ProjectModel> project=projectRepository.findById(projectId);
+		taskTrackRejection.setUser(user.get());
+		taskTrackRejection.setProject(project.get());
+		taskTrackRejection.setMonth(month);
+		taskTrackRejection.setYear(year);
+		taskTrackRejection.setRemark(remarks);
+		taskTrackRejectionRepository.save(taskTrackRejection);
+
+
 
 	}
 
