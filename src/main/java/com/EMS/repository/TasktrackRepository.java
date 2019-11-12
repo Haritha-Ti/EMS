@@ -14,6 +14,7 @@ import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
+import com.EMS.model.TaskTrackDaySubmissionModel;
 import com.EMS.model.Tasktrack;
 
 public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
@@ -73,13 +74,13 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	@Query("SELECT count(*) > 0 FROM Tasktrack s WHERE s.user.userId = ?2 and s.project.projectId = ?1")
 	Boolean checkExistanceOfUser(Long projectId, Long userId);
 
-	@Query("SELECT DISTINCT a.project.projectName,a.project.projectId,a.project.projectTier from AllocationModel a where a.user.userId=?1 and a.project.isBillable =1 and a.project.projectStatus=1 order by a.project.projectName")
+	@Query("SELECT DISTINCT a.project.projectName,a.project.projectId,a.project.projectTier from AllocationModel a where a.user.userId=?1 order by a.project.projectName")
 	public List<Object[]> getProjectNamesForApprovalnew(long uId) throws Exception;
 	
-	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.onsite_lead.userId=?1 and a.isBillable =1 and a.projectStatus=1 order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.onsite_lead.userId=?1 and a.isBillable =1 and a.projectStatus=1 order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel2(long uId);
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.projectOwner.userId=?1 and a.isBillable =1 and a.projectStatus=1 order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectOwner.userId=?1 and a.isBillable =1 and a.projectStatus=1 order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel1(long uId);
 
 	@Query("SELECT a FROM TaskTrackApproval a where a.user.userId = ?1 and a.month = ?2 and a.year = ?3 and a.project.projectId = ?4 ")
@@ -89,16 +90,16 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	int  checkprojectallocated(long projectId,Date startdate,Date enddate);
 
 	//Nisha
-	@Query("from ProjectModel p where p.isBillable =1  AND p.projectStatus=1 AND (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) order by p.projectName")
+	@Query("from ProjectModel p where (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) order by p.projectName")
 	public List<ProjectModel> getProjectNamesForApproval(int month,int year) throws Exception;
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.onsite_lead.userId=?1 and a.isBillable =1 and a.projectStatus=1  AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.onsite_lead.userId=?1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel2(long uId,int month,int year);
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId from ProjectModel a where a.projectOwner.userId=?1 and a.isBillable =1 and a.projectStatus=1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectOwner.userId=?1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel1(long uId,int month,int year);
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) and a.isBillable =1 and a.projectStatus=1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprover(long uId,int month,int year);
 
 	//Nisha
@@ -115,7 +116,8 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	public void updateTaskByName(long id,double hours,ProjectModel projectModel,Task task) throws Exception;
 	
 	
-	@Query("select p.projectId,p.projectName,t.date,t.id,sum(t.hours) from ProjectModel p join AllocationModel a on a.project.projectId = p.projectId join UserModel u on u.userId=a.user.userId join Tasktrack t on t.project.projectId=p.projectId and t.user.userId = u.userId where u.userId=?1 and t.date>=?2 and t.date<=?3 group by 1,2,3,4 order by 1,3")
+
+	@Query(value="select p.project_id, p.project_name , t.`date`,t.id,c.client_name  ,sum(t.hours) from tasktrack t left join project p on p.project_id = t.project_project_id join `user` u  on u.user_id = t.user_user_id join `client` c on c.client_id=p.client_name_client_id where u.user_id = ?1 and t.`date`>=?2 and t.`date`<=?3  group by 1,2,3,4,5 order by 1,2",nativeQuery=true)
 	public List<Object[]> getTasksFortimeTrack(long id,Date fromDate, Date toDate) throws Exception;
 	
 	@Query(value = "SELECT \r\n" + 

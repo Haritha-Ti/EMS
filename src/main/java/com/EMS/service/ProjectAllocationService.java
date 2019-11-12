@@ -51,6 +51,8 @@ public interface ProjectAllocationService {
 	public BigInteger getAllocationContinousDateRange(Long projectId, Long userId, Date startDate, Date endDate) ;
 
 	List<AllocationModel> getUserDataByProjectAndDate(Long projectId,Date startDate, Date endDate);
+	
+	public List<Object[]> getAllocationProjectForUserId(Long userId, Date fromDate, Date toDate);
 
 }
 

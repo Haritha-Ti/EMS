@@ -101,6 +101,9 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	@Query(value = "SELECT * FROM `allocation` as alloc Join project as pro ON alloc.project_project_id=pro.project_id left join user on user.user_id = alloc.user_user_id  where pro.project_category=2 AND alloc.start_date<=?1 AND alloc.end_date>=?1  and user.region_id = ?2",nativeQuery = true)
 	List<AllocationModel> getBenchResourcesRegionId(String datestring, Long regionId);
 
+	@Query(value="select distinct p.project_id, p.project_name,  c.client_name  from allocation a  join project p on  p.project_id  = a.project_project_id   left join `client` c on c.client_id = p.client_name_client_id   join `user` u  on u.user_id = a.user_user_id   left join tasktrack t on t.project_project_id =  p.project_id and t.user_user_id = u.user_id   where a.user_user_id=?1  and a.start_date<=?2  and a.end_date>=?3  order by 1,2,3;",nativeQuery=true)
+	List<Object[]> getAllocationProjectForUserId(Long userId, Date fromDate, Date toDate);
+
 
 
 	

@@ -89,10 +89,12 @@ public class LoginController {
 					&& (password.length() > 0)) {
 
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-	            String token = jwtTokenProvider.createToken(username, 
+				String token = jwtTokenProvider.createToken(username, 
 	            		this.userRepository.findByUserName(username)
 	            		.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
-	            		.getRole().getroleName());
+	            		.getRole().getroleName(),this.userRepository.findByUserName(username)
+	            		.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
+	            		.getRole().getroleId());
 
 				UserModel usercheck = login_service.login_authentication(username);
 
@@ -162,10 +164,10 @@ public class LoginController {
 
 		try {
 
-			user.setFirstName(requestdata.get("firstName").asText());
-			user.setLastName(requestdata.get("lastName").asText());
+			user.setFirstName(requestdata.get("firstName").asText().trim());
+			user.setLastName(requestdata.get("lastName").asText().trim());
 			user.setContact(requestdata.get("contact").asLong());
-			user.setUserName(requestdata.get("userName").asText());
+			user.setUserName(requestdata.get("userName").asText().trim());
 			user.setBloodGroup(requestdata.get("bloodGroup").asText());
 			user.setGender(requestdata.get("gender").asInt());
 			user.setEmploymentType(requestdata.get("employment").asText());
@@ -585,10 +587,10 @@ public class LoginController {
 			Long userId  = requestdata.get("userId").asLong();
 			UserModel user = userService.getUserDetailsById(userId);
 			if ( user != null) {
-				user.setFirstName(requestdata.get("firstName").asText());
-				user.setLastName(requestdata.get("lastName").asText());
+				user.setFirstName(requestdata.get("firstName").asText().trim());
+				user.setLastName(requestdata.get("lastName").asText().trim());
 				user.setContact(requestdata.get("contact").asLong());
-				user.setUserName(requestdata.get("userName").asText());
+				user.setUserName(requestdata.get("userName").asText().trim());
 				user.setBloodGroup(requestdata.get("bloodGroup").asText());
 				user.setGender(requestdata.get("gender").asInt());
 				user.setEmploymentType(requestdata.get("employment").asText());
@@ -709,10 +711,10 @@ public class LoginController {
 			//UserModel user = userService.getUserDetailsById(userId);
 			UserModel user = userService.getUserdetailsbyId(userId);
 			if ( user != null) {
-				user.setFirstName(requestdata.get("firstName").asText());
-				user.setLastName(requestdata.get("lastName").asText());
+				user.setFirstName(requestdata.get("firstName").asText().trim());
+				user.setLastName(requestdata.get("lastName").asText().trim());
 				user.setContact(requestdata.get("contact").asLong());
-				user.setUserName(requestdata.get("userName").asText());
+				user.setUserName(requestdata.get("userName").asText().trim());
 				user.setBloodGroup(requestdata.get("bloodGroup").asText());
 				user.setGender(requestdata.get("gender").asInt());
 				user.setEmploymentType(requestdata.get("employment").asText());

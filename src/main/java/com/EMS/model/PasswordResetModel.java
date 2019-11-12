@@ -3,6 +3,7 @@ package com.EMS.model;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,8 +12,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import org.hibernate.envers.Audited;
+
+import com.EMS.listener.ModelListener;
+@Audited
+@EntityListeners(ModelListener.class)
 @Entity
-public class PasswordResetModel {
+public class PasswordResetModel  extends  Auditable<String>{
 //	private static final int EXPIRATION = 60 * 24;
 	  
     @Id

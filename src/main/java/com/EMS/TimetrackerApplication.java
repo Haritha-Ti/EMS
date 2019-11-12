@@ -49,7 +49,7 @@ public class TimetrackerApplication  	//extends SpringBootServletInitializer
 }
 
 @Configuration
-@EnableJpaAuditing
+//@EnableJpaAuditing
 class DataJpaConfig {
 
     @Bean
@@ -60,4 +60,16 @@ class DataJpaConfig {
             .map(Authentication::getPrincipal)
             .map(UserModel.class::cast);
     }
+    
+    
+}
+//Renjith
+@Configuration
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+class JpaAuditingConfiguration {
+
+	@Bean
+	public AuditorAware<String> auditorProvider() {
+		return () -> Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication().getName());
+	}
 }

@@ -30,6 +30,7 @@ import com.EMS.model.AllocationModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.ProjectRegion;
+import com.EMS.model.Region;
 import com.EMS.model.UserModel;
 import com.EMS.service.AttendanceService;
 import com.EMS.service.ProjectAllocationService;
@@ -73,6 +74,9 @@ public class ProjectAllocationController {
 	
 	@Autowired
 	private ProjectService projectservice;
+	
+	@Autowired
+	private RegionService regionservice;
 
 	// To get user, department and project list
 
@@ -1255,9 +1259,8 @@ public class ProjectAllocationController {
 		String endDate = requestData.get("endDate").asText();
 		Date fromDate = null, toDate = null;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
 		List<AllocationModel> allocationModel = projectAllocation.getAllocationList(projectId);
-
+	
 
 		ArrayNode jsonArray = objectMapper.createArrayNode();
 		ArrayNode projectjsonArray = objectMapper.createArrayNode();
@@ -1267,12 +1270,13 @@ public class ProjectAllocationController {
 		try {
 			fromDate = df.parse(startDate);
 			toDate = df.parse(endDate);
-			if (!(allocationModel.isEmpty() && allocationModel.size() > 0)) {
+			if ((!allocationModel.isEmpty() && allocationModel.size() > 0)) {
 				ObjectNode jsonprojectObject = objectMapper.createObjectNode();
 				String projectStart = null;
 				String projectEnd = null;
 				String projectName = null;
 				for (AllocationModel item : allocationModel) {
+					if(item != null) {
 					String projectStartDate = df.format(item.getStartDate());
 					String projectEndDate = df.format(item.getEndDate());
 					/*if ((fromDate.compareTo(df.parse(projectStartDate)) >= 0
@@ -1301,6 +1305,7 @@ public class ProjectAllocationController {
 							jsonObject.put("lastName", item.getuser().getLastName());
 							jsonObject.put("role", item.getuser().getRole().getroleId());
 						}
+					
 						jsonObject.put("startDate", projectStartDate);
 						jsonObject.put("endDate", projectEndDate);
 						jsonObject.put("allocatedVal", item.getAllocatedPerce());
@@ -1309,8 +1314,10 @@ public class ProjectAllocationController {
 
 						if (item.getuser() != null && item.getuser().getDepartment() != null)
 							jsonObject.put("departmentName", item.getuser().getDepartment().getdepartmentName());
+					
 						jsonArray.add(jsonObject);
 					}
+				}
 				}
 				ProjectModel project = projectService.getProjectDetails(projectId);
 				projectStart = df.format(project.getStartDate());
@@ -1323,12 +1330,14 @@ public class ProjectAllocationController {
 
 				jsonData.set("projectData", jsonprojectObject);
 				jsonData.set("resourceList", jsonArray);
-				List<ProjectRegion> projectRegion = projectRegionService.getRegionListByProject(projectId);
-				for(ProjectRegion region : projectRegion){
+				List<Region> projectRegion = regionservice.getlist();
+			
+				for(Region region : projectRegion){
+					
 					ObjectNode jsonregionObject = objectMapper.createObjectNode();
-					jsonregionObject.put("region_Id",region.getRegion_Id().getId());
-					jsonregionObject.put("region_code",region.getRegion_Id().getRegion_code());
-					jsonregionObject.put("region_name",region.getRegion_Id().getRegion_name());
+					jsonregionObject.put("region_Id",region.getId());
+					jsonregionObject.put("region_code",region.getRegion_code());
+					jsonregionObject.put("region_name",region.getRegion_name());
 					regionjsonArray.add(jsonregionObject);
 				}
 				jsonData.set("regionList", regionjsonArray);
