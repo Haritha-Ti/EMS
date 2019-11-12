@@ -3016,6 +3016,8 @@ public class TasktrackController {
 			if (!endDateString.isEmpty()) {
 				endDate = outputFormat.parse(endDateString);
 			}
+			ProjectModel project = projectService.findById(projectId);
+			String approverOne = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName());
 			Integer firstHalfDay = 15;//Month split from day 15
 			JSONArray levelTwoData = new JSONArray();
 			if (startDate != null && endDate != null) {
@@ -3030,6 +3032,7 @@ public class TasktrackController {
 
 			}
 			response.put("data", levelTwoData);
+			response.put("approverOne", approverOne);
 			response.put("status", "success");
 			response.put("message", "success. ");
 			response.put("code", httpstatus.getStatus());
