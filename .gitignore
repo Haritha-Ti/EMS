@@ -11,14 +11,15 @@ HELP.md
 .springBeans
 .sts4-cache
 .app.log
-.properties
-.app.log
+
 
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
+.properties
+.app.log
 
 ### NetBeans ###
 /nbproject/private/
