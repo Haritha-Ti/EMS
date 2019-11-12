@@ -1324,6 +1324,7 @@ public class ProjectAllocationController {
 
 
 			}
+			//nisha
 			ProjectModel project = projectService.getProjectDetails(projectId);
 			projectStart = df.format(project.getStartDate());
 			projectEnd = df.format(project.getEndDate());
