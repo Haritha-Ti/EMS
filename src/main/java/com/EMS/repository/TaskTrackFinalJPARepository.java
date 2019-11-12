@@ -124,5 +124,7 @@ public interface TaskTrackFinalJPARepository extends JpaRepository<TaskTrackAppr
 	@Query(value = "SELECT id  FROM tasktrack_approval_final where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Overtime') order by id desc limit 1", nativeQuery = true)
 	Long getOvertimeIdForAUserForAProject(Integer month, Integer year, Long projectId, Long userId);
 
+	@Query("SELECT count(*) > 0 FROM TaskTrackApprovalFinal s WHERE s.user.userId = ?1")
+	Boolean existsByUser(Long id);
 
 }

@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TaskTrackDaySubmissionRepository extends JpaRepository<TaskTrackDaySubmissionModel,Integer> {
 	
 	Optional<TaskTrackDaySubmissionModel> findByMonth(int month);
+	
+	TaskTrackDaySubmissionModel findOneByMonth(Integer month);
 }

@@ -55,6 +55,5 @@ public class TimeTrackApprovalRowMapper implements RowMapper<TaskTrackApproval> 
 		rpt.setSecondHalfStatus(rs.getString("second_half_status")!=null ? rs.getString("second_half_status") : "OPEN");
 		return rpt;
 	}
-	
 
 }
