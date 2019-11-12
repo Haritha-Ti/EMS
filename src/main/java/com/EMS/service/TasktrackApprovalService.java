@@ -120,6 +120,8 @@ public interface TasktrackApprovalService {
 
 	void submitForSecondHalfRejection(JSONObject requestData) throws Exception;
 
+	JSONObject getInfoForApprovalLevelTwo(Long userId, Date startDate, Date endDate,Boolean isExist,Long projectId,Integer firstHalfDay) throws ParseException;
+
 
 
 }

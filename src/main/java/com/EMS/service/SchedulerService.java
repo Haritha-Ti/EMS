@@ -51,7 +51,7 @@ public class SchedulerService {
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "unlikely-arg-type" })
-	@Scheduled(cron = "0 0 9 * * *")
+	@Scheduled(cron = "0 35 16 * * *")
 	public void create() throws Exception {
 
 		Date date = null, croneDate = null;
@@ -146,7 +146,8 @@ public class SchedulerService {
 							
 						while (!startDate.isAfter(toDate)) {
 							
-							if(sdf.parse(projectActiveMap.get(projectName).toString()).after(sdf.parse(startDate.toString()))) {
+							if((sdf.parse(projectActiveMap.get(projectName).toString()).after(sdf.parse(startDate.toString()))) || 
+									(sdf.parse(projectActiveMap.get(projectName).toString()).equals((sdf.parse(startDate.toString()))))) {
 								if ((dateList==null || !dateList.contains(startDate.toString()))
 										&& !holidays.contains(sdf.parse(startDate.toString()))
 										&& !startDate.getDayOfWeek().equals(DayOfWeek.SATURDAY) 
@@ -171,7 +172,7 @@ public class SchedulerService {
 							
 							StringBuilder mailBody = new StringBuilder("Hi "+ userFullNameMap.get(userName) +", ");
 							mailBody.append("<br/><br/>Project: "+ projectName);
-							mailBody.append("<br/><br/>Your timtrack is pending for the foolowing days: <br/>"+sb);
+							mailBody.append("<br/><br/>Your timtrack is pending for the following days: <br/>"+sb);
 
 							Template t = freemarkerConfig.getTemplate("email_template.ftl");
 					        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "Please submit your time sheet !");
