@@ -103,6 +103,12 @@
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
         </dependency>
+        
+         <!-- data auditing -->
+        <dependency>
+    <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-envers</artifactId>
+    </dependency>
 
 	</dependencies>
 
