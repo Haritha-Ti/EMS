@@ -1,6 +1,7 @@
 package com.EMS.service;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -10,25 +11,14 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.EMS.model.*;
+import com.EMS.repository.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.EMS.model.AllocationModel;
-import com.EMS.model.ProjectModel;
-import com.EMS.model.Task;
-import com.EMS.model.TaskTrackApproval;
-import com.EMS.model.TaskTrackDaySubmissionModel;
-import com.EMS.model.Tasktrack;
-import com.EMS.repository.ProjectReportsRepository;
-import com.EMS.repository.ProjectRepository;
-import com.EMS.repository.TaskRepository;
-import com.EMS.repository.TaskTrackDaySubmissionRepository;
-import com.EMS.repository.TasktrackRepository;
-import com.EMS.repository.TimeTrackApprovalRepository;
-import com.EMS.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -51,7 +41,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 	
 	@Autowired
 	UserService userService;
-	
+
+	@Autowired
+	ProjectService projectService;
 	
 	@Autowired
 	ProjectReportsRepository projectReportsRepository;
@@ -65,6 +57,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 	@Autowired 
 	TaskTrackDaySubmissionRepository taskTrackDaySubmissionRepository;
 //	For Task track Model
+	@Autowired
+	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
 
 	@Override
 	public List<Tasktrack> getByDate(Date startDate, Date endDate, Long uId) {
@@ -525,5 +519,59 @@ public class TasktrackServiceImpl implements TasktrackService {
 			
 		}
 		//bala
+
+		//Nisha
+		@Override
+		public ObjectNode createCorrection(ObjectNode requestdata)
+		{
+			ObjectNode responsedata = objectMapper.createObjectNode();
+
+			try
+			{
+				Long userId          = requestdata.get("userId").asLong();
+				Long projectId       = requestdata.get("projectId").asLong();
+				UserModel user       = userService.getUserDetailsById(userId);
+				ProjectModel project = projectService.getProjectDetails(projectId);
+				ArrayNode days       = (ArrayNode) requestdata.get("days");
+
+				if (!days.equals(null) && days.size()!=0) {
+					for (JsonNode node : days) {
+						TaskTrackCorrection taskTrackCorrection = new TaskTrackCorrection();
+						String inputDate              = node.asText();
+						SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+						Date correctionDate           =  outputFormat.parse(inputDate);
+						Calendar cal                  = Calendar.getInstance();
+						cal.setTime(correctionDate);
+						int monthIndex            = (cal.get(Calendar.MONTH) + 1);
+						int yearIndex             = cal.get(Calendar.YEAR);
+						int day                   = cal.get(Calendar.DAY_OF_MONTH);
+						taskTrackCorrection.setDay(day);
+						taskTrackCorrection.setMonth(monthIndex);
+						taskTrackCorrection.setYear(yearIndex);
+						taskTrackCorrection.setUser(user);
+						taskTrackCorrection.setProject(project);
+						taskTrackCorrectionRepository.save(taskTrackCorrection);
+					}
+					int projectTier = project.getProjectTier();
+					if(projectTier == 1)
+					{
+
+					}
+					responsedata.put("status", "success");
+					responsedata.put("message", "Correction requested successfully");
+				}
+				else{
+					responsedata.put("status", "failed");
+					responsedata.put("message", "Correction requested failed:select dates for correction");
+				}
+			}
+			catch (Exception e)
+			{
+				responsedata.put("status", "Failed");
+				responsedata.put("message", "Exception : " + e);
+
+			}
+			return  responsedata;
+		}
 	
 }

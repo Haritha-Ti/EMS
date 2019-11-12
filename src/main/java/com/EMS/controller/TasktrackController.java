@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.EMS.model.*;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -42,17 +43,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.Taskdetails;
 import com.EMS.exceptions.DuplicateEntryException;
-import com.EMS.model.AllocationModel;
-import com.EMS.model.ProjectModel;
-import com.EMS.model.ProjectRegion;
-import com.EMS.model.Region;
-import com.EMS.model.Task;
-import com.EMS.model.TaskTrackApproval;
-import com.EMS.model.TaskTrackApprovalFinance;
-import com.EMS.model.TaskTrackApprovalLevel2;
-import com.EMS.model.TaskTrackDaySubmissionModel;
-import com.EMS.model.Tasktrack;
-import com.EMS.model.UserModel;
 import com.EMS.repository.TaskRepository;
 import com.EMS.repository.TaskTrackApprovalLevel2Repository;
 import com.EMS.service.ProjectAllocationService;
@@ -3087,4 +3077,12 @@ public class TasktrackController {
 	}
 	// bala
 
+	//Nisha
+	@PostMapping(value = "/createCorrection")
+	public JsonNode createCorrection(@RequestBody ObjectNode requestdata, HttpServletResponse servletresponse) {
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		responsedata = tasktrackService.createCorrection(requestdata);
+		responsedata.put("code", servletresponse.getStatus());
+		return responsedata;
+	}
 }
