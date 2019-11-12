@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.EMS.model.*;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -43,17 +44,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.Taskdetails;
 import com.EMS.exceptions.DuplicateEntryException;
-import com.EMS.model.AllocationModel;
-import com.EMS.model.ProjectModel;
-import com.EMS.model.ProjectRegion;
-import com.EMS.model.Region;
-import com.EMS.model.Task;
-import com.EMS.model.TaskTrackApproval;
-import com.EMS.model.TaskTrackApprovalFinance;
-import com.EMS.model.TaskTrackApprovalLevel2;
-import com.EMS.model.TaskTrackDaySubmissionModel;
-import com.EMS.model.Tasktrack;
-import com.EMS.model.UserModel;
 import com.EMS.repository.TaskRepository;
 import com.EMS.repository.TaskTrackApprovalLevel2Repository;
 import com.EMS.service.ProjectAllocationService;
@@ -966,6 +956,60 @@ public class TasktrackController {
 			jsonDataRes.put("message", "failed. " + e);
 		}
 		return jsonDataRes;
+	}
+
+	@PostMapping("/submitFirstHalfHoursForApproval2")
+	public ResponseEntity<Object> submitFirstHalfHoursForApproval2(@RequestBody JSONObject requestData,
+																  HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			taskTrackFinalService.submitFirstHalfHoursForApproval2(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+
+	@PostMapping("/submitSecondHalfHoursForApproval2")
+	public ResponseEntity<Object> submitSecondHalfHoursForApproval2(@RequestBody JSONObject requestData,
+																   HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			taskTrackFinalService.submitSecondHalfHoursForApproval2(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
 	}
 
 	@GetMapping("/getProjectNamesForApproval")
@@ -3045,4 +3089,12 @@ public class TasktrackController {
 		return response;
 	}
 
+	//Nisha
+	@PostMapping(value = "/createCorrection")
+	public JsonNode createCorrection(@RequestBody ObjectNode requestdata, HttpServletResponse servletresponse) {
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		responsedata = tasktrackService.createCorrection(requestdata);
+		responsedata.put("code", servletresponse.getStatus());
+		return responsedata;
+	}
 }
