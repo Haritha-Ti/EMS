@@ -122,6 +122,9 @@ public interface TasktrackApprovalService {
 
 	JSONObject getInfoForApprovalLevelTwo(Long userId, Date startDate, Date endDate,Boolean isExist,Long projectId,Integer firstHalfDay) throws ParseException;
 
+	JSONObject getDataForApprovalLevelTwo(Long userId, Date startDate, Date endDate, Long projectId,
+			Integer firstHalfDay);
+
 
 
 }
