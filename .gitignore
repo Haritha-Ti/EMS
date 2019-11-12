@@ -18,8 +18,8 @@ HELP.md
 *.iws
 *.iml
 *.ipr
-.properties
-.app.log
+*.properties
+*.app.log
 
 ### NetBeans ###
 /nbproject/private/
