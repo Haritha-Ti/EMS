@@ -51,9 +51,9 @@ public class TimeTrackApprovalRowMapper implements RowMapper<TaskTrackApproval> 
 		rpt.setDay29(rs.getString("day29")!=null ? Double.parseDouble(rs.getString("day29")) : 0);
 		rpt.setDay30(rs.getString("day30")!=null ? Double.parseDouble(rs.getString("day30")) : 0);
 		rpt.setDay31(rs.getString("day31")!=null ? Double.parseDouble(rs.getString("day31")) : 0);
-		
+		rpt.setFirstHalfStatus(rs.getString("first_half_status")!=null ? rs.getString("first_half_status") : "OPEN");
+		rpt.setSecondHalfStatus(rs.getString("second_half_status")!=null ? rs.getString("second_half_status") : "OPEN");
 		return rpt;
 	}
-	
 
 }

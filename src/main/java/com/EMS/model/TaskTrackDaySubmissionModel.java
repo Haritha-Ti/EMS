@@ -1,23 +1,31 @@
 package com.EMS.model;
 
+import java.util.Date;
+
 import javax.persistence.*;
 
+import org.hibernate.envers.Audited;
+
+import com.EMS.listener.ModelListener;
+
+@Audited
+@EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "tasktrack_day_submission")
-public class TaskTrackDaySubmissionModel {
+public class TaskTrackDaySubmissionModel  extends Auditable<String> {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    @Column(name = "month")
-    private int month;
+    @Column(name = "month", unique = true)
+    private Integer month;
     
     @Column(name = "first_approval_day")
-    private int firstApprovalDay;
+    private Date firstApprovalDay;
     
     @Column(name = "second_approval_day")
-    private int secondApprovalDay;
+    private Date secondApprovalDay;
 
 	public Integer getId() {
 		return id;
@@ -27,27 +35,27 @@ public class TaskTrackDaySubmissionModel {
 		this.id = id;
 	}
 
-	public int getMonth() {
+	public Integer getMonth() {
 		return month;
 	}
 
-	public void setMonth(int month) {
+	public void setMonth(Integer month) {
 		this.month = month;
 	}
 
-	public int getFirstApprovalDay() {
+	public Date getFirstApprovalDay() {
 		return firstApprovalDay;
 	}
 
-	public void setFirstApprovalDay(int firstApprovalDay) {
+	public void setFirstApprovalDay(Date firstApprovalDay) {
 		this.firstApprovalDay = firstApprovalDay;
 	}
 
-	public int getSecondApprovalDay() {
+	public Date getSecondApprovalDay() {
 		return secondApprovalDay;
 	}
 
-	public void setSecondApprovalDay(int secondApprovalDay) {
+	public void setSecondApprovalDay(Date secondApprovalDay) {
 		this.secondApprovalDay = secondApprovalDay;
 	}
 }

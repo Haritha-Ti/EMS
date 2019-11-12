@@ -2,10 +2,15 @@ package com.EMS.model;
 
 import javax.persistence.*;
 
+import org.hibernate.envers.Audited;
 
+import com.EMS.listener.ModelListener;
+
+@Audited
+@EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "employeeContractors")
-public class EmployeeContractors {
+public class EmployeeContractors extends Auditable<String>{
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)

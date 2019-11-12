@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,16 +14,21 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.EMS.listener.ModelListener;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@Audited
+@EntityListeners(ModelListener.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name="Project")
-public class ProjectModel {
+public class ProjectModel  extends  Auditable<String>  {
 	
 	@Id
 	@Column(name="projectId")
@@ -60,7 +66,7 @@ public class ProjectModel {
 	@ManyToOne
 	private UserModel onsite_lead; // approver_level_2
 	
-	@CreatedBy
+/*	@CreatedBy
 	@ManyToOne
 	private UserModel createdBy; 
 	
@@ -116,7 +122,7 @@ public class ProjectModel {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
-	}
+	}*/
 
 
 	public ProjectModel(long projectId, String projectName, String projectDetails, int estimatedHours, Date startDate,
