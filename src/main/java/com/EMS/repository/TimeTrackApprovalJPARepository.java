@@ -55,6 +55,9 @@ public interface TimeTrackApprovalJPARepository extends JpaRepository<TaskTrackA
 			+ "          THEN p.project_type = 0 " + "          ELSE p.project_id != 0 END) ", nativeQuery = true)
 	List<Object[]> getTimeTrackApprovalDataByUserId(Integer monthIndex, Integer yearIndex, Long id, int projectType);
 
+	@Query("SELECT count(*) > 0 FROM TaskTrackApproval s WHERE s.user.userId = ?1")
+	Boolean existsByUser(Long id);
+	
 	@Query(value = "SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+"
 			+ "sum(COALESCE(day8,0))+sum(COALESCE(day9,0))+sum(COALESCE(day10,0))+sum(COALESCE(day11,0))+sum(COALESCE(day12,0))+sum(COALESCE(day13,0))+sum(COALESCE(day14,0))+"
 			+ "sum(COALESCE(day15,0))) as totalhour FROM tasktrack_approval where user_user_id=?3 and month=?1 and year=?2 and project_type in('Billable','Overtime','Non-Billable')", nativeQuery = true)

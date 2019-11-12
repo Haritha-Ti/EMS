@@ -478,20 +478,22 @@ public class TasktrackController {
 			if (!date2.isEmpty()) {
 				endDate = outputFormat.parse(date2);
 			}
-			Integer firstHalfDay = 15;//Month split from day 15
+			Integer firstHalfDay = 15;// Month split from day 15
 			JSONArray taskTrackArray = new JSONArray();
 			if (startDate != null && endDate != null) {
 				Integer projectTier = requestdata.get("projectTier").asInt();
-				List<Object[]> userIdList = projectAllocationService.getUserIdByProjectAndDate(projectId, startDate, endDate);
-				taskTrackArray = getUserDataForReport(userIdList, startDate, endDate, projectId,projectTier,firstHalfDay);
+				List<Object[]> userIdList = projectAllocationService.getUserIdByProjectAndDate(projectId, startDate,
+						endDate);
+				taskTrackArray = getUserDataForReport(userIdList, startDate, endDate, projectId, projectTier,
+						firstHalfDay);
 			}
 
 			response.put("data", taskTrackArray);
 			response.put("status", "success");
 			response.put("message", "success. ");
 			response.put("code", httpstatus.getStatus());
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
+			e.printStackTrace();
 			response.put("status", "failure");
 			response.put("code", httpstatus.getStatus());
 			response.put("message", "failed. " + e);
@@ -580,15 +582,20 @@ public class TasktrackController {
 	}
 
 	@SuppressWarnings("unchecked")
-	private JSONArray getUserDataForReport(List<Object[]> userIdList, Date startDate, Date endDate,
-		Long projectId, Integer projectTier, Integer firstHalfDay) throws ParseException {
-		
+	private JSONArray getUserDataForReport(List<Object[]> userIdList, Date startDate, Date endDate, Long projectId,
+			Integer projectTier, Integer firstHalfDay) throws ParseException {
+
 		JSONArray taskTrackArray = new JSONArray();
 		for (Object userItem : userIdList) {
 			Long userId = (Long) userItem;
-			Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
-			JSONObject taskTrackObject = tasktrackApprovalService.
-					getTimeTrackUserTaskDetails(userId, startDate, endDate, isExist,projectId, projectTier,firstHalfDay);
+			Boolean isExist;
+			if (projectTier == 1) {
+				isExist = taskTrackFinalService.checkIsUserExists(userId);
+			} else {
+				isExist = tasktrackApprovalService.checkIsUserExistsInApproval(userId);
+			}
+			JSONObject taskTrackObject = tasktrackApprovalService.getTimeTrackUserTaskDetails(userId, startDate,
+					endDate, isExist, projectId, projectTier, firstHalfDay);
 			taskTrackArray.add(taskTrackObject);
 		}
 		return taskTrackArray;
@@ -684,18 +691,20 @@ public class TasktrackController {
 				startDate = outputFormat.parse(date1);
 				endDate = outputFormat.parse(date2);
 			}
-			
-			Integer firstHalfDay = 15;//Month split from day 15
+
+			Integer firstHalfDay = 15;// Month split from day 15
 			JSONObject approvaldata = new JSONObject();
-			if(startDate != null && endDate != null) {
+			if (startDate != null && endDate != null) {
 				Integer projectTier = requestdata.get("projectTier").asInt();
-				approvaldata = getUserDataForApproval(userId, startDate, endDate, null, null, null, null, projectId, projectTier,firstHalfDay);
+				approvaldata = getUserDataForApproval(userId, startDate, endDate, null, null, null, null, projectId,
+						projectTier, firstHalfDay);
 			}
 			response.put("data", approvaldata);
 			response.put("status", "success");
 			response.put("message", "success. ");
 			response.put("code", httpstatus.getStatus());
 		} catch (Exception e) {
+			e.printStackTrace();
 			response.put("status", "failure");
 			response.put("code", httpstatus.getStatus());
 			response.put("message", "failed. " + e);
@@ -707,10 +716,16 @@ public class TasktrackController {
 	private JSONObject getUserDataForApproval(Long userId, Date startDate, Date endDate, JSONObject jsonDataRes,
 			List<JSONObject> timeTrackJSONData, List<JSONObject> approvalJSONData, List<JSONObject> jsonArray,
 			Long projectId, Integer projectTier, Integer firstHalfDay) {
-		
+
 		JSONObject response = new JSONObject();
-		Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
-		JSONObject approvalData = tasktrackApprovalService.getApprovedUserTaskDetails(userId, startDate, endDate,isExist, projectId, projectTier,firstHalfDay);
+		Boolean isExist;
+		if (projectTier == 1) {
+			isExist = taskTrackFinalService.checkIsUserExists(userId);
+		} else {
+			isExist = tasktrackApprovalService.checkIsUserExistsInApproval(userId);
+		}
+		JSONObject approvalData = tasktrackApprovalService.getApprovedUserTaskDetails(userId, startDate, endDate,
+				isExist, projectId, projectTier, firstHalfDay);
 		response.put("ApprovedData", approvalData);
 		return response;
 	}
@@ -915,9 +930,9 @@ public class TasktrackController {
 		}
 		return response;
 	}
+
 	@PostMapping("/rejectFirstHalfHours")
-	public ObjectNode rejectFirstHalfHours(@RequestBody JSONObject requestData,
-											HttpServletResponse httpstatus) {
+	public ObjectNode rejectFirstHalfHours(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
 
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
@@ -933,9 +948,9 @@ public class TasktrackController {
 		}
 		return jsonDataRes;
 	}
+
 	@PostMapping("/rejectSecondHalfHours")
-	public ObjectNode rejectSecondHalfHours(@RequestBody JSONObject requestData,
-										   HttpServletResponse httpstatus) {
+	public ObjectNode rejectSecondHalfHours(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
 
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
@@ -1230,7 +1245,7 @@ public class TasktrackController {
 		Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
 		// Data From Approval table
 		approvalJsonData = getUserDataForApproval(userId, startDate, endDate, jsonDataRes, timeTrackJSONData,
-				approvalJSONData, jsonArray, projectId,null,null);
+				approvalJSONData, jsonArray, projectId, null, null);
 		// approvalJsonDataLevel2 =
 		// tasktrackApprovalService.getApprovedUserTaskDetailsForLevel2(userId,
 		// startDate, endDate,userList,jsonArray, approvalJSONData,
@@ -1241,7 +1256,7 @@ public class TasktrackController {
 		// resultData.put("ApprovedData", approvalJsonData);
 		// #New Line By Rinu 25-09-2019
 		resultData.putAll(getUserDataForApproval(userId, startDate, endDate, jsonDataRes, timeTrackJSONData,
-				approvalJSONData, jsonArray, projectId,null,null));
+				approvalJSONData, jsonArray, projectId, null, null));
 		resultData.put("ApprovedData_level2", approvalJsonDataLevel2);
 
 		return resultData;

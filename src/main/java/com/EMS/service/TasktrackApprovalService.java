@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public interface TasktrackApprovalService {
 
 	Boolean checkIsUserExists(Long id);
+	
+	Boolean checkIsUserExistsInApproval(Long id);
 
 	JSONObject getTimeTrackUserTaskDetails(Long userId, Date startDate, Date endDate,Boolean isExist,Long projectId, Integer projectTier,Integer firstHalfDay) throws ParseException;
 
