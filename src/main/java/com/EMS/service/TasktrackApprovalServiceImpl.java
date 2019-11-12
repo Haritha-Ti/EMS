@@ -6285,7 +6285,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
 				.upadateTaskTrackApprovalStatus(projectId, month, year, userId);
 		for (TaskTrackApproval approval : taskTrackApproval) {
-			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+			approval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
 		TaskTrackRejection taskTrackRejection=new TaskTrackRejection();
