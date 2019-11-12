@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.EMS.model.*;
 import com.EMS.repository.*;
+import com.EMS.utility.Constants;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class TasktrackServiceImpl implements TasktrackService {
+
+	@Autowired
+	TimeTrackApprovalJPARepository timeTrackApprovalJPARepository;
+
+	@Autowired
+	TaskTrackFinalJPARepository taskTrackFinalJPARepository;
 
 	@Autowired
 	TasktrackRepository tasktrackRepository;
@@ -532,33 +539,69 @@ public class TasktrackServiceImpl implements TasktrackService {
 				Long projectId       = requestdata.get("projectId").asLong();
 				UserModel user       = userService.getUserDetailsById(userId);
 				ProjectModel project = projectService.getProjectDetails(projectId);
+				String comment       = requestdata.get("comment").asText();
+				String status       = requestdata.get("status").asText();
 				ArrayNode days       = (ArrayNode) requestdata.get("days");
-
+				int updateFlag =0;
+				int monthIndex =0,yearIndex =0 ,day =0;
 				if (!days.equals(null) && days.size()!=0) {
 					for (JsonNode node : days) {
 						TaskTrackCorrection taskTrackCorrection = new TaskTrackCorrection();
-						String inputDate              = node.asText();
+						String inputDate = node.asText();
 						SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-						Date correctionDate           =  outputFormat.parse(inputDate);
-						Calendar cal                  = Calendar.getInstance();
+						Date correctionDate = outputFormat.parse(inputDate);
+						Calendar cal = Calendar.getInstance();
 						cal.setTime(correctionDate);
-						int monthIndex            = (cal.get(Calendar.MONTH) + 1);
-						int yearIndex             = cal.get(Calendar.YEAR);
-						int day                   = cal.get(Calendar.DAY_OF_MONTH);
-						taskTrackCorrection.setDay(day);
-						taskTrackCorrection.setMonth(monthIndex);
-						taskTrackCorrection.setYear(yearIndex);
-						taskTrackCorrection.setUser(user);
-						taskTrackCorrection.setProject(project);
-						taskTrackCorrectionRepository.save(taskTrackCorrection);
-					}
-					int projectTier = project.getProjectTier();
-					if(projectTier == 1)
-					{
+						monthIndex = (cal.get(Calendar.MONTH) + 1);
+						yearIndex = cal.get(Calendar.YEAR);
+						day = cal.get(Calendar.DAY_OF_MONTH);
+						int data = taskTrackCorrectionRepository.checkExist(userId, projectId, monthIndex, yearIndex, day);
+						if (data > 0) {
 
+						} else {
+							updateFlag = 1;
+							taskTrackCorrection.setDay(day);
+							taskTrackCorrection.setMonth(monthIndex);
+							taskTrackCorrection.setYear(yearIndex);
+							taskTrackCorrection.setUser(user);
+							taskTrackCorrection.setProject(project);
+							taskTrackCorrection.setComment(comment);
+							taskTrackCorrection.setComment(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
+							taskTrackCorrectionRepository.save(taskTrackCorrection);
+						}
+					}
+					if (updateFlag == 1) {
+						int projectTier = project.getProjectTier();
+						if (projectTier == 2) {
+							List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
+									.upadateTaskTrackApprovalStatus(projectId, monthIndex, yearIndex, userId);
+							for (TaskTrackApproval approval : taskTrackApproval) {
+								if (status.equalsIgnoreCase("firstHalf")) {
+									approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION);
+								} else if (status.equalsIgnoreCase("secondHalf")) {
+									approval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION);
+								}
+							}
+							timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+						}
+						List<TaskTrackApprovalFinal> taskTrackApprovalFinal = taskTrackFinalJPARepository
+								.upadateTaskTrackApprovalFinalStatus(projectId, monthIndex, yearIndex, userId);
+
+						for (TaskTrackApprovalFinal approvalFinal : taskTrackApprovalFinal) {
+							if (status.equalsIgnoreCase("firstHalf")) {
+								approvalFinal.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION);
+							} else if (status.equalsIgnoreCase("secondHalf")) {
+								approvalFinal.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION);
+							}
+						}
+						taskTrackFinalJPARepository.saveAll(taskTrackApprovalFinal);
+						responsedata.put("message", "Correction requested successfully");
+					}
+					else{
+						responsedata.put("message", "Already exist");
 					}
 					responsedata.put("status", "success");
-					responsedata.put("message", "Correction requested successfully");
+
 				}
 				else{
 					responsedata.put("status", "failed");

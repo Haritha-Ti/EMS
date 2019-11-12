@@ -37,6 +37,10 @@ public class TaskTrackCorrection extends  Auditable<String> {
 	
 	private Integer year;
 
+	private String comment;
+
+	private String status;
+
 	public long getId() {
 		return id;
 	}
@@ -83,6 +87,22 @@ public class TaskTrackCorrection extends  Auditable<String> {
 
 	public void setYear(Integer year) {
 		this.year = year;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }
