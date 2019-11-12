@@ -590,7 +590,14 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = startCal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					if (startCal.get(Calendar.DATE) < 16) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+					}
+					if (endCal.get(Calendar.DATE) > 15) {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+					}
+
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = startCal.get(Calendar.DATE);
 						String dateString = startCal.get(Calendar.YEAR) + "-"
@@ -604,14 +611,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 						}
 						startCal.add(Calendar.DATE, 1);
 					}
-					if (startCal.get(Calendar.DATE) < 16) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
-					if (endCal.get(Calendar.DATE) > 15) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
 					updateData(taskTrackApproval);
 					billable_id = taskTrackApproval.getId();
+				} else {
+					throw new Exception("TaskTrack data not found for given billable id.");
 				}
 			} else {
 
@@ -631,7 +634,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = startCal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (startCal.get(Calendar.MONTH) + 1);
 					intday = startCal.get(Calendar.DATE);
@@ -679,7 +682,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = startCal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = startCal.get(Calendar.DATE);
 						String dateString = startCal.get(Calendar.YEAR) + "-"
@@ -696,6 +699,8 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					}
 					updateData(taskTrackApproval);
 					nonbillable_id = taskTrackApproval.getId();
+				} else {
+					throw new Exception("TaskTrack data not found for given non-billable id.");
 				}
 			} else {
 
@@ -715,7 +720,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = startCal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (startCal.get(Calendar.MONTH) + 1);
 					intday = startCal.get(Calendar.DATE);
@@ -765,7 +770,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = startCal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = startCal.get(Calendar.DATE);
 						String dateString = startCal.get(Calendar.YEAR) + "-"
@@ -781,6 +786,8 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					}
 					updateData(taskTrackApproval);
 					overtime_id = taskTrackApproval.getId();
+				} else {
+					throw new Exception("TaskTrack data not found for given overtime id.");
 				}
 			} else {
 
@@ -800,7 +807,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = startCal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (startCal.get(Calendar.MONTH) + 1);
 					intday = startCal.get(Calendar.DATE);
@@ -928,7 +935,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DATE);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -957,7 +964,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DATE);
@@ -999,7 +1006,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DATE);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1029,7 +1036,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DATE);
@@ -1072,7 +1079,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DATE);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1101,7 +1108,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DATE);
@@ -1230,7 +1237,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DATE);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1259,7 +1266,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DATE);
@@ -1301,7 +1308,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DATE);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1331,7 +1338,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DATE);
@@ -1374,7 +1381,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DATE);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1403,7 +1410,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth-1; i < diffInDays + startDayOfMonth; i++) {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DATE);
