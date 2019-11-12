@@ -19,8 +19,8 @@ HELP.md
 *.iml
 *.ipr
 *.properties
-*.app.log
-
+*app.log
+app*
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
