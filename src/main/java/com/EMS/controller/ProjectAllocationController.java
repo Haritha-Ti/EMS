@@ -1258,6 +1258,9 @@ public class ProjectAllocationController {
 		String startDate = requestData.get("startDate").asText();
 		String endDate = requestData.get("endDate").asText();
 		Date fromDate = null, toDate = null;
+		String projectStart = null;
+		String projectEnd = null;
+		String projectName = null;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		List<AllocationModel> allocationModel = projectAllocation.getAllocationList(projectId);
 	
@@ -1267,14 +1270,13 @@ public class ProjectAllocationController {
 		ArrayNode regionjsonArray = objectMapper.createArrayNode();
 		ObjectNode jsonData = objectMapper.createObjectNode();
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		ObjectNode jsonprojectObject = objectMapper.createObjectNode();
 		try {
 			fromDate = df.parse(startDate);
 			toDate = df.parse(endDate);
 			if ((!allocationModel.isEmpty() && allocationModel.size() > 0)) {
-				ObjectNode jsonprojectObject = objectMapper.createObjectNode();
-				String projectStart = null;
-				String projectEnd = null;
-				String projectName = null;
+
+
 				for (AllocationModel item : allocationModel) {
 					if(item != null) {
 					String projectStartDate = df.format(item.getStartDate());
@@ -1319,30 +1321,31 @@ public class ProjectAllocationController {
 					}
 				}
 				}
-				ProjectModel project = projectService.getProjectDetails(projectId);
-				projectStart = df.format(project.getStartDate());
-				projectEnd = df.format(project.getEndDate());
-				projectName = project.getProjectName();
-				jsonprojectObject.put("projectId",projectId);
-				jsonprojectObject.put("projectName",projectName);
-				jsonprojectObject.put("projectStartDate",projectStart);
-				jsonprojectObject.put("projectEndDate",projectEnd);
 
-				jsonData.set("projectData", jsonprojectObject);
-				jsonData.set("resourceList", jsonArray);
-				List<Region> projectRegion = regionservice.getlist();
-			
-				for(Region region : projectRegion){
-					
-					ObjectNode jsonregionObject = objectMapper.createObjectNode();
-					jsonregionObject.put("region_Id",region.getId());
-					jsonregionObject.put("region_code",region.getRegion_code());
-					jsonregionObject.put("region_name",region.getRegion_name());
-					regionjsonArray.add(jsonregionObject);
-				}
-				jsonData.set("regionList", regionjsonArray);
 
 			}
+			ProjectModel project = projectService.getProjectDetails(projectId);
+			projectStart = df.format(project.getStartDate());
+			projectEnd = df.format(project.getEndDate());
+			projectName = project.getProjectName();
+			jsonprojectObject.put("projectId",projectId);
+			jsonprojectObject.put("projectName",projectName);
+			jsonprojectObject.put("projectStartDate",projectStart);
+			jsonprojectObject.put("projectEndDate",projectEnd);
+
+			jsonData.set("projectData", jsonprojectObject);
+			jsonData.set("resourceList", jsonArray);
+			List<Region> projectRegion = regionservice.getlist();
+
+			for(Region region : projectRegion){
+
+				ObjectNode jsonregionObject = objectMapper.createObjectNode();
+				jsonregionObject.put("region_Id",region.getId());
+				jsonregionObject.put("region_code",region.getRegion_code());
+				jsonregionObject.put("region_name",region.getRegion_name());
+				regionjsonArray.add(jsonregionObject);
+			}
+			jsonData.set("regionList", regionjsonArray);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "success ");
