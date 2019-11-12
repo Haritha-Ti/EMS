@@ -12,6 +12,7 @@ HELP.md
 .sts4-cache
 .app.log
 .properties
+.app.log
 
 ### IntelliJ IDEA ###
 .idea
