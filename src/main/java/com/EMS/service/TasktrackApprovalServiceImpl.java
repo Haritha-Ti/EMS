@@ -188,7 +188,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					approvalUserList.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
 				}
 			} else {
-				approvalUserList = getUserListForApproval(userId, projectId, month, year);
+				approvalUserList = timeTrackApprovalJPARepository.getUserListForApproval(userId, projectId, month,
+						year);
 			}
 
 			firstHalfHour = 0.0;
@@ -210,6 +211,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 				completeHourList.add(billableData.getDay1() + overtimeData.getDay1());
 				completeHourList.add(billableData.getDay2() + overtimeData.getDay2());
+				completeHourList.add(billableData.getDay3() + overtimeData.getDay3());
 				completeHourList.add(billableData.getDay4() + overtimeData.getDay4());
 				completeHourList.add(billableData.getDay5() + overtimeData.getDay5());
 				completeHourList.add(billableData.getDay6() + overtimeData.getDay6());
@@ -815,7 +817,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					approvalUserList.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
 				}
 			} else {
-				approvalUserList = getUserListForApproval(userId, projectId, monthIndex, yearIndex);
+				approvalUserList = timeTrackApprovalJPARepository.getUserListForApproval(userId, projectId, monthIndex,
+						yearIndex);
 			}
 
 			Double hours = 0.0;
@@ -6250,10 +6253,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public void submitForRejection(JSONObject requestData) throws Exception {
 
 		Long projectId = Long.valueOf(requestData.get("projectId").toString());
-		int month= Integer.valueOf(requestData.get("month").toString());
-		int year=Integer.valueOf(requestData.get("year").toString());
-		Long userId=Long.valueOf(requestData.get("userId").toString());
-		String remarks=requestData.get("remarks").toString();
+		int month = Integer.valueOf(requestData.get("month").toString());
+		int year = Integer.valueOf(requestData.get("year").toString());
+		Long userId = Long.valueOf(requestData.get("userId").toString());
+		String remarks = requestData.get("remarks").toString();
 
 		List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
 				.upadateTaskTrackApprovalStatus(projectId, month, year, userId);
@@ -6261,9 +6264,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
-		TaskTrackRejection taskTrackRejection=new TaskTrackRejection();
-		Optional<UserModel> user=userRepository.findById(userId);
-		Optional<ProjectModel> project=projectRepository.findById(projectId);
+		TaskTrackRejection taskTrackRejection = new TaskTrackRejection();
+		Optional<UserModel> user = userRepository.findById(userId);
+		Optional<ProjectModel> project = projectRepository.findById(projectId);
 		taskTrackRejection.setUser(user.get());
 		taskTrackRejection.setProject(project.get());
 		taskTrackRejection.setMonth(month);
@@ -6271,16 +6274,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setRemark(remarks);
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
-
 	}
 
 	@Override
 	public void submitForSecondHalfRejection(JSONObject requestData) throws Exception {
 		Long projectId = Long.valueOf(requestData.get("projectId").toString());
-		int month= Integer.valueOf(requestData.get("month").toString());
-		int year=Integer.valueOf(requestData.get("year").toString());
-		Long userId=Long.valueOf(requestData.get("userId").toString());
-		String remarks=requestData.get("remarks").toString();
+		int month = Integer.valueOf(requestData.get("month").toString());
+		int year = Integer.valueOf(requestData.get("year").toString());
+		Long userId = Long.valueOf(requestData.get("userId").toString());
+		String remarks = requestData.get("remarks").toString();
 
 		List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
 				.upadateTaskTrackApprovalStatus(projectId, month, year, userId);
@@ -6288,17 +6290,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			approval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
-		TaskTrackRejection taskTrackRejection=new TaskTrackRejection();
-		Optional<UserModel> user=userRepository.findById(userId);
-		Optional<ProjectModel> project=projectRepository.findById(projectId);
+		TaskTrackRejection taskTrackRejection = new TaskTrackRejection();
+		Optional<UserModel> user = userRepository.findById(userId);
+		Optional<ProjectModel> project = projectRepository.findById(projectId);
 		taskTrackRejection.setUser(user.get());
 		taskTrackRejection.setProject(project.get());
 		taskTrackRejection.setMonth(month);
 		taskTrackRejection.setYear(year);
 		taskTrackRejection.setRemark(remarks);
 		taskTrackRejectionRepository.save(taskTrackRejection);
-
-
 
 	}
 
@@ -6412,6 +6412,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 				approverOneHourList.add(billableData.getDay1() + overtimeData.getDay1());
 				approverOneHourList.add(billableData.getDay2() + overtimeData.getDay2());
+				approverOneHourList.add(billableData.getDay3() + overtimeData.getDay3());
 				approverOneHourList.add(billableData.getDay4() + overtimeData.getDay4());
 				approverOneHourList.add(billableData.getDay5() + overtimeData.getDay5());
 				approverOneHourList.add(billableData.getDay6() + overtimeData.getDay6());
@@ -6475,6 +6476,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 				approverTwoHourList.add(billableData.getDay1() + overtimeData.getDay1());
 				approverTwoHourList.add(billableData.getDay2() + overtimeData.getDay2());
+				approverTwoHourList.add(billableData.getDay3() + overtimeData.getDay3());
 				approverTwoHourList.add(billableData.getDay4() + overtimeData.getDay4());
 				approverTwoHourList.add(billableData.getDay5() + overtimeData.getDay5());
 				approverTwoHourList.add(billableData.getDay6() + overtimeData.getDay6());
@@ -6544,6 +6546,535 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
 			response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
 		}
+		return response;
+	}
+
+	@Override
+	public JSONObject getDataForApprovalLevelTwo(Long userId, Date startDate, Date endDate, Long projectId,
+			Integer firstHalfDay) {
+		// TODO Auto-generated method stub
+
+		JSONObject response = new JSONObject();
+		JSONObject billableHours;
+		JSONObject billableHours2;
+		JSONObject overtimeHours2;
+		JSONObject nonBillableHours2;
+		List<JSONObject> billableArrayOne = new ArrayList<>();
+		List<JSONObject> overTimeArrayOne = new ArrayList<>();
+		List<JSONObject> billableArray = new ArrayList<>();
+		List<JSONObject> overTimeArray = new ArrayList<>();
+		List<JSONObject> nonbillableArray = new ArrayList<>();
+		ArrayList<JSONObject> nonbillableArray2 = new ArrayList<JSONObject>();
+		JSONObject approverOneDatas = new JSONObject();
+		JSONObject approverTwoDatas = new JSONObject();
+		String approverOneFirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+		String approverOneSecodHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+		String approverTwoFirstHalfStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
+		String approverTwoSecodHalfStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startDate);
+		int month = (cal.get(Calendar.MONTH) + 1);
+		int year = cal.get(Calendar.YEAR);
+		int startDay = cal.get(Calendar.DATE);
+		cal.setTime(endDate);
+		int endDay = cal.get(Calendar.DATE);
+
+		Double firstHalfHour = 0.0;
+		Double secondHalfHour = 0.0;
+
+		Long billableId = null;
+		Long overtimeId = null;
+		Long nonbillableId = null;
+
+		String userName = null;
+		String projectName = null;
+		Long projectIdOne = null;
+		// For Approver 1 Data
+		List<TaskTrackApproval> approverOneData = new ArrayList<TaskTrackApproval>();
+		//approverOneData = getUserListForApproval(userId, projectId, month, year);
+		approverOneData = timeTrackApprovalJPARepository.getUserListForApprovalApproverOne(userId, projectId, month, year);
+		firstHalfHour = 0.0;
+		secondHalfHour = 0.0;
+		if (approverOneData != null && approverOneData.size() > 0) {
+			billableHours = new JSONObject();
+			JSONObject overtimeHours = new JSONObject();
+			JSONObject nonBillableHours = new JSONObject();
+			for (TaskTrackApproval task : approverOneData) {
+				cal.setTime(startDate);
+				Double hours = 0.0;
+				
+				for (int i = startDay; i <= endDay; i++) {
+					int day = cal.get(Calendar.DATE);
+					String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" + month : "" + month) + "-"
+							+ (day < 10 ? "0" + day : "" + day);
+
+					switch (i) {
+					case 1:
+						hours = (Double)task.getDay1();
+						break;
+					case 2:
+						hours = (Double)task.getDay2();
+						break;
+					case 3:
+						hours = (Double)task.getDay3();
+						break;
+					case 4:
+						hours = (Double)task.getDay4();
+						break;
+					case 5:
+						hours = (Double)task.getDay5();
+						break;
+					case 6:
+						hours = (Double)task.getDay6();
+						break;
+					case 7:
+						hours = (Double)task.getDay7();
+						break;
+					case 8:
+						hours = (Double)task.getDay8();
+						break;
+					case 9:
+						hours = (Double)task.getDay9();
+						break;
+					case 10:
+						hours = (Double)task.getDay10();
+						break;
+					case 11:
+						hours = (Double)task.getDay11();
+						break;
+					case 12:
+						hours = (Double)task.getDay12();
+						break;
+					case 13:
+						hours = (Double)task.getDay13();
+						break;
+					case 14:
+						hours = (Double)task.getDay14();
+						break;
+					case 15:
+						hours = (Double)task.getDay15();
+						break;
+					case 16:
+						hours = (Double)task.getDay16();
+						break;
+					case 17:
+						hours =(Double)task.getDay17();
+						break;
+					case 18:
+						hours = (Double)task.getDay18();
+						break;
+					case 19:
+						hours = (Double)task.getDay19();
+						break;
+					case 20:
+						hours = (Double)task.getDay20();
+						break;
+					case 21:
+						hours = (Double)task.getDay21();
+						break;
+					case 22:
+						hours = (Double)task.getDay22();
+						break;
+					case 23:
+						hours = (Double)task.getDay23();
+						break;
+					case 24:
+						hours = (Double)task.getDay24();
+						break;
+					case 25:
+						hours = (Double)task.getDay25();
+						break;
+					case 26:
+						hours = (Double)task.getDay26();
+						break;
+					case 27:
+						hours = (Double)task.getDay27();
+						break;
+					case 28:
+						hours = (Double)task.getDay28();
+						break;
+					case 29:
+						hours = (Double)task.getDay29();
+						break;
+					case 30:
+						hours = (Double)task.getDay30();
+						break;
+					case 31:
+						hours = (Double)task.getDay31();
+						break;
+					}
+
+					if (task.getProjectType().equalsIgnoreCase("Billable")) {
+					
+						billableHours.put(taskDate, hours);
+						projectIdOne = task.getProject().getProjectId();
+						projectName = task.getProject().getProjectName();
+						approverOneFirstHalfStatus = task.getFirstHalfStatus();
+						approverOneSecodHalfStatus = task.getSecondHalfStatus();
+					} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
+						
+						overtimeHours.put(taskDate, hours);
+						
+					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
+						// temporaryObject = new JSONObject();
+						nonBillableHours2 = new JSONObject();
+						nonBillableHours.put(taskDate, hours);
+						nonBillableHours2.put(taskDate, hours);
+						nonbillableArray2.add(nonBillableHours2);
+						// nonbillableId = task.getId();
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+			}
+			billableArray.add(billableHours);
+			overTimeArray.add(overtimeHours);
+			nonbillableArray.add(nonBillableHours);
+
+		}
+
+		else {
+			cal.setTime(startDate);
+			for (int i = startDay; i <= endDay; i++) {
+
+				int day = cal.get(Calendar.DATE);
+				String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" + month : "" + month) + "-"
+						+ (day < 10 ? "0" + day : "" + day);
+
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put(taskDate, 0);
+				billableArray.add(jsonObject);
+				overTimeArray.add(jsonObject);
+				nonbillableArray.add(jsonObject);
+
+				cal.add(Calendar.DATE, 1);
+			}
+		}
+		approverOneDatas.put("billable", billableArray);
+		approverOneDatas.put("overTime", overTimeArray);
+		approverOneDatas.put("nonBillable", nonbillableArray);
+		JSONObject userHours = new JSONObject();
+		userHours.put("firstHalfTotal", firstHalfHour);
+		userHours.put("secondHalfTotal", secondHalfHour);
+		List<TaskTrackApproval> approverTwoData = new ArrayList<TaskTrackApproval>();
+		List<TaskTrackApprovalFinal> approvalFinalList = taskTrackApprovalFinalRepository
+				.getUserFinalApprovalList(userId, projectId, month, year);
+		for (TaskTrackApprovalFinal taskTrackFinal : approvalFinalList) {
+			approverTwoData.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
+		}
+		firstHalfHour = 0.0;
+		secondHalfHour = 0.0;
+		ArrayList<JSONObject> billableArray2 = new ArrayList<JSONObject>();
+
+		ArrayList<JSONObject> overTimeArray2 = new ArrayList<JSONObject>();
+		if (approverTwoData != null && approverTwoData.size() > 0) {
+
+			for (TaskTrackApproval task : approverTwoData) {
+				cal.setTime(startDate);
+				Double hours = 0.0;
+				for (int i = startDay; i <= endDay; i++) {
+					int day = cal.get(Calendar.DATE);
+					String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" + month : "" + month) + "-"
+							+ (day < 10 ? "0" + day : "" + day);
+
+					switch (i) {
+					case 1:
+						hours = (Double)task.getDay1();
+						break;
+					case 2:
+						hours = (Double)task.getDay2();
+						break;
+					case 3:
+						hours = (Double)task.getDay3();
+						break;
+					case 4:
+						hours = (Double)task.getDay4();
+						break;
+					case 5:
+						hours = (Double)task.getDay5();
+						break;
+					case 6:
+						hours = (Double)task.getDay6();
+						break;
+					case 7:
+						hours = (Double)task.getDay7();
+						break;
+					case 8:
+						hours = (Double)task.getDay8();
+						break;
+					case 9:
+						hours = (Double)task.getDay9();
+						break;
+					case 10:
+						hours = (Double)task.getDay10();
+						break;
+					case 11:
+						hours = (Double)task.getDay11();
+						break;
+					case 12:
+						hours = (Double)task.getDay12();
+						break;
+					case 13:
+						hours = (Double)task.getDay13();
+						break;
+					case 14:
+						hours = (Double)task.getDay14();
+						break;
+					case 15:
+						hours = (Double)task.getDay15();
+						break;
+					case 16:
+						hours = (Double)task.getDay16();
+						break;
+					case 17:
+						hours =(Double)task.getDay17();
+						break;
+					case 18:
+						hours = (Double)task.getDay18();
+						break;
+					case 19:
+						hours = (Double)task.getDay19();
+						break;
+					case 20:
+						hours = (Double)task.getDay20();
+						break;
+					case 21:
+						hours = (Double)task.getDay21();
+						break;
+					case 22:
+						hours = (Double)task.getDay22();
+						break;
+					case 23:
+						hours = (Double)task.getDay23();
+						break;
+					case 24:
+						hours = (Double)task.getDay24();
+						break;
+					case 25:
+						hours = (Double)task.getDay25();
+						break;
+					case 26:
+						hours = (Double)task.getDay26();
+						break;
+					case 27:
+						hours = (Double)task.getDay27();
+						break;
+					case 28:
+						hours = (Double)task.getDay28();
+						break;
+					case 29:
+						hours = (Double)task.getDay29();
+						break;
+					case 30:
+						hours = (Double)task.getDay30();
+						break;
+					case 31:
+						hours = (Double)task.getDay31();
+						break;
+					}
+					if (task.getProjectType().equalsIgnoreCase("Billable")) {
+						billableHours2 = new JSONObject();
+						billableHours2.put(taskDate, hours);
+						billableArray2.add(billableHours2);
+						billableId = task.getId();
+						approverTwoFirstHalfStatus = task.getFirstHalfStatus();
+						approverTwoSecodHalfStatus = task.getSecondHalfStatus();
+					} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
+						overtimeHours2 = new JSONObject();
+						overtimeHours2.put(taskDate, hours);
+						overTimeArray2.add(overtimeHours2);
+						overtimeId = task.getId();
+					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
+						nonBillableHours2 = new JSONObject();
+						nonBillableHours2.put(taskDate, hours);
+						nonbillableArray2.add(nonBillableHours2);
+						nonbillableId = task.getId();
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+			}
+			approverTwoDatas.put("billable", billableArray2);
+			approverTwoDatas.put("overTime", overTimeArray2);
+			approverTwoDatas.put("nonBillable", nonbillableArray2);
+			approverTwoDatas.put("billableId", billableId);
+			approverTwoDatas.put("nonBillableId", nonbillableId);
+			approverTwoDatas.put("overtimeId", overtimeId);
+		} else {
+			// first table data
+			if (approverOneData != null && approverOneData.size() > 0) {
+				for (TaskTrackApproval task : approverOneData) {
+					cal.setTime(startDate);
+					Double hours = 0.0;
+					for (int i = startDay; i <= endDay; i++) {
+						int day = cal.get(Calendar.DATE);
+						String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" + month : "" + month) + "-"
+								+ (day < 10 ? "0" + day : "" + day);
+
+						switch (i) {
+						case 1:
+							hours = (Double) task.getDay1();
+							break;
+						case 2:
+							hours = (Double) task.getDay2();
+							break;
+						case 3:
+							hours = (Double) task.getDay3();
+							break;
+						case 4:
+							hours = (Double) task.getDay4();
+							break;
+						case 5:
+							hours = (Double) task.getDay5();
+							break;
+						case 6:
+							hours = (Double) task.getDay6();
+							break;
+						case 7:
+							hours = (Double) task.getDay7();
+							break;
+						case 8:
+							hours = (Double) task.getDay8();
+							break;
+						case 9:
+							hours = (Double) task.getDay9();
+							break;
+						case 10:
+							hours = (Double) task.getDay10();
+							break;
+						case 11:
+							hours = (Double) task.getDay11();
+							break;
+						case 12:
+							hours = (Double) task.getDay12();
+							break;
+						case 13:
+							hours = (Double) task.getDay13();
+							break;
+						case 14:
+							hours = (Double) task.getDay14();
+							break;
+						case 15:
+							hours = (Double) task.getDay15();
+							break;
+						case 16:
+							hours = (Double) task.getDay16();
+							break;
+						case 17:
+							hours = (Double) task.getDay17();
+							break;
+						case 18:
+							hours = (Double) task.getDay18();
+							break;
+						case 19:
+							hours = (Double) task.getDay19();
+							break;
+						case 20:
+							hours = (Double) task.getDay20();
+							break;
+						case 21:
+							hours = (Double) task.getDay21();
+							break;
+						case 22:
+							hours = (Double) task.getDay22();
+							break;
+						case 23:
+							hours = (Double) task.getDay23();
+							break;
+						case 24:
+							hours = (Double) task.getDay24();
+							break;
+						case 25:
+							hours = (Double) task.getDay25();
+							break;
+						case 26:
+							hours = (Double) task.getDay26();
+							break;
+						case 27:
+							hours = (Double) task.getDay27();
+							break;
+						case 28:
+							hours = (Double) task.getDay28();
+							break;
+						case 29:
+							hours = (Double) task.getDay29();
+							break;
+						case 30:
+							hours = (Double) task.getDay30();
+							break;
+						case 31:
+							hours = (Double) task.getDay31();
+							break;
+						}
+						if (task.getProjectType().equalsIgnoreCase("Billable")) {
+							billableHours2 = new JSONObject();
+							billableHours2.put(taskDate, hours);
+							billableArray2.add(billableHours2);
+							billableId = task.getId();
+							
+						} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
+							overtimeHours2 = new JSONObject();
+
+							overtimeHours2.put(taskDate, hours);
+							overTimeArray2.add(overtimeHours2);
+							overtimeId = task.getId();
+						} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
+							nonBillableHours2 = new JSONObject();
+							nonBillableHours2.put(taskDate, hours);
+							nonbillableArray2.add(nonBillableHours2);
+							nonbillableId = task.getId();
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+
+				}
+				approverTwoDatas.put("billable", billableArray2);
+				approverTwoDatas.put("overTime", overTimeArray2);
+				approverTwoDatas.put("nonBillable", nonbillableArray2);
+				approverTwoDatas.put("billableId", billableId);
+				approverTwoDatas.put("nonBillableId", nonbillableId);
+				approverTwoDatas.put("overtimeId", overtimeId);
+			} else {
+				cal.setTime(startDate);
+				for (int i = startDay; i <= endDay; i++) {
+
+					int day = cal.get(Calendar.DATE);
+					String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" + month : "" + month) + "-"
+							+ (day < 10 ? "0" + day : "" + day);
+
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put(taskDate, 0);
+					billableArray2.add(jsonObject);
+					overTimeArray2.add(jsonObject);
+
+					cal.add(Calendar.DATE, 1);
+				}
+				approverTwoDatas.put("billable", billableArray2);
+				approverTwoDatas.put("overTime", overTimeArray2);
+				approverTwoDatas.put("nonBillable", nonbillableArray2);
+				approverTwoDatas.put("billableId", billableId);
+				approverTwoDatas.put("nonBillableId", nonbillableId);
+				approverTwoDatas.put("overtimeId", overtimeId);
+			}
+
+		}
+
+		if (userName == null || userName.isEmpty()) {
+			String uName = userService.getUserName(userId);
+			userName = String.valueOf(uName).replace(",", " ");
+		}
+		
+		response.put("projectName",projectName);
+		response.put("userId", userId);
+		response.put("userName", userName);
+		response.put("month", month);
+		response.put("approverOneData", approverOneDatas);
+		response.put("approverTwoData", approverTwoDatas);
+		response.put("approverOneFirstHalfStatus", approverOneFirstHalfStatus);
+		response.put("approverOneSecodHalfStatus", approverOneSecodHalfStatus);
+		response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
+		response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
+
 		return response;
 	}
 }
