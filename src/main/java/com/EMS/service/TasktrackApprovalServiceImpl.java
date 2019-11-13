@@ -188,7 +188,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					approvalUserList.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
 				}
 			} else {
-				approvalUserList = getUserListForApproval(userId, projectId, month, year);
+				approvalUserList = timeTrackApprovalJPARepository.getUserListForApproval(userId, projectId, month, year);
 			}
 
 			firstHalfHour = 0.0;
@@ -210,6 +210,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 				completeHourList.add(billableData.getDay1() + overtimeData.getDay1());
 				completeHourList.add(billableData.getDay2() + overtimeData.getDay2());
+				completeHourList.add(billableData.getDay3() + overtimeData.getDay3());
 				completeHourList.add(billableData.getDay4() + overtimeData.getDay4());
 				completeHourList.add(billableData.getDay5() + overtimeData.getDay5());
 				completeHourList.add(billableData.getDay6() + overtimeData.getDay6());
@@ -815,7 +816,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					approvalUserList.add(TaskTrackApproverConverter.finalApproverToApprover(taskTrackFinal));
 				}
 			} else {
-				approvalUserList = getUserListForApproval(userId, projectId, monthIndex, yearIndex);
+				approvalUserList = timeTrackApprovalJPARepository.getUserListForApproval(userId, projectId, monthIndex, yearIndex);
 			}
 
 			Double hours = 0.0;
@@ -6412,6 +6413,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 				approverOneHourList.add(billableData.getDay1() + overtimeData.getDay1());
 				approverOneHourList.add(billableData.getDay2() + overtimeData.getDay2());
+				approverOneHourList.add(billableData.getDay3() + overtimeData.getDay3());
 				approverOneHourList.add(billableData.getDay4() + overtimeData.getDay4());
 				approverOneHourList.add(billableData.getDay5() + overtimeData.getDay5());
 				approverOneHourList.add(billableData.getDay6() + overtimeData.getDay6());
@@ -6475,6 +6477,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 				approverTwoHourList.add(billableData.getDay1() + overtimeData.getDay1());
 				approverTwoHourList.add(billableData.getDay2() + overtimeData.getDay2());
+				approverTwoHourList.add(billableData.getDay3() + overtimeData.getDay3());
 				approverTwoHourList.add(billableData.getDay4() + overtimeData.getDay4());
 				approverTwoHourList.add(billableData.getDay5() + overtimeData.getDay5());
 				approverTwoHourList.add(billableData.getDay6() + overtimeData.getDay6());
