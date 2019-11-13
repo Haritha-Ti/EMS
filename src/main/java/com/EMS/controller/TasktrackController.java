@@ -579,12 +579,7 @@ public class TasktrackController {
 		JSONArray taskTrackArray = new JSONArray();
 		for (Object userItem : userIdList) {
 			Long userId = (Long) userItem;
-			Boolean isExist;
-			if (projectTier == 1) {
-				isExist = taskTrackFinalService.checkIsUserExists(userId);
-			} else {
-				isExist = tasktrackApprovalService.checkIsUserExistsInApproval(userId);
-			}
+			Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
 			JSONObject taskTrackObject = tasktrackApprovalService.getTimeTrackUserTaskDetails(userId, startDate,
 					endDate, isExist, projectId, projectTier, firstHalfDay);
 			taskTrackArray.add(taskTrackObject);
@@ -709,12 +704,7 @@ public class TasktrackController {
 			Long projectId, Integer projectTier, Integer firstHalfDay) {
 
 		JSONObject response = new JSONObject();
-		Boolean isExist;
-		if (projectTier == 1) {
-			isExist = taskTrackFinalService.checkIsUserExists(userId);
-		} else {
-			isExist = tasktrackApprovalService.checkIsUserExistsInApproval(userId);
-		}
+		Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
 		JSONObject approvalData = tasktrackApprovalService.getApprovedUserTaskDetails(userId, startDate, endDate,
 				isExist, projectId, projectTier, firstHalfDay);
 		response.put("ApprovedData", approvalData);
