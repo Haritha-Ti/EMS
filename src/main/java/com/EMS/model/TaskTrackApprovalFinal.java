@@ -58,10 +58,10 @@ public class TaskTrackApprovalFinal extends  Auditable<String>{
 
 	private Integer month;
 
-	@Column(name = "first_half_status", length = 10)
+	@Column(name = "first_half_status", length = 25)
 	private String firstHalfStatus;
 
-	@Column(name = "second_half_status", length = 10)
+	@Column(name = "second_half_status", length = 25)
 	private String secondHalfStatus;
 
 	private Date approvedDate;
