@@ -1,6 +1,7 @@
 package com.EMS.service;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -10,25 +11,15 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.EMS.model.*;
+import com.EMS.repository.*;
+import com.EMS.utility.Constants;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.EMS.model.AllocationModel;
-import com.EMS.model.ProjectModel;
-import com.EMS.model.Task;
-import com.EMS.model.TaskTrackApproval;
-import com.EMS.model.TaskTrackDaySubmissionModel;
-import com.EMS.model.Tasktrack;
-import com.EMS.repository.ProjectReportsRepository;
-import com.EMS.repository.ProjectRepository;
-import com.EMS.repository.TaskRepository;
-import com.EMS.repository.TaskTrackDaySubmissionRepository;
-import com.EMS.repository.TasktrackRepository;
-import com.EMS.repository.TimeTrackApprovalRepository;
-import com.EMS.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -36,6 +27,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class TasktrackServiceImpl implements TasktrackService {
+
+	@Autowired
+	TimeTrackApprovalJPARepository timeTrackApprovalJPARepository;
+
+	@Autowired
+	TaskTrackFinalJPARepository taskTrackFinalJPARepository;
 
 	@Autowired
 	TasktrackRepository tasktrackRepository;
@@ -51,7 +48,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 	
 	@Autowired
 	UserService userService;
-	
+
+	@Autowired
+	ProjectService projectService;
 	
 	@Autowired
 	ProjectReportsRepository projectReportsRepository;
@@ -65,6 +64,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 	@Autowired 
 	TaskTrackDaySubmissionRepository taskTrackDaySubmissionRepository;
 //	For Task track Model
+	@Autowired
+	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
 
 	@Override
 	public List<Tasktrack> getByDate(Date startDate, Date endDate, Long uId) {
@@ -525,5 +526,95 @@ public class TasktrackServiceImpl implements TasktrackService {
 			
 		}
 		//bala
+
+		//Nisha
+		@Override
+		public ObjectNode createCorrection(ObjectNode requestdata)
+		{
+			ObjectNode responsedata = objectMapper.createObjectNode();
+
+			try
+			{
+				Long userId          = requestdata.get("userId").asLong();
+				Long projectId       = requestdata.get("projectId").asLong();
+				UserModel user       = userService.getUserDetailsById(userId);
+				ProjectModel project = projectService.getProjectDetails(projectId);
+				String comment       = requestdata.get("comment").asText();
+				String status       = requestdata.get("status").asText();
+				ArrayNode days       = (ArrayNode) requestdata.get("days");
+				int updateFlag =0;
+				int monthIndex =0,yearIndex =0 ,day =0;
+				if (!days.equals(null) && days.size()!=0) {
+					for (JsonNode node : days) {
+						TaskTrackCorrection taskTrackCorrection = new TaskTrackCorrection();
+						String inputDate = node.asText();
+						SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+						Date correctionDate = outputFormat.parse(inputDate);
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(correctionDate);
+						monthIndex = (cal.get(Calendar.MONTH) + 1);
+						yearIndex = cal.get(Calendar.YEAR);
+						day = cal.get(Calendar.DAY_OF_MONTH);
+						int data = taskTrackCorrectionRepository.checkExist(userId, projectId, monthIndex, yearIndex, day);
+						if (data > 0) {
+
+						} else {
+							updateFlag = 1;
+							taskTrackCorrection.setDay(day);
+							taskTrackCorrection.setMonth(monthIndex);
+							taskTrackCorrection.setYear(yearIndex);
+							taskTrackCorrection.setUser(user);
+							taskTrackCorrection.setProject(project);
+							taskTrackCorrection.setComment(comment);
+							taskTrackCorrection.setComment(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
+							taskTrackCorrectionRepository.save(taskTrackCorrection);
+						}
+					}
+					if (updateFlag == 1) {
+						int projectTier = project.getProjectTier();
+						if (projectTier == 2) {
+							List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
+									.upadateTaskTrackApprovalStatus(projectId, monthIndex, yearIndex, userId);
+							for (TaskTrackApproval approval : taskTrackApproval) {
+								if (status.equalsIgnoreCase("firstHalf")) {
+									approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION);
+								} else if (status.equalsIgnoreCase("secondHalf")) {
+									approval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION);
+								}
+							}
+							timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+						}
+						List<TaskTrackApprovalFinal> taskTrackApprovalFinal = taskTrackFinalJPARepository
+								.upadateTaskTrackApprovalFinalStatus(projectId, monthIndex, yearIndex, userId);
+
+						for (TaskTrackApprovalFinal approvalFinal : taskTrackApprovalFinal) {
+							if (status.equalsIgnoreCase("firstHalf")) {
+								approvalFinal.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION);
+							} else if (status.equalsIgnoreCase("secondHalf")) {
+								approvalFinal.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION);
+							}
+						}
+						taskTrackFinalJPARepository.saveAll(taskTrackApprovalFinal);
+						responsedata.put("message", "Correction requested successfully");
+					}
+					else{
+						responsedata.put("message", "Already exist");
+					}
+					responsedata.put("status", "success");
+
+				}
+				else{
+					responsedata.put("status", "failed");
+					responsedata.put("message", "Correction requested failed:select dates for correction");
+				}
+			}
+			catch (Exception e)
+			{
+				responsedata.put("status", "Failed");
+				responsedata.put("message", "Exception : " + e);
+
+			}
+			return  responsedata;
+		}
 	
 }

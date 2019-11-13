@@ -127,4 +127,7 @@ public interface TaskTrackFinalJPARepository extends JpaRepository<TaskTrackAppr
 	@Query("SELECT count(*) > 0 FROM TaskTrackApprovalFinal s WHERE s.user.userId = ?1")
 	Boolean existsByUser(Long id);
 
+    @Query("SELECT a FROM TaskTrackApprovalFinal a  where a.project.projectId = ?1 and a.month = ?2 and a.year = ?3 and a.user.userId = ?4 ")
+    List<TaskTrackApprovalFinal> upadateTaskTrackApprovalFinalStatus(Long projectId, int intMonth, int year,Long userId);
+
 }

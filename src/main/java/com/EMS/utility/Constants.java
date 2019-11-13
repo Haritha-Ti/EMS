@@ -19,4 +19,7 @@ public class Constants {
 	public static String TASKTRACK_FINAL_STATUS_REJECT="REJECTED";
 	public static String TASKTRACK_FINAL_STATUS_CORRECTION="CORRECTION";
 
+	public static String TASKTRACK_CORRECTION_STATUS_OPEN="OPEN";
+	public static String TASKTRACK_CORRECTION_STATUS_CLOSED="CLOSED";
+
 }
