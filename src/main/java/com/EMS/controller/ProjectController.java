@@ -72,8 +72,10 @@ public class ProjectController {
 				contractModel = projectservice.getContract(contractId);
 			project.setProjectDetails(requestdata.get("projectDetails").asText());
 			project.setprojectType(requestdata.get("projectType").asInt());
-
-			if (project.getprojectType() == 0) { // if the project type is external(value =0)
+/**
+ * Nisha -
+ */
+			//if (project.getprojectType() == 0) { // if the project type is external(value =0)
 				Long clientid = requestdata.get("clientId").asLong();
 				ClientModel client = new ClientModel();
 				if (clientid != 0L) {
@@ -81,7 +83,7 @@ public class ProjectController {
 					project.setClientName(client);
 					project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
 				}
-			}
+			//}
 			project.setParentProjectId(requestdata.get("parentProjectId").asLong());
 			//project.setProject_refId(requestdata.get("projectRefId").asText());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
@@ -206,8 +208,12 @@ public class ProjectController {
 				project.setReleasingDate(releaseDate);
 			}
 
-			if ((project.getProjectDetails() != null) && (project.getProjectDetails().length() > 0)
+			/*if ((project.getProjectDetails() != null) && (project.getProjectDetails().length() > 0)
 					&& (!project.getProjectDetails().equals(" ")) && (project.getProjectName() != null)
+					&& (!project.getProjectName().equals(" ")) && (project.getProjectName().length() > 0)
+					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
+					&& (project.getProjectCode().length() > 0)) {*/
+			if ((project.getProjectName() != null)
 					&& (!project.getProjectName().equals(" ")) && (project.getProjectName().length() > 0)
 					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
 					&& (project.getProjectCode().length() > 0)) {
@@ -724,7 +730,7 @@ public class ProjectController {
 				contractModel = projectservice.getContract(contractId);
 			project.setprojectType(requestdata.get("projectType").asInt());
 
-			if (project.getprojectType() == 0) { // if the project type is external(value =0)
+			//if (project.getprojectType() == 0) { // if the project type is external(value =0)
 				Long clientid = requestdata.get("clientId").asLong();
 				ClientModel client = new ClientModel();
 				if (clientid != 0L) {
@@ -732,7 +738,7 @@ public class ProjectController {
 					project.setClientName(client);
 					project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
 				}
-			}
+			//}
 			project.setParentProjectId(requestdata.get("parentProjectId").asLong());
 			//project.setProject_refId(requestdata.get("projectRefId").asText());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
@@ -869,8 +875,12 @@ public class ProjectController {
 				project.setReleasingDate(releaseDate);
 			}
 
-			if ((project.getProjectDetails() != null) && (project.getProjectDetails().length() > 0)
+			/*if ((project.getProjectDetails() != null) && (project.getProjectDetails().length() > 0)
 					&& (!project.getProjectDetails().equals(" ")) && (project.getProjectName() != null)
+					&& (!project.getProjectName().equals(" ")) && (project.getProjectName().length() > 0)
+					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
+					&& (project.getProjectCode().length() > 0)) {*/
+			if ((project.getProjectName() != null)
 					&& (!project.getProjectName().equals(" ")) && (project.getProjectName().length() > 0)
 					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
 					&& (project.getProjectCode().length() > 0)) {
@@ -953,9 +963,10 @@ public class ProjectController {
 				//	responseflag = 1;
 				//}
 
-			} else {
-				responseflag = 1;
 			}
+			/*else {
+				responseflag = 1;
+			}*/
 
 			// setting values on response json
 			if (responseflag == 0) {
@@ -1019,7 +1030,12 @@ public class ProjectController {
 				responseData.put("projectCategory", project.getProjectCategory());
 				responseData.put("projectCode", project.getProjectCode());
 				responseData.put("projectType", project.getprojectType());
-				responseData.put("releasingDate", project.getReleasingDate().toString());
+				if(project.getReleasingDate()!=null) {
+					responseData.put("releasingDate", project.getReleasingDate().toString());
+				}
+				else{
+					responseData.put("releasingDate", " ");
+				}
 				responseData.put("isPOC", project.getisPOC());
 				responseData.put("projectStatus", project.getprojectStatus());
 				responseData.put("projectTier", project.getProjectTier());
