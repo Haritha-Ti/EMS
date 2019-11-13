@@ -6609,6 +6609,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" + month : "" + month) + "-"
 							+ (day < 10 ? "0" + day : "" + day);
 
+					
+					
 					switch (i) {
 					case 1:
 						hours = (Double)task.getDay1();
