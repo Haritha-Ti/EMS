@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 import org.hibernate.envers.Audited;
 
 import com.EMS.listener.ModelListener;
+import com.EMS.utility.Constants;
 
 
 
@@ -363,7 +364,7 @@ public class TaskTrackApprovalFinal extends  Auditable<String>{
 
 	public String getFirstHalfStatus() {
 		if(firstHalfStatus == null) {
-			firstHalfStatus = "OPEN";
+			firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		}
 		return firstHalfStatus;
 	}
@@ -374,7 +375,7 @@ public class TaskTrackApprovalFinal extends  Auditable<String>{
 
 	public String getSecondHalfStatus() {
 		if(secondHalfStatus == null) {
-			secondHalfStatus = "OPEN";
+			secondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		}
 		return secondHalfStatus;
 	}

@@ -196,7 +196,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			secondHalfHour = 0.0;
 
 			if (approvalUserList != null && approvalUserList.size() > 0) {
-				List<Double> completeHourList = new ArrayList<Double>();
 				TaskTrackApproval billableData = new TaskTrackApproval();
 				TaskTrackApproval overtimeData = new TaskTrackApproval();
 				for (TaskTrackApproval task : approvalUserList) {
@@ -208,40 +207,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						overtimeData = task;
 					}
 				}
-
-				completeHourList.add(billableData.getDay1() + overtimeData.getDay1());
-				completeHourList.add(billableData.getDay2() + overtimeData.getDay2());
-				completeHourList.add(billableData.getDay3() + overtimeData.getDay3());
-				completeHourList.add(billableData.getDay4() + overtimeData.getDay4());
-				completeHourList.add(billableData.getDay5() + overtimeData.getDay5());
-				completeHourList.add(billableData.getDay6() + overtimeData.getDay6());
-				completeHourList.add(billableData.getDay7() + overtimeData.getDay7());
-				completeHourList.add(billableData.getDay8() + overtimeData.getDay8());
-				completeHourList.add(billableData.getDay9() + overtimeData.getDay9());
-				completeHourList.add(billableData.getDay10() + overtimeData.getDay10());
-				completeHourList.add(billableData.getDay11() + overtimeData.getDay11());
-				completeHourList.add(billableData.getDay12() + overtimeData.getDay12());
-				completeHourList.add(billableData.getDay12() + overtimeData.getDay12());
-				completeHourList.add(billableData.getDay13() + overtimeData.getDay13());
-				completeHourList.add(billableData.getDay14() + overtimeData.getDay14());
-				completeHourList.add(billableData.getDay15() + overtimeData.getDay15());
-				completeHourList.add(billableData.getDay16() + overtimeData.getDay16());
-				completeHourList.add(billableData.getDay17() + overtimeData.getDay17());
-				completeHourList.add(billableData.getDay18() + overtimeData.getDay18());
-				completeHourList.add(billableData.getDay19() + overtimeData.getDay19());
-				completeHourList.add(billableData.getDay20() + overtimeData.getDay20());
-				completeHourList.add(billableData.getDay21() + overtimeData.getDay21());
-				completeHourList.add(billableData.getDay22() + overtimeData.getDay22());
-				completeHourList.add(billableData.getDay23() + overtimeData.getDay23());
-				completeHourList.add(billableData.getDay24() + overtimeData.getDay24());
-				completeHourList.add(billableData.getDay25() + overtimeData.getDay25());
-				completeHourList.add(billableData.getDay26() + overtimeData.getDay26());
-				completeHourList.add(billableData.getDay27() + overtimeData.getDay27());
-				completeHourList.add(billableData.getDay28() + overtimeData.getDay28());
-				completeHourList.add(billableData.getDay29() + overtimeData.getDay29());
-				completeHourList.add(billableData.getDay30() + overtimeData.getDay30());
-				completeHourList.add(billableData.getDay31() + overtimeData.getDay31());
-
+				
+				List<Double> completeHourList = getApprovalTotalBillableHour(billableData,overtimeData);
 				for (int i = 0; i < completeHourList.size(); i++) {
 					if (i < firstHalfDay) {
 						firstHalfHour += completeHourList.get(i);
@@ -284,10 +251,48 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			response.put("secondHalfStatus", secondHalfStatus);
 		}
 		if (submissionDates != null) {
-			response.put("firstHalfSubmissionDate", dateFormat.format(submissionDates.getFirstApprovalDay()));
-			response.put("secondHalfSubmissionDate", dateFormat.format(submissionDates.getSecondApprovalDay()));
+			response.put("firstHalfSubmissionDate", cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" : "") + month + "-"
+					+ (submissionDates.getFirstApprovalDay() < 10 ? "0" : "") + submissionDates.getFirstApprovalDay());
+			response.put("secondHalfSubmissionDate", cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" : "") + month  + "-"
+					+ (submissionDates.getSecondApprovalDay() < 10 ? "0" : "") + submissionDates.getSecondApprovalDay());
 		}
 		return response;
+	}
+	
+	private List<Double> getApprovalTotalBillableHour(TaskTrackApproval billableData, TaskTrackApproval overtimeData){
+		List<Double> completeHourList = new ArrayList<Double>();
+		completeHourList.add(billableData.getDay1() + overtimeData.getDay1());
+		completeHourList.add(billableData.getDay2() + overtimeData.getDay2());
+		completeHourList.add(billableData.getDay3() + overtimeData.getDay3());
+		completeHourList.add(billableData.getDay4() + overtimeData.getDay4());
+		completeHourList.add(billableData.getDay5() + overtimeData.getDay5());
+		completeHourList.add(billableData.getDay6() + overtimeData.getDay6());
+		completeHourList.add(billableData.getDay7() + overtimeData.getDay7());
+		completeHourList.add(billableData.getDay8() + overtimeData.getDay8());
+		completeHourList.add(billableData.getDay9() + overtimeData.getDay9());
+		completeHourList.add(billableData.getDay10() + overtimeData.getDay10());
+		completeHourList.add(billableData.getDay11() + overtimeData.getDay11());
+		completeHourList.add(billableData.getDay12() + overtimeData.getDay12());
+		completeHourList.add(billableData.getDay13() + overtimeData.getDay13());
+		completeHourList.add(billableData.getDay14() + overtimeData.getDay14());
+		completeHourList.add(billableData.getDay15() + overtimeData.getDay15());
+		completeHourList.add(billableData.getDay16() + overtimeData.getDay16());
+		completeHourList.add(billableData.getDay17() + overtimeData.getDay17());
+		completeHourList.add(billableData.getDay18() + overtimeData.getDay18());
+		completeHourList.add(billableData.getDay19() + overtimeData.getDay19());
+		completeHourList.add(billableData.getDay20() + overtimeData.getDay20());
+		completeHourList.add(billableData.getDay21() + overtimeData.getDay21());
+		completeHourList.add(billableData.getDay22() + overtimeData.getDay22());
+		completeHourList.add(billableData.getDay23() + overtimeData.getDay23());
+		completeHourList.add(billableData.getDay24() + overtimeData.getDay24());
+		completeHourList.add(billableData.getDay25() + overtimeData.getDay25());
+		completeHourList.add(billableData.getDay26() + overtimeData.getDay26());
+		completeHourList.add(billableData.getDay27() + overtimeData.getDay27());
+		completeHourList.add(billableData.getDay28() + overtimeData.getDay28());
+		completeHourList.add(billableData.getDay29() + overtimeData.getDay29());
+		completeHourList.add(billableData.getDay30() + overtimeData.getDay30());
+		completeHourList.add(billableData.getDay31() + overtimeData.getDay31());
+		return completeHourList;
 	}
 
 	@Override
@@ -6398,7 +6403,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			firstHalfHour = 0.0;
 			secondHalfHour = 0.0;
 			if (approverOneData != null && approverOneData.size() > 0) {
-				List<Double> approverOneHourList = new ArrayList<Double>();
 				TaskTrackApproval billableData = new TaskTrackApproval();
 				TaskTrackApproval overtimeData = new TaskTrackApproval();
 				for (TaskTrackApproval task : approverOneData) {
@@ -6410,38 +6414,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						overtimeData = task;
 					}
 				}
-				approverOneHourList.add(billableData.getDay1() + overtimeData.getDay1());
-				approverOneHourList.add(billableData.getDay2() + overtimeData.getDay2());
-				approverOneHourList.add(billableData.getDay3() + overtimeData.getDay3());
-				approverOneHourList.add(billableData.getDay4() + overtimeData.getDay4());
-				approverOneHourList.add(billableData.getDay5() + overtimeData.getDay5());
-				approverOneHourList.add(billableData.getDay6() + overtimeData.getDay6());
-				approverOneHourList.add(billableData.getDay7() + overtimeData.getDay7());
-				approverOneHourList.add(billableData.getDay8() + overtimeData.getDay8());
-				approverOneHourList.add(billableData.getDay9() + overtimeData.getDay9());
-				approverOneHourList.add(billableData.getDay10() + overtimeData.getDay10());
-				approverOneHourList.add(billableData.getDay11() + overtimeData.getDay11());
-				approverOneHourList.add(billableData.getDay12() + overtimeData.getDay12());
-				approverOneHourList.add(billableData.getDay12() + overtimeData.getDay12());
-				approverOneHourList.add(billableData.getDay13() + overtimeData.getDay13());
-				approverOneHourList.add(billableData.getDay14() + overtimeData.getDay14());
-				approverOneHourList.add(billableData.getDay15() + overtimeData.getDay15());
-				approverOneHourList.add(billableData.getDay16() + overtimeData.getDay16());
-				approverOneHourList.add(billableData.getDay17() + overtimeData.getDay17());
-				approverOneHourList.add(billableData.getDay18() + overtimeData.getDay18());
-				approverOneHourList.add(billableData.getDay19() + overtimeData.getDay19());
-				approverOneHourList.add(billableData.getDay20() + overtimeData.getDay20());
-				approverOneHourList.add(billableData.getDay21() + overtimeData.getDay21());
-				approverOneHourList.add(billableData.getDay22() + overtimeData.getDay22());
-				approverOneHourList.add(billableData.getDay23() + overtimeData.getDay23());
-				approverOneHourList.add(billableData.getDay24() + overtimeData.getDay24());
-				approverOneHourList.add(billableData.getDay25() + overtimeData.getDay25());
-				approverOneHourList.add(billableData.getDay26() + overtimeData.getDay26());
-				approverOneHourList.add(billableData.getDay27() + overtimeData.getDay27());
-				approverOneHourList.add(billableData.getDay28() + overtimeData.getDay28());
-				approverOneHourList.add(billableData.getDay29() + overtimeData.getDay29());
-				approverOneHourList.add(billableData.getDay30() + overtimeData.getDay30());
-				approverOneHourList.add(billableData.getDay31() + overtimeData.getDay31());
+				
+				List<Double> approverOneHourList = getApprovalTotalBillableHour(billableData,overtimeData);
 				for (int i = 0; i < approverOneHourList.size(); i++) {
 					if (i < firstHalfDay) {
 						firstHalfHour += approverOneHourList.get(i);
@@ -6462,7 +6436,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			firstHalfHour = 0.0;
 			secondHalfHour = 0.0;
 			if (approverTwoData != null && approverTwoData.size() > 0) {
-				List<Double> approverTwoHourList = new ArrayList<Double>();
 				TaskTrackApproval billableData = new TaskTrackApproval();
 				TaskTrackApproval overtimeData = new TaskTrackApproval();
 				for (TaskTrackApproval task : approverTwoData) {
@@ -6474,38 +6447,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						overtimeData = task;
 					}
 				}
-				approverTwoHourList.add(billableData.getDay1() + overtimeData.getDay1());
-				approverTwoHourList.add(billableData.getDay2() + overtimeData.getDay2());
-				approverTwoHourList.add(billableData.getDay3() + overtimeData.getDay3());
-				approverTwoHourList.add(billableData.getDay4() + overtimeData.getDay4());
-				approverTwoHourList.add(billableData.getDay5() + overtimeData.getDay5());
-				approverTwoHourList.add(billableData.getDay6() + overtimeData.getDay6());
-				approverTwoHourList.add(billableData.getDay7() + overtimeData.getDay7());
-				approverTwoHourList.add(billableData.getDay8() + overtimeData.getDay8());
-				approverTwoHourList.add(billableData.getDay9() + overtimeData.getDay9());
-				approverTwoHourList.add(billableData.getDay10() + overtimeData.getDay10());
-				approverTwoHourList.add(billableData.getDay11() + overtimeData.getDay11());
-				approverTwoHourList.add(billableData.getDay12() + overtimeData.getDay12());
-				approverTwoHourList.add(billableData.getDay12() + overtimeData.getDay12());
-				approverTwoHourList.add(billableData.getDay13() + overtimeData.getDay13());
-				approverTwoHourList.add(billableData.getDay14() + overtimeData.getDay14());
-				approverTwoHourList.add(billableData.getDay15() + overtimeData.getDay15());
-				approverTwoHourList.add(billableData.getDay16() + overtimeData.getDay16());
-				approverTwoHourList.add(billableData.getDay17() + overtimeData.getDay17());
-				approverTwoHourList.add(billableData.getDay18() + overtimeData.getDay18());
-				approverTwoHourList.add(billableData.getDay19() + overtimeData.getDay19());
-				approverTwoHourList.add(billableData.getDay20() + overtimeData.getDay20());
-				approverTwoHourList.add(billableData.getDay21() + overtimeData.getDay21());
-				approverTwoHourList.add(billableData.getDay22() + overtimeData.getDay22());
-				approverTwoHourList.add(billableData.getDay23() + overtimeData.getDay23());
-				approverTwoHourList.add(billableData.getDay24() + overtimeData.getDay24());
-				approverTwoHourList.add(billableData.getDay25() + overtimeData.getDay25());
-				approverTwoHourList.add(billableData.getDay26() + overtimeData.getDay26());
-				approverTwoHourList.add(billableData.getDay27() + overtimeData.getDay27());
-				approverTwoHourList.add(billableData.getDay28() + overtimeData.getDay28());
-				approverTwoHourList.add(billableData.getDay29() + overtimeData.getDay29());
-				approverTwoHourList.add(billableData.getDay30() + overtimeData.getDay30());
-				approverTwoHourList.add(billableData.getDay31() + overtimeData.getDay31());
+				
+				List<Double> approverTwoHourList = getApprovalTotalBillableHour(billableData,overtimeData);
 				for (int i = 0; i < approverTwoHourList.size(); i++) {
 					if (i < firstHalfDay) {
 						firstHalfHour += approverTwoHourList.get(i);
@@ -6548,7 +6491,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		return response;
 	}
-
 	@Override
 	public JSONObject getDataForApprovalLevelTwo(Long userId, Date startDate, Date endDate, Long projectId,
 			Integer firstHalfDay) {
