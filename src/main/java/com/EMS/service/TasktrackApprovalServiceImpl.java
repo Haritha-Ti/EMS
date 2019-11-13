@@ -6610,6 +6610,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" + month : "" + month) + "-"
 							+ (day < 10 ? "0" + day : "" + day);
 
+					
+					
 					switch (i) {
 					case 1:
 						hours = (Double) task.getDay1();
@@ -7011,19 +7013,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							billableHours2 = new JSONObject();
 							billableHours2.put(taskDate, hours);
 							billableArray2.add(billableHours2);
-							billableId = task.getId();
-
+							//billableId = task.getId();
+							
 						} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
 							overtimeHours2 = new JSONObject();
 
 							overtimeHours2.put(taskDate, hours);
 							overTimeArray2.add(overtimeHours2);
-							overtimeId = task.getId();
+							//overtimeId = task.getId();
 						} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
 							nonBillableHours2 = new JSONObject();
 							nonBillableHours2.put(taskDate, hours);
 							nonbillableArray2.add(nonBillableHours2);
-							nonbillableId = task.getId();
+							//nonbillableId = task.getId();
 						}
 						cal.add(Calendar.DATE, 1);
 					}
