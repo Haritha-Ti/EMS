@@ -16,8 +16,8 @@ public class Constants {
 	public static final String TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED = "CORRECTION_SAVED";
 	public static final String TASKTRACK_APPROVER_STATUS_CORRECTED = "CORRECTED";
 	public static final String TASKTRACK_APPROVER_STATUS_REJECTION = "REJECTED";
-	public static final String TASKTRACK_APPROVER_STATUS_REJECTION_SAVED = "RE-SAVED";
-	public static final String TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED = "RE-SUBMTTED";
+	public static final String TASKTRACK_APPROVER_STATUS_REJECTION_SAVED = "REJECTION_SAVED";
+	public static final String TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED = "REJECTION SUBMTTED";
 
 	public static final String TASKTRACK_FINAL_STATUS_OPEN = "OPEN";
 	public static final String TASKTRACK_FINAL_STATUS_SUBMIT = "SUBMITTED";
@@ -32,6 +32,8 @@ public class Constants {
 	public static final String TASKTRACK_REJECTION_STATUS_CLOSED = "CLOSED";
 	public static final String TASKTRACK_REJECTION_FIRST_HALF_CYCLE = "FIRST";
 	public static final String TASKTRACK_REJECTION_SECOND_HALF_CYCLE = "SECOND";
+	
+	public static final String NOT_SUBMITTED = "NOT_SUBMITTED";
 
 	
 }
