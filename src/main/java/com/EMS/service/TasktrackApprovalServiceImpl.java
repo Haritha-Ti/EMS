@@ -6597,11 +6597,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				List<Double> approverOneHourList = getApprovalTotalBillableHour(billableData, overtimeData);
 				for (int i = 0; i < approverOneHourList.size(); i++) {
 					if (i < firstHalfDay) {
-						firstHalfHour += approverOneHourList.get(i);
+						if(approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+								|| approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)
+								|| approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT_SUBMITTED))
+							firstHalfHour += approverOneHourList.get(i);
 					} else {
-						secondHalfHour += approverOneHourList.get(i);
+						if(approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+								|| approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)
+								|| approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT_SUBMITTED))
+							secondHalfHour += approverOneHourList.get(i);
 					}
 				}
+			}
+			else {
+				approverOneFirstHalfStatus = Constants.NOT_SUBMITTED;
+				approverOneSecodHalfStatus = Constants.NOT_SUBMITTED;
 			}
 			JSONObject userHours = new JSONObject();
 			userHours.put("firstHalfTotal", firstHalfHour);
@@ -6630,12 +6640,38 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				List<Double> approverTwoHourList = getApprovalTotalBillableHour(billableData, overtimeData);
 				for (int i = 0; i < approverTwoHourList.size(); i++) {
 					if (i < firstHalfDay) {
-						firstHalfHour += approverTwoHourList.get(i);
+						if(approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+								|| approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)
+								|| approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT_SUBMITTED))
+							firstHalfHour += approverTwoHourList.get(i);
 					} else {
-						secondHalfHour += approverTwoHourList.get(i);
+						if(approverTwoSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+								|| approverTwoSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)
+								|| approverTwoSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT_SUBMITTED))
+							secondHalfHour += approverTwoHourList.get(i);
 					}
 				}
 			}
+			else {
+				approverTwoFirstHalfStatus = Constants.NOT_SUBMITTED;
+				approverTwoSecodHalfStatus = Constants.NOT_SUBMITTED;
+			}
+			
+			/* 
+			 * Status of approver2 should be REJECTED if status in in approver1 is either REJECTED, REJECTION_SAVED or REJECTION_SUBMITTED
+			 * 
+			*/
+			
+			approverTwoFirstHalfStatus = (approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT)
+					|| approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT_SAVED)
+					|| approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT_SUBMITTED)) ? 
+							Constants.TASKTRACK_FINAL_STATUS_REJECT : approverTwoFirstHalfStatus;
+
+			approverTwoSecodHalfStatus = (approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT) 
+					|| approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT_SAVED)
+					|| approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT_SUBMITTED)																						)? 
+							Constants.TASKTRACK_FINAL_STATUS_REJECT : approverTwoSecodHalfStatus;
+			
 			JSONObject savedHour = new JSONObject();
 			savedHour.put("firstHalfTotal", firstHalfHour);
 			savedHour.put("secondHalfTotal", secondHalfHour);
@@ -6643,6 +6679,24 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				String uName = userService.getUserName(userId);
 				userName = String.valueOf(uName).replace(",", " ");
 			}
+			
+			//Rejection messages from REJECTION Table
+			
+			List<TaskTrackRejection> rejectionFirstHalf = taskTrackRejectionRepository
+					.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
+							Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
+			List<TaskTrackRejection> rejectionSecondHalf = taskTrackRejectionRepository
+					.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
+							Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
+			
+			String firstHalfRemark= "",secondHalfRemark="";
+			for(TaskTrackRejection rejectionObj: rejectionFirstHalf) {
+				firstHalfRemark=rejectionObj.getRemark();
+			}
+			for(TaskTrackRejection rejectionObj: rejectionSecondHalf) {
+				secondHalfRemark=rejectionObj.getRemark();
+			}
+			
 			response.put("userId", userId);
 			response.put("userName", userName);
 			response.put("month", month);
@@ -6652,6 +6706,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			response.put("approverOneSecodHalfStatus", approverOneSecodHalfStatus);
 			response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
 			response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
+			response.put("firstHalfRemark", firstHalfRemark);
+			response.put("secondHalfRemark", secondHalfRemark);
 		} else {
 			response.put("userId", userId);
 			String uName = userService.getUserName(userId);
@@ -6667,6 +6723,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			response.put("approverOneSecodHalfStatus", approverOneSecodHalfStatus);
 			response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
 			response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
+			response.put("firstHalfRemark", "");
+			response.put("secondHalfRemark", "");
 		}
 		return response;
 	}
