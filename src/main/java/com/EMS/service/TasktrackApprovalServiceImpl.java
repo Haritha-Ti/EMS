@@ -6367,6 +6367,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setMonth(month);
 		taskTrackRejection.setYear(year);
 		taskTrackRejection.setRemark(remarks);
+		taskTrackRejection.setStatus("Open");
+		taskTrackRejection.setCycle("First");
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
 	}
@@ -6393,6 +6395,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setMonth(month);
 		taskTrackRejection.setYear(year);
 		taskTrackRejection.setRemark(remarks);
+		taskTrackRejection.setStatus("Open");
+		taskTrackRejection.setCycle("Second");
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
 	}
