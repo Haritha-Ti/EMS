@@ -590,7 +590,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					int startDayOfMonth = startCal.get(Calendar.DATE);
 					if (startCal.get(Calendar.DATE) < 16) {
 						if (taskTrackApproval.getFirstHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| taskTrackApproval.getFirstHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 						} else {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -598,7 +600,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					}
 					if (endCal.get(Calendar.DATE) > 15) {
 						if (taskTrackApproval.getSecondHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| taskTrackApproval.getSecondHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 						} else {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -634,7 +638,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (startCal.get(Calendar.DATE) < 16) {
 					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -642,7 +648,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
 					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getSecondHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -693,7 +701,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (startCal.get(Calendar.DATE) < 16) {
 					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -701,7 +711,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
 					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getSecondHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -740,7 +752,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (startCal.get(Calendar.DATE) < 16) {
 					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -748,7 +762,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
 					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getSecondHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -801,7 +817,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (startCal.get(Calendar.DATE) < 16) {
 					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -809,7 +827,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
 					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getSecondHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -847,7 +867,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (startCal.get(Calendar.DATE) < 16) {
 					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -855,7 +877,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
 					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+							|| taskTrackApproval.getSecondHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -992,7 +1016,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)
+							|| taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
 
 						int startDay = 0, endDay = 0;
@@ -1080,7 +1106,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)
+							|| taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
 
 						int startDay = 0, endDay = 0;
@@ -1171,7 +1199,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)
+							|| taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
 
 						int startDay = 0, endDay = 0;
@@ -1346,7 +1376,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)
+							|| taskTrackApproval.getSecondHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
 
 						int startDay = 0, endDay = 0;
@@ -1434,7 +1466,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)
+							|| taskTrackApproval.getSecondHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
 
 						int startDay = 0, endDay = 0;
@@ -1525,7 +1559,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)
+							|| taskTrackApproval.getSecondHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
 
 						int startDay = 0, endDay = 0;

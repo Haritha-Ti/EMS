@@ -16,5 +16,11 @@ public interface TaskTrackRejectionRepository extends JpaRepository<TaskTrackRej
 			+ Constants.TASKTRACK_REJECTION_STATUS_OPEN + "' order by rejection.id desc")
 	List<TaskTrackRejection> findOpenRejectionForCycleForUserForProject(Long userId, Long projectId, Integer month,
 			Integer year, String cycle);
+	
+	@Query("SELECT rejection FROM TaskTrackRejection rejection "
+			+ "where rejection.user.userId = ?1 and rejection.project.projectId = ?2 "
+			+ "and rejection.month = ?3 and rejection.year = ?4 and rejection.status = '"
+			+ Constants.TASKTRACK_REJECTION_STATUS_OPEN + "' order by rejection.id desc")
+	List<TaskTrackRejection> findOpenRejectionForUserForProject(Long userId, Long projectId, Integer month,Integer year);
 
 }
