@@ -88,6 +88,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	@Autowired
 	TimeTrackApprovalJPARepository timeTrackApprovalJPARepository;
 
+	@Autowired
+	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
+
 	@Override
 	public Boolean checkIsUserExists(Long id) {
 		Boolean exist = taskTrackFinalJPARepository.existsByUser(id);
@@ -991,6 +994,18 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 					}
@@ -1067,6 +1082,18 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 					}
@@ -1146,6 +1173,18 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 					}
@@ -1309,6 +1348,18 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 					}
@@ -1385,6 +1436,18 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 					}
@@ -1464,6 +1527,18 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 					}
@@ -1621,7 +1696,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays+startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DAY_OF_MONTH);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1649,7 +1724,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++)  {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -1689,7 +1764,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays+startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DAY_OF_MONTH);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1760,7 +1835,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays+startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DAY_OF_MONTH);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1788,7 +1863,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++)  {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -1917,7 +1992,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
 
-					for (int i =  startDayOfMonth-1; i < diffInDays+startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DAY_OF_MONTH);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -1945,7 +2020,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++)  {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -1986,7 +2061,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays+startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DAY_OF_MONTH);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -2015,7 +2090,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++)  {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -2058,7 +2133,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = cal.get(Calendar.DATE);
-					for (int i = startDayOfMonth-1; i < diffInDays+startDayOfMonth; i++) {
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 						intday = cal.get(Calendar.DAY_OF_MONTH);
 						String dateString = cal.get(Calendar.YEAR) + "-"
@@ -2086,7 +2161,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
-				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++)  {
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
 					intMonth = (cal.get(Calendar.MONTH) + 1);
 					intday = cal.get(Calendar.DAY_OF_MONTH);
@@ -2125,7 +2200,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	 */
 	private void setDayInCorrespondingModel(TaskTrackApprovalFinal taskTrackApproval, int i, double hours)
 			throws Exception {
-        System.out.println("test");
+		System.out.println("test");
 		if (i == 0) {
 			taskTrackApproval.setDay1(hours);
 		} else if (i == 1) {

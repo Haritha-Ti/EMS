@@ -5776,7 +5776,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(endDate);
-		calendar.add(Calendar.DATE, -1);
 
 		if (billableArray.size() > 0 && billableId == null) {
 			billableId = timeTrackApprovalJPARepository.getBillableIdForAUserForAProject(month, year, projectId,
@@ -5809,13 +5808,24 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			cal.setTime(startDate);
 			double hours = 0;
 			intMonth = (cal.get(Calendar.MONTH) + 1);
-
 			if (billableId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
 				if (taskTrackApproval != null) {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -5890,6 +5900,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -5967,6 +5989,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6131,6 +6165,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6207,6 +6253,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6286,6 +6344,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED);
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackCorrection> correctionList = taskTrackCorrectionRepository
+								.findCorrectionDays(userId, projectId, month, year, startDay, endDay);
+						for (TaskTrackCorrection correctionObj : correctionList) {
+							correctionObj.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+						}
+
+						taskTrackCorrectionRepository.saveAll(correctionList);
+
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6367,8 +6437,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setMonth(month);
 		taskTrackRejection.setYear(year);
 		taskTrackRejection.setRemark(remarks);
-		taskTrackRejection.setStatus("Open");
-		taskTrackRejection.setCycle("First");
+		taskTrackRejection.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
+		taskTrackRejection.setCycle(Constants.TASKTRACK_CORRECTION_SECOND_HALF_CYCLE);
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
 	}
@@ -6395,8 +6465,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setMonth(month);
 		taskTrackRejection.setYear(year);
 		taskTrackRejection.setRemark(remarks);
-		taskTrackRejection.setStatus("Open");
-		taskTrackRejection.setCycle("Second");
+		taskTrackRejection.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
+		taskTrackRejection.setCycle(Constants.TASKTRACK_CORRECTION_SECOND_HALF_CYCLE);
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
 	}
