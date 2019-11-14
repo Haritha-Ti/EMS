@@ -24,6 +24,26 @@ public class TaskTrackRejection {
 
     private String remark;
 
+    private String status;
+
+    private String cycle;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(String cycle) {
+        this.cycle = cycle;
+    }
+
     public String getRemark() {
         return remark;
     }
