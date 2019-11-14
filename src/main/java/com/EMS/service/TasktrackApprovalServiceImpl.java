@@ -754,6 +754,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		List<JSONObject> overTimeArray = new ArrayList<>();
 		List<JSONObject> nonbillableArray = new ArrayList<>();
 		List<Integer> correctionDays = new ArrayList<Integer>();
+		String remark = null;
 
 		String approvalStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		String name = null;
@@ -944,9 +945,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						cal.add(Calendar.DATE, 1);
 					}
 					if (item.getProjectType().equalsIgnoreCase("Billable")) {
+						String cycle = Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE;
 						if (startDay <= firstHalfDay) {
 							approvalStatus = item.getFirstHalfStatus();
 						} else {
+							cycle = Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE;
 							approvalStatus = item.getSecondHalfStatus();
 						}
 						if (approvalStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
@@ -957,6 +960,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									item.getYear(), startDay, endDay);
 							for (TaskTrackCorrection correction : corrections) {
 								correctionDays.add(correction.getDay());
+							}
+						}
+						if (approvalStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+								|| approvalStatus
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+							List<TaskTrackRejection> rejection = taskTrackRejectionRepository
+									.findOpenRejectionForCycleForUserForProject(item.getUser().getUserId(),
+											item.getProject().getProjectId(), item.getMonth(), item.getYear(), cycle);
+							if (rejection.size() > 0) {
+								remark = rejection.get(0).getRemark();
 							}
 						}
 					}
@@ -1024,6 +1037,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		response.put("month", monthIndex);
 		response.put("approvalStatus", approvalStatus);
 		response.put("correctionDays", correctionDays);
+		response.put("remark", remark);
 		return response;
 	}
 
@@ -5402,19 +5416,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						if (taskTrackApproval.getFirstHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else {
-							if (taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT)) {
-								List<TaskTrackRejection> rejectionEntryList = taskTrackRejectionRepository
-										.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
-												Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
-								TaskTrackRejection rejectionObj = new TaskTrackRejection();
-								if (rejectionEntryList.size() > 0) {
-									rejectionObj = rejectionEntryList.get(0);
-									rejectionObj.setStatus(Constants.TASKTRACK_REJECTION_STATUS_CLOSED);
-									rejectionList.add(rejectionObj);
-								}
+						} else if (taskTrackApproval.getFirstHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
+							List<TaskTrackRejection> rejectionEntryList = taskTrackRejectionRepository
+									.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
+											Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
+							TaskTrackRejection rejectionObj = new TaskTrackRejection();
+							if (rejectionEntryList.size() > 0) {
+								rejectionObj = rejectionEntryList.get(0);
+								rejectionObj.setStatus(Constants.TASKTRACK_REJECTION_STATUS_CLOSED);
+								rejectionList.add(rejectionObj);
 							}
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
+						} else {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 						}
 
@@ -5423,19 +5437,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						if (taskTrackApproval.getSecondHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else {
-							if (taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT)) {
-								List<TaskTrackRejection> rejectionEntryList = taskTrackRejectionRepository
-										.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
-												Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
-								TaskTrackRejection rejectionObj = new TaskTrackRejection();
-								if (rejectionEntryList.size() > 0) {
-									rejectionObj = rejectionEntryList.get(0);
-									rejectionObj.setStatus(Constants.TASKTRACK_REJECTION_STATUS_CLOSED);
-									rejectionList.add(rejectionObj);
-								}
+						} else if (taskTrackApproval.getFirstHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
+							List<TaskTrackRejection> rejectionEntryList = taskTrackRejectionRepository
+									.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
+											Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
+							TaskTrackRejection rejectionObj = new TaskTrackRejection();
+							if (rejectionEntryList.size() > 0) {
+								rejectionObj = rejectionEntryList.get(0);
+								rejectionObj.setStatus(Constants.TASKTRACK_REJECTION_STATUS_CLOSED);
+								rejectionList.add(rejectionObj);
 							}
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
+						} else {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 						}
 					}
@@ -5470,20 +5484,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setProjectType("Billable");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -5532,6 +5536,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
+					} else if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 					}
@@ -5540,6 +5547,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
+					} else if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 					}
@@ -5576,20 +5586,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setProjectType("Non-Billable");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -5640,6 +5640,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
+					} else if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 					}
@@ -5648,6 +5651,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
+					} else if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 					}
@@ -5683,20 +5689,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				taskTrackApproval.setProjectType("Overtime");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -5841,6 +5837,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 
 						taskTrackCorrectionRepository.saveAll(correctionList);
+					} else if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackRejection> rejectionList = taskTrackRejectionRepository
+								.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
+										Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
+						for (TaskTrackRejection rejectionObj : rejectionList) {
+							rejectionObj.setStatus(Constants.TASKTRACK_REJECTION_STATUS_CLOSED);
+						}
+
+						taskTrackRejectionRepository.saveAll(rejectionList);
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -5927,6 +5938,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						taskTrackCorrectionRepository.saveAll(correctionList);
 
+					} else if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6016,6 +6030,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						taskTrackCorrectionRepository.saveAll(correctionList);
 
+					} else if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6192,6 +6209,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						taskTrackCorrectionRepository.saveAll(correctionList);
 
+					} else if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+
+						int startDay = 0, endDay = 0;
+						startDay = cal.get(Calendar.DATE);
+						endDay = calendar.get(Calendar.DATE);
+						List<TaskTrackRejection> rejectionList = taskTrackRejectionRepository
+								.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
+										Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
+						for (TaskTrackRejection rejectionObj : rejectionList) {
+							rejectionObj.setStatus(Constants.TASKTRACK_REJECTION_STATUS_CLOSED);
+						}
+
+						taskTrackRejectionRepository.saveAll(rejectionList);
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6280,6 +6312,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						taskTrackCorrectionRepository.saveAll(correctionList);
 
+					} else if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6371,6 +6407,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						taskTrackCorrectionRepository.saveAll(correctionList);
 
+					} else if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
 					}
@@ -6441,7 +6481,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
 				.upadateTaskTrackApprovalStatus(projectId, month, year, userId);
 		for (TaskTrackApproval approval : taskTrackApproval) {
-			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+			approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
 		TaskTrackRejection taskTrackRejection = new TaskTrackRejection();
@@ -6469,7 +6509,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
 				.upadateTaskTrackApprovalStatus(projectId, month, year, userId);
 		for (TaskTrackApproval approval : taskTrackApproval) {
-			approval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECT);
+			approval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
 		TaskTrackRejection taskTrackRejection = new TaskTrackRejection();
