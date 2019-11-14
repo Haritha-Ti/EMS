@@ -26,17 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.exceptions.DuplicateEntryException;
-
-import com.EMS.model.ActivityLog;
-import com.EMS.model.ProjectModel;
-import com.EMS.model.TaskTrackApproval;
-import com.EMS.model.TaskTrackApprovalFinal;
-import com.EMS.model.TaskTrackApprovalFinance;
-import com.EMS.model.TaskTrackApprovalLevel2;
-import com.EMS.model.TaskTrackCorrection;
-import com.EMS.model.TaskTrackDaySubmissionModel;
-import com.EMS.model.Tasktrack;
-import com.EMS.model.UserModel;
 import com.EMS.repository.ActivityLogRepository;
 import com.EMS.repository.ProjectAllocationRepository;
 import com.EMS.repository.ProjectRepository;
@@ -5406,7 +5395,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			if (billableId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(billableId);
-
+				List<TaskTrackRejection> rejectionList = new ArrayList<TaskTrackRejection>();
 //					taskTrackApproval.setApprovedDate(endDate);
 				if (taskTrackApproval != null) {
 					if (startCal.get(Calendar.DATE) < 16) {
@@ -5414,14 +5403,39 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
 						} else {
+							if (taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT)) {
+								List<TaskTrackRejection> rejectionEntryList = taskTrackRejectionRepository
+										.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
+												Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
+								TaskTrackRejection rejectionObj = new TaskTrackRejection();
+								if (rejectionEntryList.size() > 0) {
+									rejectionObj = rejectionEntryList.get(0);
+									rejectionObj.setStatus(Constants.TASKTRACK_REJECTION_STATUS_CLOSED);
+									rejectionList.add(rejectionObj);
+								}
+							}
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 						}
+
 					}
 					if (endCal.get(Calendar.DATE) > 15) {
 						if (taskTrackApproval.getSecondHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
 						} else {
+							if (taskTrackApproval.getFirstHalfStatus()
+									.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECT)) {
+								List<TaskTrackRejection> rejectionEntryList = taskTrackRejectionRepository
+										.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
+												Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
+								TaskTrackRejection rejectionObj = new TaskTrackRejection();
+								if (rejectionEntryList.size() > 0) {
+									rejectionObj = rejectionEntryList.get(0);
+									rejectionObj.setStatus(Constants.TASKTRACK_REJECTION_STATUS_CLOSED);
+									rejectionList.add(rejectionObj);
+								}
+							}
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 						}
 					}
@@ -5443,6 +5457,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					tasktrackApprovalService.updateData(taskTrackApproval);
 					billable_id = taskTrackApproval.getId();
+					taskTrackRejectionRepository.saveAll(rejectionList);
 				} else {
 					throw new Exception("TaskTrack data not found for given billable id.");
 				}
@@ -6437,8 +6452,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setMonth(month);
 		taskTrackRejection.setYear(year);
 		taskTrackRejection.setRemark(remarks);
-		taskTrackRejection.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
-		taskTrackRejection.setCycle(Constants.TASKTRACK_CORRECTION_SECOND_HALF_CYCLE);
+		taskTrackRejection.setStatus(Constants.TASKTRACK_REJECTION_STATUS_OPEN);
+		taskTrackRejection.setCycle(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
 	}
@@ -6465,8 +6480,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setMonth(month);
 		taskTrackRejection.setYear(year);
 		taskTrackRejection.setRemark(remarks);
-		taskTrackRejection.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
-		taskTrackRejection.setCycle(Constants.TASKTRACK_CORRECTION_SECOND_HALF_CYCLE);
+		taskTrackRejection.setStatus(Constants.TASKTRACK_REJECTION_STATUS_OPEN);
+		taskTrackRejection.setCycle(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
 	}
