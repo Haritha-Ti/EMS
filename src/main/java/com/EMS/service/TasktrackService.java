@@ -3,6 +3,7 @@ package com.EMS.service;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,6 +64,7 @@ public interface TasktrackService {
     Task getTaskByName(String taskName);
 
 	List<Object[]> getTasksForTimeTrack(Long userId, Date fromDate, Date toDate);
-		
+	//nisha
+	ObjectNode createCorrection(ObjectNode requestdata);
 }
 

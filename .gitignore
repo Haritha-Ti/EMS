@@ -10,13 +10,16 @@ HELP.md
 .settings
 .springBeans
 .sts4-cache
+.app.log
+
 
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-
+*app.log
+app*
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
