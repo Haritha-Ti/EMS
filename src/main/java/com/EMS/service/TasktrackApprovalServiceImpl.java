@@ -198,8 +198,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						if (firstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
 								|| firstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)
 								|| secondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
-								|| secondHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+								|| secondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
 							List<TaskTrackRejection> rejections = taskTrackRejectionRepository
 									.findOpenRejectionForUserForProject(userId, projectId, month, year);
 							for (TaskTrackRejection rejection : rejections) {
@@ -208,6 +207,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								} else if (rejection.getCycle()
 										.equals(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE)) {
 									secondHalfRemarks = rejection.getRemark();
+								}
+							}
+						}
+						else if(firstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
+								|| firstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)
+								|| secondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
+								|| secondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+							List<TaskTrackCorrection> corrections = taskTrackCorrectionRepository.findCorrectionDays(userId, projectId, month, year, 1, 31);
+							for (TaskTrackCorrection correction : corrections) {
+								if(firstHalfRemarks == null && correction.getDay() <= firstHalfDay) {
+									firstHalfRemarks = correction.getComment();
+									continue;
+								}
+								if(secondHalfRemarks == null && correction.getDay() > firstHalfDay) {
+									secondHalfRemarks = correction.getComment();
 								}
 							}
 						}
