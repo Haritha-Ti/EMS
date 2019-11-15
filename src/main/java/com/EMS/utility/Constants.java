@@ -23,7 +23,6 @@ public class Constants {
 	public static final String TASKTRACK_FINAL_STATUS_SUBMIT = "SUBMITTED";
 	public static final String TASKTRACK_FINAL_STATUS_CORRECTION = "CORRECTION";
 	public static final String TASKTRACK_FINAL_STATUS_CORRECTION_SAVED = "CORRECTION_SAVED";
-	public static final String TASKTRACK_FINAL_STATUS_CORRECTED = "CORRECTION_SUBMITTED";
 
 	public static final String TASKTRACK_CORRECTION_STATUS_OPEN = "OPEN";
 	public static final String TASKTRACK_CORRECTION_STATUS_CLOSED = "CLOSED";

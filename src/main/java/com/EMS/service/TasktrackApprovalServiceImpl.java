@@ -6636,16 +6636,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				List<Double> approverOneHourList = getApprovalTotalBillableHour(billableData, overtimeData);
 				for (int i = 0; i < approverOneHourList.size(); i++) {
 					if (i < firstHalfDay) {
-						if (approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+						if (approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)
 								|| approverOneFirstHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
 								|| approverOneFirstHalfStatus
 										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED))
 							firstHalfHour += approverOneHourList.get(i);
 					} else {
-						if (approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+						if (approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)
 								|| approverOneSecodHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
 								|| approverOneSecodHalfStatus
 										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED))
 							secondHalfHour += approverOneHourList.get(i);
@@ -6682,18 +6682,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				List<Double> approverTwoHourList = getApprovalTotalBillableHour(billableData, overtimeData);
 				for (int i = 0; i < approverTwoHourList.size(); i++) {
 					if (i < firstHalfDay) {
-						if (approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
-								|| approverTwoFirstHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)
-								|| approverTwoFirstHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED))
+						if (approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT))
 							firstHalfHour += approverTwoHourList.get(i);
 					} else {
-						if (approverTwoSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
-								|| approverTwoSecodHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTED)
-								|| approverTwoSecodHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED))
+						if (approverTwoSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT))
 							secondHalfHour += approverTwoHourList.get(i);
 					}
 				}
