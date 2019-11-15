@@ -1211,7 +1211,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-					
+
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1916,7 +1916,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
 
-		if (statusBeforeSubmit.equals(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+		if (statusBeforeSubmit != null && statusBeforeSubmit.equals(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int startDay = cal.get(Calendar.DATE);
@@ -2241,7 +2241,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		}
 		timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
 
-		if (statusBeforeSubmit.equals(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
+		if (statusBeforeSubmit != null && statusBeforeSubmit.equals(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			int startDay = cal.get(Calendar.DATE);
