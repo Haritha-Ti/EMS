@@ -587,7 +587,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 						taskTrackCorrection.setUser(user);
 						taskTrackCorrection.setProject(project);
 						taskTrackCorrection.setComment(comment);
-						taskTrackCorrection.setComment(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
+						taskTrackCorrection.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
 						taskTrackCorrectionRepository.save(taskTrackCorrection);
 					}
 				}
