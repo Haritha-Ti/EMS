@@ -3099,4 +3099,121 @@ public class TasktrackController {
 		responsedata.put("code", servletresponse.getStatus());
 		return responsedata;
 	}
+
+	/**
+	 * 
+	 * @author sreejith.j
+	 * @param requestdata
+	 * @param httpstatus
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping("/getProjectNamesForApprover")
+	public JsonNode getProjectNamesForApprover(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus)
+			throws Exception {
+		ArrayNode projectTitle = objectMapper.createArrayNode();
+		long uId = Long.valueOf(requestdata.get("uId").toString());
+		int month = Integer.parseInt(requestdata.get("month").toString());
+		int year = Integer.parseInt(requestdata.get("year").toString());
+		UserModel user = userService.getUserDetailsById(uId);
+
+		List<Object[]> projectList = null;
+		projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, month, year);
+
+		for (Object[] alloc : projectList) {
+			try {
+				ObjectNode node = objectMapper.createObjectNode();
+				node.put("id", (Long) alloc[1]);
+				node.put("value", (String) alloc[0]);
+				node.put("tier", (Integer) alloc[2]);
+				// get region list
+				List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
+				ArrayNode regionsArray = objectMapper.createArrayNode();
+				ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+				if (regions.isEmpty()) {
+					node.set("projectRegion", regionsArray);
+				} else {
+
+					for (ProjectRegion regioneach : regions) {
+						ObjectNode resource = objectMapper.createObjectNode();
+						regionsArray.add((int) regioneach.getRegion_Id().getId());
+
+					}
+					node.set("projectRegion", regionsArray);
+				}
+				//
+				projectTitle.add(node);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		ObjectNode dataNode = objectMapper.createObjectNode();
+		dataNode.set("projectTitle", projectTitle);
+
+		ObjectNode node = objectMapper.createObjectNode();
+		node.put("status", "success");
+		node.set("data", dataNode);
+		return node;
+	}
+
+	/**
+	 * 
+	 * @author sreejith.j
+	 * @param requestdata
+	 * @param httpstatus
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping("/getProjectNamesForApproverFinal")
+	public JsonNode getProjectNamesForApproverFinal(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus)
+			throws Exception {
+		ArrayNode projectTitle = objectMapper.createArrayNode();
+		long uId = Long.valueOf(requestdata.get("uId").toString());
+		int month = Integer.parseInt(requestdata.get("month").toString());
+		int year = Integer.parseInt(requestdata.get("year").toString());
+		UserModel user = userService.getUserDetailsById(uId);
+
+		List<Object[]> projectList = null;
+		projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, month, year);
+
+		for (Object[] alloc : projectList) {
+			try {
+				ObjectNode node = objectMapper.createObjectNode();
+				node.put("id", (Long) alloc[1]);
+				node.put("value", (String) alloc[0]);
+				node.put("tier", (Integer) alloc[2]);
+				// get region list
+				List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
+				ArrayNode regionsArray = objectMapper.createArrayNode();
+				ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+				if (regions.isEmpty()) {
+					node.set("projectRegion", regionsArray);
+				} else {
+
+					for (ProjectRegion regioneach : regions) {
+						ObjectNode resource = objectMapper.createObjectNode();
+						regionsArray.add((int) regioneach.getRegion_Id().getId());
+
+					}
+					node.set("projectRegion", regionsArray);
+				}
+				//
+				projectTitle.add(node);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		ObjectNode dataNode = objectMapper.createObjectNode();
+		dataNode.set("projectTitle", projectTitle);
+
+		ObjectNode node = objectMapper.createObjectNode();
+		node.put("status", "success");
+		node.set("data", dataNode);
+		return node;
+	}
+
 }

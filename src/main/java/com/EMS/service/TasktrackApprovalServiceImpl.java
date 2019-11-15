@@ -6640,14 +6640,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								|| approverOneFirstHalfStatus
 										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
 								|| approverOneFirstHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED))
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)
+								|| approverOneFirstHalfStatus
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_LOCK))
 							firstHalfHour += approverOneHourList.get(i);
 					} else {
 						if (approverOneSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)
 								|| approverOneSecodHalfStatus
 										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
 								|| approverOneSecodHalfStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED))
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)
+								|| approverOneFirstHalfStatus
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_LOCK))
 							secondHalfHour += approverOneHourList.get(i);
 					}
 				}
