@@ -69,12 +69,12 @@ public interface TaskTrackFinanceRepository extends JpaRepository<TaskTrackAppro
   		"          sum(COALESCE(f.day22,0))+sum(COALESCE(f.day23,0))+sum(COALESCE(f.day24,0))+sum(COALESCE(f.day25,0))+sum(COALESCE(f.day26,0))+sum(COALESCE(f.day27,0))+sum(COALESCE(f.day28,0))+\n" + 
   		"          sum(COALESCE(f.day29,0))+sum(COALESCE(f.day30,0))+sum(COALESCE(f.day31,0))) as totalhour FROM tasktrack_approval_finance f " +
           " INNER JOIN project p ON ( p.project_id = f.project_project_id) "
-          + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Billable','Overtime','Non-Billable') and "
-          + " (CASE WHEN ?4 = 1 " +
+          + "where f.user_user_id=?3 and f.month=?1 and f.year=?2 and f.project_type in('Billable','Overtime','Non-Billable')  "
+         /* + " and (CASE WHEN ?4 = 1 " +
           "          THEN p.project_type = 1 " + 
           "          WHEN ?4 = 0 " + 
           "          THEN p.project_type = 0 " + 
-          "          ELSE p.project_id != 0 END) ",nativeQuery = true)
+          "          ELSE p.project_id != 0 END) "*/,nativeQuery = true)
   List<Object[]> getTimeTrackApprovalDataByUserId(Integer monthIndex,Integer yearIndex,Long id, int projectType);
 
     @Query(value ="SELECT user_user_id as id,(sum(COALESCE(day1,0))+sum(COALESCE(day2,0))+sum(COALESCE(day3,0))+sum(COALESCE(day4,0))+sum(COALESCE(day5,0))+sum(COALESCE(day6,0))+sum(COALESCE(day7,0))+" +

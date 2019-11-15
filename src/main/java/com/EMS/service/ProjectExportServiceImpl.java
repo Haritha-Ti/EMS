@@ -49,6 +49,9 @@ import com.EMS.repository.UserLeaveSummaryRepository;
 public class ProjectExportServiceImpl implements ProjectExportService {
 
 	@Autowired
+	TaskTrackApprovalFinalRepository taskTrackApprovalFinalRepository;
+
+	@Autowired
 	UserRepository userRepository;
 
 	@Autowired
@@ -960,10 +963,10 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			if(reportType == "monthly") {
 
 				//loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id);
-				billable    = taskTrackFinanceRepository.getBillableDataByUserId(monthIndex, yearIndex, id,projectType);
-				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserId(monthIndex, yearIndex, id,projectType);
-				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserId(monthIndex, yearIndex, id,projectType);	
-				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id,projectType);
+				billable    = taskTrackApprovalFinalRepository.getBillableDataByUserId(monthIndex, yearIndex, id,projectType);
+				nonBillable = taskTrackApprovalFinalRepository.getNonBillableDataByUserId(monthIndex, yearIndex, id,projectType);
+				overtime    = taskTrackApprovalFinalRepository.getOvertimeDataByUserId(monthIndex, yearIndex, id,projectType);
+				loggedData = taskTrackApprovalFinalRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id,projectType);
 				working_days = calculateWorkingDays(startDate,endDate);
 				holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,endDate,regionId);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,endDate);
@@ -986,10 +989,10 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			}
 			else {
 				// loggedData = timeTrackApprovalJPARepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id);
-				billable    = taskTrackFinanceRepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
-				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
-				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
-				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id,2);
+				billable    = taskTrackApprovalFinalRepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				nonBillable = taskTrackApprovalFinalRepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				overtime    = taskTrackApprovalFinalRepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				loggedData = taskTrackApprovalFinalRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id,2);
 				working_days = calculateWorkingDays(startDate,end_date);
 				holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,end_date,regionId);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,end_date);
@@ -1264,10 +1267,10 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 				//nonBillable = timeTrackApprovalJPARepository.getNonBillableDataByUserId(monthIndex, yearIndex, id);
 				//overtime    = timeTrackApprovalJPARepository.getOvertimeDataByUserId(monthIndex, yearIndex, id);
 
-				loggedData  = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id,projectType);
-				billable    = taskTrackFinanceRepository.getBillableDataByUserId(monthIndex, yearIndex, id,projectType);
-				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserId(monthIndex, yearIndex, id,projectType);
-				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserId(monthIndex, yearIndex, id,projectType);
+				loggedData  = taskTrackApprovalFinalRepository.getTimeTrackApprovalDataByUserId(monthIndex, yearIndex, id,projectType);
+				billable    = taskTrackApprovalFinalRepository.getBillableDataByUserId(monthIndex, yearIndex, id,projectType);
+				nonBillable = taskTrackApprovalFinalRepository.getNonBillableDataByUserId(monthIndex, yearIndex, id,projectType);
+				overtime    = taskTrackApprovalFinalRepository.getOvertimeDataByUserId(monthIndex, yearIndex, id,projectType);
 				working_days = calculateWorkingDays(startDate,endDate);
 				holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,endDate,regionId);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,endDate);
@@ -1296,10 +1299,10 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 				billable    = timeTrackApprovalJPARepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id);
 				nonBillable = timeTrackApprovalJPARepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id);
 				overtime    = timeTrackApprovalJPARepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id);*/
-				loggedData = taskTrackFinanceRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
-				billable    = taskTrackFinanceRepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
-				nonBillable = taskTrackFinanceRepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
-				overtime    = taskTrackFinanceRepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				loggedData = taskTrackApprovalFinalRepository.getTimeTrackApprovalDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				billable    = taskTrackApprovalFinalRepository.getBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				nonBillable = taskTrackApprovalFinalRepository.getNonBillableDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
+				overtime    = taskTrackApprovalFinalRepository.getOvertimeDataByUserIdMidMonth(monthIndex, yearIndex, id,projectType);
 				working_days = calculateWorkingDays(startDate,end_date);
 				holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,end_date,regionId);
 				fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,end_date);
@@ -1928,7 +1931,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		}
 		headers[dayCount+2] ="Total Hours";
 
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProject(month, year, projectId);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByProject(month, year, projectId);
 
 		//Removing grids
 		sheet.setDisplayGridlines(false);
@@ -2051,7 +2054,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		}
 		headers[dayCount+2] ="Total Hours";
 
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProjectSet(month, year, prjSet);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByProjectSet(month, year, prjSet);
 
 		//Removing grids
 		sheet.setDisplayGridlines(false);
@@ -2173,7 +2176,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			headers[i + 1] = year+"-"+intmonth+"-"+j;
 		}
 		headers[dayCount+2]="Total Hours";
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUser(month, year, userId);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByUser(month, year, userId);
 
 		//Removing grids
 		sheet.setDisplayGridlines(false);
@@ -2293,7 +2296,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			headers[i + 1] = year+"-"+intmonth+"-"+j;
 		}
 		headers[dayCount+2] = "Total Hours";
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUserAndProject(month, year, userId,projectId);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByUserAndProject(month, year, userId,projectId);
 
 		//Removing grids
 		sheet.setDisplayGridlines(false);
@@ -2418,7 +2421,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			headers[i + 1] = year+"-"+intmonth+"-"+j;
 		}
 		headers[dayCount+2] = "Total Hours";
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByMonthYear(month, year);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByMonthYear(month, year);
 
 		
 		
