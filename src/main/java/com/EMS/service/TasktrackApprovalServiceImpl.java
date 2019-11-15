@@ -978,6 +978,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							List<TaskTrackCorrection> corrections = taskTrackCorrectionRepository.findCorrectionDays(
 									item.getUser().getUserId(), item.getProject().getProjectId(), item.getMonth(),
 									item.getYear(), startDay, endDay);
+						System.out.println("size"+corrections);
 							for (TaskTrackCorrection correction : corrections) {
 								correctionDays.add(correction.getDay());
 							}
@@ -6841,6 +6842,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		JSONObject billableHours2;
 		JSONObject overtimeHours2;
 		JSONObject nonBillableHours2;
+		List<Integer> correctionDays = new ArrayList<Integer>();
 		List<JSONObject> billableArrayOne = new ArrayList<>();
 		List<JSONObject> overTimeArrayOne = new ArrayList<>();
 		List<JSONObject> billableArray = new ArrayList<>();
@@ -6849,6 +6851,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ArrayList<JSONObject> nonbillableArray2 = new ArrayList<JSONObject>();
 		JSONObject approverOneDatas = new JSONObject();
 		JSONObject approverTwoDatas = new JSONObject();
+		String approvalStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		String approverOneFirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		String approverOneSecodHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		String approverTwoFirstHalfStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
@@ -7173,6 +7176,24 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						nonbillableArray2.add(nonBillableHours2);
 						nonbillableId = task.getId();
 					}
+					 
+					if (task.getProjectType().equalsIgnoreCase("Billable")) {
+						if (startDay <= firstHalfDay) {
+							approvalStatus = task.getFirstHalfStatus();
+						} else {
+							approvalStatus = task.getSecondHalfStatus();
+						}
+						if (approvalStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
+								|| approvalStatus
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+							List<TaskTrackCorrection> corrections = taskTrackCorrectionRepository.findCorrectionDays(
+									task.getUser().getUserId(), task.getProject().getProjectId(), task.getMonth(),
+									task.getYear(), startDay, endDay);
+							for (TaskTrackCorrection correction : corrections) {
+								correctionDays.add(correction.getDay());
+							}
+						}
+					}
 					cal.add(Calendar.DATE, 1);
 				}
 
@@ -7357,6 +7378,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		response.put("approverOneSecodHalfStatus", approverOneSecodHalfStatus);
 		response.put("approverTwoFirstHalfStatus", approverTwoFirstHalfStatus);
 		response.put("approverTwoSecodHalfStatus", approverTwoSecodHalfStatus);
+		response.put("correctionDays", correctionDays);
 
 		return response;
 	}
