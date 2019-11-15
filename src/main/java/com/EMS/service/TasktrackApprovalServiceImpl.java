@@ -6477,7 +6477,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setYear(year);
 		taskTrackRejection.setRemark(remarks);
 		taskTrackRejection.setStatus(Constants.TASKTRACK_REJECTION_STATUS_OPEN);
-		taskTrackRejection.setCycle(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
+		taskTrackRejection.setCycle(Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
 	}
