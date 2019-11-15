@@ -40,6 +40,9 @@ public class TaskTrackCorrection extends  Auditable<String> {
 	private String comment;
 
 	private String status;
+	
+	@Column(name = "TYPE", length = 25)
+	private String type;
 
 	public long getId() {
 		return id;
@@ -103,6 +106,14 @@ public class TaskTrackCorrection extends  Auditable<String> {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

@@ -561,8 +561,11 @@ public class TasktrackServiceImpl implements TasktrackService {
 				}
 				List<TaskTrackCorrection> taskTrackCorrections = taskTrackCorrectionRepository
 						.findCorrectionDays(userId, projectId, month, year, firstDay, lastDay);
-				for (TaskTrackCorrection correction : taskTrackCorrections) {
-					correction.setStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION);
+				if(taskTrackCorrections.size() > 0) {
+					for (TaskTrackCorrection correction : taskTrackCorrections) {
+						correction.setStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION);
+					}
+					taskTrackCorrectionRepository.saveAll(taskTrackCorrections);
 				}
 			}
 			if (!days.equals(null) && days.size() != 0) {
@@ -588,6 +591,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 						taskTrackCorrection.setProject(project);
 						taskTrackCorrection.setComment(comment);
 						taskTrackCorrection.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
+						taskTrackCorrection.setType(isRecorrection ? Constants.TASKTRACK_CORRECTION_TYPE_RECORRECTION : Constants.TASKTRACK_CORRECTION_TYPE_CORRECTION);
 						taskTrackCorrectionRepository.save(taskTrackCorrection);
 					}
 				}

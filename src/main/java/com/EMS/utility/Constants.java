@@ -28,6 +28,9 @@ public class Constants {
 	public static final String TASKTRACK_CORRECTION_STATUS_OPEN = "OPEN";
 	public static final String TASKTRACK_CORRECTION_STATUS_CLOSED = "CLOSED";
 	
+	public static final String TASKTRACK_CORRECTION_TYPE_CORRECTION = "CORRECTION";
+	public static final String TASKTRACK_CORRECTION_TYPE_RECORRECTION = "RECORRECTION";
+	
 	public static final String TASKTRACK_REJECTION_STATUS_OPEN = "OPEN";
 	public static final String TASKTRACK_REJECTION_STATUS_CLOSED = "CLOSED";
 	public static final String TASKTRACK_REJECTION_FIRST_HALF_CYCLE = "FIRST";
