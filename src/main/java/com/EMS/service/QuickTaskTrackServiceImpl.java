@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -189,6 +190,7 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService{
 			List<JSONObject> taskList = new ArrayList<JSONObject>();
 			JSONObject projectObject = map.getValue();
 			Map<String, JSONObject> taskMap = taskListMap.get(map.getKey());
+			Map<String, JSONObject> sortedTaskMap = new LinkedHashMap<String, JSONObject>();
 			for(int day = 1 ; day <= lastDay ; day++) {
 				String taskTrackDate = year + "-" + (month < 10 ? "0" : "") + month + "-" + (day < 10 ? "0" : "") + day;
 				if(!taskMap.containsKey(taskTrackDate)) {
@@ -197,10 +199,14 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService{
 					task.put("qTrackId", null);
 					task.put("hour" , 0.0);
 					task.put("enable" , checkDateEnabled(projectDateMap, map.getKey(), taskTrackDate));
-					taskMap.put(taskTrackDate, task);
+					sortedTaskMap.put(taskTrackDate, task);
+				}
+				else {
+					sortedTaskMap.put(taskTrackDate, taskMap.get(taskTrackDate));
 				}
 			}
-			for(Map.Entry<String, JSONObject> tsk : taskMap.entrySet()) {
+			
+			for(Map.Entry<String, JSONObject> tsk : sortedTaskMap.entrySet()) {
 				taskList.add(tsk.getValue());
 			}
 			projectObject.put("taskDetails", taskList);
