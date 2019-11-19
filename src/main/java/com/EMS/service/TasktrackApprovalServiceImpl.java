@@ -6686,10 +6686,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				List<Double> approverTwoHourList = getApprovalTotalBillableHour(billableData, overtimeData);
 				for (int i = 0; i < approverTwoHourList.size(); i++) {
 					if (i < firstHalfDay) {
-						if (approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT))
+						if (approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+								|| approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)
+						)
 							firstHalfHour += approverTwoHourList.get(i);
 					} else {
-						if (approverTwoSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT))
+						if (approverTwoSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+								|| approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| approverTwoFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)
+						)
 							secondHalfHour += approverTwoHourList.get(i);
 					}
 				}
