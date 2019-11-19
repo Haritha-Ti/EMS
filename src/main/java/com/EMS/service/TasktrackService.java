@@ -62,10 +62,6 @@ public interface TasktrackService {
 
 	TaskTrackDaySubmissionModel getSubmissionDayByMonth(int month);
 
-	Task getTaskByName(String taskName);
-
-	List<Object[]> getTasksForTimeTrack(Long userId, Date fromDate, Date toDate);
-
 	// nisha
 	ObjectNode createCorrection(ObjectNode requestdata, Boolean isReCorrection);
 }
