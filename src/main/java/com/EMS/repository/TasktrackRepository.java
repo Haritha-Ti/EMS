@@ -98,6 +98,12 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectOwner.userId=?1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel1(long uId,int month,int year);
+	
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectTier = 2 AND (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) order by a.projectName")
+	public List<Object[]> getTier1And2ProjectNames(int month,int year);
+
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectTier = 1 AND (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) order by a.projectName")
+	public List<Object[]> getTier1ProjectNames(int month,int year);
 
 	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprover(long uId,int month,int year);

@@ -2885,7 +2885,11 @@ public class TasktrackController {
 		UserModel user = userService.getUserDetailsById(uId);
 
 		List<Object[]> projectList = null;
-		projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, month, year);
+		if (user.getRole().getroleId() == 5) {
+			projectList = tasktrackRepository.getTier1ProjectNames(month, year);
+		} else {
+			projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, month, year);
+		}
 
 		for (Object[] alloc : projectList) {
 			try {
@@ -2943,7 +2947,12 @@ public class TasktrackController {
 		UserModel user = userService.getUserDetailsById(uId);
 
 		List<Object[]> projectList = null;
-		projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, month, year);
+
+		if (user.getRole().getroleId() == 5) {
+			projectList = tasktrackRepository.getTier1And2ProjectNames(month, year);
+		} else {
+			projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, month, year);
+		}
 
 		for (Object[] alloc : projectList) {
 			try {
