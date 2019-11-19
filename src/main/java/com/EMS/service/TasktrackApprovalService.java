@@ -125,6 +125,9 @@ public interface TasktrackApprovalService {
 	JSONObject getDataForApprovalLevelTwo(Long userId, Date startDate, Date endDate, Long projectId,
 			Integer firstHalfDay);
 
+	JSONObject getDataForApprovalFinance(Long userId, Date startDate, Date endDate, Long projectId,
+										 Integer firstHalfDay);
+
 
 
 

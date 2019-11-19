@@ -573,6 +573,148 @@ public class ProjectController {
 		}
 
 	}
+	
+	// api for project list
+	@PostMapping(value = "/viewAllProjects")
+	public JsonNode getAllProjectsList(@RequestBody JsonNode requestdata,HttpServletResponse statusResponse) {
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		ArrayNode projectArray = objectMapper.createArrayNode();
+       // Long userId=null;
+		try {
+			// Getting all projects list to arraylist
+			ArrayList<ProjectModel> projectlist=null;
+			/*if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
+				userId = requestdata.get("sessionId").asLong();
+			}
+			if(userId == null)*/
+			projectlist = projectservice.getListofProjects();
+			/*else
+		    projectlist =  (ArrayList<ProjectModel>) regionFilterService.getAllProjectByLoginUserRegion(userId);*/	
+				
+			// checking for project arraylist is empty or not
+			if (projectlist.isEmpty()) {
+				responsedata.put("status", "success");
+				responsedata.put("message", "No Records Available");
+				responsedata.put("code", statusResponse.getStatus());
+				responsedata.put("payload", "");
+			} else {
+
+				// loop for getting projectwise details
+				for (ProjectModel obj : projectlist) {
+
+					  try{
+					// Object declarations
+					ObjectNode client = objectMapper.createObjectNode();
+					ContractModel contract = null;
+					ObjectNode contractobj = objectMapper.createObjectNode();
+					String parentproject = projectservice.getProjectName(obj.getParentProjectId());
+
+					// storing projects details in json object
+					ObjectNode jsonobj = objectMapper.createObjectNode();
+					jsonobj.put("projectId", obj.getProjectId());
+					jsonobj.put("projectName", obj.getProjectName());
+					jsonobj.put("projectFullName", parentproject + "_" + obj.getProjectName());
+					jsonobj.put("isBillable", obj.getisBillable());
+					jsonobj.put("projectCode", obj.getProjectCode());
+					jsonobj.put("projectType", obj.getprojectType());
+					jsonobj.put("projectStatus", obj.getprojectStatus());
+					
+					//get region list
+                    List<ProjectRegion> regions = projectservice.getregionlist(obj.getProjectId());
+                    ArrayNode regionsArray = objectMapper.createArrayNode();
+                    ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+                    if(regions.isEmpty()) {
+                        jsonobj.set("projectRegion", regionsArray);
+                    }
+                    else {
+                        for(ProjectRegion regioneach : regions) {
+                            ObjectNode resource = objectMapper.createObjectNode();
+                            regionsArray.add((int)regioneach.getRegion_Id().getId());
+                        }
+                        jsonobj.set("projectRegion", regionsArray);
+                    }
+                    //
+					 if(obj.getReleasingDate()!=null)
+					 {
+					jsonobj.put("releasingDate", obj.getReleasingDate().toString());
+					 }
+					if(obj.getClientName() != null)
+					{
+						client.put("clientId", obj.getClientName().getClientId());
+					    client.put("clientName", obj.getClientName().getClientName());
+					    jsonobj.set("client", client);
+					}
+					else {
+						client.set("clientId", null);
+					    client.set("clientName", null);
+					    jsonobj.set("client", client);
+						
+					}
+					
+					Long contractId=null;
+					
+					if(obj.getContract()!=null)
+					 contractId = obj.getContract().getContractTypeId() ;
+
+					if (contractId != null) {
+						// getting contract details
+						contract = projectservice.getContract(contractId);
+					}
+					// storing contract values in jsonobject
+					if (contract == null)
+						contractobj = null;
+					else {
+
+						contractobj.put("contractTypeId", contract.getContractTypeId());
+						contractobj.put("contractTypeName", contract.getContractTypeName());
+					}
+					jsonobj.set("contractType", contractobj);
+
+					// null checking user ID
+					Long userid = obj.getProjectOwner().getUserId();
+					UserModel userdata = null;
+					if (userid != null) {
+						// getting user details
+						userdata = userservice.getUserDetailsById(userid);
+					}
+
+					ObjectNode userobj = objectMapper.createObjectNode();
+					// storing user values in jsonobject
+					if (userdata == null)
+						userobj = null;
+					else {
+						userobj.put("firstName", userdata.getFirstName());
+						userobj.put("lastName", userdata.getLastName());
+						userobj.put("role", userdata.getRole().getroleId());
+						userobj.put("userId", userdata.getUserId());
+						userobj.put("regionId", userdata.getRegion().getId());
+
+					}
+					jsonobj.set("approver_level_1", userobj);
+
+					projectArray.add(jsonobj);
+				}
+					  catch (Exception e) {
+						e.printStackTrace();
+					}
+			   	
+			}
+				responsedata.put("status", "success");
+				responsedata.put("message", "success");
+				responsedata.put("code", statusResponse.getStatus());
+				responsedata.set("payload", projectArray);
+
+			}
+
+		} catch (Exception e) {
+			System.out.println("Exception : " + e);
+			responsedata.put("status", "failed");
+			responsedata.put("message", "Exception : " + e);
+			responsedata.put("code", statusResponse.getStatus());
+		}
+
+		return responsedata;
+	}
 
 	// api for project list
 	@PostMapping(value = "/viewProjects")
