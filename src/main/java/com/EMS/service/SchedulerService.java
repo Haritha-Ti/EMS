@@ -180,7 +180,7 @@ public class SchedulerService {
 							mailDomainDto.setMailBody(html);
 							mailDomainDto.setTo(userEmailMap.get(userName).toString());
 						    String token = UUID.randomUUID().toString();
-							String msg = emailNotificationService.sendMail(token, mailDomainDto);
+							String msg = emailNotificationService.sendMail(token, mailDomainDto,false);
 						}	
 					}
 

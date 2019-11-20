@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
@@ -23,8 +24,11 @@ import com.EMS.model.*;
 import com.EMS.repository.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+import com.EMS.dto.MailDomainDto;
 import com.EMS.exceptions.DuplicateEntryException;
 import com.EMS.repository.ActivityLogRepository;
 import com.EMS.repository.ProjectAllocationRepository;
@@ -45,6 +49,9 @@ import com.EMS.utility.Constants;
 import com.EMS.utility.TaskTrackApproverConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 @Service
 public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
@@ -110,6 +117,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Autowired
 	TaskTrackRejectionRepository taskTrackRejectionRepository;
 
+	@Autowired
+    private Configuration freemarkerConfig;
+	
+	@Autowired
+	private EmailNotificationService emailNotificationService;
+	
+	@Value("${FINANCE_MAIL}")
+	private String financeMail;
+	
 	@Override
 	public Boolean checkIsUserExists(Long id) {
 		Boolean exist = tasktrackRepository.existsByUser(id);
@@ -6112,6 +6128,24 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			}
 		}
+		try {
+			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverOne="";
+			subject = "RCG Time Sheet- First half time sheet Forwarded";
+			resource = user.getLastName().concat(" "+user.getFirstName());
+			approverOne = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName());
+			sendCC = project.getProjectOwner().getEmail();
+			sendTo = project.getOnsite_lead().getEmail().toString();
+			emailReceiver = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName())+",";
+			StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver);
+			mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
+			mailBody.append("<br/>Resource Name : "+resource);
+			mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 1-15 days has been Forwarded for Level 2 Approval");
+			mailBody.append("<br/><br/>Forwarded by : "+approverOne);
+
+			sendMail(sendTo,sendCC,subject,mailBody);
+		}
+		catch(Exception e){
+		}
 	}
 
 	/**
@@ -6466,6 +6500,25 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			}
 		}
+		try {
+			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverOne="";
+			subject = "RCG Time Sheet- Second half time sheet Forwarded";
+			resource = user.getLastName().concat(" "+user.getFirstName());
+			approverOne = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName());
+			sendCC = project.getProjectOwner().getEmail();
+			sendTo = project.getOnsite_lead().getEmail().toString();
+			emailReceiver = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName())+",";
+			StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver);
+			mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
+			mailBody.append("<br/>Resource Name : "+resource);
+			mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 16-31 days has been Forwarded for Level 2 Approval");
+			mailBody.append("<br/><br/>Forwarded by : "+approverOne);
+
+			sendMail(sendTo,sendCC,subject,mailBody);
+		}
+		catch(Exception e){
+
+		}
 	}
 
 	@Override
@@ -6495,6 +6548,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setCycle(Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
+		try {
+			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverTwo="";
+			subject = "RCG Time Sheet- First half time sheet Rejected";
+			resource = user.get().getLastName().concat(" "+user.get().getFirstName());
+			approverTwo = project.get().getOnsite_lead().getLastName().concat(" "+project.get().getOnsite_lead().getFirstName());
+			sendCC = project.get().getOnsite_lead().getEmail();
+			sendTo = project.get().getProjectOwner().getEmail();
+			emailReceiver = project.get().getProjectOwner().getLastName().concat(" "+project.get().getProjectOwner().getFirstName())+",";
+		
+		
+			StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver);
+			mailBody.append("<br/><br/>Project Name : "+project.get().getProjectName());
+			mailBody.append("<br/>Resource Name : "+resource);
+			mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 1-15 days requires correction.");
+			mailBody.append("<br/>Comments : "+remarks);
+			mailBody.append("<br/><br/>Correction Requested by : "+approverTwo);
+
+			sendMail(sendTo,sendCC,subject,mailBody);
+		}
+		catch(Exception e){
+
+		}
 	}
 
 	@Override
@@ -6523,6 +6598,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		taskTrackRejection.setCycle(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
 		taskTrackRejectionRepository.save(taskTrackRejection);
 
+		try {
+			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverTwo="";
+			subject = "RCG Time Sheet- Second half time sheet Rejected";
+			resource = user.get().getLastName().concat(" "+user.get().getFirstName());
+			approverTwo = project.get().getOnsite_lead().getLastName().concat(" "+project.get().getOnsite_lead().getFirstName());
+			sendCC = project.get().getOnsite_lead().getEmail();
+			sendTo = project.get().getProjectOwner().getEmail();
+			emailReceiver = project.get().getProjectOwner().getLastName().concat(" "+project.get().getProjectOwner().getFirstName())+",";
+		
+		
+			StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver);
+			mailBody.append("<br/><br/>Project Name : "+project.get().getProjectName());
+			mailBody.append("<br/>Resource Name : "+resource);
+			mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 16-31 days requires correction.");
+			mailBody.append("<br/>Comments : "+remarks);
+			mailBody.append("<br/><br/>Correction Requested by : "+approverTwo);
+
+			sendMail(sendTo,sendCC,subject,mailBody);
+		}
+		catch(Exception e){
+
+		}
 	}
 
 	/**
@@ -7326,5 +7423,25 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		response.put("correctionDays", correctionDays);
 
 		return response;
+	}
+	
+	private void sendMail(String sendTo, String cc,String subject , StringBuilder mailBody) throws Exception{
+		try {
+
+		MailDomainDto mailDomainDto = new MailDomainDto();
+		mailDomainDto.setSubject(subject);
+		mailDomainDto.setCc(cc);
+		mailDomainDto.setContent(mailBody.toString());
+		
+		Template t = freemarkerConfig.getTemplate("email_template.ftl");
+        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "");
+
+		mailDomainDto.setMailBody(html);
+		mailDomainDto.setTo(sendTo);
+	    String token = UUID.randomUUID().toString();
+		emailNotificationService.sendMail(token, mailDomainDto,true);
+		}
+		catch (Exception e) {
+		}
 	}
 }

@@ -122,7 +122,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
 		mailDomainDto.setBcc(null);
 		mailDomainDto.setCc(null);
 		
-		String result = emailNotificationService.sendMail(token, mailDomainDto);
+		String result = emailNotificationService.sendMail(token, mailDomainDto,false);
 		
 		if(result == "Success")
             msg = "Verification link has been successfully sent to your email \""+user.getEmail()+"\"";

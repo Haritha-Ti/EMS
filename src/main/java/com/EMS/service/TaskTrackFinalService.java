@@ -31,6 +31,8 @@ public interface TaskTrackFinalService {
 	void submitFirstHalfHoursForApproval2(JSONObject requestData) throws Exception;
 
 	void submitSecondHalfHoursForApproval2(JSONObject requestData) throws Exception;
+	
+	void bulkApproveLevel2(JSONObject requestData) throws Exception;
 
 }
 

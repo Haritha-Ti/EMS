@@ -3,6 +3,7 @@ package com.EMS.service;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,20 +11,27 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 
+import com.EMS.dto.MailDomainDto;
 import com.EMS.model.*;
 import com.EMS.repository.*;
 import com.EMS.utility.Constants;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 @Service
 public class TasktrackServiceImpl implements TasktrackService {
@@ -67,6 +75,15 @@ public class TasktrackServiceImpl implements TasktrackService {
 	@Autowired
 	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
 
+	@Autowired
+    private Configuration freemarkerConfig;
+	
+	@Autowired
+	private EmailNotificationService emailNotificationService;
+	
+	@Value("${FINANCE_MAIL}")
+	private String financeMail;
+	
 	@Override
 	public List<Tasktrack> getByDate(Date startDate, Date endDate, Long uId) {
 		List<Tasktrack> list = tasktrackRepository.getByDate(startDate, endDate, uId);
@@ -621,6 +638,52 @@ public class TasktrackServiceImpl implements TasktrackService {
 					}
 					taskTrackFinalJPARepository.saveAll(taskTrackApprovalFinal);
 					responsedata.put("message", "Correction requested successfully");
+					/*
+					 * Sending mail to approver 1 
+					*/
+					
+					String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverTwo="";
+
+					if (status.equalsIgnoreCase("firstHalf")) {
+						subject = "RCG Time Sheet- First half time sheet needs Correction";
+						resource = user.getLastName().concat(" "+user.getFirstName());
+						approverTwo = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName());
+						sendCC = project.getOnsite_lead().getEmail();
+						sendTo = project.getProjectOwner().getEmail();
+						emailReceiver = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName())+",";
+						StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver +"<br/>");
+						mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
+						mailBody.append("<br/>Resource Name : "+resource);
+						mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 1-15 days requires correction.");
+						mailBody.append("<br/><br/>Comments : "+comment);
+						if(isRecorrection)
+							mailBody.append("<br/><br/>Correction Requested by : "+approverTwo);
+						else
+							mailBody.append("<br/><br/>Correction Requested by : Finance Team");
+						
+
+						sendMail(sendTo,sendCC,subject,mailBody);
+					}
+					else {
+						subject = "RCG Time Sheet- First half time sheet needs Correction";
+						resource = user.getLastName().concat(" "+user.getFirstName());
+						approverTwo = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName());
+						sendCC = project.getOnsite_lead().getEmail();
+						sendTo = project.getProjectOwner().getEmail();
+						emailReceiver = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName())+",";
+						StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver +"<br/>");
+						mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
+						mailBody.append("<br/>Resource Name : "+resource);
+						mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 16-31 days requires correction.");
+						mailBody.append("<br/><br/>Comments : "+comment);
+						if(isRecorrection)
+							mailBody.append("<br/><br/>Correction Requested by : "+approverTwo);
+						else
+							mailBody.append("<br/><br/>Correction Requested by : Finance Team");
+
+						sendMail(sendTo,sendCC,subject,mailBody);
+					}
+				
 				} else {
 					responsedata.put("message", "Already exist");
 				}
@@ -637,5 +700,23 @@ public class TasktrackServiceImpl implements TasktrackService {
 		}
 		return responsedata;
 	}
+	private void sendMail(String sendTo, String cc,String subject , StringBuilder mailBody) throws Exception{
+		try {
 
+		MailDomainDto mailDomainDto = new MailDomainDto();
+		mailDomainDto.setSubject(subject);
+		mailDomainDto.setCc(cc);
+		mailDomainDto.setContent(mailBody.toString());
+		
+		Template t = freemarkerConfig.getTemplate("email_template.ftl");
+        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "");
+
+		mailDomainDto.setMailBody(html);
+		mailDomainDto.setTo(sendTo);
+	    String token = UUID.randomUUID().toString();
+		emailNotificationService.sendMail(token, mailDomainDto,true);
+		}
+		catch (Exception e) {
+		}
+	}
 }

@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.EMS.dto.MailDomainDto;
+import com.EMS.model.MailDomainModel;
 import com.EMS.model.UserModel;
+import com.EMS.repository.MailDomainRepository;
 import com.EMS.utility.Constants;
 
 @Service
@@ -30,9 +32,11 @@ public class EmailNotificationServiceImpl implements EmailNotificationService{
 	@Value("${EMAIL_PASSWORD}")
 	private String password;
 	
+	@Autowired
+	private MailDomainRepository mailDomainRepository;
 
 	@Override
-	public String sendMail(String token, MailDomainDto mailDomainDto) throws Exception {
+	public String sendMail(String token, MailDomainDto mailDomainDto ,Boolean isSaveMailContent) throws Exception {
 	    String msg = "Failure";
 
 		try {
@@ -74,7 +78,10 @@ public class EmailNotificationServiceImpl implements EmailNotificationService{
 			    message.setText(mailDomainDto.getMailBody());
 			    message.setContent(mailDomainDto.getMailBody(),"text/html");
 			  
-			    Transport.send(message); 
+			    Transport.send(message);
+			    
+			    if(isSaveMailContent)
+			    	saveMailContent(mailDomainDto);
 			    
 			    msg = "Success";
 
@@ -83,6 +90,18 @@ public class EmailNotificationServiceImpl implements EmailNotificationService{
 		}
 	    System.out.println(msg); 
 		return msg;
+	}
+	
+private void saveMailContent(MailDomainDto mailDomainDto) {
+		
+		MailDomainModel mailDomain = new MailDomainModel();
+		mailDomain.setBcc(mailDomainDto.getBcc());
+		mailDomain.setCc(mailDomainDto.getCc());
+		mailDomain.setMailContent(mailDomainDto.getContent());
+		mailDomain.setMailTo(mailDomainDto.getTo());
+		mailDomainRepository.save(mailDomain);
+		
+		
 	}
 
 }
