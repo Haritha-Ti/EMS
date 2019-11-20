@@ -2000,9 +2000,9 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 			for(int d=1;d<=dayCount;d++) {
 				cell = row.createCell(d+1);
-				cell.setCellValue((double)summary[d+3]);
+				cell.setCellValue((double)summary[d+2]);
 				cell.setCellStyle(borderedCellStyle);
-				totalHour =totalHour+(double)summary[d+3];
+				totalHour =totalHour+(double)summary[d+2];
 			}
 			cell = row.createCell(dayCount+2);
 			cell.setCellValue(totalHour);
