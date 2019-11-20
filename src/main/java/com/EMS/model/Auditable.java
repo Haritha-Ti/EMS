@@ -1,5 +1,7 @@
 package com.EMS.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
@@ -20,7 +22,7 @@ public class Auditable<U> {
 	
 	@LastModifiedDate
 	@Column(name="trx_date")
-	private U trx_date;
+	private Date trx_date;
 
 	public U getUser_in_action() {
 		return user_in_action;
@@ -30,17 +32,12 @@ public class Auditable<U> {
 		this.user_in_action = user_in_action;
 	}
 
-	public U getTrx_date() {
+	public Date getTrx_date() {
 		return trx_date;
 	}
 
-	public void setTrx_date(U trx_date) {
+	public void setTrx_date(Date trx_date) {
 		this.trx_date = trx_date;
 	}
 
-    
-	
-	
-	
-
-}
+	}

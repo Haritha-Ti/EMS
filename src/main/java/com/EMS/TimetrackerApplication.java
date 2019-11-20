@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.EMS.listener.SpringSecurityAuditorAware;
 import com.EMS.model.UserModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -65,11 +66,15 @@ class DataJpaConfig {
 }
 //Renjith
 @Configuration
-@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 class JpaAuditingConfiguration {
 
-	@Bean
+	/*@Bean
 	public AuditorAware<String> auditorProvider() {
 		return () -> Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication().getName());
-	}
+	}*/
+	@Bean
+    public AuditorAware<Long> auditorAware() {
+        return new SpringSecurityAuditorAware ();
+    }
 }
