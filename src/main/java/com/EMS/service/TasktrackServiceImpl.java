@@ -672,8 +672,14 @@ public class TasktrackServiceImpl implements TasktrackService {
 					if (status.equalsIgnoreCase("firstHalf")) {
 						subject = "RCG Time Sheet- First half time sheet needs Correction";
 						resource = user.getLastName().concat(" "+user.getFirstName());
-						approverTwo = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName());
-						sendCC = project.getOnsite_lead().getEmail();
+						
+						if(projectTier == 1){
+							sendCC = financeMail;
+						}
+						else {
+							sendCC = project.getOnsite_lead().getEmail();
+							approverTwo = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName());
+						}
 						sendTo = project.getProjectOwner().getEmail();
 						emailReceiver = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName())+",";
 						StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver +"<br/>");
@@ -681,7 +687,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 						mailBody.append("<br/>Resource Name : "+resource);
 						mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 1-15 days requires correction.");
 						mailBody.append("<br/><br/>Comments : "+comment);
-						if(isRecorrection)
+						if(isRecorrection && projectTier == 2)
 							mailBody.append("<br/><br/>Correction Requested by : "+approverTwo);
 						else
 							mailBody.append("<br/><br/>Correction Requested by : Finance Team");
@@ -692,8 +698,13 @@ public class TasktrackServiceImpl implements TasktrackService {
 					else {
 						subject = "RCG Time Sheet- First half time sheet needs Correction";
 						resource = user.getLastName().concat(" "+user.getFirstName());
-						approverTwo = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName());
-						sendCC = project.getOnsite_lead().getEmail();
+						if(projectTier == 1){
+							sendCC = financeMail;
+						}
+						else {
+							sendCC = project.getOnsite_lead().getEmail();
+							approverTwo = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName());
+						}
 						sendTo = project.getProjectOwner().getEmail();
 						emailReceiver = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName())+",";
 						StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver +"<br/>");
@@ -701,7 +712,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 						mailBody.append("<br/>Resource Name : "+resource);
 						mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 16-31 days requires correction.");
 						mailBody.append("<br/><br/>Comments : "+comment);
-						if(isRecorrection)
+						if(isRecorrection && projectTier == 2)
 							mailBody.append("<br/><br/>Correction Requested by : "+approverTwo);
 						else
 							mailBody.append("<br/><br/>Correction Requested by : Finance Team");
