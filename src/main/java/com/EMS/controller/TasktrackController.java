@@ -3023,11 +3023,11 @@ public class TasktrackController {
 				for (Object userItem : userIdList) {
 					Long userId = (Long) userItem;
 					Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
-					JSONObject taskTrackObject = tasktrackApprovalService.getInfoForApprovalLevelTwo(userId, startDate,
+					JSONObject taskTrackObject = tasktrackApprovalService.getInfoForFinance(userId, startDate,
 							endDate, isExist, projectId, firstHalfDay);
 					taskTrackObject.remove("approvalOneHours");
 					taskTrackObject.remove("approverOneFirstHalfStatus");
-					taskTrackObject.remove("approverOneSecodHalfStatus");
+					taskTrackObject.remove("approverOneSecondHalfStatus");
 					levelTwoData.add(taskTrackObject);
 				}
 
