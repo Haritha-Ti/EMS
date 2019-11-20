@@ -7007,6 +7007,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (approverTwoData != null && approverTwoData.size() > 0) {
 
 			for (TaskTrackApproval task : approverTwoData) {
+
 				cal.setTime(startDate);
 				Double hours = 0.0;
 				for (int i = startDay; i <= endDay; i++) {
@@ -7382,6 +7383,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			billableHours2 = new JSONObject();
 			overtimeHours2 = new JSONObject();
 			for (TaskTrackApproval task : approverTwoData) {
+				projectName = task.getProject().getProjectName();
 				cal.setTime(startDate);
 				Double hours = 0.0;
 
