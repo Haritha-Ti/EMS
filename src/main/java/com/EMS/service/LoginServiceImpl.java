@@ -51,7 +51,7 @@ public class LoginServiceImpl implements LoginService {
 		UserModel checkuserid = null;
 		
 		try {
-			System.out.println("una : "+userName);
+			//System.out.println("una : "+userName);
 			//System.out.println("pwd : "+password);
 
 //			calling sql query by passing parameters	
@@ -178,7 +178,7 @@ public class LoginServiceImpl implements LoginService {
 	public Boolean checkExistanceOfUserIdInTermination(Long userId) {
 		int result = 0;
 		result = userTerminationRepository.checkExistanceOfUserId(userId);
-		System.out.println("result "+result);
+		//System.out.println("result "+result);
 
 		if(result>0)
 			return true;

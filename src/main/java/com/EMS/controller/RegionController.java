@@ -46,7 +46,7 @@ public class RegionController {
 			String region_name = null;
 			String region_code = null ;
 			Long region_Id = null;
-			System.out.println("Here");
+			//System.out.println("Here");
 			
 	       if(requestdata.get("region_name") != null && requestdata.get("region_name") != "") {
 				

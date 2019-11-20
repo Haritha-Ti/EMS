@@ -1056,7 +1056,7 @@ public class TasktrackController {
 			}
 
 			else {
-				System.out.println("_________________________________________Other" + uId);
+				//System.out.println("_________________________________________Other" + uId);
 				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId);
 			}
 
@@ -1644,8 +1644,8 @@ public class TasktrackController {
 			cal.setTime(endDate);
 			approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
 
-			System.out.println("approved_dayindex" + approved_dayindex);
-			System.out.println("totaldays" + totaldays);
+			//System.out.println("approved_dayindex" + approved_dayindex);
+			//System.out.println("totaldays" + totaldays);
 			if (forward_status.length != 0) {
 				if ((approved_dayindex >= 15) && (((String) forward_status[0]).equalsIgnoreCase(""))) {
 
@@ -1678,7 +1678,7 @@ public class TasktrackController {
 				if (projectdetails.getOnsite_lead() != null)
 
 				{
-					System.out.println("------------------------------------------------1");
+					//System.out.println("------------------------------------------------1");
 
 					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()
 							+ " " + projectdetails.getOnsite_lead().getLastName());
@@ -1702,14 +1702,14 @@ public class TasktrackController {
 						month, year);
 
 				if (finance_status != null) {
-					System.out.println("---------------------------------------0");
+					//System.out.println("---------------------------------------0");
 					if (finance_status.length > 0) {
-						System.out.println("---------------------------------------1");
+					//	System.out.println("---------------------------------------1");
 						if (finance_status[0].equals("HM")) {
-							System.out.println("---------------------------------------2");
+					//		System.out.println("---------------------------------------2");
 							finance_status_message = "Submitted mid report";
 						} else if (finance_status[0].equals("FM")) {
-							System.out.println("---------------------------------------3");
+					//		System.out.println("---------------------------------------3");
 							finance_status_message = "Submitted Final report";
 						}
 
@@ -1727,7 +1727,7 @@ public class TasktrackController {
 							if (fl != null) {
 								if (fl[0] != null) {
 									Date fdate = (Date) fl[0];
-									System.out.println("---------------------------------------4");
+									//System.out.println("---------------------------------------4");
 									String pattern1 = "MM-dd-yyyy";
 									DateFormat df1 = new SimpleDateFormat(pattern1);
 									String forw = df1.format(fdate);
@@ -2588,10 +2588,10 @@ public class TasktrackController {
 
 			return jsonDataRes;
 		}
-		System.out.println(monthIndex + ", " + yearIndex + ", " + projectId);
+		//System.out.println(monthIndex + ", " + yearIndex + ", " + projectId);
 		List<TaskTrackApprovalLevel2> ls = tasktrackApprovalService.getMidMonthApprovedData(monthIndex, yearIndex,
 				projectId);
-		System.out.println(ls.size());
+		//System.out.println(ls.size());
 		for (TaskTrackApprovalLevel2 trackApprovalLevel2 : ls) {
 			try {
 				trackApprovalLevel2.setStatus("HM");

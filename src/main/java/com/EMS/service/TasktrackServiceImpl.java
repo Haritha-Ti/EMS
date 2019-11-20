@@ -330,7 +330,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				jsonArray.add(jsonObject);
 			}
 			userListObject.put("userName", name);
-			System.out.println("name : " + name);
+			//System.out.println("name : " + name);
 			userListObject.put("date", jsonArray);
 
 			jsonDataRes1.add(userListObject);
@@ -400,7 +400,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 			jsonDataRes1.add(userListObject);
 
 		} else {
-			System.out.println("caseee 22");
+			//System.out.println("caseee 22");
 			jsonArray = new ArrayList<>();
 			JSONObject userListObject = new JSONObject();
 
@@ -423,7 +423,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				jsonArray.add(jsonObject);
 			}
 			userListObject.put("userName", name);
-			System.out.println("name : " + name);
+			//System.out.println("name : " + name);
 			userListObject.put("date", jsonArray);
 
 			jsonDataRes1.add(userListObject);

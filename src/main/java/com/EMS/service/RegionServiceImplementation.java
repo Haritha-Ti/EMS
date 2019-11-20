@@ -148,7 +148,7 @@ public class RegionServiceImplementation implements RegionService {
 		holidays.setHolidayName(holiday.getHolidayName());
 		holidays.setHolidayType(holiday.getHolidayType());
 		holidays.setRegion_id(holiday.getRegion_id());
-		System.out.println("----------->"+holiday.getDate());
+		//System.out.println("----------->"+holiday.getDate());
 		holidayrepository.save(holidays);
 		responsedata.put("status", "success");
 		responsedata.put("message", "holidays updated successfully");

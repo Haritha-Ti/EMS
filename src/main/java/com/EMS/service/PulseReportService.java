@@ -69,7 +69,7 @@ public class PulseReportService {
 		}
 
 		List<ProjectModel> projectlist = projectservice.getListofProjects();
-		System.out.println("project :" + projectlist.size());
+		//System.out.println("project :" + projectlist.size());
 		int rownum = 4;
 		int count=0;
 		for (ProjectModel project : projectlist) {
@@ -80,7 +80,7 @@ public class PulseReportService {
 				projectClient = projectservice.getClientName(project.getClientName().getClientId());
 
 			List<AllocationModel> allocationlist = projectAllocationservice.getAllocationListonDate(project.getProjectId(),startDate,endDate);
-			System.out.println("allocation list size :" + allocationlist.size());
+			//System.out.println("allocation list size :" + allocationlist.size());
 
 			count = 0;
 			if (!allocationlist.isEmpty()) {

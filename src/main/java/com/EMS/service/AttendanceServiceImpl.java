@@ -52,7 +52,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public List<Object[]> getWeeklyLeavelist(Date startdate1,Date enddate1) {
 		List<Object[]> list=leaveRepository.getweeklyleavelist(startdate1,enddate1);
-		System.out.println("startdate :"+startdate1+" enddate: "+enddate1+" list :"+list.size());
+		//System.out.println("startdate :"+startdate1+" enddate: "+enddate1+" list :"+list.size());
 		return list;
 	}
 
@@ -112,7 +112,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public Boolean checkLeave(LeaveModel leaveModel) {
 		int result=leaveRepository.checkuser(leaveModel.getUser().getUserId(),leaveModel.getLeaveFrom(),leaveModel.getLeaveTo()); 
-		System.out.println("check count:"+result);
+		//System.out.println("check count:"+result);
 		if(result==0)
 			return true;
 		else
@@ -156,7 +156,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 	@Override
 	public Boolean checkLeaveBalance(LeaveBalanceModel lBalance) {
 		int result=leaveBalanceRepository.checkBalance(lBalance.getUser().getUserId(),lBalance.getQuarter(),lBalance.getYear()); 
-		System.out.println("check count:"+result);
+		//System.out.println("check count:"+result);
 		if(result==0)
 			return true;
 		else

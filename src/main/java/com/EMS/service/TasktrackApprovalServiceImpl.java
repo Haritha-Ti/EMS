@@ -992,7 +992,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							List<TaskTrackCorrection> corrections = taskTrackCorrectionRepository.findCorrectionDays(
 									item.getUser().getUserId(), item.getProject().getProjectId(), item.getMonth(),
 									item.getYear(), startDay, endDay);
-						System.out.println("size"+corrections);
+						//System.out.println("size"+corrections);
 							for (TaskTrackCorrection correction : corrections) {
 								correctionDays.add(correction.getDay());
 							}
@@ -1601,7 +1601,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				if (projectdetails.getOnsite_lead() != null)
 
 				{
-					System.out.println("------------------------------------------------1");
+					//System.out.println("------------------------------------------------1");
 
 					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()
 							+ " " + projectdetails.getOnsite_lead().getLastName());
@@ -1625,14 +1625,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						monthIndex, yearIndex);
 
 				if (finance_status != null) {
-					System.out.println("---------------------------------------0");
+					//System.out.println("---------------------------------------0");
 					if (finance_status.length > 0) {
-						System.out.println("---------------------------------------1");
+						//System.out.println("---------------------------------------1");
 						if (finance_status[0].equals("HM")) {
-							System.out.println("---------------------------------------2");
+							//System.out.println("---------------------------------------2");
 							finance_status_message = "Submitted mid report";
 						} else if (finance_status[0].equals("FM")) {
-							System.out.println("---------------------------------------3");
+							//System.out.println("---------------------------------------3");
 							finance_status_message = "Submitted Final report";
 						}
 
@@ -1651,7 +1651,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							if (fl != null) {
 								if (fl[0] != null) {
 									Date fdate = (Date) fl[0];
-									System.out.println("---------------------------------------4");
+									//System.out.println("---------------------------------------4");
 									String pattern1 = "MM-dd-yyyy";
 									DateFormat df1 = new SimpleDateFormat(pattern1);
 									String forw = df1.format(fdate);
@@ -2016,7 +2016,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (projectdetails.getOnsite_lead() != null)
 
 					{
-						System.out.println("------------------------------------------------1");
+						//System.out.println("------------------------------------------------1");
 
 						jsonDataMessageDetails.put("Level2_Approvar_Name",
 								projectdetails.getOnsite_lead().getFirstName() + " "
@@ -2041,14 +2041,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							userId, monthIndex, yearIndex);
 
 					if (finance_status != null) {
-						System.out.println("---------------------------------------0");
+						//System.out.println("---------------------------------------0");
 						if (finance_status.length > 0) {
-							System.out.println("---------------------------------------1");
+							//System.out.println("---------------------------------------1");
 							if (finance_status[0].equals("HM")) {
-								System.out.println("---------------------------------------2");
+								//System.out.println("---------------------------------------2");
 								finance_status_message = "Submitted mid report";
 							} else if (finance_status[0].equals("FM")) {
-								System.out.println("---------------------------------------3");
+								//System.out.println("---------------------------------------3");
 								finance_status_message = "Submitted Final report";
 							}
 
@@ -2067,7 +2067,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								if (fl != null) {
 									if (fl[0] != null) {
 										Date fdate = (Date) fl[0];
-										System.out.println("---------------------------------------4");
+										//System.out.println("---------------------------------------4");
 										String pattern1 = "MM-dd-yyyy";
 										DateFormat df1 = new SimpleDateFormat(pattern1);
 										String forw = df1.format(fdate);
