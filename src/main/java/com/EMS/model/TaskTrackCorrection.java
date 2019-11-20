@@ -18,7 +18,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "tasktrack_correction")
-public class TaskTrackCorrection extends  Auditable<String> {
+public class TaskTrackCorrection extends  Auditable<Long> {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

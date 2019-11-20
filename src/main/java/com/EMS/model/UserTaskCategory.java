@@ -19,7 +19,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "user_task_category")
-public class UserTaskCategory  extends Auditable<String> {
+public class UserTaskCategory  extends Auditable<Long> {
 	
 	@Id
 	@Column(name = "id")

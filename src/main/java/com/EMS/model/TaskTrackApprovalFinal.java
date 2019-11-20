@@ -24,7 +24,7 @@ import com.EMS.utility.Constants;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "TASKTRACK_APPROVAL_FINAL")
-public class TaskTrackApprovalFinal extends  Auditable<String>{
+public class TaskTrackApprovalFinal extends  Auditable<Long>{
 
 	@Id
 	@Column(name = "id")

@@ -10,7 +10,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "employeeContractors")
-public class EmployeeContractors extends Auditable<String>{
+public class EmployeeContractors extends Auditable<Long>{
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)

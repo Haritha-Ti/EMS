@@ -18,7 +18,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name="Resources")
-public class Resources extends Auditable<String>{
+public class Resources extends Auditable<Long>{
 	
 	
 	

@@ -16,7 +16,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name="contract_type")
-public class ContractModel extends Auditable<String> {
+public class ContractModel extends Auditable<Long> {
 
 	@Id
 	@Column(name="contractTypeId")

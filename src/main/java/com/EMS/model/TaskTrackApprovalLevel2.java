@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "tasktrack_approval_level2")
-public class TaskTrackApprovalLevel2  extends  Auditable<String>   {
+public class TaskTrackApprovalLevel2  extends  Auditable<Long>   {
 
 	@Id
 	@Column(name = "id")

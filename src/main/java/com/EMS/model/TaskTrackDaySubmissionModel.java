@@ -12,7 +12,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "tasktrack_day_submission")
-public class TaskTrackDaySubmissionModel extends Auditable<String> {
+public class TaskTrackDaySubmissionModel extends Auditable<Long> {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

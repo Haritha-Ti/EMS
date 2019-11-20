@@ -24,7 +24,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "taskCategory")
-public class TaskCategory  extends Auditable<String> {
+public class TaskCategory  extends Auditable<Long> {
 	@Id
 	@Column(name = "taskId")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

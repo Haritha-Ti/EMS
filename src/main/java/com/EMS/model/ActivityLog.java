@@ -19,7 +19,7 @@ import com.EMS.listener.ModelListener;
 @Entity
 @Audited
 @Table(name = "activity_log")
-public class ActivityLog  extends Auditable<String> {
+public class ActivityLog  extends Auditable<Long> {
 	
 
 	@Id
