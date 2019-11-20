@@ -18,7 +18,7 @@ import com.EMS.listener.ModelListener;
 @Audited
 @EntityListeners(ModelListener.class)
 @Entity
-public class PasswordResetModel  extends  Auditable<String>{
+public class PasswordResetModel  extends  Auditable<Long>{
 //	private static final int EXPIRATION = 60 * 24;
 	  
     @Id

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name="Allocation")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class AllocationModel extends  Auditable<String> {
+public class AllocationModel extends  Auditable<Long> {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)

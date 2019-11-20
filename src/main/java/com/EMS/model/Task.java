@@ -16,7 +16,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "task_master")
-public class Task extends Auditable<String> {
+public class Task extends Auditable<Long> {
 	
 	@Id
 	@Column(name = "id")

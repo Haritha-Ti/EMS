@@ -20,7 +20,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "userLeaveSummary")
-public class UserLeaveSummary  extends Auditable<String> {
+public class UserLeaveSummary  extends Auditable<Long> {
 
     @Id
     @Column(name = "userLeaveSummaryId")

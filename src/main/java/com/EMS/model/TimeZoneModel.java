@@ -17,7 +17,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name="timezone")
-public class TimeZoneModel extends  Auditable<String> {
+public class TimeZoneModel extends  Auditable<Long> {
 
 	
 	@Id

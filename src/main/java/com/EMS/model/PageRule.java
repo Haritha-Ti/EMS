@@ -17,7 +17,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "PAGERULE")
-public class PageRule  extends  Auditable<String> {
+public class PageRule  extends  Auditable<Long> {
 
 	@Id
 	@Column(name = "page_id")

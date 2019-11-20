@@ -11,16 +11,16 @@ import com.EMS.model.TaskTrackApprovalFinal;
 public interface AuditService {
 
 
-	List<JSONObject> getAuditByUserIdForFinal(Long projectId,Long userId, Date fromDate, Date toDate);
+	JSONObject getAuditByUserIdForFinal(Long projectId,Long userId, Date fromDate, Date toDate);
 
-	List<JSONObject> getAuditByUserId(Long projectId, Long userId, Date fromDate, Date toDate);
+	JSONObject getAuditByUserId(Long projectId, Long userId, Date fromDate, Date toDate);
 	
-	List<JSONObject> getAuditUserDetailsById(Long userId);
+	JSONObject getAuditUserDetailsById(Long userId);
 
-	List<JSONObject> getAuditUserDetailsByDateRange(Long userId, Date fromDate, Date toDate);
+	JSONObject getAuditUserDetailsByDateRange(Long userId, Date fromDate, Date toDate);
 	
-	List<JSONObject> getProjectAuditDataByProjectId(Long projectId);
+	JSONObject getProjectAuditDataByProjectId(Long projectId);
 
-	List<JSONObject> getProjectAuditDataByProjectIdAndDateRange(Long projectId, Date startDate, Date endDate);
+	JSONObject getProjectAuditDataByProjectIdAndDateRange(Long projectId, Date startDate, Date endDate);
 
 }

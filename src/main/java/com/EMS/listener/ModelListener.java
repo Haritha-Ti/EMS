@@ -9,7 +9,7 @@ import com.EMS.service.BeanUtil;
 public class ModelListener {
 	
 	@PreRemove
-	public void preRemove(Auditable modelObj){
+	public void preRemove(Auditable<Long> modelObj){
 		EntityManager entityManager = BeanUtil.getBean(EntityManager.class);
 		modelObj.setUser_in_action(null);
 		entityManager.merge(modelObj);

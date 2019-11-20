@@ -16,7 +16,7 @@ import com.EMS.listener.ModelListener;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name="cpp_level")
-public class CppLevelModel extends Auditable<String>{
+public class CppLevelModel extends Auditable<Long>{
 
 	@Id
 	@Column(name = "id")

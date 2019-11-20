@@ -27,151 +27,153 @@ private ProjectAllocationService projectAllocationService;
 @Autowired
 private AuditService auditService;
 
+@SuppressWarnings("unchecked")
 @PostMapping(value="/getAuditDataForApproval")
 public JSONObject getAuditData(@RequestBody JsonNode givenData) throws Exception{
 	Long userId=null,projectId=null;
 	Date fromDate=null,toDate=null;
 	JSONObject node=new JSONObject();
 	JSONObject nodeJson=new JSONObject();
-	List<JSONObject> taskTrackApproval=null;
+	JSONObject taskTrackApproval=null;
 	SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
 	fromDate=simpleDateFormat.parse(givenData.get("fromDate").asText());
-	if(givenData.get("userId")!=null && givenData.get("userId").asText()!=" ") {
+	if(givenData.get("userId")!=null && givenData.get("userId").asText()!="") {
 	userId=givenData.get("userId").asLong();
 	}
-	if(givenData.get("projectId")!=null && givenData.get("projectId").asText()!=" ") {
+	if(givenData.get("projectId")!=null && givenData.get("projectId").asText()!="") {
 	projectId=givenData.get("projectId").asLong();
 	}
-	if(givenData.get("fromDate")!=null && givenData.get("fromDate").asText()!=" ") {
+	if(givenData.get("fromDate")!=null && givenData.get("fromDate").asText()!="") {
 	fromDate=simpleDateFormat.parse(givenData.get("fromDate").asText());
 	}
-	if(givenData.get("toDate")!=null && givenData.get("toDate").asText()!=" ") {
+	if(givenData.get("toDate")!=null && givenData.get("toDate").asText()!="") {
 		toDate=simpleDateFormat.parse(givenData.get("toDate").asText());
 	}
 	try {
 	taskTrackApproval=auditService.getAuditByUserId(projectId,userId,fromDate,toDate);
-	
-	
-	}catch(Exception e) {
+		}catch(Exception e) {
 		
 		node.put("status", "failure");
 		node.put("message", "failed. " + e);
 	}
 	if (taskTrackApproval == null || taskTrackApproval.isEmpty()) {
-		node.put("staus", "failure");
+		node.put("status", "failure");
 		node.put("message", "No Content");
 		return node;
 	}
-	nodeJson.put("rows",taskTrackApproval);
+	
 	node.put("status", "Success");
-    node.put("data",nodeJson);
+    node.put("data",taskTrackApproval);
 	return node;
 }
 
+@SuppressWarnings("unchecked")
 @PostMapping(value="/getAuditDataForApprovalFinal")
 public JSONObject  getAuditDataForFinal(@RequestBody JsonNode givenData) throws Exception{
 	Long userId=null,projectId=null;
-	List<JSONObject> taskTrackApprovalFinal=null;
+	JSONObject taskTrackApprovalFinal=null;
 	JSONObject node=new JSONObject();
 	JSONObject nodeJson=new JSONObject();
 	Date fromDate=null,toDate=null;
 	SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-	if(givenData.get("userId")!=null && givenData.get("userId").asText()!=" ") {
+	if(givenData.get("userId")!=null && givenData.get("userId").asText()!="") {
 	userId=givenData.get("userId").asLong();
 	}
-	if(givenData.get("projectId")!=null && givenData.get("projectId").asText()!=" ") {
+	if(givenData.get("projectId")!=null && givenData.get("projectId").asText()!="") {
 	projectId=givenData.get("projectId").asLong();
 	}
-	if(givenData.get("fromDate")!=null && givenData.get("fromDate").asText()!=" ") {
+	if(givenData.get("fromDate")!=null && givenData.get("fromDate").asText()!="") {
 	fromDate=simpleDateFormat.parse(givenData.get("fromDate").asText());
 	}
-	if(givenData.get("toDate")!=null && givenData.get("toDate").asText()!=" ") {
+	if(givenData.get("toDate")!=null && givenData.get("toDate").asText()!="") {
 		toDate=simpleDateFormat.parse(givenData.get("toDate").asText());
 	}
 	
 	try {
 		taskTrackApprovalFinal=auditService.getAuditByUserIdForFinal(projectId,userId,fromDate,toDate);
-		
-		
 		}catch(Exception e) {
 			
 			node.put("status", "failure");
 			node.put("message", "failed. " + e);
 		}
 	if (taskTrackApprovalFinal == null || taskTrackApprovalFinal.isEmpty()) {
-		node.put("staus", "failure");
+		node.put("status", "failure");
 		node.put("message", "No Content");
 		return node;
 	}
-	nodeJson.put("rows",taskTrackApprovalFinal);
+	
 	node.put("status", "Success");
-    node.put("data",nodeJson);
+    node.put("data",taskTrackApprovalFinal);
 return node;
 }
 
+@SuppressWarnings("unchecked")
 @PostMapping(value="/getUserAuditData")
 public JSONObject getUserAuditData(@RequestBody JsonNode givenData) throws Exception{
 	Long userId=null;
-	List<JSONObject> userAuditData=null;
+
+	JSONObject userAuditDatas=null;
 	Date fromDate=null,toDate=null;
 	JSONObject node=new JSONObject();
 	JSONObject nodeJson=new JSONObject();
 	SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-	if(givenData.get("userId")!=null && givenData.get("userId").asText()!=" ") {
+	if(givenData.get("userId")!=null && givenData.get("userId").asText()!="") {
 		userId=givenData.get("userId").asLong();		
 	}
-	if(givenData.get("fromDate")!=null && givenData.get("fromDate").asText()!=" ") {
+	if(givenData.get("fromDate")!=null && givenData.get("fromDate").asText()!="") {
 		fromDate=simpleDateFormat.parse(givenData.get("fromDate").asText());
 	}
-	if(givenData.get("toDate")!=null && givenData.get("toDate").asText()!= " ") {
+	if(givenData.get("toDate")!=null && givenData.get("toDate").asText()!= "") {
 		toDate=simpleDateFormat.parse(givenData.get("toDate").asText());
 	}
 	try {
 		if (fromDate == null && toDate == null)
-			userAuditData=auditService.getAuditUserDetailsById(userId);
+			userAuditDatas=auditService.getAuditUserDetailsById(userId);
 		else
-			userAuditData=auditService.getAuditUserDetailsByDateRange(userId,fromDate,toDate);
+			userAuditDatas=auditService.getAuditUserDetailsByDateRange(userId,fromDate,toDate);
 		
 	}catch(Exception e) {
 		node.put("status", "failure");
 		node.put("message", "failed. " + e);
 	}
-	if (userAuditData == null || userAuditData.isEmpty()) {
+	if (userAuditDatas == null || userAuditDatas.isEmpty()) {
 		node.put("status", "failure");
 		node.put("message", "No Content");
 		return node;
 	}
-	nodeJson.put("rows",userAuditData);
+	//nodeJson.put("userAuditDetails",userAuditDatas);
 	node.put("status","Success");
-	node.put("data",nodeJson);
+	node.put("data",userAuditDatas);
 	return node;
 }
 
+
 @SuppressWarnings("unchecked")
 @PostMapping(value = "/getProjectAuditData")
-public JSONObject getProjectAuditData(@RequestBody JsonNode givenData) throws Exception {
+public JSONObject getProjectAuditData(@RequestBody JsonNode request) throws Exception {
 
 	Long projectId = null;
 	Date fromDate = null;
 	Date toDate = null;
 	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	JSONObject response = new JSONObject();
-	List<JSONObject> node = null;
-	if (givenData.get("projectId") != null && givenData.get("projectId").asText() != " ") {
-		projectId = givenData.get("projectId").asLong();
+	JSONObject node = null;
+	if (request.get("projectId") != null && request.get("projectId").asText() != "") {
+		projectId = request.get("projectId").asLong();
 	}
-	if (givenData.get("fromDate") != null && givenData.get("fromDate").asText() != " ") {
-		fromDate = simpleDateFormat.parse(givenData.get("fromDate").asText());
+	if (request.get("fromDate") != null && request.get("fromDate").asText() != "") {
+		fromDate = simpleDateFormat.parse(request.get("fromDate").asText());
 	}
-	if (givenData.get("toDate") != null && givenData.get("toDate").asText() != " ") {
-		toDate = simpleDateFormat.parse(givenData.get("toDate").asText());
+	if (request.get("toDate") != null && request.get("toDate").asText() != "") {
+		toDate = simpleDateFormat.parse(request.get("toDate").asText());
 	}
 
 	try {
 
 		if (projectId == 0L || projectId == null) {
-			response.put("staus", "failure");
+			response.put("status", "failure");
 			response.put("message", "ProjectId is mandtory");
+			response.put("code", 400);
 			return response;
 		}
 
@@ -179,19 +181,24 @@ public JSONObject getProjectAuditData(@RequestBody JsonNode givenData) throws Ex
 			node = auditService.getProjectAuditDataByProjectId(projectId);
 		else
 			node = auditService.getProjectAuditDataByProjectIdAndDateRange(projectId, fromDate, toDate);
+		
 	} catch (Exception e) {
-		response.put("staus", "failure");
+		response.put("status", "failure");
 		response.put("message", e.getMessage());
+		response.put("code", 500);
 		return response;
 	}
 	if (node == null || node.isEmpty()) {
-		response.put("staus", "failure");
+		response.put("status", "failure");
 		response.put("message", "No Content");
+		response.put("code", 404);
 		return response;
 	}
 	response.put("data", node);
-	response.put("staus", "Success");
+	response.put("status", "Success");
 	return response;
 
+	
 }
+
 }

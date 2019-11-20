@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name="Project")
-public class ProjectModel  extends  Auditable<String>  {
+public class ProjectModel  extends  Auditable<Long>  {
 	
 	@Id
 	@Column(name="projectId")

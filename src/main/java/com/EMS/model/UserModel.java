@@ -35,7 +35,7 @@ import lombok.Builder;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "User")
-public class UserModel  extends Auditable<String> implements UserDetails{
+public class UserModel  extends Auditable<Long> implements UserDetails{
 
 	@Id
 	@Column(name = "userId")

@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "Tasktrack")
-public class Tasktrack  extends  Auditable<String> implements Comparable<Tasktrack> {
+public class Tasktrack  extends  Auditable<Long> implements Comparable<Tasktrack> {
 
 	@Id
 	@Column(name = "id")
