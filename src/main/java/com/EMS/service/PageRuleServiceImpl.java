@@ -33,7 +33,7 @@ public class PageRuleServiceImpl implements PageRuleService {
 		
 		for(PageRule rules : allowedList) {
 			List<PageRule> childs = pageRuleRepository.getChildsParent(rules.getId());
-			System.out.println("childs--------------->"+childs.size());
+			//System.out.println("childs--------------->"+childs.size());
 			ObjectNode eachpage = objectMapper.createObjectNode();
 			ArrayNode allowedchilds = objectMapper.createArrayNode();
 			for(PageRule child : childs) {

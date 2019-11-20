@@ -128,7 +128,7 @@ public class PasswordResetServiceImpl implements PasswordResetService{
             msg = "Verification link has been successfully sent to your email \""+user.getEmail()+"\"";
 		else
 			msg = "Unable to send mail";
-	    System.out.println(msg); 
+	    //System.out.println(msg);
 		return msg;
 	}
 

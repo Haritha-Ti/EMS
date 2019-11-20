@@ -1056,7 +1056,7 @@ public class TasktrackController {
 			}
 
 			else {
-				System.out.println("_________________________________________Other" + uId);
+				//System.out.println("_________________________________________Other" + uId);
 				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId);
 			}
 
@@ -1644,8 +1644,8 @@ public class TasktrackController {
 			cal.setTime(endDate);
 			approved_dayindex = cal.get(Calendar.DAY_OF_MONTH);
 
-			System.out.println("approved_dayindex" + approved_dayindex);
-			System.out.println("totaldays" + totaldays);
+			//System.out.println("approved_dayindex" + approved_dayindex);
+			//System.out.println("totaldays" + totaldays);
 			if (forward_status.length != 0) {
 				if ((approved_dayindex >= 15) && (((String) forward_status[0]).equalsIgnoreCase(""))) {
 
@@ -1678,7 +1678,7 @@ public class TasktrackController {
 				if (projectdetails.getOnsite_lead() != null)
 
 				{
-					System.out.println("------------------------------------------------1");
+					//System.out.println("------------------------------------------------1");
 
 					jsonDataMessageDetails.put("Level2_Approvar_Name", projectdetails.getOnsite_lead().getFirstName()
 							+ " " + projectdetails.getOnsite_lead().getLastName());
@@ -1702,14 +1702,14 @@ public class TasktrackController {
 						month, year);
 
 				if (finance_status != null) {
-					System.out.println("---------------------------------------0");
+					//System.out.println("---------------------------------------0");
 					if (finance_status.length > 0) {
-						System.out.println("---------------------------------------1");
+					//	System.out.println("---------------------------------------1");
 						if (finance_status[0].equals("HM")) {
-							System.out.println("---------------------------------------2");
+					//		System.out.println("---------------------------------------2");
 							finance_status_message = "Submitted mid report";
 						} else if (finance_status[0].equals("FM")) {
-							System.out.println("---------------------------------------3");
+					//		System.out.println("---------------------------------------3");
 							finance_status_message = "Submitted Final report";
 						}
 
@@ -1727,7 +1727,7 @@ public class TasktrackController {
 							if (fl != null) {
 								if (fl[0] != null) {
 									Date fdate = (Date) fl[0];
-									System.out.println("---------------------------------------4");
+									//System.out.println("---------------------------------------4");
 									String pattern1 = "MM-dd-yyyy";
 									DateFormat df1 = new SimpleDateFormat(pattern1);
 									String forw = df1.format(fdate);
@@ -2588,10 +2588,10 @@ public class TasktrackController {
 
 			return jsonDataRes;
 		}
-		System.out.println(monthIndex + ", " + yearIndex + ", " + projectId);
+		//System.out.println(monthIndex + ", " + yearIndex + ", " + projectId);
 		List<TaskTrackApprovalLevel2> ls = tasktrackApprovalService.getMidMonthApprovedData(monthIndex, yearIndex,
 				projectId);
-		System.out.println(ls.size());
+		//System.out.println(ls.size());
 		for (TaskTrackApprovalLevel2 trackApprovalLevel2 : ls) {
 			try {
 				trackApprovalLevel2.setStatus("HM");
@@ -3023,11 +3023,11 @@ public class TasktrackController {
 				for (Object userItem : userIdList) {
 					Long userId = (Long) userItem;
 					Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
-					JSONObject taskTrackObject = tasktrackApprovalService.getInfoForApprovalLevelTwo(userId, startDate,
+					JSONObject taskTrackObject = tasktrackApprovalService.getInfoForFinance(userId, startDate,
 							endDate, isExist, projectId, firstHalfDay);
 					taskTrackObject.remove("approvalOneHours");
 					taskTrackObject.remove("approverOneFirstHalfStatus");
-					taskTrackObject.remove("approverOneSecodHalfStatus");
+					taskTrackObject.remove("approverOneSecondHalfStatus");
 					levelTwoData.add(taskTrackObject);
 				}
 
@@ -3092,6 +3092,39 @@ public class TasktrackController {
 		}
 		return response;
 
+	}
+	/**
+	 * For bulk approval of first half data in Approval Log2
+	 *
+	 * @author  Jinu Shaji
+	 * @version 1.0
+	 * @since   2019-11-14
+	 */
+	@PostMapping("/bulkApproveLevel2")
+	public ResponseEntity<Object> bulkApproveLevel2(@RequestBody JSONObject requestData,
+													HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+		try {
+			taskTrackFinalService.bulkApproveLevel2(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
 	}
 
 }

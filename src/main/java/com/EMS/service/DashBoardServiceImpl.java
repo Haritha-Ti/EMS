@@ -49,15 +49,15 @@ public class DashBoardServiceImpl implements DashBoardService {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
 		String datestring = formatter.format(date);
-		System.out.println("datee :" + datestring);
+		//System.out.println("datee :" + datestring);
 //	    For getting the count of active projects
 		int activeProjects = projectRepository.getActiveProjects(datestring);
-		System.out.println("Active projects count : " + activeProjects);
+		//System.out.println("Active projects count : " + activeProjects);
 		jsonData.put("projectCount", activeProjects);
 
 //		For getting the count of active users
 		int activeUsers = userRepository.getAllActiveUsers(datestring);
-		System.out.println("active users count :" + activeUsers);
+	//	System.out.println("active users count :" + activeUsers);
 		jsonData.put("usersCount", activeUsers);
 
 		
@@ -66,7 +66,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		
 		if (!allocationList.isEmpty()) {
 			int benchUsersCount = allocationList.size();
-			System.out.println("bench count :" + benchUsersCount);
+			//System.out.println("bench count :" + benchUsersCount);
 			jsonData.put("benchUsersCount", benchUsersCount);
 
 			Map<String, Integer> technologyCount = new HashMap<String, Integer>();
@@ -105,15 +105,15 @@ public class DashBoardServiceImpl implements DashBoardService {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
 		String datestring = formatter.format(date);
-		System.out.println("datee :" + datestring);
+		//System.out.println("datee :" + datestring);
 //	    For getting the count of active projects
 		int activeProjects = projectRepository.getActiveProjectsCountByRegion(datestring, regionId);
-		System.out.println("Active projects count : " + activeProjects);
+		//System.out.println("Active projects count : " + activeProjects);
 		jsonData.put("projectCount", activeProjects);
 
 //		For getting the count of active users
 		int activeUsers = userRepository.getAllActiveUsersByRegion(regionId);
-		System.out.println("active users count :" + activeUsers);
+		//System.out.println("active users count :" + activeUsers);
 		jsonData.put("usersCount", activeUsers);
 
 		
@@ -122,7 +122,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		
 		if (!allocationList.isEmpty()) {
 			int benchUsersCount = allocationList.size();
-			System.out.println("bench count :" + benchUsersCount);
+			//System.out.println("bench count :" + benchUsersCount);
 			jsonData.put("benchUsersCount", benchUsersCount);
 
 			Map<String, Integer> technologyCount = new HashMap<String, Integer>();

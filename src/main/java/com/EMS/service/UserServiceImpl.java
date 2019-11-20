@@ -142,10 +142,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public int deleteTechnology(Long userId) {
-		System.out.println("userId: "+userId);
+		//System.out.println("userId: "+userId);
 
 		int userTechnology = userTechnologyRepository.deleteByUserId(userId);
-		System.out.println("userId 1 : "+userId);
+		//System.out.println("userId 1 : "+userId);
 
 		return userTechnology;
 	}
@@ -166,7 +166,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<Object[]> getnewHire(int startmonth,int endmonth,int year) {
-		System.out.println("month :"+startmonth+" endmonth:"+endmonth);
+		//System.out.println("month :"+startmonth+" endmonth:"+endmonth);
 		
 		List<Object[]> list=userRepository.findnewHire(startmonth,endmonth,year);
 

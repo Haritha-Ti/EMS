@@ -90,7 +90,7 @@ public class SummaryService {
 		rownum += 2;
 
 		List<String> location = projectservice.getclientLocation();
-		System.out.println("location list:" + location.size());
+		//System.out.println("location list:" + location.size());
 		int startrow = 0, lastrow = 0,benchrow=0,totalrow=0;
 		
 		startrow = rownum+2;

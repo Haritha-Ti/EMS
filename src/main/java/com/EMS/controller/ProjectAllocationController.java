@@ -228,7 +228,7 @@ public class ProjectAllocationController {
 
 			if (!requestData.get("regionId").toString().isEmpty() && requestData.get("regionId").toString() != null)
 				regionId = requestData.get("regionId").toString();
-			System.out.println("-------------------->" + regionId);
+			//System.out.println("-------------------->" + regionId);
 			
 			if (!requestData.get("sessionId").toString().isEmpty() && requestData.get("sessionId").toString() != null)
 				sessionId = new Long(requestData.get("sessionId").toString());
@@ -248,7 +248,7 @@ public class ProjectAllocationController {
 			// available
 
 			if ((uId == null || uId == "") && (dId == null || dId == "") && (regionId == null || regionId == "")) {
-				System.out.println("no ids");
+				//System.out.println("no ids");
 				List<UserModel> userList = userService.getUserByRegionAndDepartment(loginUserRegionId);
 
 				// Invoc getUserAllocationList() to findout the allocation
@@ -270,7 +270,7 @@ public class ProjectAllocationController {
 			else if ((dId != null || dId != "") && (uId == null || uId == "" || uId.equals("0"))
 					&& (regionId == null || regionId == "")) {
 				Long deptId = Long.parseLong(dId);
-				System.out.println("depart id");
+				//System.out.println("depart id");
 				// Obtain the user list based on the department
 				List<UserModel> userList = userService.getUserByDeptId(deptId);
 
@@ -293,7 +293,7 @@ public class ProjectAllocationController {
 
 				Long userId = Long.parseLong(uId);
 				UserModel user = userService.getUserDetailsById(userId);
-				System.out.println("userId");
+				//System.out.println("userId");
 				// Invoc getUserAllocationList() to findout the allocation
 				// details of the user
 				if (user != null) {
@@ -308,10 +308,10 @@ public class ProjectAllocationController {
 
 				Long regId = Long.parseLong(regionId);
 				List<UserModel> userList = userService.getUserByRegion(date1,date2,regId);
-				System.out.println("regionId");
+				//System.out.println("regionId");
 				if (userList != null) {
 					for (UserModel user : userList) {
-						System.out.println("userName----"+user.getFirstName()+" "+user.getLastName());
+				//		System.out.println("userName----"+user.getFirstName()+" "+user.getLastName());
 						// Invoc getUserAllocationList() to findout the
 						// allocation details of the user
 						getUserAllocationList(user, date1, date2, jsonArrayFiltered);
@@ -326,7 +326,7 @@ public class ProjectAllocationController {
 					&& (regionId == null || regionId == "")) {
 				Long deptId = Long.parseLong(dId);
 				Long userId = Long.parseLong(uId);
-				System.out.println("userId&deptId");
+				//System.out.println("userId&deptId");
 				UserModel user = userService.getUser(deptId, userId);
 
 				// Invoc getUserAllocationList() to findout the allocation
@@ -342,7 +342,7 @@ public class ProjectAllocationController {
 							Long userId = Long.parseLong(uId);
 							Long regId  = Long.parseLong(regionId);
 							UserModel user = userService.getUserByRegion(regId, userId);
-							System.out.println("UserId n RegionId");
+				//			System.out.println("UserId n RegionId");
 							// Invoc getUserAllocationList() to findout the allocation
 							// details of the user
 							if (user != null) {
@@ -352,11 +352,11 @@ public class ProjectAllocationController {
 			// 3 ids are there
 			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "")
 					&& (regionId != null && regionId != "")) {
-				System.out.println("--------------------->"+dId);
-				System.out.println("-------------------->6" + regionId);
+				//System.out.println("--------------------->"+dId);
+				//System.out.println("-------------------->6" + regionId);
 				Long deptId = Long.parseLong(dId);
 				Long userId = Long.parseLong(uId);
-				System.out.println("Region and user only");
+				//System.out.println("Region and user only");
 				Long regId = Long.parseLong(regionId);
 				UserModel user = userService.getUserBydeptRegion(deptId, userId, regId);
 
@@ -374,7 +374,7 @@ public class ProjectAllocationController {
 			jsonDataRes.put("message", "success. ");
 
 		} catch (Exception e) {
-			System.out.println("start failed");
+			//System.out.println("start failed");
 			jsonDataRes.put("status", "failure");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "failed. " + e);
@@ -833,12 +833,12 @@ public class ProjectAllocationController {
 			allocationModel.setIsBillable(isBillable);
 			
 			//if the endate is just after the end date of previously added one
-			System.out.println("Here---------------------->");
+			//System.out.println("Here---------------------->");
 			//List<Object[]> allocationModelnew = projectAllocation.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
 			//Object[] allocationModelnew = projectAllocation.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
 			
 			BigInteger allocationID=projectAllocation.getAllocationContinousDateRange(projectId,userId,startDate,endDate);
-			System.out.println("Here---------------------->1"+allocationID);
+			//System.out.println("Here---------------------->1"+allocationID);
 			Long prim_id = null;
 			//long alloc_id = 721;
 			
@@ -940,13 +940,13 @@ public class ProjectAllocationController {
 
 			if (!requestData.get("regionId").toString().isEmpty() && requestData.get("regionId").toString() != null)
 				regionId = requestData.get("regionId").toString();
-			System.out.println("-------------------->" + regionId);
+			//System.out.println("-------------------->" + regionId);
 
 			// Obtain the user list if both department id and user id are not
 			// available
 
 			if ((uId == null || uId == "") && (dId == null || dId == "") && (regionId == null || regionId == "")) {
-				System.out.println("no ids");
+				//System.out.println("no ids");
 				List<UserModel> userList = userService.getAllUsers();
 
 				// Invoc getUserAllocationList() to findout the allocation
@@ -968,7 +968,7 @@ public class ProjectAllocationController {
 			else if ((dId != null || dId != "") && (uId == null || uId == "" || uId.equals("0"))
 					&& (regionId == null || regionId == "")) {
 				Long deptId = Long.parseLong(dId);
-				System.out.println("depart id");
+				//System.out.println("depart id");
 				// Obtain the user list based on the department
 				List<UserModel> userList = userService.getUserByDeptId(deptId);
 
@@ -991,7 +991,7 @@ public class ProjectAllocationController {
 
 				Long userId = Long.parseLong(uId);
 				UserModel user = userService.getUserDetailsById(userId);
-				System.out.println("userId");
+				//System.out.println("userId");
 				// Invoc getUserAllocationList() to findout the allocation
 				// details of the user
 				if (user != null) {
@@ -1006,7 +1006,7 @@ public class ProjectAllocationController {
 
 				Long regId = Long.parseLong(regionId);
 				List<UserModel> userList = userService.getUserByRegion(regId);
-				System.out.println("regionId");
+				//System.out.println("regionId");
 				if (userList != null) {
 					for (UserModel user : userList) {
 
@@ -1024,7 +1024,7 @@ public class ProjectAllocationController {
 					&& (regionId == null || regionId == "")) {
 				Long deptId = Long.parseLong(dId);
 				Long userId = Long.parseLong(uId);
-				System.out.println("userId&deptId");
+				//System.out.println("userId&deptId");
 				UserModel user = userService.getUser(deptId, userId);
 
 				// Invoc getUserAllocationList() to findout the allocation
@@ -1040,7 +1040,7 @@ public class ProjectAllocationController {
 							Long userId = Long.parseLong(uId);
 							Long regId  = Long.parseLong(regionId);
 							UserModel user = userService.getUserByRegion(regId, userId);
-							System.out.println("UserId n RegionId");
+							//System.out.println("UserId n RegionId");
 							// Invoc getUserAllocationList() to findout the allocation
 							// details of the user
 							if (user != null) {
@@ -1050,11 +1050,11 @@ public class ProjectAllocationController {
 			// 3 ids are there
 			else if ((uId != null && uId != "" && !uId.equals("0")) && (dId != null || dId != "")
 					&& (regionId != null && regionId != "")) {
-				System.out.println("--------------------->"+dId);
-				System.out.println("-------------------->6" + regionId);
+				//System.out.println("--------------------->"+dId);
+				//System.out.println("-------------------->6" + regionId);
 				Long deptId = Long.parseLong(dId);
 				Long userId = Long.parseLong(uId);
-				System.out.println("Region and user only");
+				//System.out.println("Region and user only");
 				Long regId = Long.parseLong(regionId);
 				UserModel user = userService.getUserBydeptRegion(deptId, userId, regId);
 
@@ -1072,7 +1072,7 @@ public class ProjectAllocationController {
 			jsonDataRes.put("message", "success. ");
 
 		} catch (Exception e) {
-			System.out.println("start failed");
+			System.out.println("Exception : start failed");
 			jsonDataRes.put("status", "failure");
 			jsonDataRes.put("code", httpstatus.getStatus());
 			jsonDataRes.put("message", "failed. " + e);

@@ -192,7 +192,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List<String> getclientLocation() {
 		List<String> location=client_repository.getLocation();
-		System.out.println("loca :"+location.size());
+		//System.out.println("loca :"+location.size());
 		return location;
 	}
 

@@ -182,7 +182,7 @@ public class TermService {
 			int termrownum=6;
 			
 			List<UserTermination> termlist=getTermlist(startDate,endDate);
-			System.out.println("term list:"+termlist.size());
+			//System.out.println("term list:"+termlist.size());
 			for(UserTermination termdata:termlist) {
 				
 				UserModel userdata=userservice.getUserdetailsbyId(termdata.getConsultant().getUserId());

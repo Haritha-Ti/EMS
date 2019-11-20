@@ -330,7 +330,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				jsonArray.add(jsonObject);
 			}
 			userListObject.put("userName", name);
-			System.out.println("name : " + name);
+			//System.out.println("name : " + name);
 			userListObject.put("date", jsonArray);
 
 			jsonDataRes1.add(userListObject);
@@ -400,7 +400,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 			jsonDataRes1.add(userListObject);
 
 		} else {
-			System.out.println("caseee 22");
+			//System.out.println("caseee 22");
 			jsonArray = new ArrayList<>();
 			JSONObject userListObject = new JSONObject();
 
@@ -423,7 +423,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				jsonArray.add(jsonObject);
 			}
 			userListObject.put("userName", name);
-			System.out.println("name : " + name);
+			//System.out.println("name : " + name);
 			userListObject.put("date", jsonArray);
 
 			jsonDataRes1.add(userListObject);
@@ -505,8 +505,23 @@ public class TasktrackServiceImpl implements TasktrackService {
 			String comment = requestdata.get("comment").asText();
 			String status = requestdata.get("status").asText();
 			ArrayNode days = (ArrayNode) requestdata.get("days");
-			JsonNode node1 = days.get(0);
-			String inputDate1 = node1.asText();
+			ArrayNode removedDays = (ArrayNode) requestdata.get("removedDays");
+			if( days.size()==0 && removedDays.size()==0)
+			{
+				responsedata.put("message", "no days selected");
+				responsedata.put("status", "success");
+				return requestdata;
+			}
+			String inputDate1 = null;
+			if(days.size()!=0) {
+				JsonNode node1 = days.get(0);
+				 inputDate1 = node1.asText();
+			}
+			else if(removedDays.size()!=0)
+			{
+				JsonNode node1 = removedDays.get(0);
+				 inputDate1 = node1.asText();
+			}
 			SimpleDateFormat outputFormat1 = new SimpleDateFormat("yyyy-MM-dd");
 			Date correctionDate1 = outputFormat1.parse(inputDate1);
 			Calendar calender = Calendar.getInstance();
@@ -532,6 +547,50 @@ public class TasktrackServiceImpl implements TasktrackService {
 						correction.setStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION);
 					}
 					taskTrackCorrectionRepository.saveAll(taskTrackCorrections);
+				}
+			}
+			//remove days
+			if(removedDays.size()!=0){
+				for (JsonNode node : removedDays) {
+					String inputDate = node.asText();
+					SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+					Date correctionDate = outputFormat.parse(inputDate);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(correctionDate);
+					monthIndex = (cal.get(Calendar.MONTH) + 1);
+					yearIndex = cal.get(Calendar.YEAR);
+					day = cal.get(Calendar.DAY_OF_MONTH);
+					List<TaskTrackCorrection> correctionData = taskTrackCorrectionRepository.getTaskCorrectData(userId, projectId, monthIndex, yearIndex, day);
+					for (TaskTrackCorrection correction : correctionData) {
+						correction.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
+					}
+					taskTrackCorrectionRepository.saveAll(correctionData);
+				}
+				if(days.size()==0){
+					int projectTier = project.getProjectTier();
+					if (projectTier == 2) {
+						List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
+								.upadateTaskTrackApprovalStatus(projectId, monthIndex, yearIndex, userId);
+						for (TaskTrackApproval approval : taskTrackApproval) {
+							if (status.equalsIgnoreCase("firstHalf")) {
+								approval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_LOCK);
+							} else if (status.equalsIgnoreCase("secondHalf")) {
+								approval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_LOCK);
+							}
+						}
+						timeTrackApprovalJPARepository.saveAll(taskTrackApproval);
+					}
+					List<TaskTrackApprovalFinal> taskTrackApprovalFinal = taskTrackFinalJPARepository
+							.upadateTaskTrackApprovalFinalStatus(projectId, monthIndex, yearIndex, userId);
+
+					for (TaskTrackApprovalFinal approvalFinal : taskTrackApprovalFinal) {
+						if (status.equalsIgnoreCase("firstHalf")) {
+							approvalFinal.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
+						} else if (status.equalsIgnoreCase("secondHalf")) {
+							approvalFinal.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
+						}
+					}
+					taskTrackFinalJPARepository.saveAll(taskTrackApprovalFinal);
 				}
 			}
 			if (!days.equals(null) && days.size() != 0) {

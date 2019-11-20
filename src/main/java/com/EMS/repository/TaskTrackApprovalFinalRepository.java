@@ -171,4 +171,5 @@ public interface TaskTrackApprovalFinalRepository extends JpaRepository<TaskTrac
 			" inner join project ON (project.project_id = ta.project_project_id) where " +
 			"month=?1 and year=?2 and ta.project_type in('Billable','Overtime') group by user_user_id,status,project.project_name",nativeQuery = true)
 	List<Object[]> getFinanceDataByMonthYear(int month, int year);
+
 }

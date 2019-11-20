@@ -117,7 +117,7 @@ public class ReportController {
 	public JsonNode getBenchProjectReport(@RequestBody Taskdetails requestdata) {
 
 		ArrayNode benchProjectReport = null;
-		System.out.println("requestdata.getuId()=" + requestdata.getuId());
+		//System.out.println("requestdata.getuId()=" + requestdata.getuId());
 		if (requestdata.getuId() != null) { // System.out.println("if");
 			benchProjectReport = reportServiceImpl.getBenchProjectReportDetails(requestdata.getuId(),
 					requestdata.getFromDate(), requestdata.getToDate());
@@ -419,7 +419,7 @@ public class ReportController {
 				String billable = null;
 				Boolean isBillable = false;
 				Long id = (Long) userItem;
-				System.out.println("id : " + id);
+				//System.out.println("id : " + id);
 
 				isBillable = projectAllocationService.getIsBillable(id, projectId);
 				if (isBillable)

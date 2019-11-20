@@ -106,7 +106,7 @@ public class PulseReportController {
 		/*if(regionId_selected != null || regionId_selected != 0  && user.getRole().getroleId() == 1 || user.getRole().getroleId() == 10) {
 			regionId = regionId_selected;
 		}*/
-		System.out.println("regionSelected------------------>"+regionId);
+		//System.out.println("regionSelected------------------>"+regionId);
 		
 		//
 		int projectType = 2;

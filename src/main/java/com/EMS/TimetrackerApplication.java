@@ -64,7 +64,7 @@ class DataJpaConfig {
     
     
 }
-//Renjith
+//Renjith K R
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 class JpaAuditingConfiguration {

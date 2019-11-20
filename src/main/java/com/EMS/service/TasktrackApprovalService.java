@@ -129,7 +129,5 @@ public interface TasktrackApprovalService {
 										 Integer firstHalfDay);
 
 
-
-
-
+	JSONObject getInfoForFinance(Long userId, Date startDate, Date endDate, Boolean isExist, Long projectId, Integer firstHalfDay) throws ParseException;
 }
