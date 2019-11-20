@@ -7,6 +7,8 @@ public class MailDomainDto {
 	private String to;
 	private String cc;
 	private String bcc;
+	private String content;
+
 
 	public String getSubject() {
 		return subject;
@@ -48,4 +50,11 @@ public class MailDomainDto {
 		this.bcc = bcc;
 	}
 
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
 }

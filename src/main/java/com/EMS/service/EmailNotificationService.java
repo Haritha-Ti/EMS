@@ -4,7 +4,7 @@ import com.EMS.dto.MailDomainDto;
 
 public interface EmailNotificationService {
 	
-	String sendMail(String token, MailDomainDto mailDomainDto) throws Exception;
+	String sendMail(String token, MailDomainDto mailDomainDto ,Boolean isSaveMailContent) throws Exception;
 
 
 }
