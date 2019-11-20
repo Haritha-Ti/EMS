@@ -3093,5 +3093,38 @@ public class TasktrackController {
 		return response;
 
 	}
+	
+	/**
+	* For bulk approval of first half data in Approval Log2
+	* 
+	* @author  Jinu Shaji
+	* @version 1.0
+	* @since   2019-11-14 
+	*/
+	@PostMapping("/bulkApproveLevel2")
+	public ResponseEntity<Object> bulkApproveLevel2(@RequestBody JSONObject requestData,
+			HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 
+		try {
+			taskTrackFinalService.bulkApproveLevel2(requestData);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (DuplicateEntryException e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonDataRes.put("message", "failed. " + e);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
 }
