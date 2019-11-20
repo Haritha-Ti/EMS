@@ -23,7 +23,7 @@ public interface TaskTrackCorrectionRepository extends JpaRepository<TaskTrackCo
 			+ "where correction.user.userId = ?1 and correction.project.projectId = ?2 "
 			+ "and correction.month = ?3 and correction.year = ?4 and correction.day = ?5 and status='"+Constants.TASKTRACK_CORRECTION_STATUS_OPEN+"' ")
 	int checkExist(Long userId, Long projectId, Integer month, Integer year, Integer day);
-
+	//Nisha
 	@Query("SELECT correction FROM TaskTrackCorrection correction "
 			+ "where correction.user.userId = ?1 and correction.project.projectId = ?2 "
 			+ "and correction.month = ?3 and correction.year = ?4 and correction.day = ?5 and status !='"+Constants.TASKTRACK_CORRECTION_STATUS_CLOSED+"'")
