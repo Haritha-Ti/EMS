@@ -28,11 +28,14 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.ProjectSubmissionDataDTO;
 import com.EMS.dto.Taskdetails;
 import com.EMS.model.ApprovalTimeTrackReportModel;
 import com.EMS.model.BenchProjectReportModel;
@@ -92,16 +95,14 @@ public class ReportController {
 		if (requestdata.getRegionId() != null && requestdata.getRegionId() != 0) {
 			regionId_selected = requestdata.getRegionId();
 		}
-		
-		if(regionId_selected != null) {
+
+		if (regionId_selected != null) {
 			projectReport = reportServiceImpl.getProjectReportDetailsByRegions(requestdata.getProjectId(),
-					requestdata.getFromDate(), requestdata.getToDate(),regionId_selected);
-		}
-		else {
+					requestdata.getFromDate(), requestdata.getToDate(), regionId_selected);
+		} else {
 			projectReport = reportServiceImpl.getProjectReportDetails(requestdata.getProjectId(),
 					requestdata.getFromDate(), requestdata.getToDate());
 		}
-		
 
 		ObjectNode dataNode = objectMapper.createObjectNode();
 		dataNode.set("projectReport", projectReport);
@@ -120,12 +121,10 @@ public class ReportController {
 		if (requestdata.getuId() != null) { // System.out.println("if");
 			benchProjectReport = reportServiceImpl.getBenchProjectReportDetails(requestdata.getuId(),
 					requestdata.getFromDate(), requestdata.getToDate());
-		} 
-		else if(requestdata.getRegionId() != null) {
+		} else if (requestdata.getRegionId() != null) {
 			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReports(requestdata.getuId(),
-					requestdata.getFromDate(),requestdata.getToDate(),requestdata.getRegionId());
-		}
-		else { // System.out.println("else");
+					requestdata.getFromDate(), requestdata.getToDate(), requestdata.getRegionId());
+		} else { // System.out.println("else");
 			benchProjectReport = reportServiceImpl.getBenchProjectReportDetails(requestdata.getFromDate(),
 					requestdata.getToDate());
 		}
@@ -296,25 +295,21 @@ public class ReportController {
 				Boolean isExist = taskTrackService.checkIsUserExists(userId);
 				System.out.println("aaaaa");
 				/*
-				 * List<JSONObject> jsonDataRes11 =
-				 * taskTrackService.getUserTaskDetails(userId, startDate,
-				 * endDate, userList, jsonArray, jsonDataRes1,
-				 * isExist,projectId);
+				 * List<JSONObject> jsonDataRes11 = taskTrackService.getUserTaskDetails(userId,
+				 * startDate, endDate, userList, jsonArray, jsonDataRes1, isExist,projectId);
 				 */
 				/*
 				 * List<JSONObject> jsonDataRes11 =
-				 * taskTrackService.getUserTaskDetailsByuser(userId, startDate,
-				 * endDate, userList, jsonArray, jsonDataRes1,
-				 * isExist,projectId);
+				 * taskTrackService.getUserTaskDetailsByuser(userId, startDate, endDate,
+				 * userList, jsonArray, jsonDataRes1, isExist,projectId);
 				 */
 				projectList = taskTrackService.getProjectListByUserAndDate(userId, startDate, endDate);
 				getUserDataForReportByProject(projectList, startDate, endDate, jsonDataRes, jsonDataRes1, jsonArray,
 						userId);
 				/*
 				 * List<JSONObject> jsonDataRes11 =
-				 * taskTrackService.getUserTaskDetailsByuser(userId, startDate,
-				 * endDate, userList, jsonArray, jsonDataRes1,
-				 * isExist,projectId);
+				 * taskTrackService.getUserTaskDetailsByuser(userId, startDate, endDate,
+				 * userList, jsonArray, jsonDataRes1, isExist,projectId);
 				 */
 			}
 
@@ -568,9 +563,8 @@ public class ReportController {
 				double actualHours = 0.0;
 				for (ApprovalTimeTrackReportModel obj : data) {
 					long projectId = obj.getProjectId();
-					if(projectId!=35){
+					if (projectId != 35) {
 						actualHours = reportService.getActualHours(projectId, startDate, endDate);
-
 
 						if (projectList.contains(obj.getProjectName())) {
 							for (int k = 0; k < approvalReport.size(); k++) {
@@ -592,7 +586,8 @@ public class ReportController {
 
 							jsonData.put("projectName", obj.getProjectName());
 							jsonData.put("BillableHours", obj.getBillableHours() != null ? obj.getBillableHours() : 0);
-							//jsonData.put("LoggedHours", obj.getLoggedHours() != null ? obj.getLoggedHours() : 0);
+							// jsonData.put("LoggedHours", obj.getLoggedHours() != null ?
+							// obj.getLoggedHours() : 0);
 							jsonData.put("LoggedHours", actualHours);
 							approvalReport.add(jsonData);
 						}
@@ -627,17 +622,17 @@ public class ReportController {
 			String date2 = requestData.get("toDate").toString();
 			Long userId = null;
 			Long regionId_selected = null;
-			Long regionId  = null;
+			Long regionId = null;
 			UserModel user = null;
 
-			if (requestData.get("sessionId") != null && requestData.get("sessionId").toString()!= "") {
-				userId =Long.valueOf(requestData.get("sessionId").toString()) ;
+			if (requestData.get("sessionId") != null && requestData.get("sessionId").toString() != "") {
+				userId = Long.valueOf(requestData.get("sessionId").toString());
 				user = userRepository.getOne(userId);
 				regionId = user.getRegion().getId();
 			}
 			if (requestData.get("regionId") != null && requestData.get("regionId").toString() != "") {
-				regionId_selected =Long.valueOf(requestData.get("regionId").toString()) ;
-				if(user.getRole().getroleId() == 1 || user.getRole().getroleId() == 10) {
+				regionId_selected = Long.valueOf(requestData.get("regionId").toString());
+				if (user.getRole().getroleId() == 1 || user.getRole().getroleId() == 10) {
 					regionId = regionId_selected;
 				}
 			}
@@ -651,11 +646,13 @@ public class ReportController {
 				toDate = outputFormat.parse(date2);
 			}
 
-			//List<Object[]> allocReport = reportServiceImpl.getAllocationDetailsTechWise(techId, fromDate, toDate);
-			List<Object[]> allocReport = reportService.getAllocationDetailsTechWiseRegionwise(techId, fromDate, toDate,regionId);
+			// List<Object[]> allocReport =
+			// reportServiceImpl.getAllocationDetailsTechWise(techId, fromDate, toDate);
+			List<Object[]> allocReport = reportService.getAllocationDetailsTechWiseRegionwise(techId, fromDate, toDate,
+					regionId);
 			ArrayNode jsonArray = objectMapper.createArrayNode();
 			for (Object[] item : allocReport) {
-				 userId = Long.valueOf((String.valueOf(item[0])));
+				userId = Long.valueOf((String.valueOf(item[0])));
 				ObjectNode jsonObject = objectMapper.createObjectNode();
 				jsonObject.put("userId", userId);
 				jsonObject.put("userName", (String) item[1]);
@@ -852,7 +849,7 @@ public class ReportController {
 
 						String projectName = projectService.getProjectName(projectId);
 						Sheet sheet = workrbook.createSheet(monthName + "-" + year);
-						String nameofReport = "Project Report  Consolidated" ;
+						String nameofReport = "Project Report  Consolidated";
 						projectExportService.exportFinanceDataByProjectSet(workrbook, sheet, nameofReport, month, year,
 								projSet);
 
@@ -867,43 +864,43 @@ public class ReportController {
 				return new ResponseEntity(HttpStatus.OK);
 
 			}
-			
-			             // Level 1
-						projectList = projectService.getProjectListByLevel1(userId);
-						// Level 2
-						projectList.addAll(projectService.getProjectListByLevel2(userId));
 
-						// Remove duplicates if any
+			// Level 1
+			projectList = projectService.getProjectListByLevel1(userId);
+			// Level 2
+			projectList.addAll(projectService.getProjectListByLevel2(userId));
 
-						projectList = projectList.stream().distinct().collect(Collectors.toList());
-						if (!(projectList).isEmpty() && projectList.size() > 0 && isLevels) {
-						projSet = new HashSet<Long>();
-						for (ProjectModel pModel : projectList) {
-							projSet.add(pModel.getProjectId());
-						}
-						for (JsonNode rangenode : range) {
-							JSONObject node = new JSONObject();
-							month = Integer.parseInt(rangenode.get("month").toString());
-							year = Integer.parseInt(rangenode.get("year").toString());
-							String monthName = Month.of(month).name();
+			// Remove duplicates if any
 
-							if (month != 0 && year != 0 && projSet != null && projSet.size() != 0) {
-
-								String projectName = projectService.getProjectName(projectId);
-								Sheet sheet = workrbook.createSheet(monthName + "-" + year);
-								String nameofReport = "Project Report  Consolidated" ;
-								projectExportService.exportFinanceDataByProjectSet(workrbook, sheet, nameofReport, month, year,
-										projSet);
-
-							}
-
-						}
-						response.setContentType("application/vnd.ms-excel");
-						response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-						response.setHeader("Content-Disposition", "filename=\"" + "FinanceData.xlsx" + "\"");
-						workrbook.write(response.getOutputStream());
-						workrbook.close();
+			projectList = projectList.stream().distinct().collect(Collectors.toList());
+			if (!(projectList).isEmpty() && projectList.size() > 0 && isLevels) {
+				projSet = new HashSet<Long>();
+				for (ProjectModel pModel : projectList) {
+					projSet.add(pModel.getProjectId());
 				}
+				for (JsonNode rangenode : range) {
+					JSONObject node = new JSONObject();
+					month = Integer.parseInt(rangenode.get("month").toString());
+					year = Integer.parseInt(rangenode.get("year").toString());
+					String monthName = Month.of(month).name();
+
+					if (month != 0 && year != 0 && projSet != null && projSet.size() != 0) {
+
+						String projectName = projectService.getProjectName(projectId);
+						Sheet sheet = workrbook.createSheet(monthName + "-" + year);
+						String nameofReport = "Project Report  Consolidated";
+						projectExportService.exportFinanceDataByProjectSet(workrbook, sheet, nameofReport, month, year,
+								projSet);
+
+					}
+
+				}
+				response.setContentType("application/vnd.ms-excel");
+				response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+				response.setHeader("Content-Disposition", "filename=\"" + "FinanceData.xlsx" + "\"");
+				workrbook.write(response.getOutputStream());
+				workrbook.close();
+			}
 
 		} catch (Exception e) {
 			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -912,28 +909,28 @@ public class ReportController {
 	}
 
 	// Renjith
-	
+
 	/***
 	 * @des export bench report
 	 * @param requestdata
 	 * @param httpstatus
 	 * @return
-	 * @throws IOException 
-	 * @throws ParseException 
+	 * @throws IOException
+	 * @throws ParseException
 	 */
 	@PostMapping("/exportBenchReport")
-	public void exportBenchReport(@RequestBody JsonNode requestdata,HttpServletResponse response) throws IOException, ParseException {
-		
+	public void exportBenchReport(@RequestBody JsonNode requestdata, HttpServletResponse response)
+			throws IOException, ParseException {
 
 		String startdate = requestdata.get("fromDate").asText();
 		String enddate = requestdata.get("toDate").asText();
 		Date fromDate = null, toDate = null;
 		Long regionId = null;
 		Long userId = null;
-		if(requestdata.get("regionId").asText() != null && requestdata.get("regionId").asText() != "" ) {
+		if (requestdata.get("regionId").asText() != null && requestdata.get("regionId").asText() != "") {
 			regionId = requestdata.get("regionId").asLong();
 		}
-		if(requestdata.get("uId").asText() != null && requestdata.get("uId").asText() != "" ) {
+		if (requestdata.get("uId").asText() != null && requestdata.get("uId").asText() != "") {
 			userId = requestdata.get("uId").asLong();
 		}
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -948,33 +945,44 @@ public class ReportController {
 
 		int monthIndex = (cal.get(Calendar.MONTH) + 1);
 		int yearIndex = cal.get(Calendar.YEAR);
-		List<BenchProjectReportModel>  benchProjectReport = null;
-		if (userId != null && regionId == null) { 
-			 System.out.println("if");
-			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(userId,
-					fromDate, toDate);
-		}
-		else if(userId == null && regionId != null) {
+		List<BenchProjectReportModel> benchProjectReport = null;
+		if (userId != null && regionId == null) {
+			System.out.println("if");
+			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(userId, fromDate, toDate);
+		} else if (userId == null && regionId != null) {
 			System.out.println("else if");
-			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(userId,
-					fromDate, toDate,regionId);
-		}
-		else { 
+			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(userId, fromDate, toDate,
+					regionId);
+		} else {
 			System.out.println("else");
-			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(fromDate,
-					toDate);
+			benchProjectReport = reportServiceImpl.getBenchProjectReportDetailsReport(fromDate, toDate);
 		}
 		Workbook workrbook = new XSSFWorkbook();
 		Sheet sheet = workrbook.createSheet("Bench Report");
-		String nameofReport   = "BENCH REPORT";
-		projectExportService.exportBenchReport(workrbook,sheet,nameofReport,benchProjectReport);
+		String nameofReport = "BENCH REPORT";
+		projectExportService.exportBenchReport(workrbook, sheet, nameofReport, benchProjectReport);
 		response.setContentType("application/vnd.ms-excel");
 		response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 		response.setHeader("Content-Disposition", "filename=\"" + "Bench Report.xlsx" + "\"");
 		workrbook.write(response.getOutputStream());
 		workrbook.close();
-		
+
 	}
-	
-	
+
+	@GetMapping(value = "getSubmissionsData")
+	public ResponseEntity<List<ProjectSubmissionDataDTO>> getSubmissionsData(@RequestParam("month") Integer month,
+			@RequestParam("year") Integer year, @RequestParam("session") String session) {
+		ResponseEntity<List<ProjectSubmissionDataDTO>> response = new ResponseEntity<List<ProjectSubmissionDataDTO>>(
+				HttpStatus.OK);
+		try {
+			List<ProjectSubmissionDataDTO> submittedDataList = reportService.getProjectSubmissionDetails(month, year,
+					session);
+			response = new ResponseEntity<List<ProjectSubmissionDataDTO>>(submittedDataList, HttpStatus.OK);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 }

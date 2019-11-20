@@ -98,6 +98,12 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectOwner.userId=?1 AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel1(long uId,int month,int year);
+	
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectTier = 1 or a.projectTier = 2) AND (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) order by a.projectName")
+	public List<Object[]> getTier1And2ProjectNames(int month,int year);
+
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectTier = 2 AND (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) order by a.projectName")
+	public List<Object[]> getTier2ProjectNames(int month,int year);
 
 	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprover(long uId,int month,int year);
@@ -117,7 +123,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	
 	
 
-	@Query(value="select p.project_id, p.project_name , t.`date`,t.id,c.client_name  ,sum(t.hours) from tasktrack t left join project p on p.project_id = t.project_project_id join `user` u  on u.user_id = t.user_user_id join `client` c on c.client_id=p.client_name_client_id where u.user_id = ?1 and t.`date`>=?2 and t.`date`<=?3  group by 1,2,3,4,5 order by 1,2",nativeQuery=true)
+	@Query(value="select p.project_id, p.project_name , t.`date`,t.id,c.client_name  ,sum(t.hours) from tasktrack t left join project p on p.project_id = t.project_project_id join `user` u  on u.user_id = t.user_user_id left join `client` c on c.client_id=p.client_name_client_id where u.user_id = ?1 and t.`date`>=?2 and t.`date`<=?3  group by 1,2,3,4,5 order by 1,2",nativeQuery=true)
 	public List<Object[]> getTasksFortimeTrack(long id,Date fromDate, Date toDate) throws Exception;
 	
 	@Query(value = "SELECT \r\n" + 
