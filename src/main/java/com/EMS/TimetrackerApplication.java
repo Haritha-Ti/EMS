@@ -2,6 +2,7 @@ package com.EMS;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -19,21 +20,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.EMS.listener.SpringSecurityAuditorAware;
 import com.EMS.model.UserModel;
+import com.EMS.repository.CronTimeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication
 @EnableScheduling
-public class TimetrackerApplication  	//extends SpringBootServletInitializer
-
+public class TimetrackerApplication // extends SpringBootServletInitializer
 {
 
+	@Autowired
+	private CronTimeRepository cronTimeRepository;
 	
+
 	public static void main(String[] args) {
 		SpringApplication.run(TimetrackerApplication.class, args);
 	}
 
-	
-	
 	@Bean
 	public ObjectMapper configureObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -41,41 +43,76 @@ public class TimetrackerApplication  	//extends SpringBootServletInitializer
 
 		return mapper;
 	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
+
+	@Bean
+	public String getCronForApproverOneSecondHalf() {
+		String cronSyntax = cronTimeRepository.getCronDates1();
+		return cronSyntax;
+	}
+
+	@Bean
+	public String getCronForApproverOneFirstHalf() {
+		String cronSyntax = cronTimeRepository.getCronDatesForApproverOneFirstHalf();
+		return cronSyntax;
+	}
+
+	@Bean
+	public String getCronForApproverTwoFirstHalf() {
+		String cronSyntax = cronTimeRepository.getCronDatesForApproverTwoFirstHalf();
+		return cronSyntax;
+	}
+
+	@Bean
+	public String getCronForApproverTwoSecondHalf() {
+		String cronSyntax = cronTimeRepository.getCronDatesForApproverTwoSecondHalf();
+		return cronSyntax;
+	}
 	
-	 @Bean
-	    public PasswordEncoder passwordEncoder() {
-	        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	    }
-	 
+	@Bean
+	public String getCronTaskTrackSchedulerAtUserlevel() {
+		String cronSyntax = cronTimeRepository.getCronTaskTrackSchedulerAtUserlevel();
+		return cronSyntax;
+	}
+	
+	@Bean
+	public String getCronCreateTaskTrack() {
+		String cronSyntax = cronTimeRepository.getCronCreateTaskTrack();
+		return cronSyntax;
+	}
+
+
 }
 
 @Configuration
 //@EnableJpaAuditing
 class DataJpaConfig {
 
-    @Bean
-    public AuditorAware<UserModel> auditor() {
-        return () -> Optional.ofNullable(SecurityContextHolder.getContext())
-            .map(SecurityContext::getAuthentication)
-            .filter(Authentication::isAuthenticated)
-            .map(Authentication::getPrincipal)
-            .map(UserModel.class::cast);
-    }
-    
-    
+	@Bean
+	public AuditorAware<UserModel> auditor() {
+		return () -> Optional.ofNullable(SecurityContextHolder.getContext()).map(SecurityContext::getAuthentication)
+				.filter(Authentication::isAuthenticated).map(Authentication::getPrincipal).map(UserModel.class::cast);
+	}
+
 }
+
 //Renjith
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 class JpaAuditingConfiguration {
 
-	/*@Bean
-	public AuditorAware<String> auditorProvider() {
-		return () -> Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication().getName());
-	}*/
-	
+	/*
+	 * @Bean public AuditorAware<String> auditorProvider() { return () ->
+	 * Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication().
+	 * getName()); }
+	 */
+
 	@Bean
-    public AuditorAware<Long> auditorAware() {
-        return new SpringSecurityAuditorAware ();
-    }
+	public AuditorAware<Long> auditorAware() {
+		return new SpringSecurityAuditorAware();
+	}
 }
