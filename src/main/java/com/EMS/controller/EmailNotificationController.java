@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.model.MailDomainModel;
-import com.EMS.model.Technology;
 import com.EMS.model.UserModel;
 import com.EMS.service.EmailNotificationService;
 import com.EMS.service.UserService;
@@ -43,9 +42,9 @@ public class EmailNotificationController {
 
 			Long userId = requestdata.get("userId").asLong();
 			UserModel user = userservice.getUserdetailsbyId(userId);
-			System.out.println("user email : "+user.getEmail());
+			System.out.println("user email : " + user.getEmail());
 			List<MailDomainModel> mailnotificationList = emailNotificationService.getUnReadEmails(user.getEmail());
-			System.out.println("Email list size :"+mailnotificationList.size());
+			System.out.println("Email list size :" + mailnotificationList.size());
 			if (mailnotificationList.isEmpty()) {
 				responsedata.put("status", "success");
 				responsedata.put("message", "No Records Available");
@@ -53,10 +52,8 @@ public class EmailNotificationController {
 				responsedata.put("payload", "");
 			} else {
 
-				// loop for getting projectwise details
 				for (MailDomainModel obj : mailnotificationList) {
 
-					// storing projects details in json object
 					ObjectNode jsonobj = objectMapper.createObjectNode();
 					jsonobj.put("mailDomaiId", obj.getMailDomainId());
 					jsonobj.put("mailContent", obj.getMailContent());
@@ -81,40 +78,38 @@ public class EmailNotificationController {
 		}
 		return responsedata;
 	}
-	
+
 	@PostMapping(value = "/updateEmailNotificationStatus")
 	public ObjectNode toUpdateEmailStatus(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) {
 
 		ObjectNode responsedata = objectMapper.createObjectNode();
-		
+
 		try {
 
-//			Long userId = requestdata.get("userId").asLong();
 			Long mailDomainId = requestdata.get("mailDomainId").asLong();
 			int mailcount = emailNotificationService.getEmailCount(mailDomainId);
-		
-			if(mailcount==0) {
+
+			if (mailcount == 0) {
 				responsedata.put("status", "success");
 				responsedata.put("message", "No Matching Records Available");
 				responsedata.put("code", httpstatus.getStatus());
 				responsedata.put("payload", "");
-			}else {
-				
-				int result=emailNotificationService.updateEmailStatus(mailDomainId);
-//				if(result>0) {
+			} else {
+
+				int result = emailNotificationService.updateEmailStatus(mailDomainId);
+				if (result > 0) {
 					responsedata.put("status", "success");
 					responsedata.put("code", httpstatus.getStatus());
 					responsedata.put("message", "Record Status Updated");
 					responsedata.put("payload", "");
-//				}else {
-//					responsedata.put("status", "Failed");
-//					responsedata.put("code", httpstatus.getStatus());
-//					responsedata.put("payload", "");
-//				}
-				
+				} else {
+					responsedata.put("status", "Failed");
+					responsedata.put("code", httpstatus.getStatus());
+					responsedata.put("payload", "");
+				}
+
 			}
-			
-			
+
 		} catch (Exception e) {
 			System.out.println("Exception : " + e);
 			responsedata.put("status", "Failed");

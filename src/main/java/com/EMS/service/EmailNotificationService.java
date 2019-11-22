@@ -11,8 +11,6 @@ public interface EmailNotificationService {
 
 	List<MailDomainModel> getUnReadEmails(String email);
 
-	 
-
 	int getEmailCount(Long mailDomainId);
 
 	int updateEmailStatus(Long mailDomainId);
