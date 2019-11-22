@@ -303,7 +303,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 		for(ExportApprovalReportModel obj : data) {
 			Listdata.add(new ExportApprovalReportModel
-					(obj.getId(),obj.getProjectName(),obj.getFirstName(),obj.getLastName(),obj.getProjectType(),obj.getCppLevel()
+					(obj.getId(),obj.getProjectName(),obj.getProjectCode(), obj.getFirstName(),obj.getLastName(),obj.getProjectType(),obj.getCppLevel()
 							,obj.getDay1(),obj.getDay2(),obj.getDay3(),obj.getDay4(),obj.getDay5(),
 							obj.getDay6(),obj.getDay7(),obj.getDay8(),obj.getDay9(),obj.getDay10(),
 							obj.getDay11(),obj.getDay12(),obj.getDay13(),obj.getDay14(),obj.getDay15(),
@@ -556,24 +556,25 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 	@Override
 	public void exportAllReport(List <ExportApprovalReportModel> data,Workbook workbook,Sheet sheet,ArrayList<String> colNames,String reportName) throws FileNotFoundException {
 		int dayCount = colNames.size();
-		int cols = dayCount+6;
+		int cols = dayCount+7;
 		String[] headers = new String[cols];
 		//headers[0] = "User Id";
 		headers[0] = "Last Name";
 		headers[1] = "First Name";
-		headers[2] = "Project Name";
-		headers[3] = "Project Type";
-		headers[4] = "Cpp Level";
+		headers[2] = "Project Code";
+		headers[3] = "Project Name";
+		headers[4] = "Project Type";
+		headers[5] = "Cpp Level";
 		for(int i=0;i<dayCount;i++) {
-			headers[i+5] = colNames.get(i);
+			headers[i+6] = colNames.get(i);
 
 		}
-		headers[dayCount+5] = "Total Hours";
+		headers[dayCount+6] = "Total Hours";
 		List<ExportApprovalReportModel> Listdata = new ArrayList<ExportApprovalReportModel>();
 		for(ExportApprovalReportModel obj : data) {
 
 			Listdata.add(new ExportApprovalReportModel
-					(obj.getId(),obj.getProjectName(),obj.getFirstName(),obj.getLastName(),obj.getProjectType(),obj.getCppLevel()
+					(obj.getId(),obj.getProjectName(),obj.getProjectCode(),obj.getFirstName(),obj.getLastName(),obj.getProjectType(),obj.getCppLevel()
 							,obj.getDay1(),obj.getDay2(),obj.getDay3(),obj.getDay4(),obj.getDay5(),
 							obj.getDay6(),obj.getDay7(),obj.getDay8(),obj.getDay9(),obj.getDay10(),
 							obj.getDay11(),obj.getDay12(),obj.getDay13(),obj.getDay14(),obj.getDay15(),
@@ -586,7 +587,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		//Removing grids
 		sheet.setDisplayGridlines(false);
 		//Freezing columns and rows from scrooling
-		sheet.createFreezePane(4,4);
+		sheet.createFreezePane(6,6);
 
 		//Bordered Cell Style
 		CellStyle borderedCellStyle = workbook.createCellStyle();
@@ -642,7 +643,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			if (!tmp_pjctName .equals(" ") && !tmp_pjctName.equals(summary.getProjectName())) {
 				Row row1 = sheet.createRow(rowNum++);
 				int j;
-				for(j=0;j<dayCount+5;j++){
+				for(j=0;j<dayCount+6;j++){
 					Cell cell = row1.createCell(j);
 					cell.setCellValue("");
 					cell.setCellStyle(borderedCellStyle);
@@ -660,234 +661,238 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 			cell = row.createCell(1);
 			cell.setCellValue(summary.getFirstName());
-			cell.setCellStyle(borderedCellStyle);		
+			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(2);
-			cell.setCellValue(summary.getProjectName());
+			cell.setCellValue(summary.getProjectCode());
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(3);
+			cell.setCellValue(summary.getProjectName());
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(4);
 			cell.setCellValue(summary.getProjectType());
 			cell.setCellStyle(borderedCellStyle);
 			
-			cell = row.createCell(4);
+			cell = row.createCell(5);
 			cell.setCellValue(summary.getCppLevel());
 			cell.setCellStyle(borderedCellStyle);
-			int cellcount = 4;
+			int cellcount = 5;
 			double totalHour = 0.0;
 			if(dayCount>0) {
-				cellcount = 5;
-				cell = row.createCell(5);
+				cellcount = 6;
+				cell = row.createCell(6);
 				cell.setCellValue(summary.getDay1());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay1();
 			}
 			if(dayCount>1) {
-				cellcount = 6;
-				cell = row.createCell(6);
+				cellcount = 7;
+				cell = row.createCell(7);
 				cell.setCellValue(summary.getDay2());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay2();
 			}
 			if(dayCount>2) {
-				cellcount = 7;
-				cell = row.createCell(7);
+				cellcount = 8;
+				cell = row.createCell(8);
 				cell.setCellValue(summary.getDay3());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay3();
 			}
 			if(dayCount>3) {
-				cellcount = 8;
-				cell = row.createCell(8);
+				cellcount = 9;
+				cell = row.createCell(9);
 				cell.setCellValue(summary.getDay4());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay4();
 			}
 			if(dayCount>4) {
-				cellcount = 9;
-				cell = row.createCell(9);
+				cellcount = 10;
+				cell = row.createCell(10);
 				cell.setCellValue(summary.getDay5());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay5();
 			}
 			if(dayCount>5) {
-				cellcount = 10;
-				cell = row.createCell(10);
+				cellcount = 11;
+				cell = row.createCell(11);
 				cell.setCellValue(summary.getDay6());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay6();
 			}
 			if(dayCount>6) {
-				cellcount = 11;
-				cell = row.createCell(11);
+				cellcount = 12;
+				cell = row.createCell(12);
 				cell.setCellValue(summary.getDay7());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay7();
 			}
 			if(dayCount>7) {
-				cellcount = 12;
-				cell = row.createCell(12);
+				cellcount = 13;
+				cell = row.createCell(13);
 				cell.setCellValue(summary.getDay8());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay8();
 			}
 			if(dayCount>8) {
-				cellcount = 13;
-				cell = row.createCell(13);
+				cellcount = 14;
+				cell = row.createCell(14);
 				cell.setCellValue(summary.getDay9());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay9();
 			}
 			if(dayCount>9) {
-				cellcount = 14;
-				cell = row.createCell(14);
+				cellcount = 15;
+				cell = row.createCell(15);
 				cell.setCellValue(summary.getDay10());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay10();
 			}
 			if(dayCount>10) {
-				cellcount = 15;
-				cell = row.createCell(15);
+				cellcount = 16;
+				cell = row.createCell(16);
 				cell.setCellValue(summary.getDay11());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay11();
 			}
 			if(dayCount>11) {
-				cellcount = 16;
-				cell = row.createCell(16);
+				cellcount = 17;
+				cell = row.createCell(17);
 				cell.setCellValue(summary.getDay12());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay12();
 			}
 			if(dayCount>12) {
-				cellcount = 17;
-				cell = row.createCell(17);
+				cellcount = 18;
+				cell = row.createCell(18);
 				cell.setCellValue(summary.getDay13());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay13();
 			}
 			if(dayCount>13) {
-				cellcount = 18;
-				cell = row.createCell(18);
+				cellcount = 19;
+				cell = row.createCell(19);
 				cell.setCellValue(summary.getDay14());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay14();
 			}
 			if(dayCount>14) {
-				cellcount = 19;
-				cell = row.createCell(19);
+				cellcount = 20;
+				cell = row.createCell(20);
 				cell.setCellValue(summary.getDay15());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay15();
 			}
 			if(dayCount>15) {
-				cellcount = 20;
-				cell = row.createCell(20);
+				cellcount = 21;
+				cell = row.createCell(21);
 				cell.setCellValue(summary.getDay16());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay16();
 			}
 			if(dayCount>16) {
-				cellcount = 21;
-				cell = row.createCell(21);
+				cellcount = 22;
+				cell = row.createCell(22);
 				cell.setCellValue(summary.getDay17());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay17();
 			}
 			if(dayCount>17) {
-				cellcount = 22;
-				cell = row.createCell(22);
+				cellcount = 23;
+				cell = row.createCell(23);
 				cell.setCellValue(summary.getDay18());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay18();
 			}
 			if(dayCount>18) {
-				cellcount = 23;
-				cell = row.createCell(23);
+				cellcount = 24;
+				cell = row.createCell(24);
 				cell.setCellValue(summary.getDay19());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay19();
 			}
 			if(dayCount>19) {
-				cellcount = 24;
-				cell = row.createCell(24);
+				cellcount = 25;
+				cell = row.createCell(25);
 				cell.setCellValue(summary.getDay20());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay20();
 			}
 			if(dayCount>20) {
-				cellcount = 25;
-				cell = row.createCell(25);
+				cellcount = 26;
+				cell = row.createCell(26);
 				cell.setCellValue(summary.getDay21());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay21();
 			}
 			if(dayCount>21) {
-				cellcount = 26;
-				cell = row.createCell(26);
+				cellcount = 27;
+				cell = row.createCell(27);
 				cell.setCellValue(summary.getDay22());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay22();
 			}
 			if(dayCount>22) {
-				cellcount = 27;
-				cell = row.createCell(27);
+				cellcount = 28;
+				cell = row.createCell(28);
 				cell.setCellValue(summary.getDay23());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay23();
 			}
 			if(dayCount>23) {
-				cellcount = 28;
-				cell = row.createCell(28);
+				cellcount = 29;
+				cell = row.createCell(29);
 				cell.setCellValue(summary.getDay24());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay24();
 			}
 			if(dayCount>24) {
-				cellcount = 29;
-				cell = row.createCell(29);
+				cellcount = 30;
+				cell = row.createCell(30);
 				cell.setCellValue(summary.getDay25());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay25();
 			}
 			if(dayCount>25) {
-				cellcount = 30;
-				cell = row.createCell(30);
+				cellcount = 31;
+				cell = row.createCell(31);
 				cell.setCellValue(summary.getDay26());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay26();
 			}
 			if(dayCount>26) {
-				cellcount = 31;
-				cell = row.createCell(31);
+				cellcount = 32;
+				cell = row.createCell(32);
 				cell.setCellValue(summary.getDay27());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay27();
 			}
 			if(dayCount>27) {
-				cellcount = 32;
-				cell = row.createCell(32);
+				cellcount = 33;
+				cell = row.createCell(33);
 				cell.setCellValue(summary.getDay28());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay28();
 			}
 			if(dayCount>28) {
-				cellcount = 33;
-				cell = row.createCell(33);
+				cellcount = 34;
+				cell = row.createCell(34);
 				cell.setCellValue(summary.getDay29());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay29();
 			}
 			if(dayCount>29) {
-				cellcount = 34;
-				cell = row.createCell(34);
+				cellcount = 35;
+				cell = row.createCell(35);
 				cell.setCellValue(summary.getDay30());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay30();
 			}
 			if(dayCount>30) {
-				cellcount = 35;
-				cell = row.createCell(35);
+				cellcount = 36;
+				cell = row.createCell(36);
 				cell.setCellValue(summary.getDay31());
 				cell.setCellStyle(borderedCellStyle);
 				totalHour =totalHour+summary.getDay31();
@@ -904,7 +909,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		}
 
 		//Adding filter menu in column headers
-		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 4));
+		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 5));
 
 	}
 

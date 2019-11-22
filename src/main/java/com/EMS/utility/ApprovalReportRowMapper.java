@@ -17,6 +17,7 @@ public class ApprovalReportRowMapper implements RowMapper<ExportApprovalReportMo
 		rpt.setFirstName(rs.getString("firstName"));
 		rpt.setLastName(rs.getString("lastName"));
 		rpt.setProjectName(rs.getString("projectName"));
+		rpt.setProjectCode(rs.getString("projectCode"));
 		String projectType;
 		long projecttype = Long.parseLong(rs.getString("projectType"));
 		if(projecttype == 1)
