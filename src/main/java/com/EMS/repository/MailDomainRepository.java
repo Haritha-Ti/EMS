@@ -11,8 +11,8 @@ import com.EMS.model.MailDomainModel;
 
 public interface MailDomainRepository extends JpaRepository<MailDomainModel, Long>{
 
-	@Query(value="SELECT * FROM email_notification where mail_to=?1 AND status=0",nativeQuery=true)
-	List<MailDomainModel> getUnReadEmails(String email);
+	@Query(value="SELECT * FROM email_notification where mail_to=?1",nativeQuery=true)
+	List<MailDomainModel> getAllEmails(String email);
 
 	@Transactional
 	@Modifying

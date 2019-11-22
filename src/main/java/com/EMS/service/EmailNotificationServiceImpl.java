@@ -105,9 +105,9 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 //For getting unreaded emails from email notification table
 
 	@Override
-	public List<MailDomainModel> getUnReadEmails(String email) {
+	public List<MailDomainModel> getAllEmails(String email) {
 
-		List<MailDomainModel> list = mailDomainRepository.getUnReadEmails(email);
+		List<MailDomainModel> list = mailDomainRepository.getAllEmails(email);
 		return list;
 	}
 

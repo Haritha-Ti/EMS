@@ -43,7 +43,7 @@ public class EmailNotificationController {
 			Long userId = requestdata.get("userId").asLong();
 			UserModel user = userservice.getUserdetailsbyId(userId);
 			System.out.println("user email : " + user.getEmail());
-			List<MailDomainModel> mailnotificationList = emailNotificationService.getUnReadEmails(user.getEmail());
+			List<MailDomainModel> mailnotificationList = emailNotificationService.getAllEmails(user.getEmail());
 			System.out.println("Email list size :" + mailnotificationList.size());
 			if (mailnotificationList.isEmpty()) {
 				responsedata.put("status", "success");
@@ -59,6 +59,7 @@ public class EmailNotificationController {
 					jsonobj.put("mailContent", obj.getMailContent());
 					jsonobj.put("mailTo", obj.getMailTo());
 					jsonobj.put("mailFrom", obj.getMailFrom());
+					jsonobj.put("mailStatus", obj.getStatus());
 					jsonobj.put("mailTimeStamp", obj.getMail_timestamp().toString());
 					emailArray.add(jsonobj);
 				}

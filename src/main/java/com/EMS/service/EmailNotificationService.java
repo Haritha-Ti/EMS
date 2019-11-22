@@ -9,7 +9,7 @@ public interface EmailNotificationService {
 	
 	String sendMail(String token, MailDomainDto mailDomainDto ,Boolean isSaveMailContent) throws Exception;
 
-	List<MailDomainModel> getUnReadEmails(String email);
+	List<MailDomainModel> getAllEmails(String email);
 
 	int getEmailCount(Long mailDomainId);
 
