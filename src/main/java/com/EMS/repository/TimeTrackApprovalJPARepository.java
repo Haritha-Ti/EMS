@@ -142,4 +142,6 @@ public interface TimeTrackApprovalJPARepository extends JpaRepository<TaskTrackA
 	@Query("SELECT a FROM TaskTrackApproval a  where a.project.projectId = ?2 and a.month = ?3 and a.year = ?4 and user.userId = ?1 ")
 	List<TaskTrackApproval> getUserListForApprovalApproverOne(Long userId, Long projectId, int month, int year);
 
+	List<TaskTrackApproval> findByUserUserIdAndProjectProjectIdAndMonthAndYear(Long userId, Long projectId, Integer month, Integer year);
+
 }
