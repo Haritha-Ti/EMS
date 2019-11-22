@@ -165,5 +165,133 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			"ORDER BY 1,2,3;", nativeQuery = true)
 	List<Object[]> getTrackTaskList(LocalDate fromDate, LocalDate toDate);
 	
+	@Query(value = "select user_id ,t.entryDate,t.user_user_id,user_name,email,concat(last_name,\" \",first_name) AS fullName\r\n" + 
+			"from `user` u\r\n" + 
+			"left join(\r\n" + 
+			"select `date` as entryDate,user_user_id,sum(hours) as hrs from tasktrack where `date`>=?1 and `date`<=?2\r\n" + 
+			"group by 1,2) t on u.user_id = t.user_user_id\r\n" + 
+			"where u.active = 1\r\n" + 
+			"order by t.user_user_id,t.entryDate", nativeQuery = true)
+	List<Object[]> getUserTaskTrackList(LocalDate fromDate, LocalDate toDate);
 	
+	@Query(value = "select coalesce(first_half_status,'OPEN') as status,po.user_name approver,po.email approverEmail,po.project_name,\n" + 
+			"concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName\n" + 
+			"from tasktrack_approval_final tf\n" + 
+			"join\n" + 
+			"(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n" + 
+			"from project p\n" + 
+			"left join user u on u.user_id = p.onsite_lead_user_id\n" + 
+			"where p.project_tier=2) po on po.project_id = tf.project_project_id\n" + 
+			"join user usr on usr.user_id = tf.user_user_id\n" + 
+			"and project_type='Billable' and tf.month = ?1", nativeQuery = true)
+	List<Object[]> getApproverTwoFirstHalfInfo(Integer month);
+	
+	@Query(value = "select coalesce(second_half_status,'OPEN') as status,po.user_name approver,po.email approverEmail,po.project_name,\n" + 
+			"concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName\n" + 
+			"from tasktrack_approval_final tf\n" + 
+			"join\n" + 
+			"(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n" + 
+			"from project p\n" + 
+			"left join user u on u.user_id = p.onsite_lead_user_id\n" + 
+			"where p.project_tier=2) po on po.project_id = tf.project_project_id\n" + 
+			"join user usr on usr.user_id = tf.user_user_id\n" + 
+			"and project_type='Billable' and tf.month = ?1", nativeQuery = true)
+	List<Object[]> getApproverTwoSecondHalfInfo(Integer month);
+	
+	
+	@Query(value = "select coalesce(first_half_status,'OPEN') as status,po.user_name approver,po.email approverEmail,po.project_name,\n" + 
+			"concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName,po.project_tier\n" + 
+			"from tasktrack_approval tf\n" + 
+			"join\n" + 
+			"(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n" + 
+			",p.project_tier\n" + 
+			"from project p\n" + 
+			"left join user u on u.user_id = p.onsite_lead_user_id\n" + 
+			"where p.project_tier=2) po on po.project_id = tf.project_project_id\n" + 
+			"join user usr on usr.user_id = tf.user_user_id\n" + 
+			"and project_type='Billable' and tf.month = ?1 \n" + 
+			"union all\n" + 
+			"select coalesce(first_half_status,'OPEN') as status,po.user_name approver,po.email approverEmail,po.project_name,\n" + 
+			"concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName,po.project_tier\n" + 
+			"from tasktrack_approval_final tf\n" + 
+			"join\n" + 
+			"(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n" + 
+			",p.project_tier\n" + 
+			"from project p\n" + 
+			"left join user u on u.user_id = p.onsite_lead_user_id\n" + 
+			"where p.project_tier=1) po on po.project_id = tf.project_project_id\n" + 
+			"join user usr on usr.user_id = tf.user_user_id\n" + 
+			"and project_type='Billable' and tf.month = ?1", nativeQuery = true)
+	List<Object[]> getApproverOneFirstHalfInfo(Integer month);
+	
+	
+
+	@Query(value = "select coalesce(second_half_status,'OPEN') as status,po.user_name approver,po.email approverEmail,po.project_name,\n" + 
+			"concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName,po.project_tier\n" + 
+			"from tasktrack_approval tf\n" + 
+			"join\n" + 
+			"(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n" + 
+			",p.project_tier\n" + 
+			"from project p\n" + 
+			"left join user u on u.user_id = p.onsite_lead_user_id\n" + 
+			"where p.project_tier=2) po on po.project_id = tf.project_project_id\n" + 
+			"join user usr on usr.user_id = tf.user_user_id\n" + 
+			"and project_type='Billable' and tf.month = ?1 \n" + 
+			"\n" + 
+			"union all\n" + 
+			"\n" + 
+			"select coalesce(second_half_status,'OPEN') as status,po.user_name approver,po.email approverEmail,po.project_name,\n" + 
+			"concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName,po.project_tier\n" + 
+			"from tasktrack_approval_final tf\n" + 
+			"join\n" + 
+			"(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n" + 
+			",p.project_tier\n" + 
+			"from project p\n" + 
+			"left join user u on u.user_id = p.onsite_lead_user_id\n" + 
+			"where p.project_tier=1) po on po.project_id = tf.project_project_id\n" + 
+			"join user usr on usr.user_id = tf.user_user_id\n" + 
+			"and project_type='Billable' and tf.month = ?1 ", nativeQuery = true)
+	List<Object[]> getApproverOneSecondHalfInfo(Integer month);
+
+	
+	@Query(value="select coalesce(first_half_status,'OPEN') as `first_half_status`,coalesce(second_half_status,'OPEN') as `second_half_status`,po.user_name approver,po.email approverEmail,po.project_name,\r\n" + 
+			"			concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName \r\n" + 
+			"			from tasktrack_approval_final tf\r\n" + 
+			"			join \r\n" + 
+			"			(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName \r\n" + 
+			"			from project p\r\n" + 
+			"			left join user u on u.user_id = p.onsite_lead_user_id\r\n" + 
+			"			where p.project_tier=2) po on po.project_id = tf.project_project_id\r\n" + 
+			"			join user usr on usr.user_id = tf.user_user_id\r\n" + 
+			"			and project_type='Billable' and tf.month = ?1",nativeQuery=true)
+	List<Object[]> getApproverTwoPreviousMonthData(int month);
+	
+	@Query(value = "select coalesce(first_half_status,'OPEN') as `first_half_status`,coalesce(second_half_status,'OPEN') as `second_half_status`,po.user_name approver,po.email approverEmail,po.project_name,\n" + 
+			"concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName,po.project_tier\n" + 
+			"from tasktrack_approval tf\n" + 
+			"join\n" + 
+			"(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n" + 
+			",p.project_tier\n" + 
+			"from project p\n" + 
+			"left join user u on u.user_id = p.onsite_lead_user_id\n" + 
+			"where p.project_tier=2) po on po.project_id = tf.project_project_id\n" + 
+			"join user usr on usr.user_id = tf.user_user_id\n" + 
+			"and project_type='Billable' and tf.month = ?1 \n" + 
+			"\n" + 
+			"union all\n" + 
+			"\n" + 
+			"select coalesce(first_half_status,'OPEN') as `first_half_status`,coalesce(second_half_status,'OPEN') as `second_half_status`,po.user_name approver,po.email approverEmail,po.project_name,\n" + 
+			"concat(usr.last_name, \" \",usr.first_name) userName,po.approverFullName,po.project_tier\n" + 
+			"from tasktrack_approval_final tf\n" + 
+			"join\n" + 
+			"(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n" + 
+			",p.project_tier\n" + 
+			"from project p\n" + 
+			"left join user u on u.user_id = p.onsite_lead_user_id\n" + 
+			"where p.project_tier=1) po on po.project_id = tf.project_project_id\n" + 
+			"join user usr on usr.user_id = tf.user_user_id\n" + 
+			"and project_type='Billable' and tf.month = ?1 ;\n" + 
+			"", nativeQuery = true)
+	List<Object[]> getApproverOnePreviousMonthInfo(int month);
+
 }
