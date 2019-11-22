@@ -127,6 +127,18 @@ public class Tasktrack  extends  Auditable<Long> implements Comparable<Tasktrack
 		this.taskTypeId = taskTypeId;
 	}
 
+	@Transient
+	private String approvalStatus;
+	
+	public String getApprovalStatus() {
+		return approvalStatus;
+	}
+	
+	public void setApprovalStatus(String approvalStatus) {
+		this.approvalStatus = approvalStatus;
+	}
+	
+	
 	@Override
 	public String toString() {
 		return this.project.getProjectId()+" | "+this.id+" | "+this.task.getId()+" | "+this.description+" | "+this.hours+" | "+this.date;

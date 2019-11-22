@@ -64,4 +64,6 @@ public interface TasktrackService {
 
 	// nisha
 	ObjectNode createCorrection(ObjectNode requestdata, Boolean isReCorrection);
+	
+	List<Object[]> getProjectTierForTaskTrack(Long userId,Date startDate, Date endDate);
 }

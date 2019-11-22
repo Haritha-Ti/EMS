@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
@@ -293,5 +294,53 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			"and project_type='Billable' and tf.month = ?1 ;\n" + 
 			"", nativeQuery = true)
 	List<Object[]> getApproverOnePreviousMonthInfo(int month);
+	
+	@Query("SELECT t.project.projectId,t.project.projectTier FROM Tasktrack t "
+			+ "WHERE t.user.userId=?1 AND CAST(t.date as date) BETWEEN ?2 AND ?3 group by t.project.projectId,t.project.projectTier")
+	List<Object[]> getProjectTierForTaskTrack(Long userId,Date startDate, Date endDate);
+		
+	@Query(value = "SELECT t.id AS taskTrackId, t.date,\r\n" + 
+			"			p.project_name, \r\n" + 
+			"			tm.task_name,\r\n" + 
+			"			t.description,\r\n" + 
+			"			t.hours,\r\n" + 
+			"			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus\r\n" + 
+			"			FROM tasktrack t \r\n" + 
+			"			LEFT JOIN tasktrack_approval ta\r\n" + 
+			"				ON (t.user_user_id = ta.user_user_id  \r\n" + 
+			"				AND ta.project_project_id = t.project_project_id\r\n" + 
+			"				AND ta.month = month(t.date) \r\n" + 
+			"				AND ta.year = year(t.date)) \r\n" + 
+			"			INNER JOIN project p \r\n" + 
+			"				on p.project_id = t.project_project_id \r\n" + 
+			"			INNER JOIN task_master tm \r\n" + 
+			"				on tm.id = t.task_id \r\n" + 
+			"			WHERE t.user_user_id = :uId AND ta.project_type = 'Billable' \r\n" + 
+			"            AND t.project_project_id IN :projectId AND CAST(t.date as date) BETWEEN :fromDate AND :toDate "+
+			"			 ORDER BY date(t.date) ASC ", nativeQuery = true)
+	List<Object[]> getTrackTaskListTire2(@Param("uId") long userId, @Param("projectId") List<Long> projectId, @Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
+	
+	@Query(value = "SELECT t.id AS taskTrackId, t.date,\r\n" + 
+			"			p.project_name, \r\n" + 
+			"			tm.task_name,\r\n" + 
+			"			t.description,\r\n" + 
+			"			t.hours,\r\n" + 
+			"			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus\r\n" + 
+			"			FROM tasktrack t \r\n" + 
+			"			LEFT JOIN tasktrack_approval_final ta\r\n" + 
+			"				ON (t.user_user_id = ta.user_user_id  \r\n" + 
+			"				AND ta.project_project_id = t.project_project_id\r\n" + 
+			"				AND ta.month = month(t.date) \r\n" + 
+			"				AND ta.year = year(t.date)) \r\n" + 
+			"			INNER JOIN project p \r\n" + 
+			"				on p.project_id = t.project_project_id \r\n" + 
+			"			INNER JOIN task_master tm \r\n" + 
+			"				on tm.id = t.task_id \r\n" + 
+			"			WHERE t.user_user_id = :uId AND ta.project_type = 'Billable' \r\n" + 
+			"            AND t.project_project_id IN :projectId AND CAST(t.date as date) BETWEEN :fromDate AND :toDate " + 
+			"			 ORDER BY date(t.date) ASC ", nativeQuery = true)
+	List<Object[]> getTrackTaskListTire1(@Param("uId") long userId, @Param("projectId") List<Long> projectId, @Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
+
+
 
 }
