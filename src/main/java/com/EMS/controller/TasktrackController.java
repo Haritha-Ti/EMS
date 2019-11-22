@@ -309,6 +309,7 @@ public class TasktrackController {
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", (Long) alloc[0]);
 				node.put("value", (String) alloc[1]);
+				node.put("clientName",(String) alloc[2]);
 				projectTitle.add(node);
 			}
 		} catch (Exception e) {
@@ -2662,6 +2663,8 @@ public class TasktrackController {
 		long uId = Long.valueOf(requestdata.get("uId").toString());
 		int month = Integer.parseInt(requestdata.get("month").toString());
 		int year = Integer.parseInt(requestdata.get("year").toString());
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = formatter.parse(year+"-"+month+"-"+"01");
 		UserModel user = userService.getUserDetailsById(uId);
 
 		if (user.getRole().getroleId() == 6 || user.getRole().getroleId() == 1) {// Finance
@@ -2695,11 +2698,11 @@ public class TasktrackController {
 			if (user.getRole().getroleId() == 7) {
 				// System.out.println("_________________________________________APPROVER_LEVEL_2
 				// " +uId );
-				projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, month, year);
+				projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId,startDate,month, year);
 			} else if (user.getRole().getroleId() == 2) {
 				// System.out.println("_________________________________________APPROVER_LEVEL_1/Lead
 				// "+uId);
-				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, month, year);
+				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId,startDate, month, year);
 			}
 			// Renjith
 			else if (user.getRole().getroleId() == 5) {
@@ -2882,13 +2885,17 @@ public class TasktrackController {
 		long uId = Long.valueOf(requestdata.get("uId").toString());
 		int month = Integer.parseInt(requestdata.get("month").toString());
 		int year = Integer.parseInt(requestdata.get("year").toString());
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = formatter.parse(year+"-"+month+"-"+"01");
+		System.out.println("starDate"+startDate);
+
 		UserModel user = userService.getUserDetailsById(uId);
 
 		List<Object[]> projectList = null;
 		if (user.getRole().getroleId() == 5) {
-			projectList = tasktrackRepository.getTier1And2ProjectNames(month, year);
+			projectList = tasktrackRepository.getTier1And2ProjectNames(month, year,startDate);
 		} else {
-			projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, month, year);
+			projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId,startDate, month, year);
 		}
 
 		for (Object[] alloc : projectList) {
@@ -2944,14 +2951,16 @@ public class TasktrackController {
 		long uId = Long.valueOf(requestdata.get("uId").toString());
 		int month = Integer.parseInt(requestdata.get("month").toString());
 		int year = Integer.parseInt(requestdata.get("year").toString());
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = formatter.parse(year+"-"+month+"-"+"01");
 		UserModel user = userService.getUserDetailsById(uId);
 
 		List<Object[]> projectList = null;
 
 		if (user.getRole().getroleId() == 5) {
-			projectList = tasktrackRepository.getTier2ProjectNames(month, year);
+			projectList = tasktrackRepository.getTier2ProjectNames(startDate,month, year);
 		} else {
-			projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, month, year);
+			projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId,startDate,month, year);
 		}
 
 		for (Object[] alloc : projectList) {
