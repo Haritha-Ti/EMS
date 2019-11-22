@@ -294,4 +294,8 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			"", nativeQuery = true)
 	List<Object[]> getApproverOnePreviousMonthInfo(int month);
 
+	//Nisha
+
+	@Query("SELECT DISTINCT a.project.projectId,a.project.projectName,a.project.clientName.clientName from AllocationModel a where a.user.userId=?1 and  a.startDate <=?3 and a.endDate >=?2 order by a.project.projectName")
+	public List<Object[]> getProjectNamesByAllocation(long uId,Date curdate) throws Exception;
 }

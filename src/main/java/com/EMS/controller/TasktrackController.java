@@ -284,27 +284,32 @@ public class TasktrackController {
 
 	@PostMapping("/getProjectNamesByMonth")
 	public JsonNode getProjectNamesByMonth(@RequestBody JsonNode requestData) throws ParseException {
-		String currentmonth = requestData.get("currentmonth").asText();
-		String currentyear = requestData.get("currentyear").asText();
+		//String currentmonth = requestData.get("currentmonth").asText();
+		//String currentyear = requestData.get("currentyear").asText();
+		String currentdate =requestData.get("currentDate").asText();
+
 		int uId = requestData.get("uid").asInt();
 		/*
 		 * Calendar cal = Calendar.getInstance(); int lastDate =
 		 * cal.getActualMaximum(Calendar.DATE); return lastDate;
 		 */
-		String fromdate = currentyear + "-" + currentmonth + "-01";
+		/*String fromdate = currentyear + "-" + currentmonth + "-01";
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
 		LocalDate date = LocalDate.parse(fromdate, dateFormat);
 		ValueRange range = date.range(ChronoField.DAY_OF_MONTH);
 		Long max = range.getMaximum();
-		String todate = String.format("%s-%s-%d", currentyear, currentmonth, max);
+		String todate = String.format("%s-%s-%d", currentyear, currentmonth, max);*/
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date startdate = outputFormat.parse(fromdate);
-		Date enddate = outputFormat.parse(todate);
+		/*Date startdate = outputFormat.parse(fromdate);
+		Date enddate = outputFormat.parse(todate);*/
+		Date curdate =outputFormat.parse(currentdate);
 		// LocalDate newDate = date.withDayOfMonth(max.intValue());
 		// return enddate;
 		ArrayNode projectTitle = objectMapper.createArrayNode();
 		try {
-			for (Object[] alloc : tasktrackRepository.getProjectNamesByMonths(uId, startdate, enddate)) {
+			//for (Object[] alloc : tasktrackRepository.getProjectNamesByMonths(uId, startdate, enddate)) {
+			for (Object[] alloc : tasktrackRepository.getProjectNamesByAllocation(uId, curdate)) {
+
 
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", (Long) alloc[0]);
