@@ -1,5 +1,7 @@
 package com.EMS.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "mail_domain_model")
+@Table(name = "email_notification")
 public class MailDomainModel {
 
 	@Id
@@ -18,6 +20,37 @@ public class MailDomainModel {
 	private String mailTo;
 	private String cc;
 	private String bcc;
+	private Date mail_timestamp;
+	private int status;
+	private String mailFrom;
+	
+	
+
+
+
+	public String getMailFrom() {
+		return mailFrom;
+	}
+
+	public void setMailFrom(String mailFrom) {
+		this.mailFrom = mailFrom;
+	}
+
+	public Date getMail_timestamp() {
+		return mail_timestamp;
+	}
+
+	public void setMail_timestamp(Date mail_timestamp) {
+		this.mail_timestamp = mail_timestamp;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
 	public long getMailDomainId() {
 		return mailDomainId;
