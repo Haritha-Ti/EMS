@@ -1,6 +1,7 @@
 package com.EMS.service;
 
 import java.math.BigInteger;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
@@ -86,30 +87,84 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 	@Override
 	public List<Tasktrack> getByDate(Date startDate, Date endDate, Long uId) {
-		List<Tasktrack> list = tasktrackRepository.getByDate(startDate, endDate, uId);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		List<Tasktrack> taskTrackList = new ArrayList<>();
+		
+		List<Object[]> projectTierList = tasktrackRepository.getProjectTierForTaskTrack(uId, startDate, endDate);
 
+		List<Long> projectIdsTire1 = new ArrayList<Long>();
+		List<Long> projectIdsTire2 = new ArrayList<Long>();
+		
+		for (Object[] projectTier : projectTierList) {						
+			if (Integer.parseInt(projectTier[1].toString()) == 2) {
+				projectIdsTire2.add(Long.parseLong(projectTier[0].toString()));
+				
+			}
+			else if(Integer.parseInt(projectTier[1].toString()) == 1) {
+				projectIdsTire1.add(Long.parseLong(projectTier[0].toString()));
+				
+			}
+		}
+		
+		List<Object[]> taskTrackObjArr = new ArrayList<Object[]>();
+		
+		if (projectIdsTire1.size()>0) {
+			taskTrackObjArr.addAll(tasktrackRepository.getTrackTaskListTire1(uId,projectIdsTire1, startDate, endDate));
+			
+		}
+		
+		
+		if (projectIdsTire2.size() > 0) {
+			taskTrackObjArr.addAll(tasktrackRepository.getTrackTaskListTire2(uId, projectIdsTire2, startDate,
+					endDate));
+		
+		}
+		
+		for (Object[] obj : taskTrackObjArr) {
+			Tasktrack tasktrack = new Tasktrack();
+			tasktrack.setId(Long.parseLong(obj[0].toString()));
+			Task task = new Task();
+			task.setTaskName(obj[3].toString());
+			tasktrack.setTask(task);
+			try {
+				tasktrack.setDate(sdf.parse(obj[1].toString()));
+			} catch (ParseException e) {					
+				e.printStackTrace();
+			}
+			ProjectModel projectModel = new ProjectModel();
+			projectModel.setProjectName(obj[2].toString());
+			tasktrack.setProject(projectModel);
+			tasktrack.setDescription(obj[4].toString());
+			tasktrack.setHours(Double.parseDouble(obj[5].toString()));
+			tasktrack.setApprovalStatus(obj[6].toString());
+			
+			taskTrackList.add(tasktrack);
+			
+		}
+		
 		LocalDate localStartDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate localEndDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
 		for (LocalDate date = localStartDate; date.isBefore(localEndDate)
 				| date.isEqual(localEndDate); date = date.plusDays(1)) {
 			LocalDate locaDate = date;
-			Tasktrack obj = list.stream()
+			Tasktrack obj = taskTrackList.stream()
 					.filter(taskTrack -> locaDate
 							.equals(taskTrack.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()))
 					.findAny().orElse(null);
 			if (obj == null) {
 				Tasktrack tasktrack = new Tasktrack();
 				tasktrack.setDate(Date.from(locaDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-				list.add(tasktrack);
+				taskTrackList.add(tasktrack);
 			}
 		}
 
-		Collections.sort(list);
+		Collections.sort(taskTrackList);
 
-		return list;
+		return taskTrackList;
 
 	}
+
 
 	@Override
 	public Tasktrack saveTaskDetails(Tasktrack task) {
@@ -754,5 +809,12 @@ public class TasktrackServiceImpl implements TasktrackService {
 		}
 		catch (Exception e) {
 		}
+	}
+
+
+	@Override
+	public List<Object[]> getProjectTierForTaskTrack(Long userId, Date startDate, Date endDate) {
+		
+		return tasktrackRepository.getProjectTierForTaskTrack(userId, startDate, endDate);
 	}
 }

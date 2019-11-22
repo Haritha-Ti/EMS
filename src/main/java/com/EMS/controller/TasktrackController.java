@@ -128,6 +128,7 @@ public class TasktrackController {
 				objectNode.put("taskSummary",
 						(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 				objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
+				objectNode.put("approvalStatus", obj.getApprovalStatus() );
 				ArrayNode arrayNode = (ArrayNode) taskDetails.get(sdf.format(obj.getDate()));
 				arrayNode.add(objectNode);
 				taskDetails.set(sdf.format(obj.getDate()), arrayNode);
@@ -143,6 +144,7 @@ public class TasktrackController {
 					objectNode.put("taskSummary",
 							(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 					objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
+					objectNode.put("approvalStatus", obj.getApprovalStatus() );
 					arrayNode.add(objectNode);
 				}
 
