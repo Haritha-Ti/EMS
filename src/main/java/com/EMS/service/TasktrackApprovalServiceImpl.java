@@ -3101,36 +3101,39 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProject(month, year, projectId);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByProject(month, year, projectId);
 		String intmonth;
 		if (month < 10) {
 			intmonth = "0" + month;
 		} else {
 			intmonth = String.valueOf(month);
 		}
-		for (Object[] item : financeData) {
-			JSONObject node = new JSONObject();
-			List<JSONObject> billableArray = new ArrayList<>();
-			List<JSONObject> userArray = new ArrayList<>();
+		if(financeData.size()!=0)
+		{
+			for (Object[] item : financeData) {
+				JSONObject node = new JSONObject();
+				List<JSONObject> billableArray = new ArrayList<>();
+				List<JSONObject> userArray = new ArrayList<>();
 
-			node.put("userId", item[0]);
-			node.put("firstName", item[1]);
-			node.put("lastName", item[2]);
-			node.put("status", item[3]);
-			for (int i = 1; i <= daysInMonth; i++) {
-				String j;
-				if (i < 10) {
-					j = "0" + i;
-				} else {
-					j = String.valueOf(i);
+				node.put("userId", item[0]);
+				node.put("firstName", item[1]);
+				node.put("lastName", item[2]);
+				//node.put("status", item[3]);
+				for (int i = 1; i <= daysInMonth; i++) {
+					String j;
+					if (i < 10) {
+						j = "0" + i;
+					} else {
+						j = String.valueOf(i);
+					}
+					JSONObject billableNode = new JSONObject();
+					billableNode.put(year + "-" + intmonth + "-" + j, item[i + 2]);
+					billableArray.add(billableNode);
 				}
-				JSONObject billableNode = new JSONObject();
-				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 3]);
-				billableArray.add(billableNode);
+				node.put("billable", billableArray);
+				resultData.add(node);
 			}
-			node.put("billable", billableArray);
-			resultData.add(node);
-		}
+	}
 
 		return resultData;
 	}
@@ -3140,32 +3143,35 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUser(month, year, userId);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByUser(month, year, userId);
 		String intmonth;
 		if (month < 10) {
 			intmonth = "0" + month;
 		} else {
 			intmonth = String.valueOf(month);
 		}
-		for (Object[] item : financeData) {
-			JSONObject node = new JSONObject();
-			List<JSONObject> billableArray = new ArrayList<>();
-			node.put("projectId", item[0]);
-			node.put("projectName", item[1]);
-			node.put("status", item[2]);
-			for (int i = 1; i <= daysInMonth; i++) {
-				String j;
-				if (i < 10) {
-					j = "0" + i;
-				} else {
-					j = String.valueOf(i);
+		if(financeData.size()!=0)
+		{
+			for (Object[] item : financeData) {
+				JSONObject node = new JSONObject();
+				List<JSONObject> billableArray = new ArrayList<>();
+				node.put("projectId", item[0]);
+				node.put("projectName", item[1]);
+				//node.put("status", item[2]);
+				for (int i = 1; i <= daysInMonth; i++) {
+					String j;
+					if (i < 10) {
+						j = "0" + i;
+					} else {
+						j = String.valueOf(i);
+					}
+					JSONObject billableNode = new JSONObject();
+					billableNode.put(year + "-" + intmonth + "-" + j, item[i + 1]);
+					billableArray.add(billableNode);
 				}
-				JSONObject billableNode = new JSONObject();
-				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 2]);
-				billableArray.add(billableNode);
+				node.put("billable", billableArray);
+				resultData.add(node);
 			}
-			node.put("billable", billableArray);
-			resultData.add(node);
 		}
 
 		return resultData;
@@ -3176,7 +3182,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUserAndProject(month, year, userId,
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByUserAndProject(month, year, userId,
 				projectId);
 		String intmonth;
 		if (month < 10) {
@@ -3184,28 +3190,30 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		} else {
 			intmonth = String.valueOf(month);
 		}
-		for (Object[] item : financeData) {
-			JSONObject node = new JSONObject();
-			List<JSONObject> billableArray = new ArrayList<>();
-			node.put("projectId", item[0]);
-			node.put("projectName", item[1]);
-			node.put("userId", item[2]);
-			node.put("firstName", item[3]);
-			node.put("lastName", item[4]);
-			node.put("status", item[5]);
-			for (int i = 1; i <= daysInMonth; i++) {
-				String j;
-				if (i < 10) {
-					j = "0" + i;
-				} else {
-					j = String.valueOf(i);
+		if(financeData.size()!=0) {
+			for (Object[] item : financeData) {
+				JSONObject node = new JSONObject();
+				List<JSONObject> billableArray = new ArrayList<>();
+				node.put("projectId", item[0]);
+				node.put("projectName", item[1]);
+				node.put("userId", item[2]);
+				node.put("firstName", item[3]);
+				node.put("lastName", item[4]);
+				//node.put("status", item[5]);
+				for (int i = 1; i <= daysInMonth; i++) {
+					String j;
+					if (i < 10) {
+						j = "0" + i;
+					} else {
+						j = String.valueOf(i);
+					}
+					JSONObject billableNode = new JSONObject();
+					billableNode.put(year + "-" + intmonth + "-" + j, item[i + 4]);
+					billableArray.add(billableNode);
 				}
-				JSONObject billableNode = new JSONObject();
-				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 5]);
-				billableArray.add(billableNode);
+				node.put("billable", billableArray);
+				resultData.add(node);
 			}
-			node.put("billable", billableArray);
-			resultData.add(node);
 		}
 
 		return resultData;
@@ -5250,36 +5258,38 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByMonthYear(month, year);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByMonthYear(month, year);
 		String intmonth;
 		if (month < 10) {
 			intmonth = "0" + month;
 		} else {
 			intmonth = String.valueOf(month);
 		}
-		for (Object[] item : financeData) {
-			JSONObject node = new JSONObject();
-			List<JSONObject> billableArray = new ArrayList<>();
-			List<JSONObject> userArray = new ArrayList<>();
+		if(financeData.size()!=0) {
+			for (Object[] item : financeData) {
+				JSONObject node = new JSONObject();
+				List<JSONObject> billableArray = new ArrayList<>();
+				List<JSONObject> userArray = new ArrayList<>();
 
-			node.put("userId", item[0]);
-			node.put("firstName", item[1]);
-			node.put("lastName", item[2]);
-			node.put("status", item[3]);
-			node.put("projectName", item[4]);
-			for (int i = 1; i <= daysInMonth; i++) {
-				String j;
-				if (i < 10) {
-					j = "0" + i;
-				} else {
-					j = String.valueOf(i);
+				node.put("userId", item[0]);
+				node.put("firstName", item[1]);
+				node.put("lastName", item[2]);
+				//node.put("status", item[3]);
+				node.put("projectName", item[3]);
+				for (int i = 1; i <= daysInMonth; i++) {
+					String j;
+					if (i < 10) {
+						j = "0" + i;
+					} else {
+						j = String.valueOf(i);
+					}
+					JSONObject billableNode = new JSONObject();
+					billableNode.put(year + "-" + intmonth + "-" + j, item[i + 3]);
+					billableArray.add(billableNode);
 				}
-				JSONObject billableNode = new JSONObject();
-				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 4]);
-				billableArray.add(billableNode);
+				node.put("billable", billableArray);
+				resultData.add(node);
 			}
-			node.put("billable", billableArray);
-			resultData.add(node);
 		}
 
 		return resultData;
@@ -5313,7 +5323,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProjectSet(month, year, id);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByProjectSet(month, year, id);
 		String intmonth;
 		if (month < 10) {
 			intmonth = "0" + month;
@@ -5328,7 +5338,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			node.put("userId", item[0]);
 			node.put("firstName", item[1]);
 			node.put("lastName", item[2]);
-			node.put("status", item[3]);
+			//node.put("status", item[3]);
 			for (int i = 1; i <= daysInMonth; i++) {
 				String j;
 				if (i < 10) {
@@ -5337,7 +5347,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					j = String.valueOf(i);
 				}
 				JSONObject billableNode = new JSONObject();
-				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 3]);
+				billableNode.put(year + "-" + intmonth + "-" + j, item[i + 2]);
 				billableArray.add(billableNode);
 			}
 			node.put("billable", billableArray);

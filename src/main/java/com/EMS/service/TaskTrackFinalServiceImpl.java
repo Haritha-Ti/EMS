@@ -46,6 +46,9 @@ import freemarker.template.Template;
 public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 	@Autowired
+	TaskTrackApprovalFinalRepository taskTrackApprovalFinalRepository;
+
+	@Autowired
 	TasktrackRepository tasktrackRepository;
 
 	@Autowired
@@ -108,7 +111,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	
 	@Value("${FINANCE_MAIL}")
 	private String financeMail;
-	
+
 	@Override
 	public Boolean checkIsUserExists(Long id) {
 		Boolean exist = taskTrackFinalJPARepository.existsByUser(id);
@@ -164,7 +167,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByProject(month, year, projectId);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByProject(month, year, projectId);
 		String intmonth;
 		if (month < 10) {
 			intmonth = "0" + month;
@@ -203,7 +206,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUser(month, year, userId);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByUser(month, year, userId);
 		String intmonth;
 		if (month < 10) {
 			intmonth = "0" + month;
@@ -239,7 +242,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackFinanceRepository.getFinanceDataByUserAndProject(month, year, userId,
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByUserAndProject(month, year, userId,
 				projectId);
 		String intmonth;
 		if (month < 10) {
