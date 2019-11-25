@@ -254,7 +254,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	@Query(value = "SELECT t.id AS taskTrackId, t.date,\r\n" + "			p.project_name, \r\n"
 			+ "			tm.task_name,\r\n" + "			t.description,\r\n" + "			t.hours,\r\n"
-			+ "			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus\r\n"
+			+ "			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus, p.project_id as projectId\r\n"
 			+ "			FROM tasktrack t \r\n" + "			LEFT JOIN tasktrack_approval ta\r\n"
 			+ "				ON (t.user_user_id = ta.user_user_id  \r\n"
 			+ "				AND ta.project_project_id = t.project_project_id\r\n"
@@ -269,7 +269,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	@Query(value = "SELECT t.id AS taskTrackId, t.date,\r\n" + "			p.project_name, \r\n"
 			+ "			tm.task_name,\r\n" + "			t.description,\r\n" + "			t.hours,\r\n"
-			+ "			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus\r\n"
+			+ "			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus, p.project_id as projectId\r\n"
 			+ "			FROM tasktrack t \r\n" + "			LEFT JOIN tasktrack_approval_final ta\r\n"
 			+ "				ON (t.user_user_id = ta.user_user_id  \r\n"
 			+ "				AND ta.project_project_id = t.project_project_id\r\n"

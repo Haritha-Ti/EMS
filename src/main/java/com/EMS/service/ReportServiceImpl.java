@@ -29,6 +29,7 @@ import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.TaskTrackFinalJPARepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.TimeTrackApprovalJPARepository;
+import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -295,7 +296,9 @@ public class ReportServiceImpl implements ReportService {
 			String projectType1 = (String.valueOf(resultObj[10]) == null
 					|| String.valueOf(resultObj[10]).equalsIgnoreCase("null")) ? null : String.valueOf(resultObj[10]);
 			String appr1FirstHalfStatus = (String.valueOf(resultObj[11]) == null
-					|| String.valueOf(resultObj[11]).equalsIgnoreCase("null")) ? null : String.valueOf(resultObj[11]);
+					|| String.valueOf(resultObj[11]).equalsIgnoreCase("null"))
+							? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+							: String.valueOf(resultObj[11]);
 			Integer approver2Id = Integer.parseInt(
 					(String.valueOf(resultObj[12]) == null || String.valueOf(resultObj[12]).equalsIgnoreCase("null"))
 							? "0"
@@ -309,19 +312,23 @@ public class ReportServiceImpl implements ReportService {
 			String projectType2 = (String.valueOf(resultObj[15]) == null
 					|| String.valueOf(resultObj[15]).equalsIgnoreCase("null")) ? null : String.valueOf(resultObj[15]);
 			String appr2FirstHalfStatus = (String.valueOf(resultObj[16]) == null
-					|| String.valueOf(resultObj[16]).equalsIgnoreCase("null")) ? null : String.valueOf(resultObj[16]);
+					|| String.valueOf(resultObj[16]).equalsIgnoreCase("null")) ? Constants.TASKTRACK_FINAL_STATUS_OPEN
+							: String.valueOf(resultObj[16]);
 			Double approver1SecondHalfHours = Double.parseDouble(
 					(String.valueOf(resultObj[17]) == null || String.valueOf(resultObj[17]).equalsIgnoreCase("null"))
 							? "0"
 							: String.valueOf(resultObj[17]));
 			String appr1SecondHalfStatus = (String.valueOf(resultObj[18]) == null
-					|| String.valueOf(resultObj[18]).equalsIgnoreCase("null")) ? null : String.valueOf(resultObj[18]);
+					|| String.valueOf(resultObj[18]).equalsIgnoreCase("null"))
+							? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+							: String.valueOf(resultObj[18]);
 			Double approver2SecondHalfHours = Double.parseDouble(
 					(String.valueOf(resultObj[19]) == null || String.valueOf(resultObj[19]).equalsIgnoreCase("null"))
 							? "0"
 							: String.valueOf(resultObj[19]));
 			String appr2SecondHalfStatus = (String.valueOf(resultObj[20]) == null
-					|| String.valueOf(resultObj[20]).equalsIgnoreCase("null")) ? null : String.valueOf(resultObj[20]);
+					|| String.valueOf(resultObj[20]).equalsIgnoreCase("null")) ? Constants.TASKTRACK_FINAL_STATUS_OPEN
+							: String.valueOf(resultObj[20]);
 
 			if (projectId != 0) {
 				if (!(projectMap.containsKey(projectId))) {
@@ -362,10 +369,7 @@ public class ReportServiceImpl implements ReportService {
 								obj.setAppr2SecondHalfTotalHours(
 										obj.getAppr2SecondHalfTotalHours() + approver2SecondHalfHours);
 							}
-						} else if ((projectType1 != null && (projectType1.equalsIgnoreCase("BILLABLE")
-								|| projectType1.equalsIgnoreCase("OVERTIME")))
-								|| (projectType2 != null && (projectType2.equalsIgnoreCase("BILLABLE")
-										|| projectType2.equalsIgnoreCase("OVERTIME")))) {
+						} else {
 							Double ap1FHHours = 0.0;
 							Double ap1SHHours = 0.0;
 							Double ap2FHHours = 0.0;
@@ -385,10 +389,7 @@ public class ReportServiceImpl implements ReportService {
 											appr1FirstHalfStatus, appr1SecondHalfStatus, ap2FHHours, ap2SHHours,
 											appr2FirstHalfStatus, appr2SecondHalfStatus));
 						}
-					} else if ((projectType1 != null
-							&& (projectType1.equalsIgnoreCase("BILLABLE") || projectType1.equalsIgnoreCase("OVERTIME")))
-							|| (projectType2 != null && (projectType2.equalsIgnoreCase("BILLABLE")
-									|| projectType2.equalsIgnoreCase("OVERTIME")))) {
+					} else {
 						approver1List = new HashMap<Integer, UsersEntryApprovalDetailsDTO>();
 						Double ap1FHHours = 0.0;
 						Double ap1SHHours = 0.0;
