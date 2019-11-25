@@ -1,5 +1,7 @@
 package com.EMS.service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -16,7 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.EMS.dto.MailDomainDto;
-import com.EMS.model.MailDomainModel;
+import com.EMS.model.EmailNotification;
 import com.EMS.model.UserModel;
 import com.EMS.repository.MailDomainRepository;
 import com.EMS.utility.Constants;
@@ -86,6 +88,7 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 
 		} catch (Exception e) {
 			msg = "Failure";
+			
 		}
 		System.out.println(msg);
 		return msg;
@@ -93,11 +96,13 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 
 	private void saveMailContent(MailDomainDto mailDomainDto) {
 
-		MailDomainModel mailDomain = new MailDomainModel();
+		EmailNotification mailDomain = new EmailNotification();
 		mailDomain.setBcc(mailDomainDto.getBcc());
 		mailDomain.setCc(mailDomainDto.getCc());
 		mailDomain.setMailContent(mailDomainDto.getContent());
 		mailDomain.setMailTo(mailDomainDto.getTo());
+		mailDomain.setMailTimestamp(new Date());
+		mailDomain.setMailFrom("PMS Admin");
 		mailDomainRepository.save(mailDomain);
 
 	}
@@ -105,9 +110,9 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
 //For getting unreaded emails from email notification table
 
 	@Override
-	public List<MailDomainModel> getAllEmails(String email) {
+	public List<EmailNotification> getAllEmails(String email) {
 
-		List<MailDomainModel> list = mailDomainRepository.getAllEmails(email);
+		List<EmailNotification> list = mailDomainRepository.getAllEmails(email);
 		return list;
 	}
 

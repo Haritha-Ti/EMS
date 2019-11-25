@@ -3,13 +3,13 @@ package com.EMS.service;
 import java.util.List;
 
 import com.EMS.dto.MailDomainDto;
-import com.EMS.model.MailDomainModel;
+import com.EMS.model.EmailNotification;
 
 public interface EmailNotificationService {
 	
 	String sendMail(String token, MailDomainDto mailDomainDto ,Boolean isSaveMailContent) throws Exception;
 
-	List<MailDomainModel> getAllEmails(String email);
+	List<EmailNotification> getAllEmails(String email);
 
 	int getEmailCount(Long mailDomainId);
 
