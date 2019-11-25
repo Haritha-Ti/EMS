@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.EMS.model.MailDomainModel;
+import com.EMS.model.EmailNotification;
 
-public interface MailDomainRepository extends JpaRepository<MailDomainModel, Long>{
+public interface MailDomainRepository extends JpaRepository<EmailNotification, Long>{
 
-	@Query(value="SELECT * FROM email_notification where mail_to=?1",nativeQuery=true)
-	List<MailDomainModel> getAllEmails(String email);
+	@Query(value="SELECT * FROM email_notification where mail_to=?1 order by mail_timestamp DESC",nativeQuery=true)
+	List<EmailNotification> getAllEmails(String email);
 
 	@Transactional
 	@Modifying
