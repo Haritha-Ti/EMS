@@ -98,6 +98,6 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 	 * @return
 	 */
 	@Query(value = QueryConstants.FINANCE_APPROVED_HOURS_REPORT_QUERY, nativeQuery = true)
-	Object[][] getProjectWiseApprovalReportForFirstHalf(Integer month, Integer year);
+	Object[][] getProjectWiseApprovalReportForFirstHalf(String monthStartDate);
 
 }
