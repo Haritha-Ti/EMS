@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.EMS.model.MailDomainModel;
+import com.EMS.model.EmailNotification;
 import com.EMS.model.UserModel;
 import com.EMS.service.EmailNotificationService;
 import com.EMS.service.UserService;
@@ -43,7 +43,7 @@ public class EmailNotificationController {
 			Long userId = requestdata.get("userId").asLong();
 			UserModel user = userservice.getUserdetailsbyId(userId);
 			System.out.println("user email : " + user.getEmail());
-			List<MailDomainModel> mailnotificationList = emailNotificationService.getAllEmails(user.getEmail());
+			List<EmailNotification> mailnotificationList = emailNotificationService.getAllEmails(user.getEmail());
 			System.out.println("Email list size :" + mailnotificationList.size());
 			if (mailnotificationList.isEmpty()) {
 				responsedata.put("status", "success");
@@ -52,7 +52,7 @@ public class EmailNotificationController {
 				responsedata.put("payload", "");
 			} else {
 
-				for (MailDomainModel obj : mailnotificationList) {
+				for (EmailNotification obj : mailnotificationList) {
 
 					ObjectNode jsonobj = objectMapper.createObjectNode();
 					jsonobj.put("mailDomaiId", obj.getMailDomainId());
@@ -60,7 +60,7 @@ public class EmailNotificationController {
 					jsonobj.put("mailTo", obj.getMailTo());
 					jsonobj.put("mailFrom", obj.getMailFrom());
 					jsonobj.put("mailStatus", obj.getStatus());
-					jsonobj.put("mailTimeStamp", obj.getMail_timestamp().toString());
+					jsonobj.put("mailTimeStamp", obj.getMailTimestamp().toString());
 					emailArray.add(jsonobj);
 				}
 				responsedata.put("status", "success");

@@ -75,13 +75,13 @@ public class TasktrackServiceImpl implements TasktrackService {
 //	For Task track Model
 	@Autowired
 	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
-	
+
 	@Autowired
-    private Configuration freemarkerConfig;
-	
+	private Configuration freemarkerConfig;
+
 	@Autowired
 	private EmailNotificationService emailNotificationService;
-	
+
 	@Value("${FINANCE_MAIL}")
 	private String financeMail;
 
@@ -89,37 +89,34 @@ public class TasktrackServiceImpl implements TasktrackService {
 	public List<Tasktrack> getByDate(Date startDate, Date endDate, Long uId) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		List<Tasktrack> taskTrackList = new ArrayList<>();
-		
+
 		List<Object[]> projectTierList = tasktrackRepository.getProjectTierForTaskTrack(uId, startDate, endDate);
 
 		List<Long> projectIdsTire1 = new ArrayList<Long>();
 		List<Long> projectIdsTire2 = new ArrayList<Long>();
-		
-		for (Object[] projectTier : projectTierList) {						
+
+		for (Object[] projectTier : projectTierList) {
 			if (Integer.parseInt(projectTier[1].toString()) == 2) {
 				projectIdsTire2.add(Long.parseLong(projectTier[0].toString()));
-				
-			}
-			else if(Integer.parseInt(projectTier[1].toString()) == 1) {
+
+			} else if (Integer.parseInt(projectTier[1].toString()) == 1) {
 				projectIdsTire1.add(Long.parseLong(projectTier[0].toString()));
-				
+
 			}
 		}
-		
+
 		List<Object[]> taskTrackObjArr = new ArrayList<Object[]>();
-		
-		if (projectIdsTire1.size()>0) {
-			taskTrackObjArr.addAll(tasktrackRepository.getTrackTaskListTire1(uId,projectIdsTire1, startDate, endDate));
-			
+
+		if (projectIdsTire1.size() > 0) {
+			taskTrackObjArr.addAll(tasktrackRepository.getTrackTaskListTire1(uId, projectIdsTire1, startDate, endDate));
+
 		}
-		
-		
+
 		if (projectIdsTire2.size() > 0) {
-			taskTrackObjArr.addAll(tasktrackRepository.getTrackTaskListTire2(uId, projectIdsTire2, startDate,
-					endDate));
-		
+			taskTrackObjArr.addAll(tasktrackRepository.getTrackTaskListTire2(uId, projectIdsTire2, startDate, endDate));
+
 		}
-		
+
 		for (Object[] obj : taskTrackObjArr) {
 			Tasktrack tasktrack = new Tasktrack();
 			tasktrack.setId(Long.parseLong(obj[0].toString()));
@@ -128,20 +125,21 @@ public class TasktrackServiceImpl implements TasktrackService {
 			tasktrack.setTask(task);
 			try {
 				tasktrack.setDate(sdf.parse(obj[1].toString()));
-			} catch (ParseException e) {					
+			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			ProjectModel projectModel = new ProjectModel();
 			projectModel.setProjectName(obj[2].toString());
+			projectModel.setProjectId(Long.parseLong(obj[7].toString()));
 			tasktrack.setProject(projectModel);
 			tasktrack.setDescription(obj[4].toString());
 			tasktrack.setHours(Double.parseDouble(obj[5].toString()));
 			tasktrack.setApprovalStatus(obj[6].toString());
-			
+
 			taskTrackList.add(tasktrack);
-			
+
 		}
-		
+
 		LocalDate localStartDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate localEndDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -164,7 +162,6 @@ public class TasktrackServiceImpl implements TasktrackService {
 		return taskTrackList;
 
 	}
-
 
 	@Override
 	public Tasktrack saveTaskDetails(Tasktrack task) {
@@ -578,21 +575,18 @@ public class TasktrackServiceImpl implements TasktrackService {
 			String status = requestdata.get("status").asText();
 			ArrayNode days = (ArrayNode) requestdata.get("days");
 			ArrayNode removedDays = (ArrayNode) requestdata.get("removedDays");
-			if( days.size()==0 && removedDays.size()==0)
-			{
+			if (days.size() == 0 && removedDays.size() == 0) {
 				responsedata.put("message", "no days selected");
 				responsedata.put("status", "success");
 				return requestdata;
 			}
 			String inputDate1 = null;
-			if(days.size()!=0) {
+			if (days.size() != 0) {
 				JsonNode node1 = days.get(0);
-				 inputDate1 = node1.asText();
-			}
-			else if(removedDays.size()!=0)
-			{
+				inputDate1 = node1.asText();
+			} else if (removedDays.size() != 0) {
 				JsonNode node1 = removedDays.get(0);
-				 inputDate1 = node1.asText();
+				inputDate1 = node1.asText();
 			}
 			SimpleDateFormat outputFormat1 = new SimpleDateFormat("yyyy-MM-dd");
 			Date correctionDate1 = outputFormat1.parse(inputDate1);
@@ -614,15 +608,15 @@ public class TasktrackServiceImpl implements TasktrackService {
 				}
 				List<TaskTrackCorrection> taskTrackCorrections = taskTrackCorrectionRepository
 						.findCorrectionDays(userId, projectId, month, year, firstDay, lastDay);
-				if(taskTrackCorrections.size() > 0) {
+				if (taskTrackCorrections.size() > 0) {
 					for (TaskTrackCorrection correction : taskTrackCorrections) {
 						correction.setStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION);
 					}
 					taskTrackCorrectionRepository.saveAll(taskTrackCorrections);
 				}
 			}
-			//remove days
-			if(removedDays.size()!=0){
+			// remove days
+			if (removedDays.size() != 0) {
 				for (JsonNode node : removedDays) {
 					String inputDate = node.asText();
 					SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -632,13 +626,14 @@ public class TasktrackServiceImpl implements TasktrackService {
 					monthIndex = (cal.get(Calendar.MONTH) + 1);
 					yearIndex = cal.get(Calendar.YEAR);
 					day = cal.get(Calendar.DAY_OF_MONTH);
-					List<TaskTrackCorrection> correctionData = taskTrackCorrectionRepository.getTaskCorrectData(userId, projectId, monthIndex, yearIndex, day);
+					List<TaskTrackCorrection> correctionData = taskTrackCorrectionRepository.getTaskCorrectData(userId,
+							projectId, monthIndex, yearIndex, day);
 					for (TaskTrackCorrection correction : correctionData) {
 						correction.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_CLOSED);
 					}
 					taskTrackCorrectionRepository.saveAll(correctionData);
 				}
-				if(days.size()==0){
+				if (days.size() == 0) {
 					int projectTier = project.getProjectTier();
 					if (projectTier == 2) {
 						List<TaskTrackApproval> taskTrackApproval = timeTrackApprovalJPARepository
@@ -688,7 +683,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 						taskTrackCorrection.setProject(project);
 						taskTrackCorrection.setComment(comment);
 						taskTrackCorrection.setStatus(Constants.TASKTRACK_CORRECTION_STATUS_OPEN);
-						taskTrackCorrection.setType(isRecorrection ? Constants.TASKTRACK_CORRECTION_TYPE_RECORRECTION : Constants.TASKTRACK_CORRECTION_TYPE_CORRECTION);
+						taskTrackCorrection.setType(isRecorrection ? Constants.TASKTRACK_CORRECTION_TYPE_RECORRECTION
+								: Constants.TASKTRACK_CORRECTION_TYPE_CORRECTION);
 						taskTrackCorrectionRepository.save(taskTrackCorrection);
 					}
 				}
@@ -719,62 +715,64 @@ public class TasktrackServiceImpl implements TasktrackService {
 					taskTrackFinalJPARepository.saveAll(taskTrackApprovalFinal);
 					responsedata.put("message", "Correction requested successfully");
 					/*
-					 * Sending mail to approver 1 
-					*/
-					
-					String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverTwo="";
+					 * Sending mail to approver 1
+					 */
+
+					String sendTo = "", sendCC = "", subject = "", emailReceiver = "", resource = "", approverTwo = "";
 
 					if (status.equalsIgnoreCase("firstHalf")) {
 						subject = "RCG Time Sheet- First half time sheet needs Correction";
-						resource = user.getLastName().concat(" "+user.getFirstName());
-						
-						if(projectTier == 1){
+						resource = user.getLastName().concat(" " + user.getFirstName());
+
+						if (projectTier == 1) {
 							sendCC = financeMail;
-						}
-						else {
+						} else {
 							sendCC = project.getOnsite_lead().getEmail();
-							approverTwo = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName());
+							approverTwo = project.getOnsite_lead().getLastName()
+									.concat(" " + project.getOnsite_lead().getFirstName());
 						}
 						sendTo = project.getProjectOwner().getEmail();
-						emailReceiver = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName())+",";
-						StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver +"<br/>");
-						mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
-						mailBody.append("<br/>Resource Name : "+resource);
-						mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 1-15 days requires correction.");
-						mailBody.append("<br/><br/>Comments : "+comment);
-						if(isRecorrection && projectTier == 2)
-							mailBody.append("<br/><br/>Correction Requested by : "+approverTwo);
+						emailReceiver = project.getProjectOwner().getLastName()
+								.concat(" " + project.getProjectOwner().getFirstName()) + ",";
+						StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver + "<br/>");
+						mailBody.append("<br/><br/>Project Name : " + project.getProjectName());
+						mailBody.append("<br/>Resource Name : " + resource);
+						mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
+								+ " 1-15 days requires correction.");
+						mailBody.append("<br/><br/>Comments : " + comment);
+						if (isRecorrection && projectTier == 2)
+							mailBody.append("<br/><br/>Correction Requested by : " + approverTwo);
 						else
 							mailBody.append("<br/><br/>Correction Requested by : Finance Team");
-						
 
-						sendMail(sendTo,sendCC,subject,mailBody);
-					}
-					else {
+						sendMail(sendTo, sendCC, subject, mailBody);
+					} else {
 						subject = "RCG Time Sheet- First half time sheet needs Correction";
-						resource = user.getLastName().concat(" "+user.getFirstName());
-						if(projectTier == 1){
+						resource = user.getLastName().concat(" " + user.getFirstName());
+						if (projectTier == 1) {
 							sendCC = financeMail;
-						}
-						else {
+						} else {
 							sendCC = project.getOnsite_lead().getEmail();
-							approverTwo = project.getOnsite_lead().getLastName().concat(" "+project.getOnsite_lead().getFirstName());
+							approverTwo = project.getOnsite_lead().getLastName()
+									.concat(" " + project.getOnsite_lead().getFirstName());
 						}
 						sendTo = project.getProjectOwner().getEmail();
-						emailReceiver = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName())+",";
-						StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver +"<br/>");
-						mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
-						mailBody.append("<br/>Resource Name : "+resource);
-						mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 16-31 days requires correction.");
-						mailBody.append("<br/><br/>Comments : "+comment);
-						if(isRecorrection && projectTier == 2)
-							mailBody.append("<br/><br/>Correction Requested by : "+approverTwo);
+						emailReceiver = project.getProjectOwner().getLastName()
+								.concat(" " + project.getProjectOwner().getFirstName()) + ",";
+						StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver + "<br/>");
+						mailBody.append("<br/><br/>Project Name : " + project.getProjectName());
+						mailBody.append("<br/>Resource Name : " + resource);
+						mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
+								+ " 16-31 days requires correction.");
+						mailBody.append("<br/><br/>Comments : " + comment);
+						if (isRecorrection && projectTier == 2)
+							mailBody.append("<br/><br/>Correction Requested by : " + approverTwo);
 						else
 							mailBody.append("<br/><br/>Correction Requested by : Finance Team");
 
-						sendMail(sendTo,sendCC,subject,mailBody);
+						sendMail(sendTo, sendCC, subject, mailBody);
 					}
-				
+
 				} else {
 					responsedata.put("message", "Already exist");
 				}
@@ -791,30 +789,30 @@ public class TasktrackServiceImpl implements TasktrackService {
 		}
 		return responsedata;
 	}
-	private void sendMail(String sendTo, String cc,String subject , StringBuilder mailBody) throws Exception{
+
+	private void sendMail(String sendTo, String cc, String subject, StringBuilder mailBody) throws Exception {
 		try {
 
-		MailDomainDto mailDomainDto = new MailDomainDto();
-		mailDomainDto.setSubject(subject);
-		mailDomainDto.setCc(cc);
-		mailDomainDto.setContent(mailBody.toString());
-		
-		Template t = freemarkerConfig.getTemplate("email_template.ftl");
-        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "");
+			MailDomainDto mailDomainDto = new MailDomainDto();
+			mailDomainDto.setSubject(subject);
+			mailDomainDto.setCc(cc);
+			mailDomainDto.setContent(mailBody.toString());
 
-		mailDomainDto.setMailBody(html);
-		mailDomainDto.setTo(sendTo);
-	    String token = UUID.randomUUID().toString();
-		emailNotificationService.sendMail(token, mailDomainDto,true);
-		}
-		catch (Exception e) {
+			Template t = freemarkerConfig.getTemplate("email_template.ftl");
+			String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto))
+					.replace("MAIL_BODY", mailBody).replace("Title", "");
+
+			mailDomainDto.setMailBody(html);
+			mailDomainDto.setTo(sendTo);
+			String token = UUID.randomUUID().toString();
+			emailNotificationService.sendMail(token, mailDomainDto, true);
+		} catch (Exception e) {
 		}
 	}
 
-
 	@Override
 	public List<Object[]> getProjectTierForTaskTrack(Long userId, Date startDate, Date endDate) {
-		
+
 		return tasktrackRepository.getProjectTierForTaskTrack(userId, startDate, endDate);
 	}
 }

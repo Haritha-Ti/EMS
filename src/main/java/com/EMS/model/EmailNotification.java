@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "email_notification")
-public class MailDomainModel {
+public class EmailNotification {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class MailDomainModel {
 	private String mailTo;
 	private String cc;
 	private String bcc;
-	private Date mail_timestamp;
+	private Date mailTimestamp;
 	private int status;
 	private String mailFrom;
 	
@@ -36,12 +36,14 @@ public class MailDomainModel {
 		this.mailFrom = mailFrom;
 	}
 
-	public Date getMail_timestamp() {
-		return mail_timestamp;
+	
+
+	public Date getMailTimestamp() {
+		return mailTimestamp;
 	}
 
-	public void setMail_timestamp(Date mail_timestamp) {
-		this.mail_timestamp = mail_timestamp;
+	public void setMailTimestamp(Date mailTimestamp) {
+		this.mailTimestamp = mailTimestamp;
 	}
 
 	public int getStatus() {

@@ -56,6 +56,7 @@ import com.EMS.service.TasktrackApprovalService;
 import com.EMS.service.TasktrackService;
 import com.EMS.service.TasktrackServiceImpl;
 import com.EMS.service.UserService;
+import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -122,13 +123,15 @@ public class TasktrackController {
 			if (taskDetails.get(sdf.format(obj.getDate())) != null) {
 				ObjectNode objectNode = objectMapper.createObjectNode();
 				objectNode.put("taskId", obj.getId());
+				objectNode.put("projectId", obj.getProject().getProjectId());
+				objectNode.put("isBeach", obj.getProject().getProjectId() == Constants.BEACH_PROJECT_ID);
 				objectNode.put("Project",
 						(obj.getProject().getProjectName() != null) ? obj.getProject().getProjectName() : null);
 				objectNode.put("taskType", (obj.getTask().getTaskName() != null) ? obj.getTask().getTaskName() : null);
 				objectNode.put("taskSummary",
 						(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 				objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
-				objectNode.put("approvalStatus", obj.getApprovalStatus() );
+				objectNode.put("approvalStatus", obj.getApprovalStatus());
 				ArrayNode arrayNode = (ArrayNode) taskDetails.get(sdf.format(obj.getDate()));
 				arrayNode.add(objectNode);
 				taskDetails.set(sdf.format(obj.getDate()), arrayNode);
@@ -137,6 +140,8 @@ public class TasktrackController {
 				if (obj.getId() != 0) {
 					ObjectNode objectNode = objectMapper.createObjectNode();
 					objectNode.put("taskId", obj.getId());
+					objectNode.put("projectId", obj.getProject().getProjectId());
+					objectNode.put("isBeach", obj.getProject().getProjectId() == Constants.BEACH_PROJECT_ID);
 					objectNode.put("Project",
 							(obj.getProject().getProjectName() != null) ? obj.getProject().getProjectName() : null);
 					objectNode.put("taskType",
@@ -144,7 +149,7 @@ public class TasktrackController {
 					objectNode.put("taskSummary",
 							(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 					objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
-					objectNode.put("approvalStatus", obj.getApprovalStatus() );
+					objectNode.put("approvalStatus", obj.getApprovalStatus());
 					arrayNode.add(objectNode);
 				}
 
@@ -317,7 +322,7 @@ public class TasktrackController {
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", (Long) alloc[0]);
 				node.put("value", (String) alloc[1]);
-				node.put("clientName",(String) alloc[2]);
+				node.put("clientName", (String) alloc[2]);
 				projectTitle.add(node);
 			}
 		} catch (Exception e) {
@@ -386,8 +391,10 @@ public class TasktrackController {
 						}
 
 						tasktrack.setHours(node.get("hours").asDouble());
-
-						Long projectId = node.get("projectId").asLong();
+						Long projectId = Constants.BEACH_PROJECT_ID;
+						if (!node.get("isBeach").asBoolean()) {
+							projectId = node.get("projectId").asLong();
+						}
 						if (projectId != 0L) {
 							ProjectModel proj = projectService.findById(projectId);
 							if (proj != null)
@@ -2672,7 +2679,7 @@ public class TasktrackController {
 		int month = Integer.parseInt(requestdata.get("month").toString());
 		int year = Integer.parseInt(requestdata.get("year").toString());
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = formatter.parse(year+"-"+month+"-"+"01");
+		Date startDate = formatter.parse(year + "-" + month + "-" + "01");
 		UserModel user = userService.getUserDetailsById(uId);
 
 		if (user.getRole().getroleId() == 6 || user.getRole().getroleId() == 1) {// Finance
@@ -2706,11 +2713,11 @@ public class TasktrackController {
 			if (user.getRole().getroleId() == 7) {
 				// System.out.println("_________________________________________APPROVER_LEVEL_2
 				// " +uId );
-				projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId,startDate,month, year);
+				projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, startDate, month, year);
 			} else if (user.getRole().getroleId() == 2) {
 				// System.out.println("_________________________________________APPROVER_LEVEL_1/Lead
 				// "+uId);
-				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId,startDate, month, year);
+				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, startDate, month, year);
 			}
 			// Renjith
 			else if (user.getRole().getroleId() == 5) {
@@ -2894,16 +2901,16 @@ public class TasktrackController {
 		int month = Integer.parseInt(requestdata.get("month").toString());
 		int year = Integer.parseInt(requestdata.get("year").toString());
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = formatter.parse(year+"-"+month+"-"+"01");
-		System.out.println("starDate"+startDate);
+		Date startDate = formatter.parse(year + "-" + month + "-" + "01");
+		System.out.println("starDate" + startDate);
 
 		UserModel user = userService.getUserDetailsById(uId);
 
 		List<Object[]> projectList = null;
 		if (user.getRole().getroleId() == 5) {
-			projectList = tasktrackRepository.getTier1And2ProjectNames(month, year,startDate);
+			projectList = tasktrackRepository.getTier1And2ProjectNames(month, year, startDate);
 		} else {
-			projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId,startDate, month, year);
+			projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, startDate, month, year);
 		}
 
 		for (Object[] alloc : projectList) {
@@ -2960,15 +2967,15 @@ public class TasktrackController {
 		int month = Integer.parseInt(requestdata.get("month").toString());
 		int year = Integer.parseInt(requestdata.get("year").toString());
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = formatter.parse(year+"-"+month+"-"+"01");
+		Date startDate = formatter.parse(year + "-" + month + "-" + "01");
 		UserModel user = userService.getUserDetailsById(uId);
 
 		List<Object[]> projectList = null;
 
 		if (user.getRole().getroleId() == 5) {
-			projectList = tasktrackRepository.getTier2ProjectNames(startDate,month, year);
+			projectList = tasktrackRepository.getTier2ProjectNames(startDate, month, year);
 		} else {
-			projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId,startDate,month, year);
+			projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, startDate, month, year);
 		}
 
 		for (Object[] alloc : projectList) {
@@ -3009,7 +3016,7 @@ public class TasktrackController {
 		return node;
 	}
 
-	//Nisha
+	// Nisha
 	@PostMapping("/getInfoForFinance")
 	public JSONObject getInfoForFinance(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus)
 			throws ParseException {
@@ -3040,8 +3047,8 @@ public class TasktrackController {
 				for (Object userItem : userIdList) {
 					Long userId = (Long) userItem;
 					Boolean isExist = tasktrackApprovalService.checkIsUserExists(userId);
-					JSONObject taskTrackObject = tasktrackApprovalService.getInfoForFinance(userId, startDate,
-							endDate, isExist, projectId, firstHalfDay);
+					JSONObject taskTrackObject = tasktrackApprovalService.getInfoForFinance(userId, startDate, endDate,
+							isExist, projectId, firstHalfDay);
 					taskTrackObject.remove("approvalOneHours");
 					taskTrackObject.remove("approverOneFirstHalfStatus");
 					taskTrackObject.remove("approverOneSecondHalfStatus");
@@ -3050,7 +3057,7 @@ public class TasktrackController {
 
 			}
 			response.put("data", levelTwoData);
-			//response.put("approverOne", approverOne);
+			// response.put("approverOne", approverOne);
 			response.put("status", "success");
 			response.put("message", "success. ");
 			response.put("code", httpstatus.getStatus());
@@ -3062,10 +3069,10 @@ public class TasktrackController {
 		return response;
 	}
 
-	//Nisha
+	// Nisha
 	@PostMapping("/getTaskTrackDataByUserIdForFinance")
 	public JSONObject getTaskTrackDataByUserIdForFinance(@RequestBody JsonNode requestdata,
-														HttpServletResponse httpstatus) throws ParseException {
+			HttpServletResponse httpstatus) throws ParseException {
 
 		JSONObject response = new JSONObject();
 		Long projectId = null;
@@ -3110,14 +3117,14 @@ public class TasktrackController {
 		return response;
 
 	}
-	
+
 	/**
-	* For bulk approval of first half data in Approval Log2
-	* 
-	* @author  Jinu Shaji
-	* @version 1.0
-	* @since   2019-11-14 
-	*/
+	 * For bulk approval of first half data in Approval Log2
+	 * 
+	 * @author Jinu Shaji
+	 * @version 1.0
+	 * @since 2019-11-14
+	 */
 	@PostMapping("/bulkApproveLevel2")
 	public ResponseEntity<Object> bulkApproveLevel2(@RequestBody JSONObject requestData,
 			HttpServletResponse httpstatus) {
