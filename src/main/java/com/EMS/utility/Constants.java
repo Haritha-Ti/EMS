@@ -37,6 +37,8 @@ public class Constants {
 
 	public static final String NOT_SUBMITTED = "NOT_SUBMITTED";
 
-	public static final Long BEACH_PROJECT_ID = 35l;
+	public static final long BEACH_PROJECT_ID = 35l;
+	
+	public static final String QUICK_TIME_TRACK_DESC = "Quick Time Track";
 
 }
