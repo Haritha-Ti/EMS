@@ -2027,7 +2027,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			overtimeId = Long.valueOf(requestData.get("overtimeId").toString());
 		}
 		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
-			overtimeId = Long.valueOf(requestData.get("beachId").toString());
+			beachId = Long.valueOf(requestData.get("beachId").toString());
 		}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");

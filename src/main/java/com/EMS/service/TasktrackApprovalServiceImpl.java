@@ -7335,6 +7335,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ArrayList<JSONObject> billableArray2 = new ArrayList<JSONObject>();
 
 		ArrayList<JSONObject> overTimeArray2 = new ArrayList<JSONObject>();
+		ArrayList<JSONObject> nonbillableArray3 = new ArrayList<JSONObject>();
+		ArrayList<JSONObject> beachArray3 = new ArrayList<JSONObject>();
+		JSONObject nonBillableHours3;
+		JSONObject beachHours3;
 		if (approverTwoData != null && approverTwoData.size() > 0) {
 
 			for (TaskTrackApproval task : approverTwoData) {
@@ -7454,15 +7458,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						overTimeArray2.add(overtimeHours2);
 						overtimeId = task.getId();
 					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
-						nonBillableHours2 = new JSONObject();
-						nonBillableHours2.put(taskDate, hours);
-						nonbillableArray2.add(nonBillableHours2);
+						nonBillableHours3 = new JSONObject();
+						nonBillableHours3.put(taskDate, hours);
+						nonbillableArray3.add(nonBillableHours3);
 						nonbillableId = task.getId();
 					}
 					else if (task.getProjectType().equalsIgnoreCase("Beach")) {
-						beachHours2 = new JSONObject();
-						beachHours2.put(taskDate, hours);
-						beachArray2.add(beachHours2);
+						beachHours3 = new JSONObject();
+						beachHours3.put(taskDate, hours);
+						beachArray3.add(beachHours3);
 						beachId = task.getId();
 					}
 					 
@@ -7490,8 +7494,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 			approverTwoDatas.put("billable", billableArray2);
 			approverTwoDatas.put("overTime", overTimeArray2);
-			approverTwoDatas.put("nonBillable", nonbillableArray2);
-			approverTwoDatas.put("beach", beachArray2);
+			approverTwoDatas.put("nonBillable", nonbillableArray3);
+			approverTwoDatas.put("beach", beachArray3);
 			approverTwoDatas.put("billableId", billableId);
 			approverTwoDatas.put("nonBillableId", nonbillableId);
 			approverTwoDatas.put("overtimeId", overtimeId);
