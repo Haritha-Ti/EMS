@@ -3,8 +3,16 @@ package com.EMS.controller;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -199,6 +207,129 @@ public JSONObject getProjectAuditData(@RequestBody JsonNode request) throws Exce
 	return response;
 
 	
+}
+
+@SuppressWarnings("unchecked")
+@PostMapping(value = "/getProjectAuditDataReport")
+public ResponseEntity getProjectAuditDataReport(@RequestBody JsonNode requestdata, HttpServletResponse response) throws Exception {
+	
+	Workbook workbook = new XSSFWorkbook();
+	Sheet sheet = workbook.createSheet("Project Audit Report ");
+	Long projectId = null;
+	Date fromDate = null;
+	Date toDate = null;
+	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
+		projectId = requestdata.get("projectId").asLong();
+	}
+	if (requestdata.get("fromDate") != null && requestdata.get("fromDate").asText() != "") {
+		fromDate = simpleDateFormat.parse(requestdata.get("fromDate").asText());
+	}
+	if (requestdata.get("toDate") != null && requestdata.get("toDate").asText() != "") {
+		toDate = simpleDateFormat.parse(requestdata.get("toDate").asText());
+	}
+	auditService.getProjectAuditeReport(projectId, fromDate, toDate, workbook, sheet);
+	response.setContentType("application/vnd.ms-excel");
+	response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+	response.setHeader("Content-Disposition", "filename=\"" + "ProjectAudit.xlsx" + "\"");
+	workbook.write(response.getOutputStream());
+	workbook.close();
+	return new ResponseEntity(HttpStatus.OK);
+}
+
+
+@SuppressWarnings("unchecked")
+@PostMapping(value = "/getUserAuditDataReport")
+public ResponseEntity getUserAuditDataReport(@RequestBody JsonNode requestdata, HttpServletResponse response) throws Exception {
+	
+	Workbook workbook = new XSSFWorkbook();
+	Sheet sheet = workbook.createSheet("User Audit Report ");
+	Long userId = null;
+	Date fromDate = null;
+	Date toDate = null;
+	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	if (requestdata.get("userId") != null && requestdata.get("userId").asText() != "") {
+		userId = requestdata.get("userId").asLong();
+	}
+	if (requestdata.get("fromDate") != null && requestdata.get("fromDate").asText() != "") {
+		fromDate = simpleDateFormat.parse(requestdata.get("fromDate").asText());
+	}
+	if (requestdata.get("toDate") != null && requestdata.get("toDate").asText() != "") {
+		toDate = simpleDateFormat.parse(requestdata.get("toDate").asText());
+	}
+	auditService.getUserAuditDataReport(userId, fromDate, toDate, workbook, sheet);
+	response.setContentType("application/vnd.ms-excel");
+	response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+	response.setHeader("Content-Disposition", "filename=\"" + "UserAudit.xlsx" + "\"");
+	workbook.write(response.getOutputStream());
+	workbook.close();
+	return new ResponseEntity(HttpStatus.OK);
+}
+
+@SuppressWarnings("unchecked")
+@PostMapping(value = "/getAuditDataReport")
+public ResponseEntity getAuditDataReport(@RequestBody JsonNode requestdata, HttpServletResponse response) throws Exception {
+	
+	Workbook workbook = new XSSFWorkbook();
+	Sheet sheet = workbook.createSheet("Approver1 Audit Report ");
+	Long userId = null;
+	Long projectId=null;
+	Date fromDate = null;
+	Date toDate = null;
+	SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+	fromDate=simpleDateFormat.parse(requestdata.get("fromDate").asText());
+	if(requestdata.get("userId")!=null && requestdata.get("userId").asText()!="") {
+	userId=requestdata.get("userId").asLong();
+	}
+	if(requestdata.get("projectId")!=null && requestdata.get("projectId").asText()!="") {
+	projectId=requestdata.get("projectId").asLong();
+	}
+	if(requestdata.get("fromDate")!=null && requestdata.get("fromDate").asText()!="") {
+	fromDate=simpleDateFormat.parse(requestdata.get("fromDate").asText());
+	}
+	if(requestdata.get("toDate")!=null && requestdata.get("toDate").asText()!="") {
+		toDate=simpleDateFormat.parse(requestdata.get("toDate").asText());
+	}
+	auditService.getAuditDataReport(userId, projectId, fromDate, toDate, workbook, sheet);
+	response.setContentType("application/vnd.ms-excel");
+	response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+	response.setHeader("Content-Disposition", "filename=\"" + "Approvr1Audit.xlsx" + "\"");
+	workbook.write(response.getOutputStream());
+	workbook.close();
+	return new ResponseEntity(HttpStatus.OK);
+}
+
+@SuppressWarnings("unchecked")
+@PostMapping(value = "/getAuditDataFinalReport")
+public ResponseEntity getAuditDataFinalReport(@RequestBody JsonNode requestdata, HttpServletResponse response) throws Exception {
+	
+	Workbook workbook = new XSSFWorkbook();
+	Sheet sheet = workbook.createSheet("Approver1 Audit Report ");
+	Long userId = null;
+	Long projectId=null;
+	Date fromDate = null;
+	Date toDate = null;
+	SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+	fromDate=simpleDateFormat.parse(requestdata.get("fromDate").asText());
+	if(requestdata.get("userId")!=null && requestdata.get("userId").asText()!="") {
+	userId=requestdata.get("userId").asLong();
+	}
+	if(requestdata.get("projectId")!=null && requestdata.get("projectId").asText()!="") {
+	projectId=requestdata.get("projectId").asLong();
+	}
+	if(requestdata.get("fromDate")!=null && requestdata.get("fromDate").asText()!="") {
+	fromDate=simpleDateFormat.parse(requestdata.get("fromDate").asText());
+	}
+	if(requestdata.get("toDate")!=null && requestdata.get("toDate").asText()!="") {
+		toDate=simpleDateFormat.parse(requestdata.get("toDate").asText());
+	}
+	auditService.getAuditDataFinalReport(userId, projectId, fromDate, toDate, workbook, sheet);
+	response.setContentType("application/vnd.ms-excel");
+	response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+	response.setHeader("Content-Disposition", "filename=\"" + "Approvr2Audit.xlsx" + "\"");
+	workbook.write(response.getOutputStream());
+	workbook.close();
+	return new ResponseEntity(HttpStatus.OK);
 }
 
 }
