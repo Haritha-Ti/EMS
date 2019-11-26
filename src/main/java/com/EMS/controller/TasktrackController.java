@@ -123,6 +123,7 @@ public class TasktrackController {
 			if (taskDetails.get(sdf.format(obj.getDate())) != null) {
 				ObjectNode objectNode = objectMapper.createObjectNode();
 				objectNode.put("taskId", obj.getId());
+				objectNode.put("projectId", obj.getProject().getProjectId());
 				objectNode.put("isBeach", obj.getProject().getProjectId() == Constants.BEACH_PROJECT_ID);
 				objectNode.put("Project",
 						(obj.getProject().getProjectName() != null) ? obj.getProject().getProjectName() : null);
@@ -139,6 +140,7 @@ public class TasktrackController {
 				if (obj.getId() != 0) {
 					ObjectNode objectNode = objectMapper.createObjectNode();
 					objectNode.put("taskId", obj.getId());
+					objectNode.put("projectId", obj.getProject().getProjectId());
 					objectNode.put("isBeach", obj.getProject().getProjectId() == Constants.BEACH_PROJECT_ID);
 					objectNode.put("Project",
 							(obj.getProject().getProjectName() != null) ? obj.getProject().getProjectName() : null);

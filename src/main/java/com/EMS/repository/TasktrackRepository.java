@@ -258,10 +258,11 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "			FROM tasktrack t \r\n" + "			LEFT JOIN tasktrack_approval ta\r\n"
 			+ "				ON (t.user_user_id = ta.user_user_id  \r\n"
 			+ "				AND ta.project_project_id = t.project_project_id\r\n"
-			+ "				AND ta.month = month(t.date) \r\n" + "				AND ta.year = year(t.date)) \r\n"
+			+ "				AND ta.month = month(t.date) \r\n"
+			+ "				AND ta.year = year(t.date)  and ta.project_type=\"Billable\") \r\n"
 			+ "			INNER JOIN project p \r\n" + "				on p.project_id = t.project_project_id \r\n"
 			+ "			INNER JOIN task_master tm \r\n" + "				on tm.id = t.task_id \r\n"
-			+ "			WHERE t.user_user_id = :uId AND ta.project_type = 'Billable' \r\n"
+			+ "			WHERE t.user_user_id = :uId \r\n"
 			+ "            AND t.project_project_id IN :projectId AND CAST(t.date as date) BETWEEN :fromDate AND :toDate "
 			+ "			 ORDER BY date(t.date) ASC ", nativeQuery = true)
 	List<Object[]> getTrackTaskListTire2(@Param("uId") long userId, @Param("projectId") List<Long> projectId,
@@ -273,10 +274,11 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "			FROM tasktrack t \r\n" + "			LEFT JOIN tasktrack_approval_final ta\r\n"
 			+ "				ON (t.user_user_id = ta.user_user_id  \r\n"
 			+ "				AND ta.project_project_id = t.project_project_id\r\n"
-			+ "				AND ta.month = month(t.date) \r\n" + "				AND ta.year = year(t.date)) \r\n"
+			+ "				AND ta.month = month(t.date) \r\n"
+			+ "				AND ta.year = year(t.date)  and ta.project_type=\"Billable\") \r\n"
 			+ "			INNER JOIN project p \r\n" + "				on p.project_id = t.project_project_id \r\n"
 			+ "			INNER JOIN task_master tm \r\n" + "				on tm.id = t.task_id \r\n"
-			+ "			WHERE t.user_user_id = :uId AND ta.project_type = 'Billable' \r\n"
+			+ "			WHERE t.user_user_id = :uId \r\n"
 			+ "            AND t.project_project_id IN :projectId AND CAST(t.date as date) BETWEEN :fromDate AND :toDate "
 			+ "			 ORDER BY date(t.date) ASC ", nativeQuery = true)
 	List<Object[]> getTrackTaskListTire1(@Param("uId") long userId, @Param("projectId") List<Long> projectId,
