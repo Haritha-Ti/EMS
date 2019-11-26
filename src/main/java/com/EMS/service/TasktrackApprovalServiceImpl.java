@@ -806,6 +806,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		List<JSONObject> billableArray = new ArrayList<>();
 		List<JSONObject> overTimeArray = new ArrayList<>();
 		List<JSONObject> nonbillableArray = new ArrayList<>();
+		List<JSONObject> beachArray = new ArrayList<>();
 		List<Integer> correctionDays = new ArrayList<Integer>();
 
 		String approvalStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
@@ -813,6 +814,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long billableId = null;
 		Long nonBillableId = null;
 		Long overtimeId = null;
+		Long beachId = null;
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(endDate);
@@ -994,6 +996,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							overTimeArray.add(temporaryObject);
 							overtimeId = item.getId();
 						}
+						else if (item.getProjectType().equals("Beach")) {
+							temporaryObject = new JSONObject();
+							temporaryObject.put(taskDate, hours);
+							beachArray.add(temporaryObject);
+							beachId = item.getId();
+						}
 						cal.add(Calendar.DATE, 1);
 					}
 					if (item.getProjectType().equalsIgnoreCase("Billable")) {
@@ -1028,18 +1036,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					billableArray.add(jsonObject);
 					nonbillableArray.add(jsonObject);
 					overTimeArray.add(jsonObject);
+					beachArray.add(jsonObject);
 
 					cal.add(Calendar.DATE, 1);
 				}
 			}
 			response.put("logged", loggedArray);
 			response.put("billable", billableArray);
-			;
 			response.put("nonBillable", nonbillableArray);
 			response.put("overtime", overTimeArray);
+			response.put("beach", beachArray);
 			response.put("billableId", billableId);
 			response.put("nonBillableId", nonBillableId);
 			response.put("overtimeId", overtimeId);
+			response.put("beachId", beachId);
 			response.put("updatedBy", null);
 		} else {
 			cal.setTime(startDate);
@@ -1055,6 +1065,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				billableArray.add(temporaryObject);
 				nonbillableArray.add(temporaryObject);
 				overTimeArray.add(temporaryObject);
+				beachArray.add(temporaryObject);
 
 				cal.add(Calendar.DATE, 1);
 			}
@@ -1064,9 +1075,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			;
 			response.put("nonBillable", nonbillableArray);
 			response.put("overtime", overTimeArray);
+			response.put("beach",beachArray);
 			response.put("billableId", null);
 			response.put("nonBillableId", null);
 			response.put("overtimeId", null);
+			response.put("beachId",null);
 			response.put("updatedBy", null);
 		}
 		if (name == null || name.isEmpty()) {
@@ -5798,7 +5811,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public void submitFirstHalfHoursForApproval(JSONObject requestData) throws Exception {
 
 		// Obtain the data from request data
-		Long billableId = null, nonBillableId = null, overtimeId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -5816,6 +5829,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (requestData.get("overtimeId") != null && requestData.get("overtimeId") != "") {
 			overtimeId = Long.valueOf(requestData.get("overtimeId").toString());
 		}
+		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
+			beachId = Long.valueOf(requestData.get("beachId").toString());
+		}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");
 
@@ -5831,6 +5847,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		HashMap<String, Object> billableArray = new JSONObject();
 		HashMap<String, Object> nonbillableArray = new JSONObject();
 		HashMap<String, Object> overtimeArray = new JSONObject();
+		HashMap<String, Object> beachArray = new JSONObject();
 
 		UserModel user = userService.getUserDetailsById(userId);
 		ProjectModel project = projectService.getProjectId(projectId);
@@ -5844,10 +5861,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (requestData.get("overtime") != null && requestData.get("overtime") != "") {
 			overtimeArray = (HashMap<String, Object>) requestData.get("overtime");
 		}
+		if (requestData.get("beach") != null && requestData.get("beach") != "") {
+			overtimeArray = (HashMap<String, Object>) requestData.get("beach");
+		}
 
 		Long billable_id = null;
 		Long nonbillable_id = null;
 		Long overtime_id = null;
+		Long beach_id = null;
 
 		Date current_date = new Date();
 		Calendar current = Calendar.getInstance();
@@ -5877,6 +5898,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					userId);
 			if (overtimeId != null) {
 				throw new DuplicateEntryException("Duplicate entry for Overtime.");
+			}
+		}
+		if (beachArray.size() > 0 && beachId == null) {
+			beachId = timeTrackApprovalJPARepository.getBeachIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (beachId != null) {
+				throw new DuplicateEntryException("Duplicate entry for Beach.");
 			}
 		}
 
@@ -6138,6 +6166,88 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 			}
 		}
+		/*****************************************************************************************/
+
+		if (beachArray.size() > 0) {// Beach
+
+			Calendar cal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			cal.setTime(startDate);
+			double hours = 0;
+			intMonth = (cal.get(Calendar.MONTH) + 1);
+			if (overtimeId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
+
+				if (taskTrackApproval != null) {
+
+					if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)
+							|| taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED);
+
+					} else if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)
+							|| taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
+					} else {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+					}
+
+					int startDayOfMonth = cal.get(Calendar.DATE);
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
+
+						intday = cal.get(Calendar.DATE);
+						String dateString = cal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (beachArray.get(dateString) != null) {
+							hours = Double.valueOf(beachArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					beach_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Beach");
+				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+
+				taskTrackApproval.setProject(project);
+
+				int startDayOfMonth = cal.get(Calendar.DATE);
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
+					intMonth = (cal.get(Calendar.MONTH) + 1);
+					intday = cal.get(Calendar.DATE);
+					String dateString = cal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (beachArray.get(dateString) != null) {
+						hours = Double.valueOf(beachArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval beach = tasktrackApprovalService.save(taskTrackApproval);
+				beach_id = beach.getId();
+
+			}
+		}
 		try {
 			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverOne="";
 			subject = "RCG Time Sheet- First half time sheet Forwarded";
@@ -6165,7 +6275,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public void submitSecondHalfHoursForApproval(JSONObject requestData) throws Exception {
 
 		// Obtain the data from request data
-		Long billableId = null, nonBillableId = null, overtimeId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -6183,6 +6293,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (requestData.get("overtimeId") != null && requestData.get("overtimeId") != "") {
 			overtimeId = Long.valueOf(requestData.get("overtimeId").toString());
 		}
+		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
+			overtimeId = Long.valueOf(requestData.get("beachId").toString());
+		}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");
 
@@ -6198,6 +6311,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		HashMap<String, Object> billableArray = new JSONObject();
 		HashMap<String, Object> nonbillableArray = new JSONObject();
 		HashMap<String, Object> overtimeArray = new JSONObject();
+		HashMap<String, Object> beachArray = new JSONObject();
 
 		UserModel user = userService.getUserDetailsById(userId);
 		ProjectModel project = projectService.getProjectId(projectId);
@@ -6211,10 +6325,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (requestData.get("overtime") != null && requestData.get("overtime") != "") {
 			overtimeArray = (HashMap<String, Object>) requestData.get("overtime");
 		}
+		if (requestData.get("beach") != null && requestData.get("beach") != "") {
+			overtimeArray = (HashMap<String, Object>) requestData.get("beach");
+		}
 
 		Long billable_id = null;
 		Long nonbillable_id = null;
 		Long overtime_id = null;
+		Long beach_id = null;
 
 		Date current_date = new Date();
 		Calendar current = Calendar.getInstance();
@@ -6245,6 +6363,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					userId);
 			if (overtimeId != null) {
 				throw new DuplicateEntryException("Duplicate entry for Overtime.");
+			}
+		}
+		if (beachArray.size() > 0 && beachId == null) {
+			beachId = timeTrackApprovalJPARepository.getOvertimeIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (beachId != null) {
+				throw new DuplicateEntryException("Duplicate entry for Beach.");
 			}
 		}
 
@@ -6507,6 +6632,89 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 				TaskTrackApproval overtime = tasktrackApprovalService.save(taskTrackApproval);
 				overtime_id = overtime.getId();
+
+			}
+		}
+		/*****************************************************************************************/
+
+		if (beachArray.size() > 0) {// Beach
+
+			Calendar cal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			cal.setTime(startDate);
+			double hours = 0;
+			intMonth = (cal.get(Calendar.MONTH) + 1);
+			if (beachId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
+
+				if (taskTrackApproval != null) {
+
+					if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)
+							|| taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)) {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED);
+
+					} else if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)
+							|| taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)) {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
+					} else {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+					}
+
+					int startDayOfMonth = cal.get(Calendar.DATE);
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
+
+						intday = cal.get(Calendar.DATE);
+						String dateString = cal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (beachArray.get(dateString) != null) {
+							hours = Double.valueOf(beachArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+						}
+						cal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					beach_id = taskTrackApproval.getId();
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Beach");
+				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+
+				taskTrackApproval.setProject(project);
+
+				int startDayOfMonth = cal.get(Calendar.DATE);
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
+
+					intMonth = (cal.get(Calendar.MONTH) + 1);
+					intday = cal.get(Calendar.DATE);
+					String dateString = cal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (beachArray.get(dateString) != null) {
+						hours = Double.valueOf(beachArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					cal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval beach = tasktrackApprovalService.save(taskTrackApproval);
+				beach_id = beach.getId();
 
 			}
 		}
@@ -6900,13 +7108,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		JSONObject billableHours2;
 		JSONObject overtimeHours2;
 		JSONObject nonBillableHours2;
+		JSONObject beachHours2;
 		List<Integer> correctionDays = null;
 		List<JSONObject> billableArrayOne = new ArrayList<>();
 		List<JSONObject> overTimeArrayOne = new ArrayList<>();
 		List<JSONObject> billableArray = new ArrayList<>();
 		List<JSONObject> overTimeArray = new ArrayList<>();
 		List<JSONObject> nonbillableArray = new ArrayList<>();
+		List<JSONObject> beachArray = new ArrayList<>();
 		ArrayList<JSONObject> nonbillableArray2 = new ArrayList<JSONObject>();
+		ArrayList<JSONObject> beachArray2 = new ArrayList<JSONObject>();
 		JSONObject approverOneDatas = new JSONObject();
 		JSONObject approverTwoDatas = new JSONObject();
 		String approvalStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
@@ -6929,6 +7140,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long billableId = null;
 		Long overtimeId = null;
 		Long nonbillableId = null;
+		Long beachId = null;
 
 		String userName = null;
 		String projectName = null;
@@ -6944,6 +7156,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			billableHours = new JSONObject();
 			JSONObject overtimeHours = new JSONObject();
 			JSONObject nonBillableHours = new JSONObject();
+			JSONObject beachHours = new JSONObject();
 			for (TaskTrackApproval task : approverOneData) {
 				cal.setTime(startDate);
 				Double hours = 0.0;
@@ -7068,12 +7281,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						nonbillableArray2.add(nonBillableHours2);
 						// nonbillableId = task.getId();
 					}
+					else if (task.getProjectType().equalsIgnoreCase("Beach")) {
+						// temporaryObject = new JSONObject();
+						beachHours2 = new JSONObject();
+						beachHours.put(taskDate, hours);
+						beachHours2.put(taskDate, hours);
+						beachArray2.add(beachHours2);
+						// nonbillableId = task.getId();
+					}
 					cal.add(Calendar.DATE, 1);
 				}
 			}
 			billableArray.add(billableHours);
 			overTimeArray.add(overtimeHours);
 			nonbillableArray.add(nonBillableHours);
+			beachArray.add(beachHours);
 
 		}
 
@@ -7090,6 +7312,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				billableArray.add(jsonObject);
 				overTimeArray.add(jsonObject);
 				nonbillableArray.add(jsonObject);
+				beachArray.add(jsonObject);
 
 				cal.add(Calendar.DATE, 1);
 			}
@@ -7097,6 +7320,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		approverOneDatas.put("billable", billableArray);
 		approverOneDatas.put("overTime", overTimeArray);
 		approverOneDatas.put("nonBillable", nonbillableArray);
+		approverOneDatas.put("beach",beachArray);
 		JSONObject userHours = new JSONObject();
 		userHours.put("firstHalfTotal", firstHalfHour);
 		userHours.put("secondHalfTotal", secondHalfHour);
@@ -7235,6 +7459,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						nonbillableArray2.add(nonBillableHours2);
 						nonbillableId = task.getId();
 					}
+					else if (task.getProjectType().equalsIgnoreCase("Beach")) {
+						beachHours2 = new JSONObject();
+						beachHours2.put(taskDate, hours);
+						beachArray2.add(beachHours2);
+						beachId = task.getId();
+					}
 					 
 					if (task.getProjectType().equalsIgnoreCase("Billable")) {
 						if (startDay <= firstHalfDay) {
@@ -7261,9 +7491,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			approverTwoDatas.put("billable", billableArray2);
 			approverTwoDatas.put("overTime", overTimeArray2);
 			approverTwoDatas.put("nonBillable", nonbillableArray2);
+			approverTwoDatas.put("beach", beachArray2);
 			approverTwoDatas.put("billableId", billableId);
 			approverTwoDatas.put("nonBillableId", nonbillableId);
 			approverTwoDatas.put("overtimeId", overtimeId);
+			approverTwoDatas.put("beachId", beachId);
 		} else {
 			// first table data
 			if (approverOneData != null && approverOneData.size() > 0) {
@@ -7388,6 +7620,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							nonbillableArray2.add(nonBillableHours2);
 							// nonbillableId = task.getId();
 						}
+						else if (task.getProjectType().equalsIgnoreCase("Beach")) {
+							beachHours2 = new JSONObject();
+							beachHours2.put(taskDate, hours);
+							beachArray2.add(beachHours2);
+							// nonbillableId = task.getId();
+						}
 
 						cal.add(Calendar.DATE, 1);
 					}
@@ -7396,9 +7634,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				approverTwoDatas.put("billable", billableArray2);
 				approverTwoDatas.put("overTime", overTimeArray2);
 				approverTwoDatas.put("nonBillable", nonbillableArray2);
+				approverTwoDatas.put("beach", beachArray2);
 				approverTwoDatas.put("billableId", billableId);
 				approverTwoDatas.put("nonBillableId", nonbillableId);
 				approverTwoDatas.put("overtimeId", overtimeId);
+				approverTwoDatas.put("beachId", beachId);
 			} else {
 				cal.setTime(startDate);
 				for (int i = startDay; i <= endDay; i++) {
@@ -7411,15 +7651,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					jsonObject.put(taskDate, 0);
 					billableArray2.add(jsonObject);
 					overTimeArray2.add(jsonObject);
+					beachArray2.add(jsonObject);
 
 					cal.add(Calendar.DATE, 1);
 				}
 				approverTwoDatas.put("billable", billableArray2);
 				approverTwoDatas.put("overTime", overTimeArray2);
 				approverTwoDatas.put("nonBillable", nonbillableArray2);
+				approverTwoDatas.put("beach", beachArray2);
 				approverTwoDatas.put("billableId", billableId);
 				approverTwoDatas.put("nonBillableId", nonbillableId);
 				approverTwoDatas.put("overtimeId", overtimeId);
+				approverTwoDatas.put("beachId", beachId);
 			}
 
 		}

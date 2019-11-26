@@ -130,4 +130,7 @@ public interface TaskTrackFinalJPARepository extends JpaRepository<TaskTrackAppr
     @Query("SELECT a FROM TaskTrackApprovalFinal a  where a.project.projectId = ?1 and a.month = ?2 and a.year = ?3 and a.user.userId = ?4 ")
     List<TaskTrackApprovalFinal> upadateTaskTrackApprovalFinalStatus(Long projectId, int intMonth, int year,Long userId);
 
+    //Nisha
+    @Query(value = "SELECT id  FROM tasktrack_approval_final where project_project_id=?3 and user_user_id=?4 and month=?1 and year=?2 and project_type in('Beach') order by id desc limit 1", nativeQuery = true)
+    Long getBeachIdForAUserForAProject(Integer month, Integer year, Long projectId, Long userId);
 }

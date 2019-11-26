@@ -310,6 +310,7 @@ public class TasktrackController {
 		ArrayNode projectTitle = objectMapper.createArrayNode();
 		try {
 			//for (Object[] alloc : tasktrackRepository.getProjectNamesByMonths(uId, startdate, enddate)) {
+			List<Object[]> objArr=tasktrackRepository.getProjectNamesByAllocation(uId, curdate);
 			for (Object[] alloc : tasktrackRepository.getProjectNamesByAllocation(uId, curdate)) {
 
 
