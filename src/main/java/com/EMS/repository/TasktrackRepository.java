@@ -301,5 +301,18 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "where u.user_id = ?1 and project_id = "+Constants.BEACH_PROJECT_ID+" and t.`date`>=?2 and t.`date`<=?3  group by 1,2,3,4,5 order by 1,2", nativeQuery = true)
 	public List<Object[]> getBeachTasksFortimeTrack(@Param("userId") long userId, @Param("fromDate") Date fromDate,@Param("toDate") Date toDate) throws Exception;
 
+	@Query("SELECT COALESCE(case when day(:currentDate) <= 15 then ta.firstHalfStatus else ta.secondHalfStatus end,'OPEN'), ta.project.projectId \r\n" + 
+			"	FROM TaskTrackApprovalFinal ta 					\r\n" + 
+			"	WHERE ta.user.userId = :userId \r\n" + 
+			"    AND ta.month = month(:currentDate) AND ta.year = year(:currentDate)  and ta.projectType='Billable'\r\n" + 
+			"	AND ta.project.projectId IN :projectIds")
+	public List<Object[]> getTaskApprovalStatusForProjectsTire1(@Param("userId") long userId, @Param("currentDate") Date currentDate, @Param("projectIds") List<Long> projectIds);
+	
+	@Query("SELECT COALESCE(case when day(:currentDate) <= 15 then ta.firstHalfStatus else ta.secondHalfStatus end,'OPEN'), ta.project.projectId \r\n" + 
+			"	FROM TaskTrackApproval ta 					\r\n" + 
+			"	WHERE ta.user.userId = :userId \r\n" + 
+			"    AND ta.month = month(:currentDate) AND ta.year = year(:currentDate)  and ta.projectType='Billable'\r\n" + 
+			"	AND ta.project.projectId IN :projectIds")
+	public List<Object[]> getTaskApprovalStatusForProjectsTire2(@Param("userId") long userId, @Param("currentDate") Date currentDate, @Param("projectIds") List<Long> projectIds);
 		
 }
