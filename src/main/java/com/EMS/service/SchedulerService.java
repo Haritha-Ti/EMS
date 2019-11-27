@@ -1340,7 +1340,6 @@ public class SchedulerService {
 		while (itr.hasNext()) {
 
 			Map.Entry entry = (Map.Entry) itr.next();
-
 			Map projectMap = new HashMap<String, ArrayList<String>>();
 			projectMap = (Map) entry.getValue();
 
