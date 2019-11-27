@@ -5377,7 +5377,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public void saveApprovedHours(JSONObject requestData) throws Exception {
 
 		// Obtain the data from request data
-		Long billableId = null, nonBillableId = null, overtimeId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -5395,6 +5395,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (requestData.get("overtimeId") != null && requestData.get("overtimeId") != "") {
 			overtimeId = Long.valueOf(requestData.get("overtimeId").toString());
 		}
+		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
+			beachId = Long.valueOf(requestData.get("beachId").toString());
+		}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");
 
@@ -5410,6 +5413,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		HashMap<String, Object> billableArray = new JSONObject();
 		HashMap<String, Object> nonbillableArray = new JSONObject();
 		HashMap<String, Object> overtimeArray = new JSONObject();
+		HashMap<String, Object> beachArray = new JSONObject();
 
 		UserModel user = userService.getUserDetailsById(userId);
 		ProjectModel project = projectService.getProjectId(projectId);
@@ -5423,10 +5427,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (requestData.get("overtime") != null && requestData.get("overtime") != "") {
 			overtimeArray = (HashMap<String, Object>) requestData.get("overtime");
 		}
+		if (requestData.get("beach") != null && requestData.get("beach") != "") {
+			beachArray = (HashMap<String, Object>) requestData.get("beach");
+		}
 
 		Long billable_id = null;
 		Long nonbillable_id = null;
 		Long overtime_id = null;
+		Long beach_id = null;
 
 		Date current_date = new Date();
 		Calendar current = Calendar.getInstance();
@@ -5457,6 +5465,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					userId);
 			if (overtimeId != null) {
 				throw new DuplicateEntryException("Duplicate entry for Overtime.");
+			}
+		}
+		if (beachArray.size() > 0 && beachId == null) {
+			beachId = timeTrackApprovalJPARepository.getBeachIdForAUserForAProject(month, year, projectId,
+					userId);
+			if (beachId != null) {
+				throw new DuplicateEntryException("Duplicate entry for Beach.");
 			}
 		}
 
@@ -5799,6 +5814,114 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 				TaskTrackApproval overtime = tasktrackApprovalService.save(taskTrackApproval);
 				overtime_id = overtime.getId();
+
+			}
+		}
+
+		/*****************************************************************************************/
+
+		if (beachArray.size() > 0) {// Beach
+
+			Calendar startCal = Calendar.getInstance();
+
+			int diffInDays = (int) ((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+			int intMonth = 0, intday = 0;
+			startCal.setTime(startDate);
+			double hours = 0;
+			intMonth = (startCal.get(Calendar.MONTH) + 1);
+			if (beachId != null) {
+				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
+
+//					taskTrackApproval.setApprovedDate(endDate);
+
+				if (startCal.get(Calendar.DATE) < 16) {
+					if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
+							|| taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
+					} else if (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+							|| taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
+					} else {
+						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+					}
+				}
+				if (endCal.get(Calendar.DATE) > 15) {
+					if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
+							|| taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
+					} else if (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+							|| taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
+					} else {
+						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+					}
+				}
+				if (taskTrackApproval != null) {
+
+					int startDayOfMonth = startCal.get(Calendar.DATE);
+					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
+
+						intday = startCal.get(Calendar.DATE);
+						String dateString = startCal.get(Calendar.YEAR) + "-"
+								+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+								+ ((intday < 10) ? "0" + intday : "" + intday);
+
+						if (beachArray.get(dateString) != null) {
+							hours = Double.valueOf(beachArray.get(dateString).toString());
+
+							setDayInCorrespondingModel(taskTrackApproval, i, hours);
+						}
+						startCal.add(Calendar.DATE, 1);
+					}
+					tasktrackApprovalService.updateData(taskTrackApproval);
+					beach_id = taskTrackApproval.getId();
+				} else {
+					throw new Exception("TaskTrack data not found for given beach id.");
+				}
+			} else {
+
+				TaskTrackApproval taskTrackApproval = new TaskTrackApproval();
+				taskTrackApproval.setMonth(month);
+				taskTrackApproval.setYear(year);
+				taskTrackApproval.setUser(user);
+				taskTrackApproval.setProjectType("Beach");
+
+				if (startCal.get(Calendar.DATE) < 16) {
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+				}
+				if (endCal.get(Calendar.DATE) > 15) {
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+				}
+
+				taskTrackApproval.setProject(project);
+				int startDayOfMonth = startCal.get(Calendar.DATE);
+				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
+
+					intMonth = (startCal.get(Calendar.MONTH) + 1);
+					intday = startCal.get(Calendar.DATE);
+					String dateString = startCal.get(Calendar.YEAR) + "-"
+							+ ((intMonth < 10) ? "0" + intMonth : "" + intMonth) + "-"
+							+ ((intday < 10) ? "0" + intday : "" + intday);
+
+					if (beachArray.get(dateString) != null) {
+						hours = Double.valueOf(beachArray.get(dateString).toString());
+
+						setDayInCorrespondingModel(taskTrackApproval, i, hours);
+
+					}
+					startCal.add(Calendar.DATE, 1);
+				}
+
+				TaskTrackApproval beach = tasktrackApprovalService.save(taskTrackApproval);
+				beach_id = beach.getId();
 
 			}
 		}
@@ -6294,7 +6417,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			overtimeId = Long.valueOf(requestData.get("overtimeId").toString());
 		}
 		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
-			overtimeId = Long.valueOf(requestData.get("beachId").toString());
+			beachId = Long.valueOf(requestData.get("beachId").toString());
 		}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");
