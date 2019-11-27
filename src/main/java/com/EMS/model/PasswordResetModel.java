@@ -15,10 +15,10 @@ import javax.persistence.Transient;
 import org.hibernate.envers.Audited;
 
 import com.EMS.listener.ModelListener;
-@Audited
-@EntityListeners(ModelListener.class)
+/*@Audited
+@EntityListeners(ModelListener.class)*/
 @Entity
-public class PasswordResetModel  extends  Auditable<Long>{
+public class PasswordResetModel {
 //	private static final int EXPIRATION = 60 * 24;
 	  
     @Id
