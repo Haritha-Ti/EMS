@@ -75,9 +75,20 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 	private String employmentType;
 	private int gender;
 	private boolean active;
-	private String empCategory,cppLevel,Recruiter,referredBy;
+	private String empCategory,cppLevel,referredBy;
 	private Date terminationDate;
-
+	@Column(name="emailRCG", nullable=false)
+	private String emailRCG;
+	@Column(name="maritalStatus", nullable=false)
+    private String maritalStatus;
+	@Column(name="homeAddress", nullable=false)
+    private String homeAddress;
+	@Column(name="cellContact", nullable=false)
+    private String cellContact;
+	@Column(name="taxID", nullable=false)
+    private String taxID;
+	@Column(name="recruiter", nullable=false)
+    private String Recruiter;
 	
 	
 	
@@ -346,6 +357,54 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 
 		public void setTimezone(TimeZoneModel timezone) {
 			this.timezone = timezone;
+		}
+
+		public String getEmailRCG() {
+			return emailRCG;
+		}
+
+		public void setEmailRCG(String emailRCG) {
+			this.emailRCG = emailRCG;
+		}
+
+		public String getMaritalStatus() {
+			return maritalStatus;
+		}
+
+		public void setMaritalStatus(String maritalStatus) {
+			this.maritalStatus = maritalStatus;
+		}
+
+		public String getHomeAddress() {
+			return homeAddress;
+		}
+
+		public void setHomeAddress(String homeAddress) {
+			this.homeAddress = homeAddress;
+		}
+
+		public String getCellContact() {
+			return cellContact;
+		}
+
+		public void setCellContact(String cellContact) {
+			this.cellContact = cellContact;
+		}
+
+		public String getTaxID() {
+			return taxID;
+		}
+
+		public void setTaxID(String taxID) {
+			this.taxID = taxID;
+		}
+
+		public List<String> getRoles() {
+			return roles;
+		}
+
+		public void setRoles(List<String> roles) {
+			this.roles = roles;
 		}
 
 
