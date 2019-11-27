@@ -2,10 +2,10 @@ package com.EMS.utility;
 
 public class QueryConstants {
 
-	public static final String FINANCE_APPROVED_HOURS_REPORT_QUERY = "(select p.project_id as projectId,p.project_name as projectName,p.project_tier as projectTier, c.client_name as clientName, u.user_id as userId, concat(u.first_name,' ', u.last_name) as userName, r.region_name as region, "
-			+ "ap1Usr.user_id as approver1Id, concat(ap1Usr.first_name,' ', ap1Usr.last_name) as approver1Name, "
+	public static final String FINANCE_APPROVED_HOURS_REPORT_QUERY = "(select p.project_id as projectId,p.project_name as projectName,p.project_tier as projectTier, c.client_name as clientName, u.user_id as userId, concat(u.last_name,' ', u.first_name) as userName, r.region_name as region, "
+			+ "ap1Usr.user_id as approver1Id, concat(ap1Usr.last_name,' ', ap1Usr.first_name) as approver1Name, "
 			+ "(ta.day1 +ta.day2 +ta.day3 +ta.day4 +ta.day5 +ta.day6 +ta.day7 +ta.day8 +ta.day9 +ta.day10 +ta.day11 +ta.day12 +ta.day13 +ta.day14 +ta.day15) as approver1FirstHours,ta.project_type as projectType1, ta.first_half_status as status1, "
-			+ "ap2Usr.user_id as approver2Id, concat(ap2Usr.first_name,' ', ap2Usr.last_name) as approver2Name, "
+			+ "ap2Usr.user_id as approver2Id, concat(ap2Usr.last_name,' ', ap2Usr.first_name) as approver2Name, "
 			+ "null as approver2Hours,null as projectType2, null as status2, "
 			+ "(ta.day16 +ta.day17 +ta.day18 +ta.day19 +ta.day20 +ta.day21 +ta.day22 +ta.day23 +ta.day24 +ta.day25 +ta.day26 +ta.day27 +ta.day28 +ta.day29 +ta.day30 +ta.day31) as approver1SecondHours, ta.second_half_status as appr1StatusSecond, "
 			+ "null as approver2SecondHours, null as appr2StatusSecond " + "from project p "
@@ -16,10 +16,10 @@ public class QueryConstants {
 			+ "join user u on u.user_id=a.user_user_id " + "left join region r on r.id= u.region_id "
 			+ "left join tasktrack_approval ta on ta.project_project_id = p.project_id and ta.user_user_id= u.user_id and ta.month=month(?1) and ta.year=year(?1)) "
 			+ "union "
-			+ "(select p.project_id as projectId,p.project_name as projectName,p.project_tier as projectTier, c.client_name as clientName, u.user_id as userId, concat(u.first_name,' ', u.last_name) as userName, r.region_name as region, "
-			+ "ap1Usr.user_id as approver1Id, concat(ap1Usr.first_name,' ', ap1Usr.last_name) as approver1Name, "
+			+ "(select p.project_id as projectId,p.project_name as projectName,p.project_tier as projectTier, c.client_name as clientName, u.user_id as userId, concat(u.last_name,' ', u.first_name) as userName, r.region_name as region, "
+			+ "ap1Usr.user_id as approver1Id, concat(ap1Usr.last_name,' ', ap1Usr.first_name) as approver1Name, "
 			+ "null as approver1FirstHours,null as projectType1, null as status1, "
-			+ "ap2Usr.user_id as approver2Id, concat(ap2Usr.first_name,' ', ap2Usr.last_name) as approver2Name, "
+			+ "ap2Usr.user_id as approver2Id, concat(ap2Usr.last_name,' ', ap2Usr.first_name) as approver2Name, "
 			+ "(tf.day1 +tf.day2 +tf.day3 +tf.day4 +tf.day5 +tf.day6 +tf.day7 +tf.day8 +tf.day9 +tf.day10 +tf.day11 +tf.day12 +tf.day13 +tf.day14 +tf.day15) as approver2Hours,tf.project_type as projectType2, tf.first_half_status as status2, "
 			+ "null as approver1SecondHours, null as appr1StatusSecond, "
 			+ "(tf.day16 +tf.day17 +tf.day18 +tf.day19 +tf.day20 +tf.day21 +tf.day22 +tf.day23 +tf.day24 +tf.day25 +tf.day26 +tf.day27 +tf.day28 +tf.day29 +tf.day30 +tf.day31) as approver2SecondHours, tf.second_half_status as appr2StatusSecond "

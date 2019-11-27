@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.EMS.model.*;
+
+import org.apache.tomcat.util.bcel.Const;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -131,7 +133,8 @@ public class TasktrackController {
 				objectNode.put("taskSummary",
 						(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 				objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
-				objectNode.put("approvalStatus", obj.getApprovalStatus());
+				boolean isBlocked = isTaskTrackApproved(obj.getProject().getProjectTier(), obj.getApprovalStatus());
+				objectNode.put("isBlocked", isBlocked);
 				ArrayNode arrayNode = (ArrayNode) taskDetails.get(sdf.format(obj.getDate()));
 				arrayNode.add(objectNode);
 				taskDetails.set(sdf.format(obj.getDate()), arrayNode);
@@ -149,7 +152,8 @@ public class TasktrackController {
 					objectNode.put("taskSummary",
 							(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 					objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
-					objectNode.put("approvalStatus", obj.getApprovalStatus());
+					boolean isBlocked = isTaskTrackApproved(obj.getProject().getProjectTier(), obj.getApprovalStatus());
+					objectNode.put("isBlocked", isBlocked);
 					arrayNode.add(objectNode);
 				}
 
@@ -315,14 +319,48 @@ public class TasktrackController {
 		ArrayNode projectTitle = objectMapper.createArrayNode();
 		try {
 			//for (Object[] alloc : tasktrackRepository.getProjectNamesByMonths(uId, startdate, enddate)) {
-			List<Object[]> objArr=tasktrackRepository.getProjectNamesByAllocation(uId, curdate);
-			for (Object[] alloc : tasktrackRepository.getProjectNamesByAllocation(uId, curdate)) {
+		
+			List<Object[]> allocatedProjectList = tasktrackRepository.getProjectNamesByAllocation(uId, curdate);
+			
+			List<Long> projectIdsForTire1 = new ArrayList<Long>();
+			List<Long> projectIdsForTire2 = new ArrayList<Long>();
 
+			for (Object[] allocatedProject : allocatedProjectList) {
+				if (Integer.parseInt(allocatedProject[3].toString()) == 2) {
+					projectIdsForTire2.add(Long.parseLong(allocatedProject[0].toString()));
+
+				} else if (Integer.parseInt(allocatedProject[3].toString()) == 1) {
+					projectIdsForTire1.add(Long.parseLong(allocatedProject[0].toString()));
+
+				}
+			}
+			List<Object[]> taskApprovalStatusArr = new ArrayList<Object[]>();
+			
+			if (projectIdsForTire1.size()> 0) {
+				taskApprovalStatusArr.addAll(tasktrackRepository.getTaskApprovalStatusForProjectsTire1(uId, curdate, projectIdsForTire1));
+			}
+			
+			if (projectIdsForTire2.size()> 0) {
+				taskApprovalStatusArr.addAll(tasktrackRepository.getTaskApprovalStatusForProjectsTire2(uId, curdate, projectIdsForTire2));
+			}
+			
+			Map<Long, String> projectTaskAprovalStatusMap = new HashMap<>();
+			
+			for (Object[] taskApprovalStatus : taskApprovalStatusArr) {
+				projectTaskAprovalStatusMap.put(Long.parseLong(taskApprovalStatus[1].toString()), taskApprovalStatus[0].toString());
+			}
+			
+			
+			for (Object[] alloc : allocatedProjectList) {
 
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", (Long) alloc[0]);
 				node.put("value", (String) alloc[1]);
 				node.put("clientName", (String) alloc[2]);
+				
+				boolean isBlocked = isTaskTrackApproved(Integer.parseInt(alloc[3].toString()) ,projectTaskAprovalStatusMap.get(Long.parseLong(alloc[0].toString())));
+				
+				node.put("isBlocked", isBlocked);
 				projectTitle.add(node);
 			}
 		} catch (Exception e) {
@@ -339,6 +377,20 @@ public class TasktrackController {
 
 	}
 
+	private boolean isTaskTrackApproved(int projectTier, String status) {
+		
+		if (projectTier == 2) {
+			List<String> tireTwoStatus = Arrays.asList(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT, Constants.TASKTRACK_APPROVER_STATUS_LOCK, Constants.TASKTRACK_APPROVER_STATUS_CORRECTED, Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
+			return tireTwoStatus.contains(status);
+		}
+		
+		else if (projectTier == 1) {
+			List<String> tireOneStatus = Arrays.asList(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
+			return tireOneStatus.contains(status);
+		}
+		return false;
+	}
+	
 	@GetMapping("/getTaskCategories")
 	public JsonNode getTaskCategories(@RequestParam("uId") int uId) {
 		ArrayNode taskTypes = objectMapper.createArrayNode();

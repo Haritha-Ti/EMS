@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.security.NoSuchAlgorithmException;
+
+import javax.persistence.Column;
 import javax.servlet.http.HttpServletResponse;
 
 import com.EMS.model.*;
@@ -172,7 +174,12 @@ public class LoginController {
 			user.setGender(requestdata.get("gender").asInt());
 			user.setEmploymentType(requestdata.get("employment").asText());
 			user.setActive(requestdata.get("active").asBoolean());
-
+            user.setEmailRCG(requestdata.get("emailRCG").asText());
+            user.setMaritalStatus(requestdata.get("maritalStatus").asText());
+            user.setHomeAddress(requestdata.get("homeAddress").asText());
+            user.setCellContact(requestdata.get("cellContact").asText());
+            user.setTaxID(requestdata.get("taxID").asText());
+            user.setRecruiter(requestdata.get("recruiter").asText());
 			Long departId = requestdata.get("department").asLong();
 			DepartmentModel department = null;
 			if (departId != null)
@@ -595,7 +602,12 @@ public class LoginController {
 				user.setGender(requestdata.get("gender").asInt());
 				user.setEmploymentType(requestdata.get("employment").asText());
 				user.setActive(requestdata.get("active").asBoolean());
-
+				user.setEmailRCG(requestdata.get("emailRCG").asText());
+	            user.setMaritalStatus(requestdata.get("maritalStatus").asText());
+	            user.setHomeAddress(requestdata.get("homeAddress").asText());
+	            user.setCellContact(requestdata.get("cellContact").asText());
+	            user.setTaxID(requestdata.get("taxID").asText());
+	            user.setRecruiter(requestdata.get("recruiter").asText());
 				Long departId = requestdata.get("department").asLong();
 				DepartmentModel department = null;
 				if (departId != null)
@@ -611,7 +623,7 @@ public class LoginController {
 				if (role != null)
 					user.setRole(role);
 
-
+                 System.out.println(requestdata.get("contractor").asLong());
 				Long contractorId = requestdata.get("contractor").asLong();
 				EmployeeContractors contractor = null;
 				if (contractorId != null)
@@ -1016,4 +1028,7 @@ public class LoginController {
 		}
 		return node;
 	}
+	
+	
+	 
 }

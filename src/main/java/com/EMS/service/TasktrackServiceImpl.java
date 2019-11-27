@@ -131,6 +131,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 			ProjectModel projectModel = new ProjectModel();
 			projectModel.setProjectName(obj[2].toString());
 			projectModel.setProjectId(Long.parseLong(obj[7].toString()));
+			projectModel.setProjectTier(Integer.parseInt(obj[8].toString()));
 			tasktrack.setProject(projectModel);
 			tasktrack.setDescription(obj[4].toString());
 			tasktrack.setHours(Double.parseDouble(obj[5].toString()));
