@@ -182,7 +182,7 @@ public class SchedulerService {
 										"Hi " + userFullNameMap.get(userName) + ", ");
 								mailBody.append("<br/><br/>Project: " + projectName);
 								mailBody.append(
-										"<br/><br/>Your timtrack is pending for the following days: <br/>" + sb);
+										"<br/><br/>Your timetrack is pending for the following days: <br/>" + sb);
 
 								Template t = freemarkerConfig.getTemplate("email_template.ftl");
 								String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto))
@@ -292,7 +292,7 @@ public class SchedulerService {
 
 							StringBuilder mailBody = new StringBuilder(
 									"Hi " + userFullNameMap.get(entry.getKey()) + ", ");
-							mailBody.append("<br/><br/>Your timtrack is pending for the following days: <br/>" + sb);
+							mailBody.append("<br/><br/>Your timetrack is pending for the following days: <br/>" + sb);
 
 							Template t = freemarkerConfig.getTemplate("email_template.ftl");
 							String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto))
@@ -1340,7 +1340,6 @@ public class SchedulerService {
 		while (itr.hasNext()) {
 
 			Map.Entry entry = (Map.Entry) itr.next();
-
 			Map projectMap = new HashMap<String, ArrayList<String>>();
 			projectMap = (Map) entry.getValue();
 
