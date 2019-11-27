@@ -54,7 +54,7 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 	@Column(name = "second_half_status", length = 25)
 	private String secondHalfStatus;
 	
-	private Date approvedDate;
+	//private Date approvedDate;
 	
 	private Long updatedBy;
 
@@ -493,12 +493,12 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 		this.secondHalfStatus = secondHalfStatus;
 	}
 
-	public Date getApprovedDate() {
+	/*public Date getApprovedDate() {
 		return approvedDate;
 	}
 
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
-	}
+	}*/
 	
 }
