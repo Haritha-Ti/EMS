@@ -54,11 +54,7 @@ public class QuickTasktrackController {
 				ArrayNode arrayNode = (ArrayNode) taskData.get("taskDetails");
 				UserModel user = userService.getUserDetailsById(uId);
 				
-				long projectId = Constants.BEACH_PROJECT_ID;
-				
-				if (!taskData.get("isBeach").asBoolean() ) {
-					projectId = taskData.get("projectId").asLong();
-				}
+				Long projectId = taskData.get("projectId").asLong();
 				
 				ProjectModel projectModel = quickTasktrackService
 						.getProjectModelById(taskData.get("projectId").asLong());
