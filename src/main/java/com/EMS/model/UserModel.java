@@ -77,7 +77,7 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 	private boolean active;
 	private String empCategory,cppLevel,referredBy;
 	private Date terminationDate;
-	@Column(name="emailRCG", nullable=false)
+	/*@Column(name="emailRCG", nullable=false)
 	private String emailRCG;
 	@Column(name="maritalStatus", nullable=false)
     private String maritalStatus;
@@ -86,11 +86,11 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 	@Column(name="cellContact", nullable=false)
     private String cellContact;
 	@Column(name="taxID", nullable=false)
-    private String taxID;
-	@Column(name="recruiter", nullable=false)
+    private String taxID;*/
+	@Column(name="recruiter")
     private String Recruiter;
-	@Column(name="employeeStatus", nullable=false)
-	private String employeeStatus;
+	/*@Column(name="employeeStatus", nullable=false)
+	private String employeeStatus;*/
 	
 	
 	
@@ -361,7 +361,7 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 			this.timezone = timezone;
 		}
 
-		public String getEmailRCG() {
+/*		public String getEmailRCG() {
 			return emailRCG;
 		}
 
@@ -416,7 +416,7 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 		public void setEmployeeStatus(String employeeStatus) {
 			this.employeeStatus = employeeStatus;
 		}
-
+*/
 
 		
 
