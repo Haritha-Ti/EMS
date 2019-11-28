@@ -5390,7 +5390,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public void saveApprovedHours(JSONObject requestData) throws Exception {
 
 		// Obtain the data from request data
-		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
+				userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -5481,8 +5482,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 		}
 		if (beachArray.size() > 0 && beachId == null) {
-			beachId = timeTrackApprovalJPARepository.getBeachIdForAUserForAProject(month, year, projectId,
-					userId);
+			beachId = timeTrackApprovalJPARepository.getBeachIdForAUserForAProject(month, year, projectId, userId);
 			if (beachId != null) {
 				throw new DuplicateEntryException("Duplicate entry for Beach.");
 			}
@@ -5861,39 +5861,44 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			if (beachId != null) {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
 
-//					taskTrackApproval.setApprovedDate(endDate);
-
-				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-					} else if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
-				}
-				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-					} else if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
-					}
-				}
 				if (taskTrackApproval != null) {
+					taskTrackApproval.setFirstHalfStatus(
+							taskTrackApproval.getFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: taskTrackApproval.getFirstHalfStatus());
+					taskTrackApproval.setSecondHalfStatus(
+							taskTrackApproval.getSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: taskTrackApproval.getSecondHalfStatus());
+
+					if (startCal.get(Calendar.DATE) < 16) {
+						if (taskTrackApproval.getFirstHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
+								|| taskTrackApproval.getFirstHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
+						} else if (taskTrackApproval.getFirstHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+								|| taskTrackApproval.getFirstHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
+						} else {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+						}
+					}
+					if (endCal.get(Calendar.DATE) > 15) {
+						if (taskTrackApproval.getSecondHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
+								|| taskTrackApproval.getSecondHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
+						} else if (taskTrackApproval.getSecondHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+								|| taskTrackApproval.getSecondHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
+						} else {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+						}
+					}
 
 					int startDayOfMonth = startCal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -6015,7 +6020,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			overtimeArray = (HashMap<String, Object>) requestData.get("overtime");
 		}
 		if (requestData.get("beach") != null && requestData.get("beach") != "") {
-			overtimeArray = (HashMap<String, Object>) requestData.get("beach");
+			beachArray = (HashMap<String, Object>) requestData.get("beach");
 		}
 
 		Long billable_id = null;
@@ -6498,7 +6503,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			overtimeArray = (HashMap<String, Object>) requestData.get("overtime");
 		}
 		if (requestData.get("beach") != null && requestData.get("beach") != "") {
-			overtimeArray = (HashMap<String, Object>) requestData.get("beach");
+			beachArray = (HashMap<String, Object>) requestData.get("beach");
 		}
 
 		Long billable_id = null;

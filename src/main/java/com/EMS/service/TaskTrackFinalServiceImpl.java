@@ -104,11 +104,11 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	TaskTrackRejectionRepository taskTrackRejectionRepository;
 
 	@Autowired
-    private Configuration freemarkerConfig;
-	
+	private Configuration freemarkerConfig;
+
 	@Autowired
 	private EmailNotificationService emailNotificationService;
-	
+
 	@Value("${FINANCE_MAIL}")
 	private String financeMail;
 
@@ -242,8 +242,8 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
-		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByUserAndProject(month, year, userId,
-				projectId);
+		List<Object[]> financeData = taskTrackApprovalFinalRepository.getFinanceDataByUserAndProject(month, year,
+				userId, projectId);
 		String intmonth;
 		if (month < 10) {
 			intmonth = "0" + month;
@@ -509,7 +509,8 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	public void saveFinalHours(JSONObject requestData) throws Exception {
 
 		// Obtain the data from request data
-		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
+				userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -610,8 +611,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				}
 			}
 			if (beachArray.size() > 0 && beachId == null) {
-				beachId = taskTrackFinalJPARepository.getBeachIdForAUserForAProject(month, year, projectId,
-						userId);
+				beachId = taskTrackFinalJPARepository.getBeachIdForAUserForAProject(month, year, projectId, userId);
 				if (beachId != null) {
 					throw new DuplicateEntryException("Duplicate entry for Beach.");
 				}
@@ -673,24 +673,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProjectType("Billable");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -967,7 +953,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
 							|| taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -977,7 +963,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
 							|| taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -1017,7 +1003,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getFirstHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
 							|| taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -1027,7 +1013,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					if (taskTrackApproval.getSecondHalfStatus()
 							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
 							|| taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 					} else {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -1068,7 +1054,8 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	public void submitFirstHalfHoursAsFinal(JSONObject requestData) throws Exception {
 
 		// Obtain the data from request data
-		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
+				userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -1511,23 +1498,24 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			}
 		}
 		try {
-			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverOne="";
+			String sendTo = "", sendCC = "", subject = "", emailReceiver = "", resource = "", approverOne = "";
 			subject = "RCG Time Sheet- First half time sheet Submitted";
-			resource = user.getLastName().concat(" "+user.getFirstName());
-			approverOne = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName());
+			resource = user.getLastName().concat(" " + user.getFirstName());
+			approverOne = project.getProjectOwner().getLastName()
+					.concat(" " + project.getProjectOwner().getFirstName());
 			sendCC = project.getProjectOwner().getEmail();
 			sendTo = financeMail;
 			emailReceiver = "Finance Team,";
 
-			StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver);
-			mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
-			mailBody.append("<br/>Resource Name : "+resource);
-			mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 1-15 days has been Approved & Submitted for the resource.");
-			mailBody.append("<br/><br/>Approved by : "+approverOne);
+			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
+			mailBody.append("<br/><br/>Project Name : " + project.getProjectName());
+			mailBody.append("<br/>Resource Name : " + resource);
+			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
+					+ " 1-15 days has been Approved & Submitted for the resource.");
+			mailBody.append("<br/><br/>Approved by : " + approverOne);
 
-			sendMail(sendTo,sendCC,subject,mailBody);
-		}
-		catch(Exception e){
+			sendMail(sendTo, sendCC, subject, mailBody);
+		} catch (Exception e) {
 
 		}
 	}
@@ -1540,7 +1528,8 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	public void submitSecondHalfHoursAsFinal(JSONObject requestData) throws Exception {
 
 		// Obtain the data from request data
-		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
+				userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -1983,23 +1972,24 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			}
 		}
 		try {
-			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverOne="";
+			String sendTo = "", sendCC = "", subject = "", emailReceiver = "", resource = "", approverOne = "";
 			subject = "RCG Time Sheet- Second half time sheet Submitted";
-			resource = user.getLastName().concat(" "+user.getFirstName());
-			approverOne = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName());
+			resource = user.getLastName().concat(" " + user.getFirstName());
+			approverOne = project.getProjectOwner().getLastName()
+					.concat(" " + project.getProjectOwner().getFirstName());
 			sendCC = project.getProjectOwner().getEmail();
 			sendTo = financeMail;
 			emailReceiver = "Finance Team,";
 
-			StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver);
-			mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
-			mailBody.append("<br/>Resource Name : "+resource);
-			mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 16-31 days has been Approved & Submitted for the resource.");
-			mailBody.append("<br/><br/>Approved by : "+approverOne);
+			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
+			mailBody.append("<br/><br/>Project Name : " + project.getProjectName());
+			mailBody.append("<br/>Resource Name : " + resource);
+			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
+					+ " 16-31 days has been Approved & Submitted for the resource.");
+			mailBody.append("<br/><br/>Approved by : " + approverOne);
 
-			sendMail(sendTo,sendCC,subject,mailBody);
-		}
-		catch(Exception e){
+			sendMail(sendTo, sendCC, subject, mailBody);
+		} catch (Exception e) {
 
 		}
 	}
@@ -2008,7 +1998,8 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	@Override
 	public void submitFirstHalfHoursForApproval2(JSONObject requestData) throws Exception {
 		// Obtain the data from request data
-		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
+				userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -2408,30 +2399,32 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			taskTrackRejectionRepository.saveAll(rejectionList);
 		}
 		try {
-			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverOne="";
+			String sendTo = "", sendCC = "", subject = "", emailReceiver = "", resource = "", approverOne = "";
 			subject = "RCG Time Sheet- First half time sheet Submitted";
-			resource = user.getLastName().concat(" "+user.getFirstName());
-			approverOne = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName());
+			resource = user.getLastName().concat(" " + user.getFirstName());
+			approverOne = project.getProjectOwner().getLastName()
+					.concat(" " + project.getProjectOwner().getFirstName());
 			sendCC = project.getOnsite_lead().getEmail();
 			sendTo = financeMail;
 			emailReceiver = "Finance Team,";
 
-			StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver);
-			mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
-			mailBody.append("<br/>Resource Name : "+resource);
-			mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 1-15 days has been Approved & Submitted for the resource.");
-			mailBody.append("<br/><br/>Approved by : "+approverOne);
+			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
+			mailBody.append("<br/><br/>Project Name : " + project.getProjectName());
+			mailBody.append("<br/>Resource Name : " + resource);
+			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
+					+ " 1-15 days has been Approved & Submitted for the resource.");
+			mailBody.append("<br/><br/>Approved by : " + approverOne);
 
-			sendMail(sendTo,sendCC,subject,mailBody);
-		}
-		catch(Exception e){
+			sendMail(sendTo, sendCC, subject, mailBody);
+		} catch (Exception e) {
 
 		}
 	}
 
 	@Override
 	public void submitSecondHalfHoursForApproval2(JSONObject requestData) throws Exception {
-		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null, userId = null;
+		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
+				userId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -2835,23 +2828,24 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			taskTrackRejectionRepository.saveAll(rejectionList);
 		}
 		try {
-			String sendTo="",sendCC="",subject="",emailReceiver="",resource="",approverOne="";
+			String sendTo = "", sendCC = "", subject = "", emailReceiver = "", resource = "", approverOne = "";
 			subject = "RCG Time Sheet- Second half time sheet Submitted";
-			resource = user.getLastName().concat(" "+user.getFirstName());
-			approverOne = project.getProjectOwner().getLastName().concat(" "+project.getProjectOwner().getFirstName());
+			resource = user.getLastName().concat(" " + user.getFirstName());
+			approverOne = project.getProjectOwner().getLastName()
+					.concat(" " + project.getProjectOwner().getFirstName());
 			sendCC = project.getOnsite_lead().getEmail();
 			sendTo = financeMail;
 			emailReceiver = "Finance Team,";
 
-			StringBuilder mailBody = new StringBuilder("Hi "+ emailReceiver);
-			mailBody.append("<br/><br/>Project Name : "+project.getProjectName());
-			mailBody.append("<br/>Resource Name : "+resource);
-			mailBody.append("<br/><br/>Timesheet for "+Month.of(month).name()+" 16-31 days has been Approved & Submitted for the resource.");
-			mailBody.append("<br/><br/>Approved by : "+approverOne);
+			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
+			mailBody.append("<br/><br/>Project Name : " + project.getProjectName());
+			mailBody.append("<br/>Resource Name : " + resource);
+			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
+					+ " 16-31 days has been Approved & Submitted for the resource.");
+			mailBody.append("<br/><br/>Approved by : " + approverOne);
 
-			sendMail(sendTo,sendCC,subject,mailBody);
-		}
-		catch(Exception e){
+			sendMail(sendTo, sendCC, subject, mailBody);
+		} catch (Exception e) {
 
 		}
 	}
@@ -2931,14 +2925,14 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		}
 	}
 
-	//@author  Jinu Shaji
+	// @author Jinu Shaji
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void bulkApproveLevel2(JSONObject requestData) throws Exception {
 
 		Long projectId = null;
 		List<Integer> userIds = new ArrayList<Integer>();
-		Integer monthPeriod=null,userId = null;
-		String date1=null,date2=null;
+		Integer monthPeriod = null, userId = null;
+		String date1 = null, date2 = null;
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
 			projectId = Long.valueOf(requestData.get("projectId").toString());
 		}
@@ -2957,34 +2951,39 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate = null, endDate = null;
-		if (date1!=null) {
+		if (date1 != null) {
 			startDate = outputFormat.parse(date1);
 		}
-		if (date2!=null) {
+		if (date2 != null) {
 			endDate = outputFormat.parse(date2);
 		}
-		
+
 		JSONObject userLevelInfo = new JSONObject();
 
 		for (int i = 0; i < userIds.size(); i++) {
-			
+
 			HashMap<String, Object> billableArray = new JSONObject();
 			HashMap<String, Object> nonbillableArray = new JSONObject();
 			HashMap<String, Object> overtimeArray = new JSONObject();
-			
+
 			userId = userIds.get(i);
-			userLevelInfo = tasktrackApprovalService.getDataForApprovalLevelTwo(new Long(userId), startDate, endDate, projectId, 15);
-			if(userLevelInfo!=null) {
+			userLevelInfo = tasktrackApprovalService.getDataForApprovalLevelTwo(new Long(userId), startDate, endDate,
+					projectId, 15);
+			if (userLevelInfo != null) {
 				String approverOneFirstHalfStatus = (String) userLevelInfo.get("approverOneFirstHalfStatus");
 				String approverOneSecondHalfStatus = (String) userLevelInfo.get("approverOneSecodHalfStatus");
-				if( ( monthPeriod == 1 && (approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)
-						||approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
-						||approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)))
-					
-					||	(  monthPeriod == 2 && (approverOneSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)
-								||approverOneSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
-								||approverOneSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)))) 
-					{
+				if ((monthPeriod == 1 && (approverOneFirstHalfStatus
+						.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)
+						|| approverOneFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
+						|| approverOneFirstHalfStatus
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)))
+
+						|| (monthPeriod == 2 && (approverOneSecondHalfStatus
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)
+								|| approverOneSecondHalfStatus
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
+								|| approverOneSecondHalfStatus
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)))) {
 					JSONObject approverOneData = (JSONObject) userLevelInfo.get("approverOneData");
 					JSONObject approverTwoData = (JSONObject) userLevelInfo.get("approverTwoData");
 					JSONObject dataToSave = new JSONObject();
@@ -2997,65 +2996,62 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					dataToSave.put("billableId", approverTwoData.get("billableId"));
 					dataToSave.put("nonBillableId", approverTwoData.get("nonBillableId"));
 					dataToSave.put("overtimeId", approverTwoData.get("overtimeId"));
-					
+
 					ArrayList<JSONObject> billable = new ArrayList<JSONObject>();
 					billable = (ArrayList<JSONObject>) approverOneData.get("billable");
 					JSONObject billableObj = billable.get(0);
-					billableObj.keySet().forEach(keyStr ->
-				    {
-				        Object keyvalue = billableObj.get(keyStr);
-				        billableArray.put((String) keyStr, keyvalue);
-				    });
-					
+					billableObj.keySet().forEach(keyStr -> {
+						Object keyvalue = billableObj.get(keyStr);
+						billableArray.put((String) keyStr, keyvalue);
+					});
+
 					ArrayList<JSONObject> nonBillable = new ArrayList<JSONObject>();
 					nonBillable = (ArrayList<JSONObject>) approverOneData.get("nonBillable");
 					JSONObject nonBillableObj = nonBillable.get(0);
-					nonBillableObj.keySet().forEach(keyStr ->
-				    {
-				        Object keyvalue = nonBillableObj.get(keyStr);
-				        nonbillableArray.put((String) keyStr, keyvalue);
-				    });
-					
+					nonBillableObj.keySet().forEach(keyStr -> {
+						Object keyvalue = nonBillableObj.get(keyStr);
+						nonbillableArray.put((String) keyStr, keyvalue);
+					});
+
 					ArrayList<JSONObject> overTime = new ArrayList<JSONObject>();
 					overTime = (ArrayList<JSONObject>) approverOneData.get("overTime");
 					JSONObject overTimeObj = overTime.get(0);
-					overTimeObj.keySet().forEach(keyStr ->
-				    {
-				        Object keyvalue = overTimeObj.get(keyStr);
-				        overtimeArray.put((String) keyStr, keyvalue);
-				    });
-							
+					overTimeObj.keySet().forEach(keyStr -> {
+						Object keyvalue = overTimeObj.get(keyStr);
+						overtimeArray.put((String) keyStr, keyvalue);
+					});
+
 					dataToSave.put("billable", billableArray);
 					dataToSave.put("nonBillable", nonbillableArray);
 					dataToSave.put("overtime", overtimeArray);
 
-					if(monthPeriod == 1)
+					if (monthPeriod == 1)
 						submitFirstHalfHoursForApproval2(dataToSave);
 					else
 						submitSecondHalfHoursForApproval2(dataToSave);
 				}
-			}		
+			}
 		}
 	}
-	
-	//@author  Jinu Shaji
-	private void sendMail(String sendTo, String cc,String subject , StringBuilder mailBody) throws Exception{
-		
-		try {
-		MailDomainDto mailDomainDto = new MailDomainDto();
-		mailDomainDto.setSubject(subject);
-		mailDomainDto.setCc(cc);
-		mailDomainDto.setContent(mailBody.toString());
-		
-		Template t = freemarkerConfig.getTemplate("email_template.ftl");
-        String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "");
 
-		mailDomainDto.setMailBody(html);
-		mailDomainDto.setTo(sendTo);
-	    String token = UUID.randomUUID().toString();
-		emailNotificationService.sendMail(token, mailDomainDto,true);
-		}
-		catch (Exception e) {
+	// @author Jinu Shaji
+	private void sendMail(String sendTo, String cc, String subject, StringBuilder mailBody) throws Exception {
+
+		try {
+			MailDomainDto mailDomainDto = new MailDomainDto();
+			mailDomainDto.setSubject(subject);
+			mailDomainDto.setCc(cc);
+			mailDomainDto.setContent(mailBody.toString());
+
+			Template t = freemarkerConfig.getTemplate("email_template.ftl");
+			String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto))
+					.replace("MAIL_BODY", mailBody).replace("Title", "");
+
+			mailDomainDto.setMailBody(html);
+			mailDomainDto.setTo(sendTo);
+			String token = UUID.randomUUID().toString();
+			emailNotificationService.sendMail(token, mailDomainDto, true);
+		} catch (Exception e) {
 		}
 	}
 }
