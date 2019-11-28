@@ -35,10 +35,10 @@ public class Constants {
 	public static final String TASKTRACK_REJECTION_FIRST_HALF_CYCLE = "FIRST";
 	public static final String TASKTRACK_REJECTION_SECOND_HALF_CYCLE = "SECOND";
 
-	public static final String TASKTRACK_PROJECT_TYPE_BILLABLE = "Billable";
-	public static final String TASKTRACK_PROJECT_TYPE_NON_BILLABLE = "Non-Billable";
-	public static final String TASKTRACK_PROJECT_TYPE_OVERTIME = "Overtime";
-	public static final String TASKTRACK_PROJECT_TYPE_BEACH = "Beach";
+	public static final String TASKTRACK_PROJECT_TYPE_BILLABLE = "billable";
+	public static final String TASKTRACK_PROJECT_TYPE_NON_BILLABLE = "nonBillable";
+	public static final String TASKTRACK_PROJECT_TYPE_OVERTIME = "overtime";
+	public static final String TASKTRACK_PROJECT_TYPE_BEACH = "beach";
 
 	public static final String NOT_SUBMITTED = "NOT_SUBMITTED";
 

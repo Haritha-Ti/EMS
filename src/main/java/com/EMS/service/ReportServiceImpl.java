@@ -501,16 +501,13 @@ public class ReportServiceImpl implements ReportService {
 					.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
 			for (TaskTrackApproval taskTrackApprovalObj : appr1TimeTrackEntriesObj) {
 				LinkedHashMap<String, Double> mapObj = new LinkedHashMap<>();
-				if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)) {
+				if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase("Billable")) {
 					mapObj = timeTrackApprover1EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE);
-				} else if (taskTrackApprovalObj.getProjectType()
-						.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE)) {
+				} else if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase("Non-Billable")) {
 					mapObj = timeTrackApprover1EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE);
-				} else if (taskTrackApprovalObj.getProjectType()
-						.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME)) {
+				} else if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase("Overtime")) {
 					mapObj = timeTrackApprover1EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME);
-				} else if (taskTrackApprovalObj.getProjectType()
-						.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BEACH)) {
+				} else if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase("Beach")) {
 					mapObj = timeTrackApprover1EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_BEACH);
 				}
 				for (String key : mapObj.keySet()) {
@@ -621,17 +618,13 @@ public class ReportServiceImpl implements ReportService {
 
 		for (TaskTrackApprovalFinal taskTrackApprovalFinalObj : appr2TimeTrackEntriesObj) {
 			LinkedHashMap<String, Double> mapObj = new LinkedHashMap<>();
-			if (taskTrackApprovalFinalObj.getProjectType()
-					.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)) {
+			if (taskTrackApprovalFinalObj.getProjectType().equalsIgnoreCase("Billable")) {
 				mapObj = timeTrackApprover2EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE);
-			} else if (taskTrackApprovalFinalObj.getProjectType()
-					.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE)) {
+			} else if (taskTrackApprovalFinalObj.getProjectType().equalsIgnoreCase("Non-Billable")) {
 				mapObj = timeTrackApprover2EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE);
-			} else if (taskTrackApprovalFinalObj.getProjectType()
-					.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME)) {
+			} else if (taskTrackApprovalFinalObj.getProjectType().equalsIgnoreCase("Overtime")) {
 				mapObj = timeTrackApprover2EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME);
-			} else if (taskTrackApprovalFinalObj.getProjectType()
-					.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BEACH)) {
+			} else if (taskTrackApprovalFinalObj.getProjectType().equalsIgnoreCase("Beach")) {
 				mapObj = timeTrackApprover2EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_BEACH);
 			}
 			for (String key : mapObj.keySet()) {
