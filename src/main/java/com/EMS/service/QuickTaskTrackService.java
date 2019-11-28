@@ -19,4 +19,6 @@ public interface QuickTaskTrackService {
 	Tasktrack saveTaskDetails(Tasktrack task);
 	
 	JSONObject getQuickTimeTrack(JsonNode request) throws Exception;
+
+	JSONObject getBeachQuickTimeTrack(JsonNode request) throws Exception;
 }

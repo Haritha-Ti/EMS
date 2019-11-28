@@ -54,7 +54,7 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 	@Column(name = "second_half_status", length = 25)
 	private String secondHalfStatus;
 	
-	private Date approvedDate;
+	//private Date approvedDate;
 	
 	private Long updatedBy;
 
@@ -478,9 +478,6 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 	}
 
 	public String getFirstHalfStatus() {
-		if(firstHalfStatus == null) {
-			firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-		}
 		return firstHalfStatus;
 	}
 
@@ -489,9 +486,6 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 	}
 
 	public String getSecondHalfStatus() {
-		if(secondHalfStatus == null) {
-			secondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-		}
 		return secondHalfStatus;
 	}
 
@@ -499,13 +493,14 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 		this.secondHalfStatus = secondHalfStatus;
 	}
 
-	public Date getApprovedDate() {
+	/*public Date getApprovedDate() {
 		return approvedDate;
 	}
 
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
-	}
+
+	}*/
 
 	public UserModel getFirstHalfsubmittedBy() {
 		return firstHalfsubmittedBy;
@@ -522,5 +517,8 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 	public void setSecondHalfsubmittedBy(UserModel secondHalfsubmittedBy) {
 		this.secondHalfsubmittedBy = secondHalfsubmittedBy;
 	}
+
+	
+
 	
 }

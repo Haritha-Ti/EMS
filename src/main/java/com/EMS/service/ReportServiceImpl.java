@@ -355,15 +355,17 @@ public class ReportServiceImpl implements ReportService {
 						approver1List = projectMap.get(projectId);
 						if (approver1List.containsKey(userId)) {
 							UsersEntryApprovalDetailsDTO obj = approver1List.get(userId);
-							if (projectType1 != null && (projectType1.equalsIgnoreCase("BILLABLE")
-									|| projectType1.equalsIgnoreCase("OVERTIME"))) {
+							if (projectType1 != null && (projectType1
+									.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)
+									|| projectType1.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME))) {
 								obj.setAppr1FirstHalfTotalHours(
 										obj.getAppr1FirstHalfTotalHours() + approver1FirstHalfHours);
 								obj.setAppr1SecondHalfTotalHours(
 										obj.getAppr1SecondHalfTotalHours() + approver1SecondHalfHours);
 							}
-							if (projectType2 != null && (projectType2.equalsIgnoreCase("BILLABLE")
-									|| projectType2.equalsIgnoreCase("OVERTIME"))) {
+							if (projectType2 != null && (projectType2
+									.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)
+									|| projectType2.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME))) {
 								obj.setAppr2FirstHalfTotalHours(
 										obj.getAppr2FirstHalfTotalHours() + approver2FirstHalfHours);
 								obj.setAppr2SecondHalfTotalHours(
@@ -374,13 +376,15 @@ public class ReportServiceImpl implements ReportService {
 							Double ap1SHHours = 0.0;
 							Double ap2FHHours = 0.0;
 							Double ap2SHHours = 0.0;
-							if (projectType1 != null && (projectType1.equalsIgnoreCase("BILLABLE")
-									|| projectType1.equalsIgnoreCase("OVERTIME"))) {
+							if (projectType1 != null && (projectType1
+									.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)
+									|| projectType1.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME))) {
 								ap1FHHours = approver1FirstHalfHours;
 								ap1SHHours = approver1SecondHalfHours;
 							}
-							if (projectType2 != null && (projectType2.equalsIgnoreCase("BILLABLE")
-									|| projectType2.equalsIgnoreCase("OVERTIME"))) {
+							if (projectType2 != null && (projectType2
+									.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)
+									|| projectType2.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME))) {
 								ap2FHHours = approver2FirstHalfHours;
 								ap2SHHours = approver2SecondHalfHours;
 							}
@@ -395,13 +399,15 @@ public class ReportServiceImpl implements ReportService {
 						Double ap1SHHours = 0.0;
 						Double ap2FHHours = 0.0;
 						Double ap2SHHours = 0.0;
-						if (projectType1 != null && (projectType1.equalsIgnoreCase("BILLABLE")
-								|| projectType1.equalsIgnoreCase("OVERTIME"))) {
+						if (projectType1 != null
+								&& (projectType1.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)
+										|| projectType1.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME))) {
 							ap1FHHours = approver1FirstHalfHours;
 							ap1SHHours = approver1SecondHalfHours;
 						}
-						if (projectType2 != null && (projectType2.equalsIgnoreCase("BILLABLE")
-								|| projectType2.equalsIgnoreCase("OVERTIME"))) {
+						if (projectType2 != null
+								&& (projectType2.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)
+										|| projectType2.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME))) {
 							ap2FHHours = approver2FirstHalfHours;
 							ap2SHHours = approver2SecondHalfHours;
 						}
@@ -452,20 +458,20 @@ public class ReportServiceImpl implements ReportService {
 		LinkedHashMap<String, Double> nonBillableApprover1EntriesMap = new LinkedHashMap<String, Double>();
 		LinkedHashMap<String, Double> overtimeApprover1EntriesMap = new LinkedHashMap<String, Double>();
 		LinkedHashMap<String, Double> beachApprover1EntriesMap = new LinkedHashMap<String, Double>();
-		timeTrackApprover1EntriesMap.put("billable", billableApprover1EntriesMap);
-		timeTrackApprover1EntriesMap.put("nonBillable", nonBillableApprover1EntriesMap);
-		timeTrackApprover1EntriesMap.put("overtime", overtimeApprover1EntriesMap);
-		timeTrackApprover1EntriesMap.put("beach", beachApprover1EntriesMap);
+		timeTrackApprover1EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE, billableApprover1EntriesMap);
+		timeTrackApprover1EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE, nonBillableApprover1EntriesMap);
+		timeTrackApprover1EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME, overtimeApprover1EntriesMap);
+		timeTrackApprover1EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_BEACH, beachApprover1EntriesMap);
 
 		Map<String, LinkedHashMap<String, Double>> timeTrackApprover2EntriesMap = new LinkedHashMap<String, LinkedHashMap<String, Double>>();
 		LinkedHashMap<String, Double> billableApprover2EntriesMap = new LinkedHashMap<String, Double>();
 		LinkedHashMap<String, Double> nonBillableApprover2EntriesMap = new LinkedHashMap<String, Double>();
 		LinkedHashMap<String, Double> overtimeApprover2EntriesMap = new LinkedHashMap<String, Double>();
 		LinkedHashMap<String, Double> beachApprover2EntriesMap = new LinkedHashMap<String, Double>();
-		timeTrackApprover2EntriesMap.put("billable", billableApprover2EntriesMap);
-		timeTrackApprover2EntriesMap.put("nonBillable", nonBillableApprover2EntriesMap);
-		timeTrackApprover2EntriesMap.put("overtime", overtimeApprover2EntriesMap);
-		timeTrackApprover2EntriesMap.put("beach", beachApprover2EntriesMap);
+		timeTrackApprover2EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE, billableApprover2EntriesMap);
+		timeTrackApprover2EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE, nonBillableApprover2EntriesMap);
+		timeTrackApprover2EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME, overtimeApprover2EntriesMap);
+		timeTrackApprover2EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_BEACH, beachApprover2EntriesMap);
 		response.put("timetrack", timeTrackEntriesMap);
 		response.put("approver2Timetrack", timeTrackApprover2EntriesMap);
 
@@ -495,14 +501,17 @@ public class ReportServiceImpl implements ReportService {
 					.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
 			for (TaskTrackApproval taskTrackApprovalObj : appr1TimeTrackEntriesObj) {
 				LinkedHashMap<String, Double> mapObj = new LinkedHashMap<>();
-				if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase("billable")) {
-					mapObj = timeTrackApprover1EntriesMap.get("billable");
-				} else if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase("nonBillable")) {
-					mapObj = timeTrackApprover1EntriesMap.get("nonBillable");
-				} else if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase("overtime")) {
-					mapObj = timeTrackApprover1EntriesMap.get("overtime");
-				} else if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase("beach")) {
-					mapObj = timeTrackApprover1EntriesMap.get("beach");
+				if (taskTrackApprovalObj.getProjectType().equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)) {
+					mapObj = timeTrackApprover1EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE);
+				} else if (taskTrackApprovalObj.getProjectType()
+						.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE)) {
+					mapObj = timeTrackApprover1EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE);
+				} else if (taskTrackApprovalObj.getProjectType()
+						.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME)) {
+					mapObj = timeTrackApprover1EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME);
+				} else if (taskTrackApprovalObj.getProjectType()
+						.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BEACH)) {
+					mapObj = timeTrackApprover1EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_BEACH);
 				}
 				for (String key : mapObj.keySet()) {
 					String day = key.substring(8);
@@ -612,14 +621,18 @@ public class ReportServiceImpl implements ReportService {
 
 		for (TaskTrackApprovalFinal taskTrackApprovalFinalObj : appr2TimeTrackEntriesObj) {
 			LinkedHashMap<String, Double> mapObj = new LinkedHashMap<>();
-			if (taskTrackApprovalFinalObj.getProjectType().equalsIgnoreCase("billable")) {
-				mapObj = timeTrackApprover2EntriesMap.get("billable");
-			} else if (taskTrackApprovalFinalObj.getProjectType().equalsIgnoreCase("nonBillable")) {
-				mapObj = timeTrackApprover2EntriesMap.get("nonBillable");
-			} else if (taskTrackApprovalFinalObj.getProjectType().equalsIgnoreCase("overtime")) {
-				mapObj = timeTrackApprover2EntriesMap.get("overtime");
-			} else if (taskTrackApprovalFinalObj.getProjectType().equalsIgnoreCase("beach")) {
-				mapObj = timeTrackApprover2EntriesMap.get("beach");
+			if (taskTrackApprovalFinalObj.getProjectType()
+					.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)) {
+				mapObj = timeTrackApprover2EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE);
+			} else if (taskTrackApprovalFinalObj.getProjectType()
+					.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE)) {
+				mapObj = timeTrackApprover2EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_NON_BILLABLE);
+			} else if (taskTrackApprovalFinalObj.getProjectType()
+					.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME)) {
+				mapObj = timeTrackApprover2EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME);
+			} else if (taskTrackApprovalFinalObj.getProjectType()
+					.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BEACH)) {
+				mapObj = timeTrackApprover2EntriesMap.get(Constants.TASKTRACK_PROJECT_TYPE_BEACH);
 			}
 			for (String key : mapObj.keySet()) {
 				String day = key.substring(8);

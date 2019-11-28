@@ -17,6 +17,7 @@ import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.TaskTrackDaySubmissionModel;
 import com.EMS.model.Tasktrack;
+import com.EMS.utility.Constants;
 
 public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
@@ -254,14 +255,15 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	@Query(value = "SELECT t.id AS taskTrackId, t.date,\r\n" + "			p.project_name, \r\n"
 			+ "			tm.task_name,\r\n" + "			t.description,\r\n" + "			t.hours,\r\n"
-			+ "			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus, p.project_id as projectId\r\n"
+			+ "			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus, p.project_id as projectId, p.project_tier\r\n"
 			+ "			FROM tasktrack t \r\n" + "			LEFT JOIN tasktrack_approval ta\r\n"
 			+ "				ON (t.user_user_id = ta.user_user_id  \r\n"
 			+ "				AND ta.project_project_id = t.project_project_id\r\n"
-			+ "				AND ta.month = month(t.date) \r\n" + "				AND ta.year = year(t.date)) \r\n"
+			+ "				AND ta.month = month(t.date) \r\n"
+			+ "				AND ta.year = year(t.date)  and ta.project_type=\"Billable\") \r\n"
 			+ "			INNER JOIN project p \r\n" + "				on p.project_id = t.project_project_id \r\n"
 			+ "			INNER JOIN task_master tm \r\n" + "				on tm.id = t.task_id \r\n"
-			+ "			WHERE t.user_user_id = :uId AND ta.project_type = 'Billable' \r\n"
+			+ "			WHERE t.user_user_id = :uId \r\n"
 			+ "            AND t.project_project_id IN :projectId AND CAST(t.date as date) BETWEEN :fromDate AND :toDate "
 			+ "			 ORDER BY date(t.date) ASC ", nativeQuery = true)
 	List<Object[]> getTrackTaskListTire2(@Param("uId") long userId, @Param("projectId") List<Long> projectId,
@@ -269,14 +271,15 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	@Query(value = "SELECT t.id AS taskTrackId, t.date,\r\n" + "			p.project_name, \r\n"
 			+ "			tm.task_name,\r\n" + "			t.description,\r\n" + "			t.hours,\r\n"
-			+ "			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus, p.project_id as projectId\r\n"
+			+ "			COALESCE(case when day(t.date) <= 15 then ta.first_half_status else ta.second_half_status end,'OPEN') as approvalStatus, p.project_id as projectId, p.project_tier\r\n"
 			+ "			FROM tasktrack t \r\n" + "			LEFT JOIN tasktrack_approval_final ta\r\n"
 			+ "				ON (t.user_user_id = ta.user_user_id  \r\n"
 			+ "				AND ta.project_project_id = t.project_project_id\r\n"
-			+ "				AND ta.month = month(t.date) \r\n" + "				AND ta.year = year(t.date)) \r\n"
+			+ "				AND ta.month = month(t.date) \r\n"
+			+ "				AND ta.year = year(t.date)  and ta.project_type=\"Billable\") \r\n"
 			+ "			INNER JOIN project p \r\n" + "				on p.project_id = t.project_project_id \r\n"
 			+ "			INNER JOIN task_master tm \r\n" + "				on tm.id = t.task_id \r\n"
-			+ "			WHERE t.user_user_id = :uId AND ta.project_type = 'Billable' \r\n"
+			+ "			WHERE t.user_user_id = :uId \r\n"
 			+ "            AND t.project_project_id IN :projectId AND CAST(t.date as date) BETWEEN :fromDate AND :toDate "
 			+ "			 ORDER BY date(t.date) ASC ", nativeQuery = true)
 	List<Object[]> getTrackTaskListTire1(@Param("uId") long userId, @Param("projectId") List<Long> projectId,
@@ -286,4 +289,30 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	List<Object[]> getTaskTrackProjectHoursForUser(Long userId, Long projectId, Integer month, Integer year,
 			Integer startDay, Integer endDay);
 
+	//Nisha
+
+	@Query("SELECT DISTINCT a.project.projectId,a.project.projectName,a.project.clientName.clientName, a.project.projectTier from AllocationModel a where a.user.userId=?1 and  a.startDate <= ?2 and a.endDate >= ?2 order by a.project.projectName")
+	public List<Object[]> getProjectNamesByAllocation(long uId,Date curdate) throws Exception;
+	
+	@Query(value = "select p.project_id, p.project_name , t.`date`,t.id,c.client_name  ,sum(t.hours) "
+			+ "from tasktrack t left join project p on p.project_id = t.project_project_id "
+			+ "join `user` u  on u.user_id = t.user_user_id "
+			+ "left join `client` c on c.client_id=p.client_name_client_id "
+			+ "where u.user_id = ?1 and project_id = "+Constants.BEACH_PROJECT_ID+" and t.`date`>=?2 and t.`date`<=?3  group by 1,2,3,4,5 order by 1,2", nativeQuery = true)
+	public List<Object[]> getBeachTasksFortimeTrack(@Param("userId") long userId, @Param("fromDate") Date fromDate,@Param("toDate") Date toDate) throws Exception;
+
+	@Query("SELECT COALESCE(case when day(:currentDate) <= 15 then ta.firstHalfStatus else ta.secondHalfStatus end,'OPEN'), ta.project.projectId \r\n" + 
+			"	FROM TaskTrackApprovalFinal ta 					\r\n" + 
+			"	WHERE ta.user.userId = :userId \r\n" + 
+			"    AND ta.month = month(:currentDate) AND ta.year = year(:currentDate)  and ta.projectType='Billable'\r\n" + 
+			"	AND ta.project.projectId IN :projectIds")
+	public List<Object[]> getTaskApprovalStatusForProjectsTire1(@Param("userId") long userId, @Param("currentDate") Date currentDate, @Param("projectIds") List<Long> projectIds);
+	
+	@Query("SELECT COALESCE(case when day(:currentDate) <= 15 then ta.firstHalfStatus else ta.secondHalfStatus end,'OPEN'), ta.project.projectId \r\n" + 
+			"	FROM TaskTrackApproval ta 					\r\n" + 
+			"	WHERE ta.user.userId = :userId \r\n" + 
+			"    AND ta.month = month(:currentDate) AND ta.year = year(:currentDate)  and ta.projectType='Billable'\r\n" + 
+			"	AND ta.project.projectId IN :projectIds")
+	public List<Object[]> getTaskApprovalStatusForProjectsTire2(@Param("userId") long userId, @Param("currentDate") Date currentDate, @Param("projectIds") List<Long> projectIds);
+		
 }

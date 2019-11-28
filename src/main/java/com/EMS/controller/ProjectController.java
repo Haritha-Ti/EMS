@@ -1483,6 +1483,15 @@ public class ProjectController {
 		return responsedata;
 	}
 
+	//nisha - projectHealthData
+	/*@PostMapping(value = "/getProjectHealthData")
+	public ObjectNode getCountOfResourcesInBenchProject(@RequestBody ObjectNode requestdata,
+														HttpServletResponse httpstatus) {
+		ObjectNode resData = objectMapper.createObjectNode();
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+
+	}*/
+
 	
 
 }

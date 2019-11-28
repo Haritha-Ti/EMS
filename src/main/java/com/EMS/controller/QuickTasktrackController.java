@@ -12,6 +12,7 @@ import com.EMS.model.*;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.service.QuickTaskTrackService;
 import com.EMS.service.UserService;
+import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -51,24 +53,27 @@ public class QuickTasktrackController {
 
 				ArrayNode arrayNode = (ArrayNode) taskData.get("taskDetails");
 				UserModel user = userService.getUserDetailsById(uId);
+				
+				long projectId = Constants.BEACH_PROJECT_ID;
+				
+				if (!taskData.get("isBeach").asBoolean() ) {
+					projectId = taskData.get("projectId").asLong();
+				}
+				
+				ProjectModel projectModel = quickTasktrackService
+						.getProjectModelById(taskData.get("projectId").asLong());
 
 				if (!user.equals(null)) {
 
 					for (JsonNode node : arrayNode) {
 
 						double hours = node.get("hours").asDouble();
-						/*
-						 * if(hours==0) continue;
-						 */
-						ProjectModel projectModel = quickTasktrackService
-								.getProjectModelById(taskData.get("projectId").asLong());
 						Long qTrackId = node.get("qTrackId").asLong();
 						if (qTrackId != 0) {
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							sdf.setTimeZone(TimeZone.getDefault());
-							// ProjectModel projectModel =
-							// tasktrackServiceImpl.getProjectModelById(taskData.get("projectId").asLong());
-							Task taskCategory = quickTasktrackService.getTaskByName("Quick Time Track");
+
+							Task taskCategory = quickTasktrackService.getTaskByName(Constants.QUICK_TIME_TRACK_DESC);
 							Tasktrack tasktrack = new Tasktrack();
 							tasktrack.setTask(taskCategory);
 							tasktrack.setProject(projectModel);
@@ -87,7 +92,7 @@ public class QuickTasktrackController {
 						Tasktrack tasktrack = new Tasktrack();
 						tasktrack.setUser(user);
 
-						Task task = quickTasktrackService.getTaskByName("Quick Time Track");
+						Task task = quickTasktrackService.getTaskByName(Constants.QUICK_TIME_TRACK_DESC);
 						if (task != null)
 							tasktrack.setTask(task);
 						else {
@@ -97,7 +102,7 @@ public class QuickTasktrackController {
 
 						tasktrack.setHours(hours);
 						// storing projects
-						Long projectId = taskData.get("projectId").asLong();
+						
 						if (projectId != 0L) {
 							// ProjectModel proj = projectService.findById(projectId);
 							if (projectModel != null)
@@ -111,7 +116,7 @@ public class QuickTasktrackController {
 							dataResponse.put("message", "Process failed due to empty project Id");
 						}
 						// hardcoded description
-						tasktrack.setDescription("Quick Time Track");
+						tasktrack.setDescription(Constants.QUICK_TIME_TRACK_DESC);
 						// getting date
 						if (!(node.get("date").asText().isEmpty())) {
 							String dateNew = node.get("date").asText();
@@ -182,5 +187,19 @@ public class QuickTasktrackController {
 		return response;
 	}
 	
-	
+	@SuppressWarnings("unchecked")
+	@GetMapping("/getBeachTimeTrack")
+	public JSONObject getBeachQuickTimeTrack(@RequestBody JsonNode request ) {
+				
+		JSONObject response = new JSONObject();
+		try {
+			response = quickTasktrackService.getBeachQuickTimeTrack(request);
+		}
+		catch(Exception ex) {
+			response.put("data", ex.getMessage());
+			response.put("status", "failed");
+		}
+		return response;
+		
+	}
 }
