@@ -7477,17 +7477,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
 						// temporaryObject = new JSONObject();
-						nonBillableHours2 = new JSONObject();
+						//nonBillableHours2 = new JSONObject();
 						nonBillableHours.put(taskDate, hours);
-						nonBillableHours2.put(taskDate, hours);
-						nonbillableArray2.add(nonBillableHours2);
+						//nonBillableHours2.put(taskDate, hours);
+						//nonbillableArray2.add(nonBillableHours2);
 						// nonbillableId = task.getId();
 					} else if (task.getProjectType().equalsIgnoreCase("Beach")) {
 						// temporaryObject = new JSONObject();
-						beachHours2 = new JSONObject();
+						//beachHours2 = new JSONObject();
 						beachHours.put(taskDate, hours);
-						beachHours2.put(taskDate, hours);
-						beachArray2.add(beachHours2);
+						//beachHours2.put(taskDate, hours);
+						//beachArray2.add(beachHours2);
 						// nonbillableId = task.getId();
 					}
 					cal.add(Calendar.DATE, 1);
@@ -7862,6 +7862,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					jsonObject.put(taskDate, 0);
 					billableArray2.add(jsonObject);
 					overTimeArray2.add(jsonObject);
+					nonbillableArray2.add(jsonObject);
 					beachArray2.add(jsonObject);
 
 					cal.add(Calendar.DATE, 1);
