@@ -222,7 +222,12 @@ public class TasktrackController {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			sdf.setTimeZone(TimeZone.getDefault());
-			ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(objectNode.get("projectId").asLong());
+			Long projectId = Constants.BEACH_PROJECT_ID;
+			if (!objectNode.get("isBeach").asBoolean()) {
+				projectId = objectNode.get("projectId").asLong();
+			}
+
+			ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(projectId);
 			Task taskCategory = tasktrackService.getTaskById(objectNode.get("taskTypeId").asLong());
 			Tasktrack tasktrack = new Tasktrack();
 			tasktrack.setTask(taskCategory);
@@ -295,33 +300,37 @@ public class TasktrackController {
 
 	@PostMapping("/getProjectNamesByMonth")
 	public JsonNode getProjectNamesByMonth(@RequestBody JsonNode requestData) throws ParseException {
-		//String currentmonth = requestData.get("currentmonth").asText();
-		//String currentyear = requestData.get("currentyear").asText();
-		String currentdate =requestData.get("currentDate").asText();
+		// String currentmonth = requestData.get("currentmonth").asText();
+		// String currentyear = requestData.get("currentyear").asText();
+		String currentdate = requestData.get("currentDate").asText();
 
 		int uId = requestData.get("uid").asInt();
 		/*
 		 * Calendar cal = Calendar.getInstance(); int lastDate =
 		 * cal.getActualMaximum(Calendar.DATE); return lastDate;
 		 */
-		/*String fromdate = currentyear + "-" + currentmonth + "-01";
-		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
-		LocalDate date = LocalDate.parse(fromdate, dateFormat);
-		ValueRange range = date.range(ChronoField.DAY_OF_MONTH);
-		Long max = range.getMaximum();
-		String todate = String.format("%s-%s-%d", currentyear, currentmonth, max);*/
+		/*
+		 * String fromdate = currentyear + "-" + currentmonth + "-01"; DateTimeFormatter
+		 * dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US); LocalDate
+		 * date = LocalDate.parse(fromdate, dateFormat); ValueRange range =
+		 * date.range(ChronoField.DAY_OF_MONTH); Long max = range.getMaximum(); String
+		 * todate = String.format("%s-%s-%d", currentyear, currentmonth, max);
+		 */
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-		/*Date startdate = outputFormat.parse(fromdate);
-		Date enddate = outputFormat.parse(todate);*/
-		Date curdate =outputFormat.parse(currentdate);
+		/*
+		 * Date startdate = outputFormat.parse(fromdate); Date enddate =
+		 * outputFormat.parse(todate);
+		 */
+		Date curdate = outputFormat.parse(currentdate);
 		// LocalDate newDate = date.withDayOfMonth(max.intValue());
 		// return enddate;
 		ArrayNode projectTitle = objectMapper.createArrayNode();
 		try {
-			//for (Object[] alloc : tasktrackRepository.getProjectNamesByMonths(uId, startdate, enddate)) {
-		
+			// for (Object[] alloc : tasktrackRepository.getProjectNamesByMonths(uId,
+			// startdate, enddate)) {
+
 			List<Object[]> allocatedProjectList = tasktrackRepository.getProjectNamesByAllocation(uId, curdate);
-			
+
 			List<Long> projectIdsForTire1 = new ArrayList<Long>();
 			List<Long> projectIdsForTire2 = new ArrayList<Long>();
 
@@ -335,31 +344,34 @@ public class TasktrackController {
 				}
 			}
 			List<Object[]> taskApprovalStatusArr = new ArrayList<Object[]>();
-			
-			if (projectIdsForTire1.size()> 0) {
-				taskApprovalStatusArr.addAll(tasktrackRepository.getTaskApprovalStatusForProjectsTire1(uId, curdate, projectIdsForTire1));
+
+			if (projectIdsForTire1.size() > 0) {
+				taskApprovalStatusArr.addAll(
+						tasktrackRepository.getTaskApprovalStatusForProjectsTire1(uId, curdate, projectIdsForTire1));
 			}
-			
-			if (projectIdsForTire2.size()> 0) {
-				taskApprovalStatusArr.addAll(tasktrackRepository.getTaskApprovalStatusForProjectsTire2(uId, curdate, projectIdsForTire2));
+
+			if (projectIdsForTire2.size() > 0) {
+				taskApprovalStatusArr.addAll(
+						tasktrackRepository.getTaskApprovalStatusForProjectsTire2(uId, curdate, projectIdsForTire2));
 			}
-			
+
 			Map<Long, String> projectTaskAprovalStatusMap = new HashMap<>();
-			
+
 			for (Object[] taskApprovalStatus : taskApprovalStatusArr) {
-				projectTaskAprovalStatusMap.put(Long.parseLong(taskApprovalStatus[1].toString()), taskApprovalStatus[0].toString());
+				projectTaskAprovalStatusMap.put(Long.parseLong(taskApprovalStatus[1].toString()),
+						taskApprovalStatus[0].toString());
 			}
-			
-			
+
 			for (Object[] alloc : allocatedProjectList) {
 
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", (Long) alloc[0]);
 				node.put("value", (String) alloc[1]);
 				node.put("clientName", (String) alloc[2]);
-				
-				boolean isBlocked = isTaskTrackApproved(Integer.parseInt(alloc[3].toString()) ,projectTaskAprovalStatusMap.get(Long.parseLong(alloc[0].toString())));
-				
+
+				boolean isBlocked = isTaskTrackApproved(Integer.parseInt(alloc[3].toString()),
+						projectTaskAprovalStatusMap.get(Long.parseLong(alloc[0].toString())));
+
 				node.put("isBlocked", isBlocked);
 				projectTitle.add(node);
 			}
@@ -378,19 +390,21 @@ public class TasktrackController {
 	}
 
 	private boolean isTaskTrackApproved(int projectTier, String status) {
-		
+
 		if (projectTier == 2) {
-			List<String> tireTwoStatus = Arrays.asList(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT, Constants.TASKTRACK_APPROVER_STATUS_LOCK, Constants.TASKTRACK_APPROVER_STATUS_CORRECTED, Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
+			List<String> tireTwoStatus = Arrays.asList(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT,
+					Constants.TASKTRACK_APPROVER_STATUS_LOCK, Constants.TASKTRACK_APPROVER_STATUS_CORRECTED,
+					Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
 			return tireTwoStatus.contains(status);
 		}
-		
+
 		else if (projectTier == 1) {
 			List<String> tireOneStatus = Arrays.asList(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 			return tireOneStatus.contains(status);
 		}
 		return false;
 	}
-	
+
 	@GetMapping("/getTaskCategories")
 	public JsonNode getTaskCategories(@RequestParam("uId") int uId) {
 		ArrayNode taskTypes = objectMapper.createArrayNode();
@@ -3203,13 +3217,14 @@ public class TasktrackController {
 		}
 		return response;
 	}
-	
+
 	/***
 	 * 
 	 * @author drishya
 	 * @param httpstatus
 	 * @project tier 2
-	 * @desc get the projectwise submission datas including submitted hours,odc,date time and project details
+	 * @desc get the projectwise submission datas including submitted hours,odc,date
+	 *       time and project details
 	 * @throws ParseException
 	 * @since 21/11/2019
 	 */
@@ -3218,9 +3233,9 @@ public class TasktrackController {
 			throws ParseException {
 
 		JSONObject jsonDataRes = new JSONObject();
-		long projectId =  0;
-		long regionId =  0;
-		long userId =  0;
+		long projectId = 0;
+		long regionId = 0;
+		long userId = 0;
 		int month = 0;
 		int year = 0;
 
@@ -3242,46 +3257,44 @@ public class TasktrackController {
 			ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
 			ArrayList<JSONObject> node1 = new ArrayList<JSONObject>();
 
-			ProjectModel project  = projectService.findById(projectId);
-			
-			if(project.getProjectTier() == 1) {
-				
+			ProjectModel project = projectService.findById(projectId);
+
+			if (project.getProjectTier() == 1) {
+
 				for (JsonNode rangenode : range) {
 					JSONObject node = new JSONObject();
 					month = Integer.parseInt(rangenode.get("month").toString());
 					year = Integer.parseInt(rangenode.get("year").toString());
-					  if (month != 0 && year != 0 ) {
+					if (month != 0 && year != 0) {
 
 						resultData = tasktrackApprovalService.getProjectWiseSubmissionDetailsTier1(month, year,
-								projectId,userId,regionId);
+								projectId, userId, regionId);
 						node.put("timeTracks", resultData);
 						node.put("month", month);
 						node.put("year", year);
 						node1.add(node);
 
-					} 
+					}
 
 				}
-			}
-			else if(project.getProjectTier() == 2) {
+			} else if (project.getProjectTier() == 2) {
 				for (JsonNode rangenode : range) {
 					JSONObject node = new JSONObject();
 					month = Integer.parseInt(rangenode.get("month").toString());
 					year = Integer.parseInt(rangenode.get("year").toString());
-					  if (month != 0 && year != 0 ) {
+					if (month != 0 && year != 0) {
 
 						resultData = tasktrackApprovalService.getProjectWiseSubmissionDetailsTier2(month, year,
-								projectId,userId,regionId);
+								projectId, userId, regionId);
 						node.put("timeTracks", resultData);
 						node.put("month", month);
 						node.put("year", year);
 						node1.add(node);
 
-					} 
+					}
 
 				}
 			}
-			
 
 			jsonDataRes.put("data", node1);
 			jsonDataRes.put("status", "success");
@@ -3295,5 +3308,5 @@ public class TasktrackController {
 
 		return jsonDataRes;
 	}
-	
+
 }
