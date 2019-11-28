@@ -63,8 +63,15 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 
 	@Column(name = "second_half_status", length = 25)
 	private String secondHalfStatus;
+	
+	@ManyToOne
+	private UserModel firstHalfsubmittedBy;
+	
+	@ManyToOne
+	private UserModel secondHalfsubmittedBy;
 
 	//private Date approvedDate;
+
 
 	public long getId() {
 		return id;
@@ -390,5 +397,22 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}*/
+
+	public UserModel getFirstHalfsubmittedBy() {
+		return firstHalfsubmittedBy;
+	}
+
+	public void setFirstHalfsubmittedBy(UserModel firstHalfsubmittedBy) {
+		this.firstHalfsubmittedBy = firstHalfsubmittedBy;
+	}
+
+	public UserModel getSecondHalfsubmittedBy() {
+		return secondHalfsubmittedBy;
+	}
+
+	public void setSecondHalfsubmittedBy(UserModel secondHalfsubmittedBy) {
+		this.secondHalfsubmittedBy = secondHalfsubmittedBy;
+	}
+
 	
 }

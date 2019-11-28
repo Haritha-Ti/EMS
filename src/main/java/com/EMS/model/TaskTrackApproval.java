@@ -58,6 +58,12 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 	
 	private Long updatedBy;
 
+	@ManyToOne
+	private UserModel firstHalfsubmittedBy;
+	
+	@ManyToOne
+	private UserModel secondHalfsubmittedBy;
+	
 	public Long getUpdatedBy() {
 		return updatedBy;
 	}
@@ -493,6 +499,26 @@ public class TaskTrackApproval    extends  Auditable<Long>{
 
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
+
 	}*/
+
+	public UserModel getFirstHalfsubmittedBy() {
+		return firstHalfsubmittedBy;
+	}
+
+	public void setFirstHalfsubmittedBy(UserModel firstHalfsubmittedBy) {
+		this.firstHalfsubmittedBy = firstHalfsubmittedBy;
+	}
+
+	public UserModel getSecondHalfsubmittedBy() {
+		return secondHalfsubmittedBy;
+	}
+
+	public void setSecondHalfsubmittedBy(UserModel secondHalfsubmittedBy) {
+		this.secondHalfsubmittedBy = secondHalfsubmittedBy;
+	}
+
+	
+
 	
 }

@@ -38,8 +38,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONObject;
 
 import com.EMS.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.EMS.repository.TimeTrackApprovalJPARepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.HolidayRepository;
@@ -68,6 +70,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 	@Autowired
 	TaskTrackFinanceRepository taskTrackFinanceRepository;
+	
+	
 
 
 	@Override
@@ -2611,6 +2615,161 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		//Adding filter menu in column headers
 		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
 		
+	}
+
+	@Override
+	public void exportBillingProjectWise(Workbook workrbook, Sheet sheet, String nameofReport, int month, int year,
+			List<Object[]> node1) {
+		// TODO Auto-generated method stub
+		YearMonth yearMonthObject = YearMonth.of(year, month);
+		
+		int dayCount = yearMonthObject.lengthOfMonth();
+		int cols = dayCount+7;
+		String[] headers = new String[cols];
+		headers[0] = "Name";
+		headers[1] = "Project Name";
+		headers[2] = "First Half Submitted Person";
+		headers[3] = "First Half Submitted Date ";
+		headers[4] = "Second Half Submitted Person";
+		headers[5] = "Second Half Submitted Date";
+		
+
+		String intmonth;
+		if(month<10){
+			intmonth ="0"+month;
+		}
+		else{
+			intmonth =String.valueOf(month);
+		}
+		if(month<10){
+			intmonth ="0"+month;
+		}
+		for(int i=1;i<=dayCount;i++){
+			String j;
+			if(i<10){
+				j ="0"+i;
+			}
+			else{
+				j =String.valueOf(i);
+			}
+			headers[i + 5] = year+"-"+intmonth+"-"+j;
+		}
+		headers[dayCount+6] = "Total Hours";
+		
+
+		
+		
+		//Removing grids
+		sheet.setDisplayGridlines(false);
+		//Freezing columns and rows from scrooling
+		sheet.createFreezePane(3,6);
+
+		//Bordered Cell Style
+		CellStyle borderedCellStyle = workrbook.createCellStyle();
+		borderedCellStyle.setBorderLeft(BorderStyle.THIN);
+		borderedCellStyle.setLeftBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderRight(BorderStyle.THIN);
+		borderedCellStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderTop(BorderStyle.THIN);
+		borderedCellStyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
+		borderedCellStyle.setBorderBottom(BorderStyle.THIN);
+		borderedCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+
+		//Title Cell Style
+		CellStyle titleCellStyle = workrbook.createCellStyle();
+		//titleCellStyle.setFont((org.apache.poi.ss.usermodel.Font) headerFont);
+
+		Row titleRow = sheet.createRow(0);
+		Cell titleCell = titleRow.createCell(0);
+		titleCell.setCellValue(nameofReport);
+		titleCell.setCellStyle(titleCellStyle);
+
+		titleRow = sheet.createRow(1);
+		titleCell = titleRow.createCell(1);
+		titleCell.setCellValue("");
+
+		XSSFFont font = (XSSFFont) workrbook.createFont();
+		font.setFontName("Liberation Sans");
+		font.setFontHeightInPoints((short)10);
+		font.setBold(true);
+
+
+		// Header Cell Style
+		CellStyle headerCellStyle = workrbook.createCellStyle();
+		headerCellStyle.cloneStyleFrom(borderedCellStyle);
+		headerCellStyle.setBorderTop(BorderStyle.THICK);
+		headerCellStyle.setFont(font);
+
+		Row headerRow = sheet.createRow(2);
+		int widthInChars = 50;
+		sheet.setColumnWidth(4, widthInChars);
+		for (int i = 0; i < headers.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(headers[i]);
+			cell.setCellStyle(headerCellStyle);
+		}
+
+		// Create Other rows and cells with contacts data
+		int rowNum = 3;
+		
+		for (Object[] summary : node1) {
+			
+			double totalHour =0.0;
+			Row row = sheet.createRow(rowNum++);
+
+			Cell cell = row.createCell(0);
+			cell.setCellValue(summary[2]+" "+summary[1]);
+			cell.setCellStyle(borderedCellStyle);
+			
+			//JsonNode project = (JsonNode) summary.get("projectDetails");
+			
+			cell = row.createCell(1);
+			cell.setCellValue(summary[3].toString());
+			cell.setCellStyle(borderedCellStyle);
+			
+			UserModel user1 = userRepository.getOne(Long.parseLong(summary[7].toString()));
+			
+			cell = row.createCell(2);
+			cell.setCellValue(user1.getLastName()+" "+user1.getFirstName());
+			cell.setCellStyle(borderedCellStyle);
+
+			cell = row.createCell(3);
+			cell.setCellValue(summary[6].toString());
+			cell.setCellStyle(borderedCellStyle);
+
+			UserModel user2 = userRepository.getOne(Long.parseLong(summary[8].toString()));
+			
+			cell = row.createCell(4);
+			cell.setCellValue(user2.getLastName()+" "+user2.getFirstName());
+			cell.setCellStyle(borderedCellStyle);
+			
+			cell = row.createCell(5);
+			cell.setCellValue(summary[6].toString());
+			cell.setCellStyle(borderedCellStyle);
+
+			
+			for(int d=1;d<=dayCount;d++) {
+				
+				cell = row.createCell(d+5);
+				cell.setCellValue((double)summary[10+d]);
+				cell.setCellStyle(borderedCellStyle);
+				totalHour =totalHour+(double)summary[d+10];
+			}
+			cell = row.createCell(dayCount+6);
+			cell.setCellValue(totalHour);
+			cell.setCellStyle(borderedCellStyle);
+			
+
+		}
+
+		
+		// Resize all columns to fit the content size
+		for (int i = 0; i < headers.length; i++) {
+			sheet.autoSizeColumn(i);
+		}
+
+		//Adding filter menu in column headers
+		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
 	}
 
 }

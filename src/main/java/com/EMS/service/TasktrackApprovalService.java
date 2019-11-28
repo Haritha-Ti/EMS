@@ -130,4 +130,14 @@ public interface TasktrackApprovalService {
 
 
 	JSONObject getInfoForFinance(Long userId, Date startDate, Date endDate, Boolean isExist, Long projectId, Integer firstHalfDay) throws ParseException;
+
+	ArrayList<JSONObject> getProjectWiseSubmissionDetailsTier1(int month, int year, long projectId,long userId, long regionId);
+
+	ArrayList<JSONObject> getProjectWiseSubmissionDetailsTier2(int month, int year, long projectId,long userId, long regionId);
+
+	List<Object[]> getProjectWiseSubmissionDetailsTierOne(int month, int year, long projectId, long userId,
+			long regionId);
+
+	List<Object[]> getProjectWiseSubmissionDetailsTierTwo(int month, int year, long projectId, long userId,
+			long regionId);
 }

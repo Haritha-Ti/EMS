@@ -1,6 +1,9 @@
 package com.EMS.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -269,6 +272,36 @@ public class ProjectServiceImpl implements ProjectService {
 			return project_repositary.getAllActiveProjectList();
 		}
 		//Renjith
+
+		@Override
+		public List<ProjectModel> getProjectsBasedOnMonthYearRegion(Long regionId, int month, int year) {
+			// TODO Auto-generated method stub
+			String startDate = year+"-"+month+"-01"; 
+			SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd");  
+			Date date1 = null;
+			try {
+				 date1=formatter1.parse(startDate);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return project_repositary.getProjectsBasedOnMonthYearRegion(regionId,date1);
+		}
+
+		@Override
+		public List<ProjectModel> getProjectsBasedOnMonthYearRegion(int month, int year) {
+			// TODO Auto-generated method stub
+			String startDate = year+"-"+month+"-01"; 
+			SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd");  
+			Date date1 = null;
+			try {
+				 date1=formatter1.parse(startDate);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return project_repositary.getProjectsBasedOnMonthYearRegion(date1);
+		}
 
 
 }

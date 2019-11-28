@@ -47,6 +47,7 @@ import com.EMS.service.ProjectExportService;
 import com.EMS.service.ProjectRegionService;
 import com.EMS.service.ReportService;
 import com.EMS.service.ReportServiceImpl;
+import com.EMS.service.TasktrackApprovalService;
 import com.EMS.service.TasktrackService;
 import com.EMS.service.UserService;
 import com.EMS.service.ProjectService;
@@ -87,6 +88,9 @@ public class ReportController {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	private TasktrackApprovalService tasktrackApprovalService;
 
 	@PostMapping("/getProjectReport")
 	public JsonNode getProjectReport(@RequestBody Taskdetails requestdata) {
@@ -1030,5 +1034,97 @@ public class ReportController {
 		}
 		return response;
 	}
+	
+	/***
+	 * @author drishya dinesh
+	 * @param requestdata
+	 * @param response
+	 * @des export projectwise submission data
+	 * @return
+	 */
+	@PostMapping(value = "/exportProjectWiseSubmissionData")
+	public ResponseEntity exportProjectWiseSubmissionData(@RequestBody JsonNode requestdata, HttpServletResponse response) {
+		JSONObject jsonDataRes = new JSONObject();
+		long projectId =  0;
+		long regionId =  0;
+		long userId =  0;
+		int month = 0;
+		int year = 0;
 
+		try {
+
+			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
+				projectId = requestdata.get("projectId").asLong();
+			}
+			if (requestdata.get("userId") != null && requestdata.get("userId").asText() != "") {
+				userId = requestdata.get("userId").asLong();
+			}
+			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
+				regionId = requestdata.get("regionId").asLong();
+			}
+			ArrayNode range = (ArrayNode) requestdata.get("range");
+
+			JSONObject outputdata = new JSONObject();
+
+			ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
+			ArrayList<JSONObject> node1 = new ArrayList<JSONObject>();
+
+			List<Object[]> result = new ArrayList<Object[]>();
+			
+			ProjectModel project  = projectService.findById(projectId);
+			
+			if(project.getProjectTier() == 1) {
+				
+				for (JsonNode rangenode : range) {
+					JSONObject node = new JSONObject();
+					month = Integer.parseInt(rangenode.get("month").toString());
+					year = Integer.parseInt(rangenode.get("year").toString());
+					  if (month != 0 && year != 0 ) {
+
+						  result = tasktrackApprovalService.getProjectWiseSubmissionDetailsTierOne(month, year,
+								projectId,userId,regionId);
+						node.put("timeTracks", resultData);
+						node.put("month", month);
+						node.put("year", year);
+						node1.add(node);
+
+					} 
+
+				}
+			}
+			else if(project.getProjectTier() == 2) {
+				for (JsonNode rangenode : range) {
+					JSONObject node = new JSONObject();
+					month = Integer.parseInt(rangenode.get("month").toString());
+					year = Integer.parseInt(rangenode.get("year").toString());
+					  if (month != 0 && year != 0 ) {
+
+						  result = tasktrackApprovalService.getProjectWiseSubmissionDetailsTierTwo(month, year,
+								projectId,userId,regionId);
+						node.put("timeTracks", resultData);
+						node.put("month", month);
+						node.put("year", year);
+						node1.add(node);
+
+					} 
+
+				}
+			}
+			Workbook workrbook = new XSSFWorkbook();
+			Sheet sheet = workrbook.createSheet("Billing ProjectWise Report");
+			String nameofReport = "BILLING PROJECTWISE REPORT";
+			projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
+					result);
+			response.setContentType("application/vnd.ms-excel");
+			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+			response.setHeader("Content-Disposition", "filename=\"" + "BillingProjectWise.xlsx" + "\"");
+			workrbook.write(response.getOutputStream());
+			workrbook.close();
+
+		} catch (Exception e) {
+			//return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace();
+		}
+		return new ResponseEntity(HttpStatus.OK);
+	}
 }

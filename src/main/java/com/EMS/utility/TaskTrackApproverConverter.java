@@ -94,7 +94,13 @@ public class TaskTrackApproverConverter {
 		approval.setMonth(finalApproval.getMonth());
 		approval.setFirstHalfStatus(finalApproval.getFirstHalfStatus());
 		approval.setSecondHalfStatus(finalApproval.getSecondHalfStatus());
+
+		approval.setFirstHalfsubmittedBy(finalApproval.getFirstHalfsubmittedBy());
+		approval.setSecondHalfsubmittedBy(finalApproval.getSecondHalfsubmittedBy());
+		approval.setTrx_date(finalApproval.getTrx_date());
+
 		//approval.setApprovedDate(finalApproval.getApprovedDate());
+
 		return approval;
 	}
 }

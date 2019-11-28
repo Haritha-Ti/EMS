@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.json.simple.JSONObject;
 
 import com.EMS.model.BenchProjectReportModel;
 import com.EMS.model.ExportApprovalReportModel;
@@ -53,6 +54,9 @@ public interface ProjectExportService {
 
 	public void exportBenchReport(Workbook workrbook, Sheet sheet, String nameofReport,
 			List<BenchProjectReportModel> benchProjectReport);
+
+	public void exportBillingProjectWise(Workbook workrbook, Sheet sheet, String nameofReport, int month, int year,
+			List<Object[]> node1);
 
 
 }
