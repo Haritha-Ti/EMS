@@ -18,22 +18,20 @@ import org.hibernate.envers.Audited;
 import com.EMS.listener.ModelListener;
 import com.EMS.utility.Constants;
 
-
-
 @Audited
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "TASKTRACK_APPROVAL_FINAL")
-public class TaskTrackApprovalFinal extends  Auditable<Long>{
+public class TaskTrackApprovalFinal extends Auditable<Long> {
 
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	private Double day1,day2,day3,day4,day5,day6,day7,day8,day9,day10,
-	day11,day12,day13,day14,day15,day16,day17,day18,day19,day20,
-	day21,day22,day23,day24,day25,day26,day27,day28,day29,day30,day31 = 0.0d;
+	private Double day1, day2, day3, day4, day5, day6, day7, day8, day9, day10, day11, day12, day13, day14, day15,
+			day16, day17, day18, day19, day20, day21, day22, day23, day24, day25, day26, day27, day28, day29, day30,
+			day31 = 0.0d;
 
 	@ManyToOne
 	private UserModel user;
@@ -63,15 +61,14 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 
 	@Column(name = "second_half_status", length = 25)
 	private String secondHalfStatus;
-	
+
 	@ManyToOne
 	private UserModel firstHalfsubmittedBy;
-	
+
 	@ManyToOne
 	private UserModel secondHalfsubmittedBy;
 
-	//private Date approvedDate;
-
+	// private Date approvedDate;
 
 	public long getId() {
 		return id;
@@ -82,6 +79,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay1() {
+		if (day1 == null) {
+			day1 = 0.0d;
+		}
 		return day1;
 	}
 
@@ -90,6 +90,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay2() {
+		if (day2 == null) {
+			day2 = 0.0d;
+		}
 		return day2;
 	}
 
@@ -98,6 +101,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay3() {
+		if (day3 == null) {
+			day3 = 0.0d;
+		}
 		return day3;
 	}
 
@@ -106,6 +112,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay4() {
+		if (day4 == null) {
+			day4 = 0.0d;
+		}
 		return day4;
 	}
 
@@ -114,6 +123,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay5() {
+		if (day5 == null) {
+			day5 = 0.0d;
+		}
 		return day5;
 	}
 
@@ -122,6 +134,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay6() {
+		if (day6 == null) {
+			day6 = 0.0d;
+		}
 		return day6;
 	}
 
@@ -130,6 +145,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay7() {
+		if (day7 == null) {
+			day7 = 0.0d;
+		}
 		return day7;
 	}
 
@@ -138,6 +156,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay8() {
+		if (day8 == null) {
+			day8 = 0.0d;
+		}
 		return day8;
 	}
 
@@ -146,6 +167,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay9() {
+		if (day9 == null) {
+			day9 = 0.0d;
+		}
 		return day9;
 	}
 
@@ -154,6 +178,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay10() {
+		if (day10 == null) {
+			day10 = 0.0d;
+		}
 		return day10;
 	}
 
@@ -162,6 +189,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay11() {
+		if (day11 == null) {
+			day11 = 0.0d;
+		}
 		return day11;
 	}
 
@@ -170,6 +200,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay12() {
+		if (day12 == null) {
+			day12 = 0.0d;
+		}
 		return day12;
 	}
 
@@ -178,6 +211,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay13() {
+		if (day13 == null) {
+			day13 = 0.0d;
+		}
 		return day13;
 	}
 
@@ -186,6 +222,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay14() {
+		if (day14 == null) {
+			day14 = 0.0d;
+		}
 		return day14;
 	}
 
@@ -194,6 +233,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay15() {
+		if (day15 == null) {
+			day15 = 0.0d;
+		}
 		return day15;
 	}
 
@@ -202,6 +244,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay16() {
+		if (day16 == null) {
+			day16 = 0.0d;
+		}
 		return day16;
 	}
 
@@ -210,6 +255,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay17() {
+		if (day17 == null) {
+			day17 = 0.0d;
+		}
 		return day17;
 	}
 
@@ -218,6 +266,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay18() {
+		if (day18 == null) {
+			day18 = 0.0d;
+		}
 		return day18;
 	}
 
@@ -226,6 +277,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay19() {
+		if (day19 == null) {
+			day19 = 0.0d;
+		}
 		return day19;
 	}
 
@@ -234,6 +288,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay20() {
+		if (day20 == null) {
+			day20 = 0.0d;
+		}
 		return day20;
 	}
 
@@ -242,6 +299,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay21() {
+		if (day21 == null) {
+			day21 = 0.0d;
+		}
 		return day21;
 	}
 
@@ -250,6 +310,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay22() {
+		if (day22 == null) {
+			day22 = 0.0d;
+		}
 		return day22;
 	}
 
@@ -258,6 +321,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay23() {
+		if (day23 == null) {
+			day23 = 0.0d;
+		}
 		return day23;
 	}
 
@@ -266,6 +332,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay24() {
+		if (day24 == null) {
+			day24 = 0.0d;
+		}
 		return day24;
 	}
 
@@ -274,6 +343,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay25() {
+		if (day25 == null) {
+			day25 = 0.0d;
+		}
 		return day25;
 	}
 
@@ -282,6 +354,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay26() {
+		if (day26 == null) {
+			day26 = 0.0d;
+		}
 		return day26;
 	}
 
@@ -290,6 +365,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay27() {
+		if (day27 == null) {
+			day27 = 0.0d;
+		}
 		return day27;
 	}
 
@@ -298,6 +376,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay28() {
+		if (day28 == null) {
+			day28 = 0.0d;
+		}
 		return day28;
 	}
 
@@ -306,6 +387,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay29() {
+		if (day29 == null) {
+			day29 = 0.0d;
+		}
 		return day29;
 	}
 
@@ -314,6 +398,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay30() {
+		if (day30 == null) {
+			day30 = 0.0d;
+		}
 		return day30;
 	}
 
@@ -322,6 +409,9 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public Double getDay31() {
+		if (day31 == null) {
+			day31 = 0.0d;
+		}
 		return day31;
 	}
 
@@ -370,7 +460,7 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public String getFirstHalfStatus() {
-		if(firstHalfStatus == null) {
+		if (firstHalfStatus == null) {
 			firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		}
 		return firstHalfStatus;
@@ -381,22 +471,22 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 	}
 
 	public String getSecondHalfStatus() {
-		if(secondHalfStatus == null) {
+		if (secondHalfStatus == null) {
 			secondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 		}
 		return secondHalfStatus;
 	}
+
 	public void setSecondHalfStatus(String secondHalfStatus) {
 		this.secondHalfStatus = secondHalfStatus;
 	}
 
-	/*public Date getApprovedDate() {
-		return approvedDate;
-	}
-
-	public void setApprovedDate(Date approvedDate) {
-		this.approvedDate = approvedDate;
-	}*/
+	/*
+	 * public Date getApprovedDate() { return approvedDate; }
+	 * 
+	 * public void setApprovedDate(Date approvedDate) { this.approvedDate =
+	 * approvedDate; }
+	 */
 
 	public UserModel getFirstHalfsubmittedBy() {
 		return firstHalfsubmittedBy;
@@ -414,5 +504,4 @@ public class TaskTrackApprovalFinal extends  Auditable<Long>{
 		this.secondHalfsubmittedBy = secondHalfsubmittedBy;
 	}
 
-	
 }
