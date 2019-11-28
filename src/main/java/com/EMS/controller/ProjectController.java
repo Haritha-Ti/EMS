@@ -871,7 +871,7 @@ public class ProjectController {
 			if ((contractId != null) && (!contractId.equals(" ")))
 				contractModel = projectservice.getContract(contractId);
 			project.setprojectType(requestdata.get("projectType").asInt());
-
+			project.setContract(contractModel);
 			//if (project.getprojectType() == 0) { // if the project type is external(value =0)
 				Long clientid = requestdata.get("clientId").asLong();
 				ClientModel client = new ClientModel();

@@ -83,6 +83,12 @@ public interface ProjectService {
 	    public List<ProjectModel>  getProjectListByLevel2(Long userId);
 	    public List<ProjectModel>  getAllActiveProjectList();
 	    //Renjith
+
+		List<ProjectModel> getProjectsBasedOnMonthYearRegion(Long regionId, int month, int year);
+
+		List<ProjectModel> getProjectsBasedOnMonthYearRegion(int month, int year);
+
+	
 	
 }
 
