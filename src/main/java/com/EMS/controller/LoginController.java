@@ -180,6 +180,7 @@ public class LoginController {
             user.setCellContact(requestdata.get("cellContact").asText());
             user.setTaxID(requestdata.get("taxID").asText());
             user.setRecruiter(requestdata.get("recruiter").asText());
+            user.setEmployeeStatus(requestdata.get("employeeStatus").asText());
 			Long departId = requestdata.get("department").asLong();
 			DepartmentModel department = null;
 			if (departId != null)
@@ -608,6 +609,7 @@ public class LoginController {
 	            user.setCellContact(requestdata.get("cellContact").asText());
 	            user.setTaxID(requestdata.get("taxID").asText());
 	            user.setRecruiter(requestdata.get("recruiter").asText());
+	            user.setEmployeeStatus(requestdata.get("employeeStatus").asText());
 				Long departId = requestdata.get("department").asLong();
 				DepartmentModel department = null;
 				if (departId != null)
@@ -731,7 +733,13 @@ public class LoginController {
 				user.setGender(requestdata.get("gender").asInt());
 				user.setEmploymentType(requestdata.get("employment").asText());
 				user.setActive(requestdata.get("active").asBoolean());
-
+				user.setEmailRCG(requestdata.get("emailRCG").asText());
+	            user.setMaritalStatus(requestdata.get("maritalStatus").asText());
+	            user.setHomeAddress(requestdata.get("homeAddress").asText());
+	            user.setCellContact(requestdata.get("cellContact").asText());
+	            user.setTaxID(requestdata.get("taxID").asText());
+	            user.setRecruiter(requestdata.get("recruiter").asText());
+	            user.setEmployeeStatus(requestdata.get("employeeStatus").asText());
 				Long departId = requestdata.get("department").asLong();
 				DepartmentModel department = null;
 				if (departId != null)

@@ -89,6 +89,8 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
     private String taxID;
 	@Column(name="recruiter", nullable=false)
     private String Recruiter;
+	@Column(name="employeeStatus", nullable=false)
+	private String employeeStatus;
 	
 	
 	
@@ -405,6 +407,14 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 
 		public void setRoles(List<String> roles) {
 			this.roles = roles;
+		}
+
+		public String getEmployeeStatus() {
+			return employeeStatus;
+		}
+
+		public void setEmployeeStatus(String employeeStatus) {
+			this.employeeStatus = employeeStatus;
 		}
 
 
