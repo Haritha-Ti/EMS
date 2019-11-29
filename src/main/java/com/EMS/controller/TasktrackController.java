@@ -110,62 +110,79 @@ public class TasktrackController {
 	private ProjectService projectservice;
 
 	@PostMapping(value = "/getTaskDetails")
-	public JsonNode getByDate(@RequestBody Taskdetails requestdata) {
+	public JsonNode getByDate(@RequestBody JsonNode requestdata) {
 		/*
 		 * { "status": "success", "data": { "taskDetails": { "2019-03-11": [ {
 		 * "Project": "SAMPLE", "taskType": "SAMPLE", "hours": 3 } ] } } }
 		 */
-		List<Tasktrack> list = tasktrackService.getByDate(requestdata.getFromDate(), requestdata.getToDate(),
-				requestdata.getuId());
 		ObjectNode responseNode = objectMapper.createObjectNode();
-
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		ObjectNode taskDetails = objectMapper.createObjectNode();
-		for (Tasktrack obj : list) {
-			if (taskDetails.get(sdf.format(obj.getDate())) != null) {
-				ObjectNode objectNode = objectMapper.createObjectNode();
-				objectNode.put("taskId", obj.getId());
-				objectNode.put("projectId", obj.getProject().getProjectId());
-				objectNode.put("isBeach", obj.getProject().getProjectId() == Constants.BEACH_PROJECT_ID);
-				objectNode.put("Project",
-						(obj.getProject().getProjectName() != null) ? obj.getProject().getProjectName() : null);
-				objectNode.put("taskType", (obj.getTask().getTaskName() != null) ? obj.getTask().getTaskName() : null);
-				objectNode.put("taskSummary",
-						(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
-				objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
-				boolean isBlocked = isTaskTrackApproved(obj.getProject().getProjectTier(), obj.getApprovalStatus());
-				objectNode.put("isBlocked", isBlocked);
-				ArrayNode arrayNode = (ArrayNode) taskDetails.get(sdf.format(obj.getDate()));
-				arrayNode.add(objectNode);
-				taskDetails.set(sdf.format(obj.getDate()), arrayNode);
-			} else {
-				ArrayNode arrayNode = objectMapper.createArrayNode();
-				if (obj.getId() != 0) {
+		try {
+			Long userId = null;
+			Date fromDate = null;
+			Date toDate = null;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			if (requestdata.get("uId") != null && requestdata.get("uId").asText() != "") {
+				userId = requestdata.get("uId").asLong();
+			}
+			if (requestdata.get("fromDate") != null && requestdata.get("fromDate").asText() != null) {
+				fromDate = sdf.parse(requestdata.get("fromDate").asText());
+			}
+			if (requestdata.get("toDate") != null && requestdata.get("toDate").asText() != null) {
+				toDate = sdf.parse(requestdata.get("toDate").asText());
+			}
+			
+			List<Tasktrack> list = tasktrackService.getByDate(fromDate, toDate,userId);
+			
+			ObjectNode taskDetails = objectMapper.createObjectNode();
+			for (Tasktrack obj : list) {
+				if (taskDetails.get(sdf.format(obj.getDate())) != null) {
 					ObjectNode objectNode = objectMapper.createObjectNode();
 					objectNode.put("taskId", obj.getId());
 					objectNode.put("projectId", obj.getProject().getProjectId());
 					objectNode.put("isBeach", obj.getProject().getProjectId() == Constants.BEACH_PROJECT_ID);
 					objectNode.put("Project",
 							(obj.getProject().getProjectName() != null) ? obj.getProject().getProjectName() : null);
-					objectNode.put("taskType",
-							(obj.getTask().getTaskName() != null) ? obj.getTask().getTaskName() : null);
+					objectNode.put("taskType", (obj.getTask().getTaskName() != null) ? obj.getTask().getTaskName() : null);
 					objectNode.put("taskSummary",
 							(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 					objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
 					boolean isBlocked = isTaskTrackApproved(obj.getProject().getProjectTier(), obj.getApprovalStatus());
 					objectNode.put("isBlocked", isBlocked);
+					ArrayNode arrayNode = (ArrayNode) taskDetails.get(sdf.format(obj.getDate()));
 					arrayNode.add(objectNode);
+					taskDetails.set(sdf.format(obj.getDate()), arrayNode);
+				} else {
+					ArrayNode arrayNode = objectMapper.createArrayNode();
+					if (obj.getId() != 0) {
+						ObjectNode objectNode = objectMapper.createObjectNode();
+						objectNode.put("taskId", obj.getId());
+						objectNode.put("projectId", obj.getProject().getProjectId());
+						objectNode.put("isBeach", obj.getProject().getProjectId() == Constants.BEACH_PROJECT_ID);
+						objectNode.put("Project",
+								(obj.getProject().getProjectName() != null) ? obj.getProject().getProjectName() : null);
+						objectNode.put("taskType",
+								(obj.getTask().getTaskName() != null) ? obj.getTask().getTaskName() : null);
+						objectNode.put("taskSummary",
+								(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
+						objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
+						boolean isBlocked = isTaskTrackApproved(obj.getProject().getProjectTier(), obj.getApprovalStatus());
+						objectNode.put("isBlocked", isBlocked);
+						arrayNode.add(objectNode);
+					}
+	
+					taskDetails.set(sdf.format(obj.getDate()), arrayNode);
 				}
-
-				taskDetails.set(sdf.format(obj.getDate()), arrayNode);
 			}
+	
+			ObjectNode dataNode = objectMapper.createObjectNode();
+			dataNode.set("taskDetails", taskDetails);
+			responseNode.put("status", "success");
+			responseNode.set("data", dataNode);
 		}
-
-		ObjectNode dataNode = objectMapper.createObjectNode();
-		dataNode.set("taskDetails", taskDetails);
-		responseNode.put("status", "success");
-		responseNode.set("data", dataNode);
-
+		catch(Exception e) {
+			responseNode.put("status", "failed");
+			responseNode.put("message", e.getMessage());
+		}
 		return responseNode;
 
 	}
