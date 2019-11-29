@@ -113,11 +113,11 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectOwner.userId=?1 AND (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel1(long uId, Date startDate, int month, int year);
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectTier = 1 or a.projectTier = 2) AND (?3 BETWEEN start_date and end_date or last_day(?3) BETWEEN start_date and end_date)  order by a.projectName")
-	public List<Object[]> getTier1And2ProjectNames(int month, int year, Date startDate);
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectTier = 1 or a.projectTier = 2) AND (?1 BETWEEN start_date and end_date or last_day(?1) BETWEEN start_date and end_date)  order by a.projectName")
+	public List<Object[]> getTier1And2ProjectNames(Date startDate);
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectTier = 2 AND (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) order by a.projectName")
-	public List<Object[]> getTier2ProjectNames(Date startDate, int month, int year);
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectTier = 2 AND (?1 BETWEEN start_date and end_date or last_day(?1) BETWEEN start_date and end_date) order by a.projectName")
+	public List<Object[]> getTier2ProjectNames(Date startDate);
 
 	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
 	public List<Object[]> getProjectNamesForApprover(long uId, int month, int year);

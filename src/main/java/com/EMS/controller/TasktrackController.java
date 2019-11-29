@@ -2974,7 +2974,7 @@ public class TasktrackController {
 
 		List<Object[]> projectList = null;
 		if (user.getRole().getroleId() == 5) {
-			projectList = tasktrackRepository.getTier1And2ProjectNames(month, year, startDate);
+			projectList = tasktrackRepository.getTier1And2ProjectNames(startDate);
 		} else {
 			projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, startDate, month, year);
 		}
@@ -3039,7 +3039,7 @@ public class TasktrackController {
 		List<Object[]> projectList = null;
 
 		if (user.getRole().getroleId() == 5) {
-			projectList = tasktrackRepository.getTier2ProjectNames(startDate, month, year);
+			projectList = tasktrackRepository.getTier2ProjectNames(startDate);
 		} else {
 			projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, startDate, month, year);
 		}
