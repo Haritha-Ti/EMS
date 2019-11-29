@@ -10,12 +10,14 @@ import com.EMS.model.ApprovalTimeTrackReportModel;
 import com.EMS.model.BenchProjectReportModel;
 import com.EMS.model.ExportProjectHourReportModel;
 import com.EMS.model.ExportProjectTaskReportModel;
+import com.EMS.model.FreeAllocationReportModel;
 import com.EMS.model.ProjectReportModel;
 import com.EMS.utility.ApprovalTimeTrackReportRowMapper;
 import com.EMS.utility.BenchReportRowMapper;
 import com.EMS.utility.DbConnectionUtility;
 import com.EMS.utility.ExportProjectHourReportRowMapper;
 import com.EMS.utility.ExportProjectTaskReportRowMapper;
+import com.EMS.utility.FreeAllcoationReportRowMapper;
 import com.EMS.utility.JsonNodeRowMapper;
 import com.EMS.utility.ReportRowMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -209,6 +211,16 @@ public class ProjectReportsRepository extends DbConnectionUtility {
 		sql = "SELECT CONCAT(u.last_name,' ',u.first_name) AS users ,u.user_id, a.is_billable, a.allocated_perce, p.project_name, d.department_id, d.department_name ,a.start_date,a.end_date FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN project p ON p.project_id = a.project_project_id LEFT JOIN department d ON d.department_id = u.department_department_id WHERE p.project_code = 'BP'  AND  ((CAST(a.start_date  AS DATE) >= CAST(?  AS DATE) AND CAST(a.start_date  AS DATE)  <=  CAST(?  AS DATE)) OR (CAST(a.end_date  AS DATE) >= CAST(? AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE)) OR (CAST(a.start_date  AS DATE) >= CAST(? AS DATE) AND CAST(a.end_date  AS DATE)  <=  CAST(?  AS DATE) ) ) AND u.region_id = ?  order by users";
 		list = jdbcTemplate.query(sql, new BenchReportRowMapper(), new Object[] {fromDate,toDate,fromDate,toDate,fromDate,toDate,regionId});	
 		
+		return list;
+	}
+	
+
+	public List<FreeAllocationReportModel> getFreeAllocationReportList(Date fromDate, Date toDate,
+			Long regionId_selected) {
+		String sql ="";
+		List<FreeAllocationReportModel> list = null;
+		sql = "select u.user_id as userId, concat(u.last_name,' ', u.first_name) as resourceName, coalesce(p.project_name,'') as projectName, coalesce(alc.start_date,null) as startDate , coalesce(alc.end_date,null) as endDate ,u.joining_date joiningDate, u.termination_date terminationDate from `user` u left join ( 	select start_date,end_date,project_project_id,user_user_id     from allocation a 	where 	? between a.start_date and a.end_date or 	? between a.start_date and a.end_date or 	(? <= a.start_date and ?>= a.end_date) 	)alc on alc.user_user_id = u.user_id left join project p on p.project_id = alc.project_project_id where u.department_department_id not in (5,6,7,11) and u.user_name!='admin' and u.user_name!='TIIndia' and coalesce(u.joining_date,?) <= ?  and coalesce(u.termination_date,?)>= ? and u.region_id=? order by 2,3";
+		list = jdbcTemplate.query(sql, new FreeAllcoationReportRowMapper(), new Object[] {fromDate,toDate,fromDate,toDate,toDate,toDate,fromDate,fromDate,regionId_selected});	
 		return list;
 	}
 	
