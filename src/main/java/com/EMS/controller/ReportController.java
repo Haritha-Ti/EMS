@@ -1072,17 +1072,22 @@ public class ReportController {
 			List<Object[]> result = new ArrayList<Object[]>();
 			
 			ProjectModel project  = projectService.findById(projectId);
-			
+			String nameofReport = "Report Of project " + project.getProjectName();
+			Workbook workrbook = new XSSFWorkbook();
 			if(project.getProjectTier() == 1) {
 				
 				for (JsonNode rangenode : range) {
 					JSONObject node = new JSONObject();
 					month = Integer.parseInt(rangenode.get("month").toString());
 					year = Integer.parseInt(rangenode.get("year").toString());
+					String monthName = Month.of(month).name();
+					
 					  if (month != 0 && year != 0 ) {
-
+							Sheet sheet = workrbook.createSheet(monthName + "-" + year);
 						  result = tasktrackApprovalService.getProjectWiseSubmissionDetailsTierOne(month, year,
 								projectId,userId,regionId);
+						  projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
+									result);
 						node.put("timeTracks", resultData);
 						node.put("month", month);
 						node.put("year", year);
@@ -1097,10 +1102,14 @@ public class ReportController {
 					JSONObject node = new JSONObject();
 					month = Integer.parseInt(rangenode.get("month").toString());
 					year = Integer.parseInt(rangenode.get("year").toString());
+					String monthName = Month.of(month).name();
+					
 					  if (month != 0 && year != 0 ) {
-
+							Sheet sheet = workrbook.createSheet(monthName + "-" + year);
 						  result = tasktrackApprovalService.getProjectWiseSubmissionDetailsTierTwo(month, year,
 								projectId,userId,regionId);
+						  projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
+									result);
 						node.put("timeTracks", resultData);
 						node.put("month", month);
 						node.put("year", year);
@@ -1110,11 +1119,9 @@ public class ReportController {
 
 				}
 			}
-			Workbook workrbook = new XSSFWorkbook();
-			Sheet sheet = workrbook.createSheet("Billing ProjectWise Report");
-			String nameofReport = "BILLING PROJECTWISE REPORT";
-			projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
-					result);
+
+			
+			
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			response.setHeader("Content-Disposition", "filename=\"" + "BillingProjectWise.xlsx" + "\"");

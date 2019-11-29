@@ -2662,7 +2662,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		//Removing grids
 		sheet.setDisplayGridlines(false);
 		//Freezing columns and rows from scrooling
-		sheet.createFreezePane(3,6);
+		sheet.createFreezePane(6,3);
 
 		//Bordered Cell Style
 		CellStyle borderedCellStyle = workrbook.createCellStyle();
