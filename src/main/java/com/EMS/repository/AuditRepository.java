@@ -21,9 +21,9 @@ public interface AuditRepository extends JpaRepository<TaskTrackApproval,Long>{
 		"join `project` p on p.project_id=t.project_project_id\r\n" + 
 		" Left join  user uia on t.user_in_action=uia.user_id " +
 		" where t.user_user_id=?2 and t.project_project_id=?1 "
-		+ " and DATE_FORMAT(t.trx_date,'%Y-%m-%d') >=?3 and  DATE_FORMAT(t.trx_date,'%Y-%m-%d') <=?4 \r\n" 
+		+ " and DATE_FORMAT(t.trx_date,'%Y-%m-%d') >?3 -  INTERVAL 1 DAY and  DATE_FORMAT(t.trx_date,'%Y-%m-%d') <?4   \r\n" 
 		+ 
-		"order by 2 asc ;",nativeQuery=true)
+		" order by trx_date ",nativeQuery=true)
 	public List<JSONObject> getAuditDataByUserId(Long projectId,Long userId, Date fromDate, Date toDate) ;
 
 @Query(value="SELECT u.user_name,p.project_name,"
@@ -37,9 +37,9 @@ public interface AuditRepository extends JpaRepository<TaskTrackApproval,Long>{
 		"join `project` p on p.project_id=t.project_project_id\r\n" + 
 		" Left join  user uia on t.user_in_action=uia.user_id " +
 		" where t.user_user_id=?2 and t.project_project_id=?1 "
-		+ " and DATE_FORMAT(t.trx_date,'%Y-%m-%d') >=?3 and  DATE_FORMAT(t.trx_date,'%Y-%m-%d') <=?4 \r\n" 
+		+ " and DATE_FORMAT(t.trx_date,'%Y-%m-%d') >?3 - INTERVAL 1 DAY and  DATE_FORMAT(t.trx_date,'%Y-%m-%d') <?4   \r\n" 
 		+ 
-		"order by 2 asc ;",nativeQuery=true)
+		" order by trx_date ",nativeQuery=true)
 public List<JSONObject> getAuditDataByUserIdForFinal(Long projectId,Long userId, Date fromDate, Date toDate);
 
 @Query(value="SELECT case  when u.revtype=0 then 'Created'  when u.revtype=1 then 'Updated'  when u.revtype=2 then 'Deleted' else null end as revtype ,  "
@@ -54,7 +54,7 @@ public List<JSONObject> getAuditDataByUserIdForFinal(Long projectId,Long userId,
 		"Left join timezone tz on u.timezone_id=tz.id\r\n" + 
 		"Left join department d on u.department_department_id=d.department_id\r\n" + 
 		"Left join cpp_level cl on u.cpplevels_id=cl.id\r\n" + 
-		"where u.user_id=?1",nativeQuery=true)
+		"where u.user_id=?1  order by trx_date ",nativeQuery=true)
 List<JSONObject> getAuditUserDetailsById(Long userId);
 
 @Query(value="SELECT  case  when u.revtype=0 then 'Created'  when u.revtype=1 then 'Updated'  when u.revtype=2 then 'Deleted' else null end as revtype , "
@@ -70,8 +70,8 @@ List<JSONObject> getAuditUserDetailsById(Long userId);
 		"Left join department d on u.department_department_id=d.department_id\r\n" + 
 		"Left join cpp_level cl on u.cpplevels_id=cl.id\r\n" + 
 		"where u.user_id=?1 \r\n" + 
-		"and DATE_FORMAT(u.trx_date,'%Y-%m-%d')>=?2 \r\n" + 
-		"and DATE_FORMAT(u.trx_date,'%Y-%m-%d')<=?3",nativeQuery=true)
+		"and DATE_FORMAT(u.trx_date,'%Y-%m-%d')>?2 - INTERVAL 1 DAY  \r\n" + 
+		"and DATE_FORMAT(u.trx_date,'%Y-%m-%d')<?3   order by trx_date ",nativeQuery=true)
 List<JSONObject> getAuditUserDetailsByDateRange(Long userId, Date fromDate, Date toDate);
 
 @Query(value=" SELECT  case  when aud.revtype=0 then 'Created'  when aud.revtype=1 then 'Updated'  when aud.revtype=2 then 'Deleted' else null end as revtype ,"
@@ -113,7 +113,7 @@ public List<JSONObject> getProjectAuditDataByProjectId(Long projectId);
 		+ " Left join  contract_type ct on aud.contract_contract_type_id=ct.contract_type_id"
 		+ " Left join client c on aud.client_name_client_id=c.client_id"
 		+ " Left join  user uia on aud.user_in_action=uia.user_id"
-		+ " where aud.project_id=?1  and  DATE_FORMAT(aud.trx_date,'%Y-%m-%d') >=?2  and DATE_FORMAT(aud.trx_date,'%Y-%m-%d') <=?3"
+		+ " where aud.project_id=?1  and  DATE_FORMAT(aud.trx_date,'%Y-%m-%d') >?2 - INTERVAL 1 DAY    and DATE_FORMAT(aud.trx_date,'%Y-%m-%d') <?3    "
 		+ " order by trx_date " ,nativeQuery=true)
 
 public List<JSONObject> getProjectAuditDataByProjectIdAndDateRange(Long projectId,Date startDate,Date endDate);
