@@ -53,13 +53,9 @@ public class QuickTasktrackController {
 
 				ArrayNode arrayNode = (ArrayNode) taskData.get("taskDetails");
 				UserModel user = userService.getUserDetailsById(uId);
-				
-				long projectId = Constants.BEACH_PROJECT_ID;
 
-				if (!taskData.get("isBeach").asBoolean() ) {
-					projectId = taskData.get("projectId").asLong();
-				}
-				
+				long projectId = taskData.get("projectId").asLong();
+
 				ProjectModel projectModel = quickTasktrackService
 						.getProjectModelById(taskData.get("projectId").asLong());
 
@@ -102,7 +98,7 @@ public class QuickTasktrackController {
 
 						tasktrack.setHours(hours);
 						// storing projects
-						
+
 						if (projectId != 0L) {
 							// ProjectModel proj = projectService.findById(projectId);
 							if (projectModel != null)
@@ -179,14 +175,14 @@ public class QuickTasktrackController {
 		JSONObject response = new JSONObject();
 		try {
 			response = quickTasktrackService.getQuickTimeTrack(request);
-		}
-		catch(Exception ex) {
+		} catch (Exception ex) {
+			ex.printStackTrace();
 			response.put("data", ex.getMessage());
 			response.put("status", "failed");
 		}
 		return response;
 	}
-	
+
 	/*
 	 * @SuppressWarnings("unchecked")
 	 * 
