@@ -187,19 +187,17 @@ public class QuickTasktrackController {
 		return response;
 	}
 	
-	@SuppressWarnings("unchecked")
-	@GetMapping("/getBeachTimeTrack")
-	public JSONObject getBeachQuickTimeTrack(@RequestBody JsonNode request ) {
-				
-		JSONObject response = new JSONObject();
-		try {
-			response = quickTasktrackService.getBeachQuickTimeTrack(request);
-		}
-		catch(Exception ex) {
-			response.put("data", ex.getMessage());
-			response.put("status", "failed");
-		}
-		return response;
-		
-	}
+	/*
+	 * @SuppressWarnings("unchecked")
+	 * 
+	 * @GetMapping("/getBeachTimeTrack") public JSONObject
+	 * getBeachQuickTimeTrack(@RequestBody JsonNode request ) {
+	 * 
+	 * JSONObject response = new JSONObject(); try { response =
+	 * quickTasktrackService.getBeachQuickTimeTrack(request); } catch(Exception ex)
+	 * { response.put("data", ex.getMessage()); response.put("status", "failed"); }
+	 * return response;
+	 * 
+	 * }
+	 */
 }
