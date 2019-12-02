@@ -20,6 +20,9 @@ public class FreeAllcoationReportRowMapper implements RowMapper<FreeAllocationRe
 		rpt.setProjectName(rs.getString("projectName"));
 		rpt.setStartDate(rs.getDate("startDate"));
 		rpt.setEndDate(rs.getDate("endDate"));
+		rpt.setJoiningDate(rs.getDate("joiningDate"));
+		rpt.setTerminationDate(rs.getDate("terminationDate"));
+		
 		}
 		catch (Exception e) {
 			e.printStackTrace();

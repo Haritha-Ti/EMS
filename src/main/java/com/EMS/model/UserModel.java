@@ -1,6 +1,5 @@
 package com.EMS.model;
 
-
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -29,19 +28,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Builder;
 
-
 @Audited
 @EntityListeners(ModelListener.class)
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 @Table(name = "User")
-public class UserModel  extends Auditable<Long> implements UserDetails{
+public class UserModel extends Auditable<Long> implements UserDetails {
 
 	@Id
 	@Column(name = "userId")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long userId;
-	
+
 	@Column(unique = true)
 	private long empId;
 
@@ -53,20 +51,19 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 
 	@ManyToOne
 	private EmployeeContractors contractor;
-	
+
 	@ManyToOne
 	private Region region;
-	
+
 	@ManyToOne
 	private TimeZoneModel timezone;
-	
-	
+
 	@ManyToOne
 	private CppLevelModel cpplevels;
-	
-	private String firstName, lastName,password;
+
+	private String firstName, lastName, password;
 	private String email;
-	private String  userName;
+	private String userName;
 	private long contact;
 	private Date dob;
 	private Date joiningDate;
@@ -75,29 +72,24 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 	private String employmentType;
 	private int gender;
 	private boolean active;
-	private String empCategory,cppLevel,referredBy;
+	private String empCategory, cppLevel, referredBy;
 	private Date terminationDate;
-	/*@Column(name="emailRCG", nullable=false)
+	@Column(name = "emailRCG")
 	private String emailRCG;
-	@Column(name="maritalStatus", nullable=false)
-    private String maritalStatus;
-	@Column(name="homeAddress", nullable=false)
-    private String homeAddress;
-	@Column(name="cellContact", nullable=false)
-    private String cellContact;
-	@Column(name="taxID", nullable=false)
-    private String taxID;*/
-	@Column(name="recruiter")
-    private String Recruiter;
-	/*@Column(name="employeeStatus", nullable=false)
-	private String employeeStatus;*/
-	
-	
-	
-	
+	@Column(name = "maritalStatus")
+	private String maritalStatus;
+	@Column(name = "homeAddress")
+	private String homeAddress;
+	@Column(name = "cellContact")
+	private String cellContact;
+	@Column(name = "taxID")
+	private String taxID;
+	@Column(name = "recruiter")
+	private String Recruiter;
+	@Column(name = "employeeStatus")
+	private String employeeStatus;
 
-//	private Address address;
-	
+	// private Address address;
 
 	public CppLevelModel getCpplevels() {
 		return cpplevels;
@@ -182,7 +174,7 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 	public Date getJoiningDate() {
 		return joiningDate;
 	}
-	
+
 	public String getQualification() {
 		return qualification;
 	}
@@ -266,7 +258,7 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 	public void setContact(long contact) {
 		this.contact = contact;
 	}
-	
+
 	public String getEmploymentType() {
 		return employmentType;
 	}
@@ -291,18 +283,17 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 		this.contractor = contractor;
 	}
 
-
 	public UserModel() {
 
 	}
 
 	public UserModel(long userId, String firstName, String lastName, String userName, String password, String email,
-			long contact,long empId, String employmentType) {
+			long contact, long empId, String employmentType) {
 		super();
 		this.userId = userId;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.empId=empId;
+		this.empId = empId;
 		this.userName = userName;
 		this.password = password;
 		this.email = email;
@@ -311,114 +302,110 @@ public class UserModel  extends Auditable<Long> implements UserDetails{
 
 	}
 
-	 @Override
-	    public boolean isAccountNonExpired() {
-	        return true;
-	    }
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 
-	    @Override
-	    public boolean isAccountNonLocked() {
-	        return true;
-	    }
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
 
-	    @Override
-	    public boolean isCredentialsNonExpired() {
-	        return true;
-	    }
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
 
-	    @Override
-	    public boolean isEnabled() {
-	        return true;
-	    }
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 
-	    @ElementCollection(fetch = FetchType.EAGER)
-	    @Builder.Default
-	    private List<String> roles = new ArrayList<>();
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Builder.Default
+	private List<String> roles = new ArrayList<>();
 
-	    @Override
-	    public Collection<? extends GrantedAuthority> getAuthorities() {
-	        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
-	    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
+	}
 
-		@Override
-		public String getUsername() {
-			return userName;
-		}
+	@Override
+	public String getUsername() {
+		return userName;
+	}
 
-		public Region getRegion() {
-			return region;
-		}
+	public Region getRegion() {
+		return region;
+	}
 
-		public void setRegion(Region region) {
-			this.region = region;
-		}
+	public void setRegion(Region region) {
+		this.region = region;
+	}
 
-		public TimeZoneModel getTimezone() {
-			return timezone;
-		}
+	public TimeZoneModel getTimezone() {
+		return timezone;
+	}
 
-		public void setTimezone(TimeZoneModel timezone) {
-			this.timezone = timezone;
-		}
+	public void setTimezone(TimeZoneModel timezone) {
+		this.timezone = timezone;
+	}
 
-/*		public String getEmailRCG() {
-			return emailRCG;
-		}
+	public String getEmailRCG() {
+		return emailRCG;
+	}
 
-		public void setEmailRCG(String emailRCG) {
-			this.emailRCG = emailRCG;
-		}
+	public void setEmailRCG(String emailRCG) {
+		this.emailRCG = emailRCG;
+	}
 
-		public String getMaritalStatus() {
-			return maritalStatus;
-		}
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
 
-		public void setMaritalStatus(String maritalStatus) {
-			this.maritalStatus = maritalStatus;
-		}
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
 
-		public String getHomeAddress() {
-			return homeAddress;
-		}
+	public String getHomeAddress() {
+		return homeAddress;
+	}
 
-		public void setHomeAddress(String homeAddress) {
-			this.homeAddress = homeAddress;
-		}
+	public void setHomeAddress(String homeAddress) {
+		this.homeAddress = homeAddress;
+	}
 
-		public String getCellContact() {
-			return cellContact;
-		}
+	public String getCellContact() {
+		return cellContact;
+	}
 
-		public void setCellContact(String cellContact) {
-			this.cellContact = cellContact;
-		}
+	public void setCellContact(String cellContact) {
+		this.cellContact = cellContact;
+	}
 
-		public String getTaxID() {
-			return taxID;
-		}
+	public String getTaxID() {
+		return taxID;
+	}
 
-		public void setTaxID(String taxID) {
-			this.taxID = taxID;
-		}
+	public void setTaxID(String taxID) {
+		this.taxID = taxID;
+	}
 
-		public List<String> getRoles() {
-			return roles;
-		}
+	public List<String> getRoles() {
+		return roles;
+	}
 
-		public void setRoles(List<String> roles) {
-			this.roles = roles;
-		}
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
+	}
 
-		public String getEmployeeStatus() {
-			return employeeStatus;
-		}
+	public String getEmployeeStatus() {
+		return employeeStatus;
+	}
 
-		public void setEmployeeStatus(String employeeStatus) {
-			this.employeeStatus = employeeStatus;
-		}
-*/
+	public void setEmployeeStatus(String employeeStatus) {
+		this.employeeStatus = employeeStatus;
+	}
 
-		
-
-		
 }
