@@ -41,7 +41,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-
 @RestController
 @RequestMapping(value = "/login")
 public class LoginController {
@@ -51,52 +50,53 @@ public class LoginController {
 
 	@Autowired
 	PageRuleService pageruleService;
-	
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
 	@Autowired
 	private UserService userService;
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+	@Autowired
+	AuthenticationManager authenticationManager;
 
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
-	
-    @Autowired 
-    UserRepository userRepository;
-    
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    
-    @Autowired
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
+
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
+	@Autowired
 	private RegionService regionservice;
 
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-    
+	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
 	@PostMapping(value = "/getLoginCredentials")
 	@ResponseBody
 	public JsonNode adminLogin(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		
+
 		ObjectNode response = objectMapper.createObjectNode();
 		ObjectNode data = objectMapper.createObjectNode();
 
 		String username = requestdata.get("username").asText();
 		String password = requestdata.get("password").asText();
-		
+
 		try {
-			
+
 			if ((username != null) && (username.length() > 0) && (!username.equals(" ")) && (password != null)
 					&& (password.length() > 0)) {
 
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-				String token = jwtTokenProvider.createToken(username, 
-	            		this.userRepository.findByUserName(username)
-	            		.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
-	            		.getRole().getroleName(),this.userRepository.findByUserName(username)
-	            		.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
-	            		.getRole().getroleId());
+				String token = jwtTokenProvider.createToken(username,
+						this.userRepository.findByUserName(username)
+								.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
+								.getRole().getroleName(),
+						this.userRepository.findByUserName(username)
+								.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
+								.getRole().getroleId());
 
 				UserModel usercheck = login_service.login_authentication(username);
 
@@ -115,13 +115,13 @@ public class LoginController {
 					data.put("userId", usercheck.getUserId());
 					data.put("roleId", usercheck.getRole().getroleId());
 					data.put("roleName", usercheck.getRole().getroleName());
-					data.put("regionName",usercheck.getRegion().getRegion_name());
-						
+					data.put("regionName", usercheck.getRegion().getRegion_name());
+
 					ObjectMapper mapper = new ObjectMapper();
 					ArrayNode array = getBlockedPageList(usercheck.getRole().getroleId());
 					data.putArray("allowedPages").addAll(array);
 					data.put("token", token);
-					
+
 					response.set("payload", data);
 				}
 
@@ -133,8 +133,7 @@ public class LoginController {
 				response.put("payload", "");
 			}
 
-		}
-		catch(BadCredentialsException b) {
+		} catch (BadCredentialsException b) {
 			LOGGER.info("Exception in adminLogin Method");
 			b.printStackTrace();
 			// Setting status on json object
@@ -142,8 +141,7 @@ public class LoginController {
 			response.put("code", "Invalid credientials");
 			response.put("message", "Exception " + b);
 			response.put("payload", "");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.info("Exception in adminLogin Method");
 			e.printStackTrace();
 			// Setting status on json object
@@ -155,7 +153,7 @@ public class LoginController {
 		return response;
 	}
 
-//	//api call for registering new user
+	// //api call for registering new user
 	@PostMapping(value = "/adduser")
 	public JsonNode adduser(@RequestBody ObjectNode requestdata, HttpServletResponse servletresponse) {
 
@@ -174,13 +172,18 @@ public class LoginController {
 			user.setGender(requestdata.get("gender").asInt());
 			user.setEmploymentType(requestdata.get("employment").asText());
 			user.setActive(requestdata.get("active").asBoolean());
-           /* user.setEmailRCG(requestdata.get("emailRCG").asText());
-            user.setMaritalStatus(requestdata.get("maritalStatus").asText());
-            user.setHomeAddress(requestdata.get("homeAddress").asText());
-            user.setCellContact(requestdata.get("cellContact").asText());
-            user.setTaxID(requestdata.get("taxID").asText());
-            user.setRecruiter(requestdata.get("recruiter").asText());
-            user.setEmployeeStatus(requestdata.get("employeeStatus").asText());*/
+			try {
+				user.setEmailRCG(requestdata.get("emailRCG").asText());
+				user.setMaritalStatus(requestdata.get("maritalStatus").asText());
+				user.setHomeAddress(requestdata.get("homeAddress").asText());
+				user.setCellContact(requestdata.get("cellContact").asText());
+				user.setTaxID(requestdata.get("taxID").asText());
+				user.setRecruiter(requestdata.get("recruiter").asText());
+				user.setEmployeeStatus(requestdata.get("employeeStatus").asText());
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+
 			Long departId = requestdata.get("department").asLong();
 			DepartmentModel department = null;
 			if (departId != null)
@@ -198,50 +201,46 @@ public class LoginController {
 			if (role != null)
 				user.setRole(role);
 
-			//region add 
+			// region add
 			Long regionId = null;
-			if(requestdata.get("regionId") != null)
-			{
+			if (requestdata.get("regionId") != null) {
 				regionId = requestdata.get("regionId").asLong();
 			}
 			Region region = null;
-			if(regionId != null) {
-				
+			if (regionId != null) {
+
 				region = regionservice.getregion(regionId);
 			}
-			
-			if(region != null)
+
+			if (region != null)
 				user.setRegion(region);
-			
-			//add cpp level 
-			
+
+			// add cpp level
+
 			Long cpp_level_id = requestdata.get("levelId").asLong();
 			CppLevelModel cpplevel = null;
-			if(cpp_level_id != null) {
-				
+			if (cpp_level_id != null) {
+
 				cpplevel = userService.findCppLevelById(cpp_level_id);
 			}
-			
-			if(cpplevel != null)
+
+			if (cpplevel != null)
 				user.setCpplevels(cpplevel);
-			
-			
-			
-			
+
 			// add timezone
-			
+
 			Long timezoneId = requestdata.get("timezoneId").asLong();
 			TimeZoneModel zone = null;
-			if(timezoneId != null) {
-				
+			if (timezoneId != null) {
+
 				zone = regionservice.getZone(timezoneId);
 			}
-			if(zone != null)
+			if (zone != null)
 				user.setTimezone(zone);
-			
+
 			Long contractorId = requestdata.get("contractors").asLong();
 			EmployeeContractors contractor = null;
-			if ( contractorId != 0 )
+			if (contractorId != 0)
 				contractor = login_service.getContractor(contractorId);
 			if (contractor != null)
 				user.setContractor(contractor);
@@ -266,147 +265,151 @@ public class LoginController {
 
 			user.setEmpId(requestdata.get("empId").asLong());
 			user.setEmail(requestdata.get("email").asText());
-			
-			 String password = requestdata.get("password").toString().replace("\"", "");
-			 /*
-			 MessageDigest md = MessageDigest.getInstance("MD5");
-			 md.update(password.getBytes());
-			 byte[] digest = md.digest();
-			 String encPassword = DatatypeConverter.printHexBinary(digest).toUpperCase();
+
+			String password = requestdata.get("password").toString().replace("\"", "");
+			/*
+			 * MessageDigest md = MessageDigest.getInstance("MD5");
+			 * md.update(password.getBytes()); byte[] digest = md.digest();
+			 * String encPassword =
+			 * DatatypeConverter.printHexBinary(digest).toUpperCase();
 			 */
-			 String encPassword = this.passwordEncoder.encode(password);
-			 user.setPassword(encPassword);  
-			
+			String encPassword = this.passwordEncoder.encode(password);
+			user.setPassword(encPassword);
+
 			user.setQualification(requestdata.get("qualification").asText());
 			Boolean isUsernameExist = login_service.checkUsernameDuplication(requestdata.get("userName").asText());
-            Boolean isEmpIdExist = login_service.checkEmpIDDuplication(requestdata.get("empId").asLong());
-			
-			if(!isUsernameExist) {
-				if(!isEmpIdExist) {
-				UserModel userdata = login_service.adduser(user);
-				if (userdata == null) {
-					responseflag = 1;
-					responsedata.put("message", "User record insertion failed");
-				}
-				else {
-					responsedata.put("userId", userdata.getUserId());
-					//inserting task category against user during user creation
-					Long user_id = user.getUserId();
+			Boolean isEmpIdExist = login_service.checkEmpIDDuplication(requestdata.get("empId").asLong());
 
-					long[] taskArray;
+			if (!isUsernameExist) {
+				if (!isEmpIdExist) {
+					UserModel userdata = login_service.adduser(user);
+					if (userdata == null) {
+						responseflag = 1;
+						responsedata.put("message", "User record insertion failed");
+					} else {
+						responsedata.put("userId", userdata.getUserId());
+						// inserting task category against user during user
+						// creation
+						Long user_id = user.getUserId();
 
-					if(user_id !=null) {
+						long[] taskArray;
 
-						if (departId == 1) {            //department - production
+						if (user_id != null) {
 
-							taskArray= new long[]{1,7};
+							if (departId == 1) { // department - production
 
-						}else if(departId == 2) {      //department - Design and Graphics
+								taskArray = new long[] { 1, 7 };
 
-							taskArray= new long[]{10,7};
+							} else if (departId == 2) { // department - Design
+														// and Graphics
 
-						}else if(departId == 3) {       //department - Mobile
+								taskArray = new long[] { 10, 7 };
 
-							taskArray= new long[]{1,7};
+							} else if (departId == 3) { // department - Mobile
 
-						}else if(departId == 4 ) {      //department - Testing
-							taskArray= new long[]{4,7};
+								taskArray = new long[] { 1, 7 };
 
-						}else if(departId == 5) {       //department - Sales and marketing
+							} else if (departId == 4) { // department - Testing
+								taskArray = new long[] { 4, 7 };
 
-							taskArray= new long[]{2,7};
+							} else if (departId == 5) { // department - Sales
+														// and marketing
 
-						}else if(departId == 6) {       //department - Human Resource
+								taskArray = new long[] { 2, 7 };
 
-							taskArray= new long[]{3,7};
+							} else if (departId == 6) { // department - Human
+														// Resource
 
-						}else if(departId == 7) {       //department - Administration
+								taskArray = new long[] { 3, 7 };
 
-							taskArray= new long[]{7};
+							} else if (departId == 7) { // department -
+														// Administration
 
-						}else if(departId == 8){       //department - Quality Assurance
+								taskArray = new long[] { 7 };
 
-							taskArray= new long[]{4,7};
+							} else if (departId == 8) { // department - Quality
+														// Assurance
 
-						}else if(departId == 11) {    // department - House Keeping Association
+								taskArray = new long[] { 4, 7 };
 
-							taskArray= new long[]{7};
+							} else if (departId == 11) { // department - House
+															// Keeping
+															// Association
 
-						}else {
+								taskArray = new long[] { 7 };
 
-							taskArray = null;
-						}
+							} else {
 
-						if(taskArray != null) {
+								taskArray = null;
+							}
 
-							for(long tasks : taskArray) {
+							if (taskArray != null) {
 
-								UserTaskCategory usertask   = new UserTaskCategory();
+								for (long tasks : taskArray) {
 
-								UserModel newuser           = userService.getUserDetailsById(user_id);
-								TaskCategory taskcategory   = userService.getTaskDetailsById(tasks);
+									UserTaskCategory usertask = new UserTaskCategory();
 
-								usertask.setTaskCategory(taskcategory);
-								usertask.setUser(newuser);
+									UserModel newuser = userService.getUserDetailsById(user_id);
+									TaskCategory taskcategory = userService.getTaskDetailsById(tasks);
 
-								//adding details in user task category based on department
-								userService.updateUserTaskCategory(usertask);
+									usertask.setTaskCategory(taskcategory);
+									usertask.setUser(newuser);
+
+									// adding details in user task category
+									// based on department
+									userService.updateUserTaskCategory(usertask);
+								}
+
 							}
 
 						}
 
-					}
+						// adding details in user technology
+						ArrayNode usertechnology = (ArrayNode) requestdata.get("userTechnology");
 
-					// adding details in user technology
-					ArrayNode usertechnology = (ArrayNode) requestdata.get("userTechnology");
+						if (!usertechnology.equals(null)) {
 
-					if (!usertechnology.equals(null)) {
+							// responseflag = 1;
+							// responsedata.put("message", "Technology insertion
+							// failed");
+							// } else {
+							for (JsonNode node : usertechnology) {
 
+								// checking for technology using ID
 
-//						responseflag = 1;
-//						responsedata.put("message", "Technology insertion failed");
-//					} else {
-						for (JsonNode node : usertechnology) {
+								Long techId = node.get("technology").asLong();
+								Technology technology = null;
 
-							// checking for technology using ID
+								if (techId != null)
+									technology = login_service.findtechnology(techId);
 
-							Long techId = node.get("technology").asLong();
-							Technology technology = null;
-
-
-							if (techId != null)
-								technology = login_service.findtechnology(techId);
-
-							UserTechnology usertech = new UserTechnology();
-							if (technology != null)
-								usertech.setTechnology(technology);
-							else {
-								responseflag = 1;
-								responsedata.put("message",
-										"User technology insertion failed due to missing technology value");
+								UserTechnology usertech = new UserTechnology();
+								if (technology != null)
+									usertech.setTechnology(technology);
+								else {
+									responseflag = 1;
+									responsedata.put("message",
+											"User technology insertion failed due to missing technology value");
+								}
+								usertech.setUser(userdata);
+								usertech.setExperience(node.get("experience").asDouble());
+								int userTechnology = login_service.addusertechnology(usertech);
+								// System.out.println("userTechnology
+								// :"+userTechnology);
+								if (userTechnology == 0)
+									responseflag = 1;
 							}
-							usertech.setUser(userdata);
-							usertech.setExperience(node.get("experience").asDouble());
-							int userTechnology = login_service.addusertechnology(usertech);
-							//System.out.println("userTechnology :"+userTechnology);
-							if (userTechnology == 0)
-								responseflag = 1;
-						}
 
+						}
 					}
-				}
-				}
-				else {
+				} else {
 					responseflag = 1;
 					responsedata.put("message", "Employee ID already exist.");
 				}
-			}
-			else {
+			} else {
 				responseflag = 1;
 				responsedata.put("message", "Username already exist.");
 			}
-
-			 
 
 			if (responseflag == 0) {
 				responsedata.put("status", "success");
@@ -425,43 +428,40 @@ public class LoginController {
 
 		return responsedata;
 	}
-	
-	
-	@PostMapping(value="/change_password")
-	public JSONObject changePassword(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus) throws NoSuchAlgorithmException {
+
+	@PostMapping(value = "/change_password")
+	public JSONObject changePassword(@RequestBody JSONObject requestdata, HttpServletResponse httpstatus)
+			throws NoSuchAlgorithmException {
 		JSONObject responsedata = new JSONObject();
-		
+
 		try {
-			
-			String userId = requestdata.get("userId").toString();		
+
+			String userId = requestdata.get("userId").toString();
 			String userName = requestdata.get("userName").toString();
-			String password = requestdata.get("password").toString();		
-			String newPassword = requestdata.get("newPassword").toString();		
-			/*		
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(password.getBytes());
-			byte[] digest = md.digest();
-			*/
+			String password = requestdata.get("password").toString();
+			String newPassword = requestdata.get("newPassword").toString();
+			/*
+			 * MessageDigest md = MessageDigest.getInstance("MD5");
+			 * md.update(password.getBytes()); byte[] digest = md.digest();
+			 */
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
 
 			UserModel usercheck = login_service.login_authentication(userName);
-					
-			if (usercheck!= null) {			
-				
+
+			if (usercheck != null) {
+
 				String encPassword = this.passwordEncoder.encode(newPassword);
 				usercheck.setPassword(encPassword);
 				login_service.adduser(usercheck);
 				responsedata.put("status", "success");
 				responsedata.put("message", "Password Updated");
 				responsedata.put("code", httpstatus.getStatus());
-			}
-			else {
+			} else {
 				responsedata.put("status", "Failed");
 				responsedata.put("message", "Password Not Matching");
 				responsedata.put("code", httpstatus.getStatus());
-			}			
-		}
-		catch(BadCredentialsException b) {
+			}
+		} catch (BadCredentialsException b) {
 			LOGGER.info("Exception in adminLogin Method");
 			b.printStackTrace();
 			// Setting status on json object
@@ -469,39 +469,35 @@ public class LoginController {
 			responsedata.put("code", "Invalid credientials");
 			responsedata.put("message", "Exception " + b);
 			responsedata.put("payload", "");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			responsedata.put("status", "Failed");
 			responsedata.put("message", "Exception : " + e);
 			responsedata.put("code", httpstatus.getStatus());
 		}
 		return responsedata;
 	}
+
 	private ArrayNode getBlockedPageList(long roleid) {
 
 		ArrayNode blockedPageList = pageruleService.getBlockedPageList(roleid);
-			return blockedPageList;		
+		return blockedPageList;
 	}
 
-	
-	
-	
 	@GetMapping("/getUserList")
 	public JsonNode getUserList(HttpServletResponse httpstatus) throws ParseException {
 
 		ObjectNode dataNode = objectMapper.createObjectNode();
 		ObjectNode node = objectMapper.createObjectNode();
-		ArrayNode userarray=objectMapper.createArrayNode();
-
+		ArrayNode userarray = objectMapper.createArrayNode();
 
 		try {
 			JsonNode userList = userService.getUserList();
-			for(JsonNode nodeItem : userList) {
-				ArrayNode techarray=objectMapper.createArrayNode();
+			for (JsonNode nodeItem : userList) {
+				ArrayNode techarray = objectMapper.createArrayNode();
 
 				List<Object[]> technologyList = userService.getUserTechnologyList(nodeItem.get("userId").asLong());
-				for(Object[] item : technologyList) {
-					ObjectNode responseData=objectMapper.createObjectNode();
+				for (Object[] item : technologyList) {
+					ObjectNode responseData = objectMapper.createObjectNode();
 					String experience = String.valueOf(item[0]);
 					String id = String.valueOf(item[1]);
 					responseData.put("id", id);
@@ -511,7 +507,7 @@ public class LoginController {
 				((ObjectNode) nodeItem).set("technologyList", techarray);
 				userarray.add(nodeItem);
 			}
-			
+
 			dataNode.set("userList", userarray);
 
 			node.put("status", "success");
@@ -526,13 +522,14 @@ public class LoginController {
 		return node;
 
 	}
-	
+
 	@GetMapping("/getUserDetails/{userId}")
-	public JsonNode getUserDetails(@PathVariable("userId") Long userId,HttpServletResponse httpstatus) throws ParseException {
+	public JsonNode getUserDetails(@PathVariable("userId") Long userId, HttpServletResponse httpstatus)
+			throws ParseException {
 
 		ObjectNode userNode = objectMapper.createObjectNode();
 		ObjectNode node = objectMapper.createObjectNode();
-		ArrayNode techarray=objectMapper.createArrayNode();
+		ArrayNode techarray = objectMapper.createArrayNode();
 
 		try {
 			JsonNode userData = userService.getUserdetails(userId);
@@ -540,8 +537,8 @@ public class LoginController {
 			((ObjectNode) userData).put("terminationType", terminationType);
 			userNode.set("userList", userData);
 			List<Object[]> technologyList = userService.getUserTechnologyList(userId);
-			for(Object[] item : technologyList) {
-				ObjectNode responseData=objectMapper.createObjectNode();
+			for (Object[] item : technologyList) {
+				ObjectNode responseData = objectMapper.createObjectNode();
 				String experience = String.valueOf(item[0]);
 				String id = String.valueOf(item[1]);
 				responseData.put("id", id);
@@ -564,13 +561,13 @@ public class LoginController {
 
 	@GetMapping("/technology")
 	public JsonNode getTechnology(HttpServletResponse httpstatus) {
-		ObjectNode responseData=objectMapper.createObjectNode();
-		
-		List<Technology> techList=login_service.getTechnology();
-		ArrayNode techarray=objectMapper.createArrayNode();
-		
+		ObjectNode responseData = objectMapper.createObjectNode();
+
+		List<Technology> techList = login_service.getTechnology();
+		ArrayNode techarray = objectMapper.createArrayNode();
+
 		if (!techList.isEmpty()) {
-		
+
 			for (Technology tech : techList) {
 				ObjectNode clientobj = objectMapper.createObjectNode();
 				clientobj.put("technologyId", tech.getTechnologyId());
@@ -582,19 +579,19 @@ public class LoginController {
 		responseData.put("message", "success");
 		responseData.put("code", httpstatus.getStatus());
 		responseData.set("payload", techarray);
-		
+
 		return responseData;
-		
+
 	}
 
 	@PutMapping(value = "/editUserDetails")
 	public JsonNode setuserData(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode responseData = objectMapper.createObjectNode();
 		try {
-			
-			Long userId  = requestdata.get("userId").asLong();
+
+			Long userId = requestdata.get("userId").asLong();
 			UserModel user = userService.getUserDetailsById(userId);
-			if ( user != null) {
+			if (user != null) {
 				user.setFirstName(requestdata.get("firstName").asText().trim());
 				user.setLastName(requestdata.get("lastName").asText().trim());
 				user.setContact(requestdata.get("contact").asLong());
@@ -603,13 +600,18 @@ public class LoginController {
 				user.setGender(requestdata.get("gender").asInt());
 				user.setEmploymentType(requestdata.get("employment").asText());
 				user.setActive(requestdata.get("active").asBoolean());
-				/*user.setEmailRCG(requestdata.get("emailRCG").asText());
-	            user.setMaritalStatus(requestdata.get("maritalStatus").asText());
-	            user.setHomeAddress(requestdata.get("homeAddress").asText());
-	            user.setCellContact(requestdata.get("cellContact").asText());
-	            user.setTaxID(requestdata.get("taxID").asText());
-	            user.setRecruiter(requestdata.get("recruiter").asText());
-	            user.setEmployeeStatus(requestdata.get("employeeStatus").asText());*/
+				try {
+					user.setEmailRCG(requestdata.get("emailRCG").asText());
+					user.setMaritalStatus(requestdata.get("maritalStatus").asText());
+					user.setHomeAddress(requestdata.get("homeAddress").asText());
+					user.setCellContact(requestdata.get("cellContact").asText());
+					user.setTaxID(requestdata.get("taxID").asText());
+					user.setRecruiter(requestdata.get("recruiter").asText());
+					user.setEmployeeStatus(requestdata.get("employeeStatus").asText());
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+
 				Long departId = requestdata.get("department").asLong();
 				DepartmentModel department = null;
 				if (departId != null)
@@ -617,7 +619,7 @@ public class LoginController {
 
 				if (department != null)
 					user.setDepartment(department);
-				
+
 				Long roleId = requestdata.get("role").asLong();
 				RoleModel role = null;
 				if (roleId != null)
@@ -625,7 +627,7 @@ public class LoginController {
 				if (role != null)
 					user.setRole(role);
 
-                 System.out.println(requestdata.get("contractor").asLong());
+				System.out.println(requestdata.get("contractor").asLong());
 				Long contractorId = requestdata.get("contractor").asLong();
 				EmployeeContractors contractor = null;
 				if (contractorId != null)
@@ -654,17 +656,16 @@ public class LoginController {
 				user.setEmpId(requestdata.get("empId").asLong());
 				user.setEmail(requestdata.get("email").asText());
 				user.setQualification(requestdata.get("qualification").asText());
-    
+
 				UserModel userModel = userService.updateUser(user);
-				int  result = 1;
+				int result = 1;
 				Boolean isExist = userService.checkExistanceOfUserId(userId);
 
-				if(isExist) {
+				if (isExist) {
 					result = userService.deleteTechnology(userId);
 				}
-				
 
-				if(result != 0) {
+				if (result != 0) {
 					ArrayNode usertechnology = (ArrayNode) requestdata.get("userTechnology");
 					if (!usertechnology.equals(null)) {
 
@@ -688,32 +689,26 @@ public class LoginController {
 							usertech.setUser(userModel);
 							usertech.setExperience(node.get("experience").asDouble());
 							int userTechnology = login_service.addusertechnology(usertech);
-							
+
 						}
 
 					}
 				}
-				
-			
+
 				responseData.put("message", "User updated successfully");
 
-				
-				
-			}
-			else {
+			} else {
 				responseData.put("message", "User does not exist");
 			}
 			responseData.put("status", "success");
 			responseData.put("code", httpstatus.getStatus());
-			
-			
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			responseData.put("status", "failure");
 			responseData.put("code", httpstatus.getStatus());
 		}
 		return responseData;
-		
+
 	}
 
 	@PutMapping(value = "v2/editUserDetails")
@@ -721,10 +716,10 @@ public class LoginController {
 		ObjectNode responseData = objectMapper.createObjectNode();
 		try {
 
-			Long userId  = requestdata.get("userId").asLong();
-			//UserModel user = userService.getUserDetailsById(userId);
+			Long userId = requestdata.get("userId").asLong();
+			// UserModel user = userService.getUserDetailsById(userId);
 			UserModel user = userService.getUserdetailsbyId(userId);
-			if ( user != null) {
+			if (user != null) {
 				user.setFirstName(requestdata.get("firstName").asText().trim());
 				user.setLastName(requestdata.get("lastName").asText().trim());
 				user.setContact(requestdata.get("contact").asLong());
@@ -733,13 +728,19 @@ public class LoginController {
 				user.setGender(requestdata.get("gender").asInt());
 				user.setEmploymentType(requestdata.get("employment").asText());
 				user.setActive(requestdata.get("active").asBoolean());
-				/*user.setEmailRCG(requestdata.get("emailRCG").asText());
-	            user.setMaritalStatus(requestdata.get("maritalStatus").asText());
-	            user.setHomeAddress(requestdata.get("homeAddress").asText());
-	            user.setCellContact(requestdata.get("cellContact").asText());
-	            user.setTaxID(requestdata.get("taxID").asText());
-	            user.setRecruiter(requestdata.get("recruiter").asText());
-	            user.setEmployeeStatus(requestdata.get("employeeStatus").asText());*/
+
+				try {
+					user.setEmailRCG(requestdata.get("emailRCG").asText());
+					user.setMaritalStatus(requestdata.get("maritalStatus").asText());
+					user.setHomeAddress(requestdata.get("homeAddress").asText());
+					user.setCellContact(requestdata.get("cellContact").asText());
+					user.setTaxID(requestdata.get("taxID").asText());
+					user.setRecruiter(requestdata.get("recruiter").asText());
+					user.setEmployeeStatus(requestdata.get("employeeStatus").asText());
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+
 				Long departId = requestdata.get("department").asLong();
 				DepartmentModel department = null;
 				if (departId != null)
@@ -757,49 +758,47 @@ public class LoginController {
 
 				Long contractorId = requestdata.get("contractors").asLong();
 				EmployeeContractors contractor = null;
-				System.out.println("contractorId "+contractorId);
-				if(contractorId ==0)
+				System.out.println("contractorId " + contractorId);
+				if (contractorId == 0)
 					user.setContractor(null);
-				if (contractorId !=0 )
+				if (contractorId != 0)
 					contractor = login_service.getContractor(contractorId);
 				if (contractor != null)
 					user.setContractor(contractor);
-				
-				
-				//region add 
-				
+
+				// region add
+
 				Long regionId = requestdata.get("regionId").asLong();
 				Region region = null;
-				if(regionId != null) {
-					
+				if (regionId != null) {
+
 					region = regionservice.getregion(regionId);
 				}
-				
-				if(region != null)
+
+				if (region != null)
 					user.setRegion(region);
-				
-				//add cpp level 
+
+				// add cpp level
 				Long cpplevel_Id = requestdata.get("levelId").asLong();
-				
-				CppLevelModel cpplevel =null;
-				if(cpplevel_Id != null) {
+
+				CppLevelModel cpplevel = null;
+				if (cpplevel_Id != null) {
 					cpplevel = userService.findCppLevelById(cpplevel_Id);
-					
+
 				}
-				if(cpplevel != null)
-				{
+				if (cpplevel != null) {
 					user.setCpplevels(cpplevel);
 				}
-				
+
 				// add timezone
-				
+
 				Long timezoneId = requestdata.get("timezoneId").asLong();
 				TimeZoneModel zone = null;
-				if(timezoneId != null) {
-					
+				if (timezoneId != null) {
+
 					zone = regionservice.getZone(timezoneId);
 				}
-				if(zone != null)
+				if (zone != null)
 					user.setTimezone(zone);
 
 				String dob = requestdata.get("dob").asText();
@@ -824,7 +823,7 @@ public class LoginController {
 				user.setEmail(requestdata.get("email").asText());
 				user.setQualification(requestdata.get("qualification").asText());
 				String newpassword = requestdata.get("newPassword").asText();
-				if(!newpassword.isEmpty()) {
+				if (!newpassword.isEmpty()) {
 					String encPassword = this.passwordEncoder.encode(newpassword);
 					user.setPassword(encPassword);
 				}
@@ -836,15 +835,14 @@ public class LoginController {
 				}
 				user.setTerminationDate(date3);
 				UserModel userModel = userService.updateUser(user);
-				int  result = 1;
+				int result = 1;
 				Boolean isExist = userService.checkExistanceOfUserId(userId);
 
-				if(isExist) {
+				if (isExist) {
 					result = userService.deleteTechnology(userId);
 				}
 
-
-				if(result != 0) {
+				if (result != 0) {
 					ArrayNode usertechnology = (ArrayNode) requestdata.get("userTechnology");
 					if (!usertechnology.equals(null)) {
 
@@ -877,11 +875,9 @@ public class LoginController {
 
 				String terminationType = requestdata.get("terminationType").asText();
 				Boolean isExist1 = login_service.checkExistanceOfUserIdInTermination(userId);
-				if(isExist1)
-				{
-					login_service.updateUserTerm(terminationType,date3,userId);
-				}
-				else {
+				if (isExist1) {
+					login_service.updateUserTerm(terminationType, date3, userId);
+				} else {
 					if (!terminationType.isEmpty() && terminationType != "null") {
 						UserTermination userterm = new UserTermination();
 						userterm.setTermType(terminationType);
@@ -892,24 +888,17 @@ public class LoginController {
 						UserTermination userTermination = login_service.addusertermination(userterm);
 					}
 
-
 				}
-
 
 				responseData.put("message", "User updated successfully");
 
-
-
-			}
-			else {
+			} else {
 				responseData.put("message", "User not exist");
 			}
 			responseData.put("status", "success");
 			responseData.put("code", httpstatus.getStatus());
 
-
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			responseData.put("status", "failure");
 			responseData.put("code", httpstatus.getStatus());
 		}
@@ -918,32 +907,32 @@ public class LoginController {
 	}
 
 	@GetMapping("/getAllUserList")
-	public JsonNode getAllUserList(@RequestParam("sessionId") Long userId,HttpServletResponse httpstatus) throws ParseException {
+	public JsonNode getAllUserList(@RequestParam("sessionId") Long userId, HttpServletResponse httpstatus)
+			throws ParseException {
 
 		ObjectNode dataNode = objectMapper.createObjectNode();
 		ObjectNode node = objectMapper.createObjectNode();
-		ArrayNode userarray=objectMapper.createArrayNode();
-
+		ArrayNode userarray = objectMapper.createArrayNode();
 
 		try {
-			JsonNode userList=null;
+			JsonNode userList = null;
 			Long roleId = userService.getUserDetailsById(userId).getRole().getroleId();
-			if(roleId==1){
-				
-				 userList = userService.getAllUserList();
+			if (roleId == 1) {
+
+				userList = userService.getAllUserList();
 			}
-			
-			else{
+
+			else {
 				Long regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
-				 userList = userService.getAllUsersByRegion(regionId);
+				userList = userService.getAllUsersByRegion(regionId);
 			}
-				
-			for(JsonNode nodeItem : userList) {
-				ArrayNode techarray=objectMapper.createArrayNode();
+
+			for (JsonNode nodeItem : userList) {
+				ArrayNode techarray = objectMapper.createArrayNode();
 
 				List<Object[]> technologyList = userService.getUserTechnologyList(nodeItem.get("userId").asLong());
-				for(Object[] item : technologyList) {
-					ObjectNode responseData=objectMapper.createObjectNode();
+				for (Object[] item : technologyList) {
+					ObjectNode responseData = objectMapper.createObjectNode();
 					String experience = String.valueOf(item[0]);
 					String id = String.valueOf(item[1]);
 					responseData.put("id", id);
@@ -968,28 +957,29 @@ public class LoginController {
 		return node;
 
 	}
-	  //Bala
-	@PostMapping("/getAllUserListByRegion")
-	public JsonNode getAllUserListByRegion(@RequestBody JsonNode requestdata,HttpServletResponse httpstatus) throws ParseException {
 
+	// Bala
+	@PostMapping("/getAllUserListByRegion")
+	public JsonNode getAllUserListByRegion(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
 
 		ObjectNode dataNode = objectMapper.createObjectNode();
 		ObjectNode node = objectMapper.createObjectNode();
-		ArrayNode userarray=objectMapper.createArrayNode();
+		ArrayNode userarray = objectMapper.createArrayNode();
 		Long userId = null;
-        Long regionId=null;
+		Long regionId = null;
 		try {
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				userId = requestdata.get("sessionId").asLong();
 			}
 			regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
 			JsonNode userList = userService.getAllUsersByRegion(regionId);
-			for(JsonNode nodeItem : userList) {
-				ArrayNode techarray=objectMapper.createArrayNode();
+			for (JsonNode nodeItem : userList) {
+				ArrayNode techarray = objectMapper.createArrayNode();
 
 				List<Object[]> technologyList = userService.getUserTechnologyList(nodeItem.get("userId").asLong());
-				for(Object[] item : technologyList) {
-					ObjectNode responseData=objectMapper.createObjectNode();
+				for (Object[] item : technologyList) {
+					ObjectNode responseData = objectMapper.createObjectNode();
 					String experience = String.valueOf(item[0]);
 					String id = String.valueOf(item[1]);
 					responseData.put("id", id);
@@ -1013,30 +1003,26 @@ public class LoginController {
 
 		return node;
 
-	
-		
 	}
-	//Bala
+
+	// Bala
 	@GetMapping("/getCppLevelList")
 	public JsonNode getCppLevelList(HttpServletResponse httpstatus) throws ParseException {
-		
+
 		ObjectNode dataNode = objectMapper.createObjectNode();
 		ObjectNode node = objectMapper.createObjectNode();
 		ArrayNode cpplevelarray = objectMapper.createArrayNode();
 		try {
-		cpplevelarray = userService.getCppLevel();
-		dataNode.set("cpplevels", cpplevelarray);
-		node.put("status", "success");
-		node.set("data", dataNode);
-		}	
-		catch (Exception e) {
+			cpplevelarray = userService.getCppLevel();
+			dataNode.set("cpplevels", cpplevelarray);
+			node.put("status", "success");
+			node.set("data", dataNode);
+		} catch (Exception e) {
 			System.out.println("Exception " + e);
 			node.put("status", "failure");
 			node.set("data", dataNode);
 		}
 		return node;
 	}
-	
-	
-	 
+
 }
