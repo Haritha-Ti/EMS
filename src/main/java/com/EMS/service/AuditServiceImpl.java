@@ -1049,53 +1049,53 @@ ProjectAllocationService projectAllocationService;
 		JSONArray     columns =new JSONArray();
 
 		
-		String[] headers = new String[42];
+		String[] headers = new String[41];
 		headers[0]="User Name";
 		headers[1]="Project Name";
 		headers[2]="Transaction Type";
 		headers[3]="Transaction Date";
 		headers[4]="Users In Action";
-		headers[5]="Approved Date";
-		headers[6]="Day1";
-		headers[7]="Day2";
-		headers[8]="Day3";
-		headers[9]="Day4";
-		headers[10]="Day5";
-		headers[11]="Day6";
-		headers[12]="Day7";
-		headers[13]="Day8";
-		headers[14]="Day9";
-		headers[15]="Day10";
-		headers[16]="Day11";
-		headers[17]="Day12";
-		headers[18]="Day13";
-		headers[19]="Day14";
-		headers[20]="Day15";
-		headers[21]="Day16";
-		headers[22]="Day17";
-		headers[23]="Day18"; 
-		headers[24]="Day19"; 
-		headers[25]="Day20"; 
-		headers[26]="Day21"; 
-		headers[27]="Day22"; 
-		headers[28]="Day23"; 
-		headers[29]="Day24"; 
-		headers[30]="Day25"; 
-		headers[31]="Day26"; 
-		headers[32]="Day27"; 
-		headers[33]="Day28";
-		headers[34]="Day29";
-		headers[35]="Day30";
-		headers[36]="Day31";
-		headers[37]="First Half Status";
-		headers[38]="Month";
-		headers[39]="Project Type";
-		headers[40]="Second Half Status";
-		headers[41]="Year";
+		//headers[5]="Approved Date";
+		headers[5]="Day1";
+		headers[6]="Day2";
+		headers[7]="Day3";
+		headers[8]="Day4";
+		headers[9]="Day5";
+		headers[10]="Day6";
+		headers[11]="Day7";
+		headers[12]="Day8";
+		headers[13]="Day9";
+		headers[14]="Day10";
+		headers[15]="Day11";
+		headers[16]="Day12";
+		headers[17]="Day13";
+		headers[18]="Day14";
+		headers[19]="Day15";
+		headers[20]="Day16";
+		headers[21]="Day17";
+		headers[22]="Day18"; 
+		headers[23]="Day19"; 
+		headers[24]="Day20"; 
+		headers[25]="Day21"; 
+		headers[26]="Day22"; 
+		headers[27]="Day23"; 
+		headers[28]="Day24"; 
+		headers[29]="Day25"; 
+		headers[30]="Day26"; 
+		headers[31]="Day27"; 
+		headers[32]="Day28";
+		headers[33]="Day29";
+		headers[34]="Day30";
+		headers[35]="Day31";
+		headers[36]="First Half Status";
+		headers[37]="Month";
+		headers[38]="Project Type";
+		headers[39]="Second Half Status";
+		headers[40]="Year";
 		//Removing grids
 				sheet.setDisplayGridlines(false);
 				//Freezing columns and rows from scrooling
-				sheet.createFreezePane(3,3);
+				//sheet.createFreezePane(3,3);
 
 				//Bordered Cell Style
 				CellStyle borderedCellStyle = workbook.createCellStyle();
@@ -1183,231 +1183,231 @@ ProjectAllocationService projectAllocationService;
 					if(prevRow!=null &&  (!(prevRow.getCell(4).getStringCellValue()==cell.getStringCellValue())) )
 					    cell.setCellStyle(style);
 					
-					cell = row.createCell(5);
+					/*cell = row.createCell(5);
 					cell.setCellValue((String) data.get("approved_date"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(5).getStringCellValue()==cell.getStringCellValue())) )
+					    cell.setCellStyle(style);*/
+					
+					cell = row.createCell(5);
+					cell.setCellValue((Double)data.get("day1"));
+					cell.setCellStyle(borderedCellStyle);
+					if(prevRow!=null &&  (!(prevRow.getCell(5).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(6);
-					cell.setCellValue((Double)data.get("day1"));
+					cell.setCellValue((Double)data.get("day2"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(6).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
-					
+
 					cell = row.createCell(7);
-					cell.setCellValue((Double)data.get("day2"));
+					cell.setCellValue((Double) data.get("day3"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(7).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
-
+					
 					cell = row.createCell(8);
-					cell.setCellValue((Double) data.get("day3"));
+					cell.setCellValue((Double) data.get("day4"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(8).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(9);
-					cell.setCellValue((Double) data.get("day4"));
+					cell.setCellValue((Double) data.get("day5"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(9).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(10);
-					cell.setCellValue((Double) data.get("day5"));
+					cell.setCellValue((Double)data.get("day6"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(10).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(11);
-					cell.setCellValue((Double)data.get("day6"));
+					cell.setCellValue((Double) data.get("day7"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(11).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(12);
-					cell.setCellValue((Double) data.get("day7"));
+					cell.setCellValue((Double) data.get("day8"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(12).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
-					cell = row.createCell(13);
-					cell.setCellValue((Double) data.get("day8"));
+					
+				    cell = row.createCell(13);
+					cell.setCellValue((Double)data.get("day9"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(13).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
-					
-					
-				    cell = row.createCell(14);
-					cell.setCellValue((Double)data.get("day9"));
+
+					cell = row.createCell(14);
+					cell.setCellValue((Double) data.get("day10"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(14).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
-
+					
 					cell = row.createCell(15);
-					cell.setCellValue((Double) data.get("day10"));
+					cell.setCellValue((Double) data.get("day11"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(15).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(16);
-					cell.setCellValue((Double) data.get("day11"));
+					cell.setCellValue((Double) data.get("day12"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(16).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(17);
-					cell.setCellValue((Double) data.get("day12"));
+					cell.setCellValue((Double) data.get("day13"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(17).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(18);
-					cell.setCellValue((Double) data.get("day13"));
-					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(18).getNumericCellValue()==cell.getNumericCellValue())) )
-					    cell.setCellStyle(style);
-					
-					cell = row.createCell(19);
 					cell.setCellValue((Double) data.get("day14"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(19).getNumericCellValue()==cell.getNumericCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(18).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					/*cell = row.createCell(20);
 					cell.setCellValue(data.get("cpplevels_id")+"");
 					cell.setCellStyle(borderedCellStyle);*/
 					
-					cell = row.createCell(20);
+					cell = row.createCell(19);
 					cell.setCellValue((Double) data.get("day15"));
+					cell.setCellStyle(borderedCellStyle);
+					if(prevRow!=null &&  (!(prevRow.getCell(19).getNumericCellValue()==cell.getNumericCellValue())) )
+					    cell.setCellStyle(style);
+					
+					cell = row.createCell(20);
+					cell.setCellValue((Double) data.get("day16"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(20).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(21);
-					cell.setCellValue((Double) data.get("day16"));
+					cell.setCellValue((Double) data.get("day17"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(21).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(22);
-					cell.setCellValue((Double) data.get("day17"));
+					cell.setCellValue((Double) data.get("day18"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(22).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(23);
-					cell.setCellValue((Double) data.get("day18"));
+					cell.setCellValue((Double) data.get("day19"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(23).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(24);
-					cell.setCellValue((Double) data.get("day19"));
+					cell.setCellValue((Double) data.get("day20"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(24).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(25);
-					cell.setCellValue((Double) data.get("day20"));
+					cell.setCellValue((Double) data.get("day21"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(25).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(26);
-					cell.setCellValue((Double) data.get("day21"));
+					cell.setCellValue((Double) data.get("day22"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(26).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(27);
-					cell.setCellValue((Double) data.get("day22"));
+					cell.setCellValue((Double) data.get("day23"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(27).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(28);
-					cell.setCellValue((Double) data.get("day23"));
+					cell.setCellValue((Double) data.get("day24"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(28).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(29);
-					cell.setCellValue((Double) data.get("day24"));
+					cell.setCellValue((Double) data.get("day25"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(29).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(30);
-					cell.setCellValue((Double) data.get("day25"));
+					cell.setCellValue((Double) data.get("day26"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(30).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(31);
-					cell.setCellValue((Double) data.get("day26"));
+					cell.setCellValue((Double) data.get("day27"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(31).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(32);
-					cell.setCellValue((Double) data.get("day27"));
+					cell.setCellValue((Double) data.get("day28"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(32).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(33);
-					cell.setCellValue((Double) data.get("day28"));
+					cell.setCellValue((Double) data.get("day29"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(33).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(34);
-					cell.setCellValue((Double) data.get("day29"));
+					cell.setCellValue((Double) data.get("day30"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(34).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(35);
-					cell.setCellValue((Double) data.get("day30"));
+					cell.setCellValue((Double) data.get("day31"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(35).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(36);
-					cell.setCellValue((Double) data.get("day31"));
+					cell.setCellValue((String) data.get("first_half_status"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(36).getNumericCellValue()==cell.getNumericCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(36).getStringCellValue()==cell.getStringCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(37);
-					cell.setCellValue((String) data.get("first_half_status"));
+					cell.setCellValue((Integer) data.get("month"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(37).getStringCellValue()==cell.getStringCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(37).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(38);
-					cell.setCellValue((Integer) data.get("month"));
+					cell.setCellValue((String) data.get("project_type"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(38).getNumericCellValue()==cell.getNumericCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(38).getStringCellValue()==cell.getStringCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(39);
-					cell.setCellValue((String) data.get("project_type"));
+					cell.setCellValue((String) data.get("second_half_status"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(39).getStringCellValue()==cell.getStringCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(40);
-					cell.setCellValue((String) data.get("second_half_status"));
-					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(40).getStringCellValue()==cell.getStringCellValue())) )
-					    cell.setCellStyle(style);
-					
-					cell = row.createCell(41);
 					cell.setCellValue((Integer) data.get("year"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(41).getNumericCellValue()==cell.getNumericCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(40).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 
 					
@@ -1435,49 +1435,49 @@ ProjectAllocationService projectAllocationService;
 		JSONArray     columns =new JSONArray();
 
 		
-		String[] headers = new String[42];
+		String[] headers = new String[41];
 		headers[0]="User Name";
 		headers[1]="Project Name";
 		headers[2]="Transaction Type";
 		headers[3]="Transaction Date";
 		headers[4]="Users In Action";
-		headers[5]="Approved Date";
-		headers[6]="Day1";
-		headers[7]="Day2";
-		headers[8]="Day3";
-		headers[9]="Day4";
-		headers[10]="Day5";
-		headers[11]="Day6";
-		headers[12]="Day7";
-		headers[13]="Day8";
-		headers[14]="Day9";
-		headers[15]="Day10";
-		headers[16]="Day11";
-		headers[17]="Day12";
-		headers[18]="Day13";
-		headers[19]="Day14";
-		headers[20]="Day15";
-		headers[21]="Day16";
-		headers[22]="Day17";
-		headers[23]="Day18"; 
-		headers[24]="Day19"; 
-		headers[25]="Day20"; 
-		headers[26]="Day21"; 
-		headers[27]="Day22"; 
-		headers[28]="Day23"; 
-		headers[29]="Day24"; 
-		headers[30]="Day25"; 
-		headers[31]="Day26"; 
-		headers[32]="Day27"; 
-		headers[33]="Day28";
-		headers[34]="Day29";
-		headers[35]="Day30";
-		headers[36]="Day31";
-		headers[37]="First Half Status";
-		headers[38]="Month";
-		headers[39]="Project Type";
-		headers[40]="Second Half Status";
-		headers[41]="Year";
+		//headers[5]="Approved Date";
+		headers[5]="Day1";
+		headers[6]="Day2";
+		headers[7]="Day3";
+		headers[8]="Day4";
+		headers[9]="Day5";
+		headers[10]="Day6";
+		headers[11]="Day7";
+		headers[12]="Day8";
+		headers[13]="Day9";
+		headers[14]="Day10";
+		headers[15]="Day11";
+		headers[16]="Day12";
+		headers[17]="Day13";
+		headers[18]="Day14";
+		headers[19]="Day15";
+		headers[20]="Day16";
+		headers[21]="Day17";
+		headers[22]="Day18"; 
+		headers[23]="Day19"; 
+		headers[24]="Day20"; 
+		headers[25]="Day21"; 
+		headers[26]="Day22"; 
+		headers[27]="Day23"; 
+		headers[28]="Day24"; 
+		headers[29]="Day25"; 
+		headers[30]="Day26"; 
+		headers[31]="Day27"; 
+		headers[32]="Day28";
+		headers[33]="Day29";
+		headers[34]="Day30";
+		headers[35]="Day31";
+		headers[36]="First Half Status";
+		headers[37]="Month";
+		headers[38]="Project Type";
+		headers[39]="Second Half Status";
+		headers[40]="Year";
 		//Removing grids
 				sheet.setDisplayGridlines(false);
 				//Freezing columns and rows from scrooling
@@ -1570,231 +1570,231 @@ ProjectAllocationService projectAllocationService;
 					if(prevRow!=null &&  (!(prevRow.getCell(4).getStringCellValue()==cell.getStringCellValue())) )
 					    cell.setCellStyle(style);
 					
-					cell = row.createCell(5);
+					/*cell = row.createCell(5);
 					cell.setCellValue((String) data.get("approved_date"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(5).getStringCellValue()==cell.getStringCellValue())) )
+					    cell.setCellStyle(style);*/
+					
+					cell = row.createCell(5);
+					cell.setCellValue((Double)data.get("day1"));
+					cell.setCellStyle(borderedCellStyle);
+					if(prevRow!=null &&  (!(prevRow.getCell(5).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(6);
-					cell.setCellValue((Double)data.get("day1"));
+					cell.setCellValue((Double)data.get("day2"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(6).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
-					
+
 					cell = row.createCell(7);
-					cell.setCellValue((Double)data.get("day2"));
+					cell.setCellValue((Double) data.get("day3"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(7).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
-
+					
 					cell = row.createCell(8);
-					cell.setCellValue((Double) data.get("day3"));
+					cell.setCellValue((Double) data.get("day4"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(8).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(9);
-					cell.setCellValue((Double) data.get("day4"));
+					cell.setCellValue((Double) data.get("day5"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(9).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(10);
-					cell.setCellValue((Double) data.get("day5"));
+					cell.setCellValue((Double)data.get("day6"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(10).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(11);
-					cell.setCellValue((Double)data.get("day6"));
+					cell.setCellValue((Double) data.get("day7"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(11).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(12);
-					cell.setCellValue((Double) data.get("day7"));
+					cell.setCellValue((Double) data.get("day8"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(12).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
-					cell = row.createCell(13);
-					cell.setCellValue((Double) data.get("day8"));
+					
+				    cell = row.createCell(13);
+					cell.setCellValue((Double)data.get("day9"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(13).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
-					
-					
-				    cell = row.createCell(14);
-					cell.setCellValue((Double)data.get("day9"));
+
+					cell = row.createCell(14);
+					cell.setCellValue((Double) data.get("day10"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(14).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
-
+					
 					cell = row.createCell(15);
-					cell.setCellValue((Double) data.get("day10"));
+					cell.setCellValue((Double) data.get("day11"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(15).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(16);
-					cell.setCellValue((Double) data.get("day11"));
+					cell.setCellValue((Double) data.get("day12"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(16).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(17);
-					cell.setCellValue((Double) data.get("day12"));
+					cell.setCellValue((Double) data.get("day13"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(17).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(18);
-					cell.setCellValue((Double) data.get("day13"));
-					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(18).getNumericCellValue()==cell.getNumericCellValue())) )
-					    cell.setCellStyle(style);
-					
-					cell = row.createCell(19);
 					cell.setCellValue((Double) data.get("day14"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(19).getNumericCellValue()==cell.getNumericCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(18).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					/*cell = row.createCell(20);
 					cell.setCellValue(data.get("cpplevels_id")+"");
 					cell.setCellStyle(borderedCellStyle);*/
 					
-					cell = row.createCell(20);
+					cell = row.createCell(19);
 					cell.setCellValue((Double) data.get("day15"));
+					cell.setCellStyle(borderedCellStyle);
+					if(prevRow!=null &&  (!(prevRow.getCell(19).getNumericCellValue()==cell.getNumericCellValue())) )
+					    cell.setCellStyle(style);
+					
+					cell = row.createCell(20);
+					cell.setCellValue((Double) data.get("day16"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(20).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(21);
-					cell.setCellValue((Double) data.get("day16"));
+					cell.setCellValue((Double) data.get("day17"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(21).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(22);
-					cell.setCellValue((Double) data.get("day17"));
+					cell.setCellValue((Double) data.get("day18"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(22).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(23);
-					cell.setCellValue((Double) data.get("day18"));
+					cell.setCellValue((Double) data.get("day19"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(23).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(24);
-					cell.setCellValue((Double) data.get("day19"));
+					cell.setCellValue((Double) data.get("day20"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(24).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(25);
-					cell.setCellValue((Double) data.get("day20"));
+					cell.setCellValue((Double) data.get("day21"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(25).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(26);
-					cell.setCellValue((Double) data.get("day21"));
+					cell.setCellValue((Double) data.get("day22"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(26).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(27);
-					cell.setCellValue((Double) data.get("day22"));
+					cell.setCellValue((Double) data.get("day23"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(27).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(28);
-					cell.setCellValue((Double) data.get("day23"));
+					cell.setCellValue((Double) data.get("day24"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(28).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(29);
-					cell.setCellValue((Double) data.get("day24"));
+					cell.setCellValue((Double) data.get("day25"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(29).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(30);
-					cell.setCellValue((Double) data.get("day25"));
+					cell.setCellValue((Double) data.get("day26"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(30).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(31);
-					cell.setCellValue((Double) data.get("day26"));
+					cell.setCellValue((Double) data.get("day27"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(31).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(32);
-					cell.setCellValue((Double) data.get("day27"));
+					cell.setCellValue((Double) data.get("day28"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(32).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(33);
-					cell.setCellValue((Double) data.get("day28"));
+					cell.setCellValue((Double) data.get("day29"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(33).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(34);
-					cell.setCellValue((Double) data.get("day29"));
+					cell.setCellValue((Double) data.get("day30"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(34).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(35);
-					cell.setCellValue((Double) data.get("day30"));
+					cell.setCellValue((Double) data.get("day31"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(35).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(36);
-					cell.setCellValue((Double) data.get("day31"));
+					cell.setCellValue((String) data.get("first_half_status"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(36).getNumericCellValue()==cell.getNumericCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(36).getStringCellValue()==cell.getStringCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(37);
-					cell.setCellValue((String) data.get("first_half_status"));
+					cell.setCellValue((Integer) data.get("month"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(37).getStringCellValue()==cell.getStringCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(37).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(38);
-					cell.setCellValue((Integer) data.get("month"));
+					cell.setCellValue((String) data.get("project_type"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(38).getNumericCellValue()==cell.getNumericCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(38).getStringCellValue()==cell.getStringCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(39);
-					cell.setCellValue((String) data.get("project_type"));
+					cell.setCellValue((String) data.get("second_half_status"));
 					cell.setCellStyle(borderedCellStyle);
 					if(prevRow!=null &&  (!(prevRow.getCell(39).getStringCellValue()==cell.getStringCellValue())) )
 					    cell.setCellStyle(style);
 					
 					cell = row.createCell(40);
-					cell.setCellValue((String) data.get("second_half_status"));
-					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(40).getStringCellValue()==cell.getStringCellValue())) )
-					    cell.setCellStyle(style);
-					
-					cell = row.createCell(41);
 					cell.setCellValue((Integer) data.get("year"));
 					cell.setCellStyle(borderedCellStyle);
-					if(prevRow!=null &&  (!(prevRow.getCell(41).getNumericCellValue()==cell.getNumericCellValue())) )
+					if(prevRow!=null &&  (!(prevRow.getCell(40).getNumericCellValue()==cell.getNumericCellValue())) )
 					    cell.setCellStyle(style);
 
 					
