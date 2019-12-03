@@ -2731,12 +2731,13 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			
 			UserModel user1 = userRepository.getOne(Long.parseLong(summary[7].toString()));
 			
-		/*	SimpleDateFormat ft =  new SimpleDateFormat ("MM-dd-yyyy");
+			SimpleDateFormat ft =  new SimpleDateFormat ("MM-dd-yyyy");
 			
 			Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(Long.parseLong(summary[4].toString()),user1.getUserId(), month,year);
 			
 			String firstHalfDate = null;
 			Date firstHalf = null;
+			if(firstHalfDates.length > 0) {
 			if(firstHalfDates != null) {
 				firstHalf = (Date) firstHalfDates[0];
 				firstHalfDate = ft.format(firstHalf);
@@ -2744,7 +2745,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			else {
 				firstHalfDate = "-";
 			}
-			
+			}
 			String secondHalfDate = null;
 			Date secondHalf = null;
 			
@@ -2754,7 +2755,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			}
 			else {
 				secondHalfDate = "-";
-			} */
+			} 
 			cell = row.createCell(2);
 			cell.setCellValue(user1.getLastName()+" "+user1.getFirstName());
 			cell.setCellStyle(borderedCellStyle);

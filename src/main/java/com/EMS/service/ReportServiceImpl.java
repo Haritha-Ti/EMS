@@ -792,7 +792,7 @@ public class ReportServiceImpl implements ReportService {
 					}
 					else if(bench) {
 						projectList = new JSONArray();
-						projectList.add("Bench");
+						projectList.add("Free Allocation");
 						dateObj.put(date, projectList );
 					}
 					else if((loopDate.after(alcStartDate) || loopDate.equals(alcStartDate)) &&
@@ -802,7 +802,7 @@ public class ReportServiceImpl implements ReportService {
 							if(dateObj.containsKey(date)) {
 								projectList = dateObj.get(date);
 								if(!projectList.contains(projectName)) {
-									projectList.remove("Bench");
+									projectList.remove("Free Allocation");
 									projectList.add(projectName);
 								}
 							}
@@ -824,7 +824,7 @@ public class ReportServiceImpl implements ReportService {
 							if(dateObj.containsKey(date)) {
 								projectList = dateObj.get(date);
 								if(projectList.size()<=0)
-									projectList.add("Bench");
+									projectList.add("Free Allocation");
 							}
 							else {
 								projectList = new JSONArray();
@@ -835,7 +835,7 @@ public class ReportServiceImpl implements ReportService {
 						else
 						{
 							projectList = new JSONArray();
-							projectList.add("Bench");
+							projectList.add("Free Allocation");
 							dateObj.put(date, projectList );
 						}
 					}
@@ -859,7 +859,7 @@ public class ReportServiceImpl implements ReportService {
 			    for (Map.Entry<String,JSONArray> dateEntry : dateObject.entrySet()) {
 			    	String date = dateEntry.getKey();
 			    	projectList = dateEntry.getValue();
-			    	if(projectList.contains("Bench")) {
+			    	if(projectList.contains("Free Allocation")) {
 			    		if(freeResourceCount.get(date)!=null) {
 			    			count = freeResourceCount.get(date);
 			    			count++;
