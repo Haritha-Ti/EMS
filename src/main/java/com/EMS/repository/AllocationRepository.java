@@ -9,5 +9,5 @@ import com.EMS.model.AllocationModel;
 public interface AllocationRepository extends JpaRepository<AllocationModel, Long> {
 
 	public AllocationModel findOneByProjectProjectIdAndUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsBillableAndActiveOrderByEndDateDesc(
-			Long projectId, Long userId, Date startDate, Date endDate, Boolean isBillable, Boolean isActive);
+			Long projectId, Long userId, Date endDate, Date startDate, Boolean isBillable, Boolean isActive);
 }

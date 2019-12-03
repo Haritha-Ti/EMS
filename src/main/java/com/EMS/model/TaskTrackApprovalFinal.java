@@ -460,9 +460,6 @@ public class TaskTrackApprovalFinal extends Auditable<Long> {
 	}
 
 	public String getFirstHalfStatus() {
-		if (firstHalfStatus == null) {
-			firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-		}
 		return firstHalfStatus;
 	}
 
@@ -471,9 +468,6 @@ public class TaskTrackApprovalFinal extends Auditable<Long> {
 	}
 
 	public String getSecondHalfStatus() {
-		if (secondHalfStatus == null) {
-			secondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-		}
 		return secondHalfStatus;
 	}
 
