@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import com.EMS.dto.ProjectSubmissionDataDTO;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -28,4 +30,6 @@ public interface ReportService {
 
 	public HashMap<String, Object> getUsersProjectSubmissionDetails(Long projectid, Integer projectTyre, Long userId,
 			Integer month, Integer year, String session) throws Exception;
+
+	public JSONObject getFreeAllocationReport(Long regionId_selected, Date fromDate, Date toDate);
 }

@@ -20,5 +20,4 @@ public interface QuickTaskTrackService {
 	
 	JSONObject getQuickTimeTrack(JsonNode request) throws Exception;
 
-	JSONObject getBeachQuickTimeTrack(JsonNode request) throws Exception;
 }

@@ -9,16 +9,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.model.CppLevelModel;
+import com.EMS.model.EmploymentDetailsModel;
 import com.EMS.model.PasswordResetModel;
+
 import com.EMS.model.ProjectModel;
+
+import com.EMS.model.PayrollModel;
+import com.EMS.model.PerformanceMangementModel;
+import com.EMS.model.SkillsModel;
+
 import com.EMS.model.Technology;
 import com.EMS.model.UserModel;
 import com.EMS.model.TaskCategory;
 import com.EMS.model.UserTaskCategory;
 import com.EMS.model.UserTechnology;
 import com.EMS.repository.CppLevelRepository;
+import com.EMS.repository.EmploymentDetailsRepository;
 import com.EMS.repository.PasswordResetRepository;
+
 import com.EMS.repository.ProjectRepository;
+
+import com.EMS.repository.PayrollRepository;
+import com.EMS.repository.PerformanceMangementRepository;
+import com.EMS.repository.SkillsRepository;
+
 import com.EMS.repository.TechnologyRepository;
 import com.EMS.repository.UserRepository;
 import com.EMS.repository.UserTechnologyRepository;
@@ -54,8 +68,22 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private CppLevelRepository cppLevelRepository;
 	
+
 	@Autowired 
 	private ProjectRepository projectRepository;
+
+	@Autowired
+	private  SkillsRepository  skillsRepository;
+	
+	@Autowired
+	private PerformanceMangementRepository  performanceMangementRepository;
+	
+	@Autowired
+	private EmploymentDetailsRepository  employmentDetailsRepository;
+	
+	@Autowired
+	private PayrollRepository payrollRepository;
+
 	
 	@Override
 	public UserModel getUserDetailsById(Long id) {
@@ -297,6 +325,7 @@ public class UserServiceImpl implements UserService {
 	//Nisha
 
 	@Override
+
 	public List<UserModel> getUsesrsBasedOnMonthYearRegion(Long regionId, int month, int year) {
 		// TODO Auto-generated method stub
 		String startDate = year+"-"+month+"-01"; 
@@ -354,6 +383,192 @@ public class UserServiceImpl implements UserService {
 			e.printStackTrace();
 		}
 		return projectRepository.getProjectsBasedOnMonthYearAndUser(date1,userId);
+	}
+	public SkillsModel addSkills(SkillsModel skill) {
+		SkillsModel skillModel=null;
+		try {
+			skillModel = skillsRepository.save(skill);
+		} catch (Exception e) {
+			System.out.println("Exception"+e);
+		}
+		
+		return skillModel;
+	}
+
+	@Override
+	public SkillsModel updateSkills(SkillsModel skill) {
+		SkillsModel skillModel=null;
+		try {
+			skillModel = skillsRepository.save(skill);
+		} catch (Exception e) {
+			System.out.println("Exception"+e);
+		}
+		
+		return skillModel;
+	}
+
+	@Override
+	public JSONObject getSkillsByUserId(Long userId) {
+		List<JSONObject> ls=skillsRepository.getSkillsByUserId(userId);
+		if(ls.isEmpty())
+			return null;
+		JSONObject  node = new JSONObject();
+		node.put("Skills", ls);
+		return node;
+	}
+
+	@Override
+	public JSONObject getSkillsId(Long userId) {
+		//SkillsModel ls=skillsRepository.findByuserId(userId);
+		JSONObject  node = new JSONObject();
+		node.put("Skills", null);
+		return node;
+	}
+
+	@Override
+	public SkillsModel getSkillModelByUserId(Long userID) {
+		
+		return skillsRepository.getAllSkillsByUserId(userID).get(0);
+	}
+
+	@Override
+	public PerformanceMangementModel addAppraisal(PerformanceMangementModel model) {
+		
+
+		PerformanceMangementModel pmObj=null;
+		try {
+			pmObj = performanceMangementRepository.save(model);
+		} catch (Exception e) {
+			System.out.println("Exception"+e);
+		}
+		
+		return pmObj;
+	
+	}
+	
+	@Override
+	public PerformanceMangementModel updateAppraisal(PerformanceMangementModel model) {
+		PerformanceMangementModel pmObj=null;
+		try {
+			pmObj = performanceMangementRepository.save(model);
+		} catch (Exception e) {
+			System.out.println("Exception"+e);
+		}
+		
+		return pmObj;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject   getAppraisalDetailsByUserId(Long userId){
+
+		JSONObject  pmObject=performanceMangementRepository.getAppraisalDetailsByUserId(userId);
+		if(pmObject==null)
+			return null;
+		JSONObject  node = new JSONObject();
+		node.put("appraisal", pmObject);
+		return node;
+	
+		
+	}
+
+	@Override
+	public PerformanceMangementModel getPerformanceManagementModelByUserId(Long userID) {
+		return  performanceMangementRepository.getPerformanceManagementModelByUserId(userID);
+	}
+
+	@Override
+	public EmploymentDetailsModel addEmploymentDetails(EmploymentDetailsModel model) {
+		EmploymentDetailsModel empDetailsObj=null;
+		try {
+			empDetailsObj = employmentDetailsRepository.save(model);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Exception"+e);
+		}
+		
+		return empDetailsObj;
+	}
+
+	@Override
+	public EmploymentDetailsModel updateEmploymentDetailsModel(EmploymentDetailsModel model) {
+		EmploymentDetailsModel empDetailsObj=null;
+		try {
+			empDetailsObj = employmentDetailsRepository.save(model);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Exception"+e);
+		}
+		
+		return empDetailsObj;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getEmploymentDetailsByUserId(Long userId) {
+
+		JSONObject  empDetailsObj=employmentDetailsRepository.getEmploymentDetailsByUserId(userId);
+		if(empDetailsObj==null)
+			return null;
+		JSONObject  node = new JSONObject();
+		node.put("employmentdetails", empDetailsObj);
+		return node;
+	
+		
+	}
+
+	@Override
+	public EmploymentDetailsModel getEmploymentDetailsModelByUserId(Long userID) {
+		return  employmentDetailsRepository.EmploymentDetailsByUserId(userID);
+	}
+
+	@Override
+	public PayrollModel addPayroll(PayrollModel model) {
+		PayrollModel payroll=null;
+		try {
+			payroll = payrollRepository.save(model);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Exception"+e);
+		}
+		
+		return payroll;
+	}
+
+	@Override
+	public PayrollModel updatePayroll(PayrollModel model) {
+		PayrollModel payroll=null;
+		try {
+			payroll = payrollRepository.save(model);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Exception"+e);
+		}
+		
+		return payroll;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getPayrollByUserId(Long userID) {
+
+
+		JSONObject  payroll=payrollRepository.getPayrollByUserId(userID);
+		if(payroll==null)
+			return null;
+		JSONObject  node = new JSONObject();
+		node.put("payroll", payroll);
+		return node;
+	
+		
+	
+	}
+
+	@Override
+	public PayrollModel PayrollByUserId(Long userID) {
+		
+		return payrollRepository.PayrollByUserId(userID);
+
 	}
 
 }

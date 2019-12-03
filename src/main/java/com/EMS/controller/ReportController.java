@@ -1207,4 +1207,35 @@ public class ReportController {
 		}
 		return new ResponseEntity(HttpStatus.OK);
 	}
+	
+	@PostMapping(value = "getFreeAllocationReport")
+	public ResponseEntity<Object> getFreeAllocationReport(@RequestBody Taskdetails requestdata,
+			HttpServletResponse httpstatus) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		JSONObject jsonDataRes = new JSONObject();
+		JSONObject freeAllocationData = new JSONObject();
+		try {
+			Date fromDate = null, toDate = null;
+			Long regionId_selected = null;
+			fromDate = requestdata.getFromDate();
+			toDate = requestdata.getToDate();
+
+			if (requestdata.getRegionId() != null && requestdata.getRegionId() != 0) {
+				regionId_selected = requestdata.getRegionId();
+			}
+			freeAllocationData = reportService.getFreeAllocationReport(regionId_selected, fromDate, toDate);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			jsonDataRes.put("data", freeAllocationData);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			jsonDataRes.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+	
 }

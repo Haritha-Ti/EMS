@@ -130,6 +130,7 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 				projectDateMap.put(projectId, projectDateList);
 			}
 		}
+		boolean containsBeach = false;
 
 		Map<Long, JSONObject> responseMap = new HashMap<Long, JSONObject>();
 		Map<Long, Map<String, JSONObject>> taskListMap = new HashMap<Long, Map<String, JSONObject>>();
@@ -138,6 +139,9 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 		if (taskTrackList != null && taskTrackList.size() > 0) {
 			for (Object[] taskTrack : taskTrackList) {
 				Long projectId = Long.valueOf(taskTrack[0].toString());
+				if(projectId == Constants.BEACH_PROJECT_ID) {
+					containsBeach = true;
+				}
 				String taskTrackDate = taskTrack[2].toString();
 				Map<String, JSONObject> taskDetailsMap = new HashMap<String, JSONObject>();
 				if (projectClientMap.containsKey(projectId)) {
@@ -189,7 +193,6 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 			List<JSONObject> taskList = new ArrayList<JSONObject>();
 			JSONObject projectObject = map.getValue();
 			Map<String, JSONObject> taskMap = taskListMap.get(map.getKey());
-			Map<String, JSONObject> sortedTaskMap = new LinkedHashMap<String, JSONObject>();
 			for (int day = 1; day <= lastDay; day++) {
 				String taskTrackDate = year + "-" + (month < 10 ? "0" : "") + month + "-" + (day < 10 ? "0" : "") + day;
 				if (!taskMap.containsKey(taskTrackDate)) {
@@ -198,17 +201,17 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 					task.put("qTrackId", null);
 					task.put("hour", 0.0);
 					task.put("enable", checkDateEnabled(projectDateMap, map.getKey(), taskTrackDate));
-					sortedTaskMap.put(taskTrackDate, task);
+					taskList.add(task);
 				} else {
-					sortedTaskMap.put(taskTrackDate, taskMap.get(taskTrackDate));
+					taskList.add(taskMap.get(taskTrackDate));
 				}
-			}
-
-			for (Map.Entry<String, JSONObject> tsk : sortedTaskMap.entrySet()) {
-				taskList.add(tsk.getValue());
 			}
 			projectObject.put("taskDetails", taskList);
 			projectList.add(projectObject);
+		}
+
+		if (!containsBeach) {
+			projectList.add(getBeachQuickTimeTrack(userId, fromDate, toDate));
 		}
 
 		JSONObject projectResponse = new JSONObject();
@@ -221,33 +224,16 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 
 	private Boolean checkDateEnabled(Map<Long, List<String>> projectDateMap, Long projectId, String date) {
 		List<String> projectDateList = projectDateMap.get(projectId);
-		if (projectDateList.contains(date)) {
+		if (projectDateList != null && projectDateList.contains(date)) {
 			return Boolean.TRUE;
 		}
 		return Boolean.FALSE;
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public JSONObject getBeachQuickTimeTrack(JsonNode request) throws Exception {
-		JSONObject response = new JSONObject();
-
-		Long userId = null;
-		Date fromDate = null;
-		Date toDate = null;
+	public JSONObject getBeachQuickTimeTrack(Long userId, Date fromDate, Date toDate) throws Exception {
 
 		long projectId = Constants.BEACH_PROJECT_ID;
-
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		if (request.get("userId") != null && request.get("userId").asText() != "") {
-			userId = request.get("userId").asLong();
-		}
-		if (request.get("fromDate") != null && request.get("fromDate").asText() != null) {
-			fromDate = sdf.parse(request.get("fromDate").asText());
-		}
-		if (request.get("toDate") != null && request.get("toDate").asText() != null) {
-			toDate = sdf.parse(request.get("toDate").asText());
-		}
 
 		Calendar calender = Calendar.getInstance();
 		calender.setTime(fromDate);
@@ -259,8 +245,6 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 
 		Map<String, JSONObject> taskDetailsMap = new HashMap<String, JSONObject>();
 
-		
-
 		List<Object[]> beachTasksFortimeTrack = tasktrackRepository.getBeachTasksFortimeTrack(userId, fromDate, toDate);
 
 		for (Object[] beachTask : beachTasksFortimeTrack) {
@@ -269,10 +253,11 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 			task.put("date", taskTrackDate);
 			task.put("qTrackId", beachTask[1]);
 			task.put("hour", beachTask[2]);
+			task.put("enable", true);
 			taskDetailsMap.put(taskTrackDate, task);
 
 		}
-		
+
 		List<JSONObject> taskList = new ArrayList<JSONObject>();
 
 		for (int day = 1; day <= lastDay; day++) {
@@ -282,27 +267,22 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 				task.put("date", taskTrackDate);
 				task.put("qTrackId", null);
 				task.put("hour", 0.0);
+				task.put("enable", true);
 				taskList.add(task);
 			} else {
 				taskList.add(taskDetailsMap.get(taskTrackDate));
 			}
 		}
 		ProjectModel projectModel = tasktrackRepository.getProjectById(projectId);
-		
+
 		JSONObject projectObject = new JSONObject();
 		projectObject.put("projectId", projectId);
 		projectObject.put("projectName", projectModel.getProjectName());
-		projectObject.put("clientName", projectModel.getClientName() == null? "" : projectModel.getClientName().getClientName());
+		projectObject.put("clientName",
+				projectModel.getClientName() == null ? "" : projectModel.getClientName().getClientName());
 		projectObject.put("taskDetails", taskList);
-		
-		List<JSONObject> projectList = new ArrayList<JSONObject>();
-		projectList.add(projectObject);
-		
-		JSONObject projectResponse = new JSONObject();
-		projectResponse.put("projectList", projectList);
-		response.put("data", projectResponse);
-		response.put("status", "success");
-		return response;
+		System.out.println("projectObject : " + projectObject);
+		return projectObject;
 
 	}
 
