@@ -37,11 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.ProjectSubmissionDataDTO;
 import com.EMS.dto.Taskdetails;
-import com.EMS.model.ApprovalTimeTrackReportModel;
-import com.EMS.model.BenchProjectReportModel;
-import com.EMS.model.ExportProjectHourReportModel;
-import com.EMS.model.ExportProjectTaskReportModel;
-import com.EMS.model.ProjectModel;
 import com.EMS.service.ProjectAllocationService;
 import com.EMS.service.ProjectExportService;
 import com.EMS.service.ProjectRegionService;
@@ -1048,6 +1043,7 @@ public class ReportController {
 		long projectId =  0;
 		long regionId =  0;
 		long userId =  0;
+		long sessionId = 0;
 		int month = 0;
 		int year = 0;
 
@@ -1061,6 +1057,16 @@ public class ReportController {
 			}
 			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
 				regionId = requestdata.get("regionId").asLong();
+			}
+			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
+				sessionId = requestdata.get("sessionId").asLong();
+			}
+			
+			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
+			
+			if(loggedUser.getRole().getroleId() == 6) {
+				
+				regionId = loggedUser.getRegion().getId();
 			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
 
@@ -1148,6 +1154,7 @@ public class ReportController {
 		JSONObject jsonDataRes = new JSONObject();
 		long projectId =  0;
 		long regionId =  0;
+		long sessionId = 0;
 		long userId =  0;
 		int month = 0;
 		int year = 0;
@@ -1162,6 +1169,16 @@ public class ReportController {
 			}
 			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
 				regionId = requestdata.get("regionId").asLong();
+			}
+			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
+				sessionId = requestdata.get("sessionId").asLong();
+			}
+			
+			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
+			
+			if(loggedUser.getRole().getroleId() == 6) {
+				
+				regionId = loggedUser.getRegion().getId();
 			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
 
