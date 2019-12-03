@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer.UserInfoEndpointConfig;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -1435,6 +1436,127 @@ public class ProjectAllocationController {
 		}
 		else {
 			node.set("projectList", null);
+			//node.set("data", jsonData);
+			node.put("status", "failed");
+			node.put("code", httpStatus.getStatus());
+			node.put("message", "failed");
+		}
+		
+		return node;
+	}
+	
+	@PostMapping(value = "/getUserNamesBasedOnMonthAndYear")
+	public ObjectNode getUserNamesBasedOnMonthAndYear(@RequestBody ObjectNode requestData,
+			HttpServletResponse httpStatus) {
+		ObjectNode node = objectMapper.createObjectNode();
+		ArrayNode jsonProjectArray = objectMapper.createArrayNode();
+		Long regionId = null;
+		Long regionIdSelected = null;
+		int month = 0;
+		int year = 0;
+		List<UserModel> userList = new ArrayList<>();
+		Set<UserModel> allUser = new HashSet<>();
+		ArrayList<UserModel> newList = new ArrayList<UserModel>();
+		ArrayNode range = (ArrayNode) requestData.get("range");
+		if (requestData.get("regionId") != null && (!requestData.get("regionId").asText().trim().isEmpty())) {
+			regionId = requestData.get("regionId").asLong();
+		}
+		for (JsonNode rangeNode : range) {
+			userList= new ArrayList<UserModel>();
+			month = Integer.parseInt(rangeNode.get("month").toString());
+			year = Integer.parseInt(rangeNode.get("year").toString());
+			if (month != 0 && year != 0 && regionId != null) {
+
+				userList = userService.getUsesrsBasedOnMonthYearRegion(regionId, month, year);
+				
+
+			} else if ((month != 0 && year != 0 && regionId == null)) {
+				userList = userService.getUsesrsBasedOnMonthYearRegion(month, year);
+			}
+
+			allUser.addAll(userList);
+
+		}
+		
+		
+		if (!(allUser).isEmpty() && allUser.size() > 0) {
+			for (UserModel user : allUser) {
+				ObjectNode jsonObject = objectMapper.createObjectNode();
+				jsonObject.put("userId", user.getUserId());
+				jsonObject.put("userName", user.getLastName()+ " "+user.getFirstName());
+				jsonProjectArray.add(jsonObject);
+			}
+			node.set("userList", jsonProjectArray);
+			//node.set("data", jsonData);
+			node.put("status", "success");
+			node.put("code", httpStatus.getStatus());
+			node.put("message", "success");
+			
+		}
+		else {
+			node.set("userList", null);
+			//node.set("data", jsonData);
+			node.put("status", "failed");
+			node.put("code", httpStatus.getStatus());
+			node.put("message", "failed");
+		}
+		
+		return node;
+	}
+	@PostMapping(value = "/getProjectNamesBasedOnMonthYearAndUser")
+	public ObjectNode getProjectNamesBasedOnMonthAndYearAndUser(@RequestBody ObjectNode requestData,
+			HttpServletResponse httpStatus) {
+		ObjectNode node = objectMapper.createObjectNode();
+		ArrayNode jsonProjectArray = objectMapper.createArrayNode();
+		Long regionId = null;
+		Long userId = null;
+		Long regionIdSelected = null;
+		int month = 0;
+		int year = 0;
+		List<ProjectModel> userList = new ArrayList<>();
+		Set<ProjectModel> allUser = new HashSet<>();
+		ArrayList<ProjectModel> newList = new ArrayList<ProjectModel>();
+		ArrayNode range = (ArrayNode) requestData.get("range");
+		if (requestData.get("regionId") != null && (!requestData.get("regionId").asText().trim().isEmpty())) {
+			regionId = requestData.get("regionId").asLong();
+		}
+		if (requestData.get("userId") != null && (!requestData.get("userId").asText().trim().isEmpty())) {
+			userId = requestData.get("userId").asLong();
+		}
+		for (JsonNode rangeNode : range) {
+			userList= new ArrayList<ProjectModel>();
+			month = Integer.parseInt(rangeNode.get("month").toString());
+			year = Integer.parseInt(rangeNode.get("year").toString());
+			if (month != 0 && year != 0 && regionId != null) {
+
+				userList = userService.getProjectNamesBasedOnMonthAndYearAndUser(regionId, month, year,userId);
+				
+
+			} else if ((month != 0 && year != 0 && regionId == null)) {
+				userList = userService.getProjectNamesBasedOnMonthAndYearAndUser(month, year,userId);
+			}
+
+			allUser.addAll(userList);
+
+		}
+		
+		
+		if (!(allUser).isEmpty() && allUser.size() > 0) {
+			for (ProjectModel user : allUser) {
+				ObjectNode jsonObject = objectMapper.createObjectNode();
+				jsonObject.put("projectId", user.getProjectId());
+				jsonObject.put("projectName", user.getProjectName());
+				jsonProjectArray.add(jsonObject);
+			}
+			node.set("projectList", jsonProjectArray);
+			//node.set("data", jsonData);
+			node.put("status", "success");
+			node.put("code", httpStatus.getStatus());
+			node.put("message", "success");
+			
+		}
+		else {
+			node.set("userList", null);
 			//node.set("data", jsonData);
 			node.put("status", "failed");
 			node.put("code", httpStatus.getStatus());

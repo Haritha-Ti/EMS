@@ -9,6 +9,7 @@ import com.EMS.model.Technology;
 import com.EMS.model.UserModel;
 import com.EMS.model.UserTechnology;
 import com.EMS.model.CppLevelModel;
+import com.EMS.model.ProjectModel;
 import com.EMS.model.TaskCategory;
 import com.EMS.model.UserTaskCategory;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -82,4 +83,12 @@ public interface UserService {
 	//Nisha
 	List<UserModel> getUserByRegion(Date startDate, Date endDate, Long regionId);
 	//nisha
+
+	List<UserModel> getUsesrsBasedOnMonthYearRegion(Long regionId, int month, int year);
+
+	List<UserModel> getUsesrsBasedOnMonthYearRegion(int month, int year);
+
+	List<ProjectModel> getProjectNamesBasedOnMonthAndYearAndUser(Long regionId, int month, int year, Long userId);
+
+	List<ProjectModel> getProjectNamesBasedOnMonthAndYearAndUser(int month, int year, Long userId);
 }

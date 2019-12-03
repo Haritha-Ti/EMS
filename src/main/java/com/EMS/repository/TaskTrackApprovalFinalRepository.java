@@ -194,7 +194,7 @@ public interface TaskTrackApprovalFinalRepository extends JpaRepository<TaskTrac
 			"            group by user_user_id,project.project_name,r.region_name,project.project_id,ta.trx_date,ta.first_halfsubmitted_by_user_id,ta.second_halfsubmitted_by_user_id,first_half_status,second_half_status",nativeQuery = true)
 	List<Object[]> getProjectWiseSubmissionDetails(int month, int year, long projectId, long userId,long regionId);
 	
-	@Query(value ="SELECT trx_date FROM `tasktrack_approval_aud` WHERE  project_project_id = ?1 and user_user_id = ?2 and ((first_half_status = 'SUBMITTED' or first_half_status = 'CORRECTION_SAVED') and (second_half_status != 'SUBMITTED' or second_half_status != 'CORRECTION_SAVED' )) and month = ?3 and year = ?4 " + 
+	@Query(value ="SELECT trx_date FROM `tasktrack_approval_final_aud` WHERE  project_project_id = ?1 and user_user_id = ?2 and ((first_half_status = 'SUBMITTED' or first_half_status = 'CORRECTION_SAVED') and (second_half_status != 'SUBMITTED' or second_half_status != 'CORRECTION_SAVED' )) and month = ?3 and year = ?4 " + 
 			" order by trx_date " + 
 			" limit 1 ",nativeQuery = true)
 	Object[] getSubmittedDateFromAudit(Long projectId, Long userId, int month, int year);
@@ -203,5 +203,7 @@ public interface TaskTrackApprovalFinalRepository extends JpaRepository<TaskTrac
 			" order by trx_date " + 
 			" limit 1 ",nativeQuery = true)
 	Object[] getSubmittedDateFromAuditSecondHalf(Long projectId, Long userId, int month, int year);
+
+
 
 }

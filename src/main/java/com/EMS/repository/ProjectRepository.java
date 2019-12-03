@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.EMS.dto.ProjectSubmissionDataDTO;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.UserModel;
 import com.EMS.utility.QueryConstants;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -105,5 +106,11 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 
 	@Query(value="select p from ProjectModel p where (( ?1 between p.startDate and p.endDate) or (last_day(?1) between p.startDate and p.endDate)) ")
 	List<ProjectModel> getProjectsBasedOnMonthYearRegion(Date date1);
+
+	@Query(value="select p from ProjectModel p inner join ProjectRegion pr on (p.projectId = pr.project_Id.projectId ) inner join AllocationModel a on (a.project.projectId = p.projectId) where (( ?2 between p.startDate and p.endDate) or (last_day(?2) between p.startDate and p.endDate)) and pr.region_Id.id = ?1 and a.user.userId = ?3")
+	List<ProjectModel> getProjectsBasedOnMonthYearRegionAndUser(Long regionId, Date date1, Long userId);
+
+	@Query(value="select p from ProjectModel p  inner join AllocationModel a on (a.project.projectId = p.projectId) where (( ?1 between p.startDate and p.endDate) or (last_day(?1) between p.startDate and p.endDate)) and a.user.userId = ?2")
+	List<ProjectModel> getProjectsBasedOnMonthYearAndUser(Date date1, Long userId);
 
 }

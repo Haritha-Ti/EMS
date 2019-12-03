@@ -1129,8 +1129,81 @@ public class ReportController {
 			workrbook.close();
 
 		} catch (Exception e) {
-			//return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-			e.printStackTrace();
+			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+			//e.printStackTrace();
+		}
+		return new ResponseEntity(HttpStatus.OK);
+	}
+	
+	
+	/***
+	 * @author drishya dinesh
+	 * @param requestdata
+	 * @param response
+	 * @des export projectwise submission data
+	 * @return
+	 */
+	@PostMapping(value = "/exportUserWiseSubmissionData")
+	public ResponseEntity exportUserWiseSubmissionData(@RequestBody JsonNode requestdata, HttpServletResponse response) {
+		JSONObject jsonDataRes = new JSONObject();
+		long projectId =  0;
+		long regionId =  0;
+		long userId =  0;
+		int month = 0;
+		int year = 0;
+
+		try {
+
+			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
+				projectId = requestdata.get("projectId").asLong();
+			}
+			if (requestdata.get("userId") != null && requestdata.get("userId").asText() != "") {
+				userId = requestdata.get("userId").asLong();
+			}
+			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
+				regionId = requestdata.get("regionId").asLong();
+			}
+			ArrayNode range = (ArrayNode) requestdata.get("range");
+
+			JSONObject outputdata = new JSONObject();
+
+			ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
+			ArrayList<JSONObject> node1 = new ArrayList<JSONObject>();
+
+			List<Object[]> result = new ArrayList<Object[]>();
+			
+			UserModel  user  = userService.getUserDetailsById(userId);
+			String nameofReport = "Report Of User " + user.getLastName()+ " "+user.getFirstName();
+			Workbook workrbook = new XSSFWorkbook();				
+				for (JsonNode rangenode : range) {
+					JSONObject node = new JSONObject();
+					month = Integer.parseInt(rangenode.get("month").toString());
+					year = Integer.parseInt(rangenode.get("year").toString());
+					String monthName = Month.of(month).name();
+					
+					  if (month != 0 && year != 0 ) {
+							Sheet sheet = workrbook.createSheet(monthName + "-" + year);
+						  result = tasktrackApprovalService.getUserWiseSubmissionDetailsExport(month, year,
+								projectId,userId,regionId);
+						  projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
+									result);
+						node.put("timeTracks", resultData);
+						node.put("month", month);
+						node.put("year", year);
+						node1.add(node);
+
+					} 
+
+				}
+			response.setContentType("application/vnd.ms-excel");
+			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+			response.setHeader("Content-Disposition", "filename=\"" + "BillingUserWise.xlsx" + "\"");
+			workrbook.write(response.getOutputStream());
+			workrbook.close();
+
+		} catch (Exception e) {
+			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+			
 		}
 		return new ResponseEntity(HttpStatus.OK);
 	}

@@ -2712,6 +2712,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		// Create Other rows and cells with contacts data
 		int rowNum = 3;
 		
+		
+		
 		for (Object[] summary : node1) {
 			
 			double totalHour =0.0;
@@ -2729,6 +2731,30 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			
 			UserModel user1 = userRepository.getOne(Long.parseLong(summary[7].toString()));
 			
+		/*	SimpleDateFormat ft =  new SimpleDateFormat ("MM-dd-yyyy");
+			
+			Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(Long.parseLong(summary[4].toString()),user1.getUserId(), month,year);
+			
+			String firstHalfDate = null;
+			Date firstHalf = null;
+			if(firstHalfDates != null) {
+				firstHalf = (Date) firstHalfDates[0];
+				firstHalfDate = ft.format(firstHalf);
+			}
+			else {
+				firstHalfDate = "-";
+			}
+			
+			String secondHalfDate = null;
+			Date secondHalf = null;
+			
+			if(summary[6] != null) {
+				secondHalf = (Date)summary[6];
+				secondHalfDate = ft.format(secondHalf);
+			}
+			else {
+				secondHalfDate = "-";
+			} */
 			cell = row.createCell(2);
 			cell.setCellValue(user1.getLastName()+" "+user1.getFirstName());
 			cell.setCellStyle(borderedCellStyle);

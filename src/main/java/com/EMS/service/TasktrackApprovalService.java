@@ -140,4 +140,8 @@ public interface TasktrackApprovalService {
 
 	List<Object[]> getProjectWiseSubmissionDetailsTierTwo(int month, int year, long projectId, long userId,
 			long regionId);
+
+	ArrayList<JSONObject> getUserWiseSubmissionDetails(int month, int year, long projectId, long userId, long regionId);
+
+	List<Object[]> getUserWiseSubmissionDetailsExport(int month, int year, long projectId, long userId, long regionId);
 }
