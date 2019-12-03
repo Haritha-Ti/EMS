@@ -2761,7 +2761,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(3);
-			cell.setCellValue(summary[6].toString());
+			cell.setCellValue(firstHalfDate);
 			cell.setCellStyle(borderedCellStyle);
 
 			UserModel user2 = userRepository.getOne(Long.parseLong(summary[8].toString()));
@@ -2771,7 +2771,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellStyle(borderedCellStyle);
 			
 			cell = row.createCell(5);
-			cell.setCellValue(summary[6].toString());
+			cell.setCellValue(secondHalfDate);
 			cell.setCellStyle(borderedCellStyle);
 
 			
