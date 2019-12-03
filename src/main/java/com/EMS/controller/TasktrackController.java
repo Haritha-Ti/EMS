@@ -3326,4 +3326,75 @@ public class TasktrackController {
 		return jsonDataRes;
 	}
 
+	/***
+	 * 
+	 * @author drishya
+	 * @param httpstatus
+	 * @project tier 2
+	 * @desc get the userwise submission datas including submitted hours,odc,date
+	 *       time and project details
+	 * @throws ParseException
+	 * @since 29/11/2019
+	 */
+	@PostMapping("/getUserWiseSubmissionData")
+	public JSONObject getUserWiseSubmissionData(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
+
+		JSONObject jsonDataRes = new JSONObject();
+		long projectId = 0;
+		long regionId = 0;
+		long userId = 0;
+		int month = 0;
+		int year = 0;
+
+		try {
+
+			if (requestdata.get("projectId") != null && requestdata.get("projectId").asText() != "") {
+				projectId = requestdata.get("projectId").asLong();
+			}
+			if (requestdata.get("userId") != null && requestdata.get("userId").asText() != "") {
+				userId = requestdata.get("userId").asLong();
+			}
+			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
+				regionId = requestdata.get("regionId").asLong();
+			}
+			ArrayNode range = (ArrayNode) requestdata.get("range");
+
+			JSONObject outputdata = new JSONObject();
+
+			ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
+			ArrayList<JSONObject> node1 = new ArrayList<JSONObject>();
+
+				for (JsonNode rangenode : range) {
+					JSONObject node = new JSONObject();
+					month = Integer.parseInt(rangenode.get("month").toString());
+					year = Integer.parseInt(rangenode.get("year").toString());
+					if (month != 0 && year != 0) {
+
+						resultData = tasktrackApprovalService.getUserWiseSubmissionDetails(month, year,
+								projectId, userId, regionId);
+						node.put("timeTracks", resultData);
+						node.put("month", month);
+						node.put("year", year);
+						node1.add(node);
+
+					}
+
+				}
+
+			jsonDataRes.put("data", node1);
+			jsonDataRes.put("status", "success");
+			jsonDataRes.put("message", "success. ");
+			jsonDataRes.put("code", httpstatus.getStatus());
+		} catch (Exception e) {
+			jsonDataRes.put("status", "failure");
+			jsonDataRes.put("code", httpstatus.getStatus());
+			jsonDataRes.put("message", "failed. " + e);
+		}
+
+		return jsonDataRes;
+	}
+
+	
+	
 }

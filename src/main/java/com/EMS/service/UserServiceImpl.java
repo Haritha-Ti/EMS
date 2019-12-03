@@ -1,5 +1,7 @@
 package com.EMS.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.json.simple.JSONObject;
@@ -9,9 +11,13 @@ import org.springframework.stereotype.Service;
 import com.EMS.model.CppLevelModel;
 import com.EMS.model.EmploymentDetailsModel;
 import com.EMS.model.PasswordResetModel;
+
+import com.EMS.model.ProjectModel;
+
 import com.EMS.model.PayrollModel;
 import com.EMS.model.PerformanceMangementModel;
 import com.EMS.model.SkillsModel;
+
 import com.EMS.model.Technology;
 import com.EMS.model.UserModel;
 import com.EMS.model.TaskCategory;
@@ -20,9 +26,13 @@ import com.EMS.model.UserTechnology;
 import com.EMS.repository.CppLevelRepository;
 import com.EMS.repository.EmploymentDetailsRepository;
 import com.EMS.repository.PasswordResetRepository;
+
+import com.EMS.repository.ProjectRepository;
+
 import com.EMS.repository.PayrollRepository;
 import com.EMS.repository.PerformanceMangementRepository;
 import com.EMS.repository.SkillsRepository;
+
 import com.EMS.repository.TechnologyRepository;
 import com.EMS.repository.UserRepository;
 import com.EMS.repository.UserTechnologyRepository;
@@ -58,6 +68,10 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private CppLevelRepository cppLevelRepository;
 	
+
+	@Autowired 
+	private ProjectRepository projectRepository;
+
 	@Autowired
 	private  SkillsRepository  skillsRepository;
 	
@@ -69,6 +83,7 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private PayrollRepository payrollRepository;
+
 	
 	@Override
 	public UserModel getUserDetailsById(Long id) {
@@ -310,6 +325,65 @@ public class UserServiceImpl implements UserService {
 	//Nisha
 
 	@Override
+
+	public List<UserModel> getUsesrsBasedOnMonthYearRegion(Long regionId, int month, int year) {
+		// TODO Auto-generated method stub
+		String startDate = year+"-"+month+"-01"; 
+		SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd");  
+		Date date1 = null;
+		try {
+			 date1=formatter1.parse(startDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userRepository.getUsersBasedOnMonthYearRegion(regionId,date1);
+	}
+
+	@Override
+	public List<UserModel> getUsesrsBasedOnMonthYearRegion(int month, int year) {
+		// TODO Auto-generated method stub
+		String startDate = year+"-"+month+"-01"; 
+		SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd");  
+		Date date1 = null;
+		try {
+			 date1=formatter1.parse(startDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userRepository.getUsersBasedOnMonthYearRegion(date1);
+	}
+
+	@Override
+	public List<ProjectModel> getProjectNamesBasedOnMonthAndYearAndUser(Long regionId, int month, int year, Long userId) {
+		// TODO Auto-generated method stub
+		String startDate = year+"-"+month+"-01"; 
+		SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd");  
+		Date date1 = null;
+		try {
+			 date1=formatter1.parse(startDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return projectRepository.getProjectsBasedOnMonthYearRegionAndUser(regionId,date1,userId);
+	}
+
+	@Override
+	public List<ProjectModel> getProjectNamesBasedOnMonthAndYearAndUser(int month, int year, Long userId) {
+		// TODO Auto-generated method stub
+		String startDate = year+"-"+month+"-01"; 
+		SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd");  
+		Date date1 = null;
+		try {
+			 date1=formatter1.parse(startDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return projectRepository.getProjectsBasedOnMonthYearAndUser(date1,userId);
+	}
 	public SkillsModel addSkills(SkillsModel skill) {
 		SkillsModel skillModel=null;
 		try {
@@ -494,6 +568,7 @@ public class UserServiceImpl implements UserService {
 	public PayrollModel PayrollByUserId(Long userID) {
 		
 		return payrollRepository.PayrollByUserId(userID);
+
 	}
 
 }
