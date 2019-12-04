@@ -7470,16 +7470,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 								: task.getSecondHalfStatus();
 						 billableHoursOneCopy = new JSONObject();
+						 billableHoursOneCopy.put(taskDate, hours);
 						 billableArrayOneCopy.add(billableHoursOneCopy);
 
 					} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
 
 						 overTimeHoursOneCopy = new JSONObject();
+						 overTimeHoursOneCopy.put(taskDate, hours);
 						 overTimeArrayOneCopy.add(overTimeHoursOneCopy);
 						overtimeHours.put(taskDate, hours);
 
 					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
 						 nonBillableHoursOneCopy = new JSONObject();
+						 nonBillableHoursOneCopy.put(taskDate, hours);
 						 nonBillableArrayOneCopy.add(nonBillableHoursOneCopy);
 						// temporaryObject = new JSONObject();
 						// nonBillableHours2 = new JSONObject();
@@ -7489,6 +7492,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						// nonbillableId = task.getId();
 					} else if (task.getProjectType().equalsIgnoreCase("Beach")) {
 						 beachHoursOneCopy = new JSONObject();
+						 beachHoursOneCopy.put(taskDate, hours);
 						 beachArrayOneCopy.add(beachHoursOneCopy);
 						// temporaryObject = new JSONObject();
 						// beachHours2 = new JSONObject();
