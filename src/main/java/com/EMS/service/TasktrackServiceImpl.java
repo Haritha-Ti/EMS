@@ -7,11 +7,13 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import com.EMS.dto.MailDomainDto;
@@ -202,16 +204,58 @@ public class TasktrackServiceImpl implements TasktrackService {
 		return result;
 	}
 
-	public boolean deleteTaskById(long id) {
-		boolean result = false;
+	public JsonNode deleteTaskById(long taskId, long projectId, long userId, Date currentDate) {
+		ObjectNode node = objectMapper.createObjectNode();
+
 		try {
-			tasktrackRepository.deleteTaskById(id);
-			result = true;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			sdf.setTimeZone(TimeZone.getDefault());
+			ProjectModel projectModel = getProjectModelById(projectId);
+
+			int projectTier = projectModel.getProjectTier();
+
+			List<Long> projectIds = Arrays.asList(projectId);
+
+			List<Object[]> taskApprovalStatusArr = new ArrayList<Object[]>();
+
+			if (projectTier == 1) {
+
+				taskApprovalStatusArr.addAll(
+						tasktrackRepository.getTaskApprovalStatusForProjectsTire1(userId, currentDate, projectIds));
+
+			}
+
+			else if (projectTier == 2) {
+
+				taskApprovalStatusArr.addAll(
+						tasktrackRepository.getTaskApprovalStatusForProjectsTire2(userId, currentDate, projectIds));
+
+			}
+
+			boolean isBlocked = false;
+
+			if (taskApprovalStatusArr != null && !taskApprovalStatusArr.isEmpty()) {
+
+				isBlocked = isTaskTrackApproved(projectTier, taskApprovalStatusArr.get(0)[0].toString());
+
+			}
+
+			if (!isBlocked) {
+
+				tasktrackRepository.deleteTaskById(taskId);
+
+			}
+
+			node.put("isBlocked", isBlocked);
+
 		} catch (Exception exc) {
+
 			exc.printStackTrace();
+
 		}
 
-		return result;
+		return node;
+
 	}
 
 	public boolean createTask(Tasktrack task) {
@@ -815,5 +859,21 @@ public class TasktrackServiceImpl implements TasktrackService {
 	public List<Object[]> getProjectTierForTaskTrack(Long userId, Date startDate, Date endDate) {
 
 		return tasktrackRepository.getProjectTierForTaskTrack(userId, startDate, endDate);
+	}
+	
+	private boolean isTaskTrackApproved(int projectTier, String status) {
+		if (projectTier == 2) {
+			List<String> tireTwoStatus = Arrays.asList(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT,
+					Constants.TASKTRACK_APPROVER_STATUS_LOCK, Constants.TASKTRACK_APPROVER_STATUS_CORRECTED,
+					Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
+			return tireTwoStatus.contains(status);
+		}
+
+		else if (projectTier == 1) {
+			List<String> tireOneStatus = Arrays.asList(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
+			return tireOneStatus.contains(status);
+		}
+		return false;
+
 	}
 }
