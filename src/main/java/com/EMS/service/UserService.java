@@ -10,6 +10,7 @@ import com.EMS.model.Technology;
 import com.EMS.model.UserModel;
 import com.EMS.model.UserTechnology;
 import com.EMS.model.CppLevelModel;
+import com.EMS.model.ProjectModel;
 import com.EMS.model.EmploymentDetailsModel;
 import com.EMS.model.PayrollModel;
 import com.EMS.model.PerformanceMangementModel;
@@ -87,6 +88,16 @@ public interface UserService {
 	//Nisha
 	List<UserModel> getUserByRegion(Date startDate, Date endDate, Long regionId);
 	//nisha
+
+
+	List<UserModel> getUsesrsBasedOnMonthYearRegion(Long regionId, int month, int year);
+
+	List<UserModel> getUsesrsBasedOnMonthYearRegion(int month, int year);
+
+	List<ProjectModel> getProjectNamesBasedOnMonthAndYearAndUser(Long regionId, int month, int year, Long userId);
+
+	List<ProjectModel> getProjectNamesBasedOnMonthAndYearAndUser(int month, int year, Long userId);
+
 	
 	SkillsModel addSkills(SkillsModel skill);
 	
@@ -131,4 +142,5 @@ public interface UserService {
 	
 	
 	  
+
 }

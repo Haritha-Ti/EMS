@@ -620,25 +620,24 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			if (billableId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(billableId);
 
-//					taskTrackApproval.setApprovedDate(endDate);
 				if (taskTrackApproval != null) {
 
 					int startDayOfMonth = startCal.get(Calendar.DATE);
 					if (startCal.get(Calendar.DATE) < 16) {
-						if (taskTrackApproval.getFirstHalfStatus()
+						if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 						} else {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 						}
 					}
 					if (endCal.get(Calendar.DATE) > 15) {
-						if (taskTrackApproval.getSecondHalfStatus()
+						if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
 								|| taskTrackApproval.getSecondHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
 						} else {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
@@ -720,28 +719,28 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				TaskTrackApprovalFinal taskTrackApproval = findById(nonBillableId);
 
 //					taskTrackApproval.setApprovedDate(endDate);
-
-				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
-				}
-				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
-				}
 				if (taskTrackApproval != null) {
+
+					if (startCal.get(Calendar.DATE) < 16) {
+						if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| taskTrackApproval.getFirstHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
+						} else {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
+						}
+					}
+					if (endCal.get(Calendar.DATE) > 15) {
+						if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| taskTrackApproval.getSecondHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
+						} else {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
+						}
+					}
 
 					int startDayOfMonth = startCal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -773,24 +772,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProjectType("Non-Billable");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -835,29 +820,28 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			if (overtimeId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(overtimeId);
 
-//					taskTrackApproval.setApprovedDate(endDate);
-
-				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
-				}
-				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
-				}
 				if (taskTrackApproval != null) {
+
+					if (startCal.get(Calendar.DATE) < 16) {
+						if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| taskTrackApproval.getFirstHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
+						} else {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
+						}
+					}
+					if (endCal.get(Calendar.DATE) > 15) {
+						if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| taskTrackApproval.getSecondHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
+						} else {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
+						}
+					}
 
 					int startDayOfMonth = startCal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -888,24 +872,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProjectType("Overtime");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -947,29 +917,28 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			if (beachId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(beachId);
 
-//					taskTrackApproval.setApprovedDate(endDate);
-
-				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
-				}
-				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
-				}
 				if (taskTrackApproval != null) {
+
+					if (startCal.get(Calendar.DATE) < 16) {
+						if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| taskTrackApproval.getFirstHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
+						} else {
+							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
+						}
+					}
+					if (endCal.get(Calendar.DATE) > 15) {
+						if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
+								|| taskTrackApproval.getSecondHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
+						} else {
+							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
+						}
+					}
 
 					int startDayOfMonth = startCal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -1000,24 +969,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setProjectType("Beach");
 
 				if (startCal.get(Calendar.DATE) < 16) {
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getFirstHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
+					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 				}
 				if (endCal.get(Calendar.DATE) > 15) {
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
-							|| taskTrackApproval.getSecondHalfStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED);
-					} else {
-						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
-					}
+					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_OPEN);
 				}
 
 				taskTrackApproval.setProject(project);
@@ -1055,7 +1010,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 		// Obtain the data from request data
 		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
-				userId = null;
+				userId = null,sessionId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -1076,6 +1031,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
 			beachId = Long.valueOf(requestData.get("beachId").toString());
 		}
+		
+		if (requestData.get("sessionId") != null && requestData.get("sessionId") != "") {
+			sessionId = Long.valueOf(requestData.get("sessionId").toString());
+		}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");
 
@@ -1092,7 +1051,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		HashMap<String, Object> nonbillableArray = new JSONObject();
 		HashMap<String, Object> overtimeArray = new JSONObject();
 		HashMap<String, Object> beachArray = new JSONObject();
-
+		UserModel approver = userService.getUserDetailsById(sessionId);
 		UserModel user = userService.getUserDetailsById(userId);
 		ProjectModel project = projectService.getProjectId(projectId);
 
@@ -1164,10 +1123,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				TaskTrackApprovalFinal taskTrackApproval = findById(billableId);
 				if (taskTrackApproval != null) {
 
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+					if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+						taskTrackApproval.setFirstHalfsubmittedBy(approver);
 						int startDay = 0, endDay = 0;
 						startDay = cal.get(Calendar.DATE);
 						endDay = calendar.get(Calendar.DATE);
@@ -1181,7 +1140,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+					taskTrackApproval.setFirstHalfsubmittedBy(approver);
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1208,7 +1167,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Billable");
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
@@ -1251,10 +1210,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (taskTrackApproval != null) {
 
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+					if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+						taskTrackApproval.setFirstHalfsubmittedBy(approver);
 						int startDay = 0, endDay = 0;
 						startDay = cal.get(Calendar.DATE);
 						endDay = calendar.get(Calendar.DATE);
@@ -1268,7 +1227,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+					taskTrackApproval.setFirstHalfsubmittedBy(approver);
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1296,7 +1255,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Non-Billable");
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
@@ -1341,10 +1300,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (taskTrackApproval != null) {
 
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+					if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+						taskTrackApproval.setFirstHalfsubmittedBy(approver);
 						int startDay = 0, endDay = 0;
 						startDay = cal.get(Calendar.DATE);
 						endDay = calendar.get(Calendar.DATE);
@@ -1358,7 +1317,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+					taskTrackApproval.setFirstHalfsubmittedBy(approver);
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1385,7 +1344,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Overtime");
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
@@ -1427,10 +1386,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (taskTrackApproval != null) {
 
-					if (taskTrackApproval.getFirstHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+					if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 						taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+						taskTrackApproval.setFirstHalfsubmittedBy(approver);
 						int startDay = 0, endDay = 0;
 						startDay = cal.get(Calendar.DATE);
 						endDay = calendar.get(Calendar.DATE);
@@ -1444,7 +1403,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+					taskTrackApproval.setFirstHalfsubmittedBy(approver);
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1471,7 +1430,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Beach");
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
@@ -1529,7 +1488,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 		// Obtain the data from request data
 		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
-				userId = null;
+				userId = null,sessionId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -1550,6 +1509,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
 			beachId = Long.valueOf(requestData.get("beachId").toString());
 		}
+		if (requestData.get("sessionId") != null && requestData.get("sessionId") != "") {
+			sessionId = Long.valueOf(requestData.get("sessionId").toString());
+			}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");
 
@@ -1566,7 +1528,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		HashMap<String, Object> nonbillableArray = new JSONObject();
 		HashMap<String, Object> overtimeArray = new JSONObject();
 		HashMap<String, Object> beachArray = new JSONObject();
-
+		UserModel approver = userService.getUserDetailsById(sessionId);
 		UserModel user = userService.getUserDetailsById(userId);
 		ProjectModel project = projectService.getProjectId(projectId);
 
@@ -1582,7 +1544,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		if (requestData.get("beach") != null && requestData.get("beach") != "") {
 			beachArray = (HashMap<String, Object>) requestData.get("beach");
 		}
-
+		
 		Long billable_id = null;
 		Long nonbillable_id = null;
 		Long overtime_id = null;
@@ -1638,10 +1600,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				TaskTrackApprovalFinal taskTrackApproval = findById(billableId);
 				if (taskTrackApproval != null) {
 
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+					if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+						taskTrackApproval.setSecondHalfsubmittedBy(approver);
 						int startDay = 0, endDay = 0;
 						startDay = cal.get(Calendar.DATE);
 						endDay = calendar.get(Calendar.DATE);
@@ -1655,7 +1617,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+					taskTrackApproval.setSecondHalfsubmittedBy(approver);
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1682,7 +1644,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Billable");
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
@@ -1725,10 +1687,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (taskTrackApproval != null) {
 
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+					if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+						taskTrackApproval.setSecondHalfsubmittedBy(approver);
 						int startDay = 0, endDay = 0;
 						startDay = cal.get(Calendar.DATE);
 						endDay = calendar.get(Calendar.DATE);
@@ -1742,7 +1704,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+					taskTrackApproval.setSecondHalfsubmittedBy(approver);
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1770,7 +1732,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Non-Billable");
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
@@ -1815,10 +1777,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (taskTrackApproval != null) {
 
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+					if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+						taskTrackApproval.setSecondHalfsubmittedBy(approver);
 						int startDay = 0, endDay = 0;
 						startDay = cal.get(Calendar.DATE);
 						endDay = calendar.get(Calendar.DATE);
@@ -1832,7 +1794,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+					taskTrackApproval.setSecondHalfsubmittedBy(approver);
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1859,7 +1821,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Overtime");
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
@@ -1901,10 +1863,10 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 				if (taskTrackApproval != null) {
 
-					if (taskTrackApproval.getSecondHalfStatus()
-							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED)) {
+					if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
+							.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))) {
 						taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+						taskTrackApproval.setSecondHalfsubmittedBy(approver);
 						int startDay = 0, endDay = 0;
 						startDay = cal.get(Calendar.DATE);
 						endDay = calendar.get(Calendar.DATE);
@@ -1918,7 +1880,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 					}
 					taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+					taskTrackApproval.setSecondHalfsubmittedBy(approver);
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
 
@@ -1945,7 +1907,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Beach");
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 
 				int startDayOfMonth = cal.get(Calendar.DATE);
@@ -1999,7 +1961,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	public void submitFirstHalfHoursForApproval2(JSONObject requestData) throws Exception {
 		// Obtain the data from request data
 		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
-				userId = null;
+				userId = null,sessionId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -2019,6 +1981,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		}
 		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
 			beachId = Long.valueOf(requestData.get("beachId").toString());
+		}
+		if (requestData.get("sessionId") != null && requestData.get("sessionId") != "") {
+			sessionId = Long.valueOf(requestData.get("sessionId").toString());
 		}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");
@@ -2093,7 +2058,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				throw new DuplicateEntryException("Duplicate entry for Beach.");
 			}
 		}
-
+		UserModel approver = userService.getUserDetailsById(sessionId);
 		String statusBeforeSubmit = null;
 		if (billableArray.size() > 0) {// Billable
 
@@ -2104,11 +2069,12 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			cal.setTime(startDate);
 			double hours = 0;
 			intMonth = (cal.get(Calendar.MONTH) + 1);
-
+			
 			if (billableId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(billableId);
 				statusBeforeSubmit = taskTrackApproval.getFirstHalfStatus();
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
 					for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -2136,7 +2102,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Billable");
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
 				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -2174,7 +2140,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 			if (nonBillableId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(nonBillableId);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 
 				if (taskTrackApproval != null) {
@@ -2205,7 +2171,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Non-Billable");
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
 				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -2246,7 +2212,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			intMonth = (cal.get(Calendar.MONTH) + 1);
 			if (overtimeId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(overtimeId);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
@@ -2275,7 +2241,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Overtime");
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
 				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -2313,7 +2279,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			intMonth = (cal.get(Calendar.MONTH) + 1);
 			if (beachId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(beachId);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
@@ -2342,7 +2308,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Beach");
 				taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setFirstHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
 				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -2424,7 +2390,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	@Override
 	public void submitSecondHalfHoursForApproval2(JSONObject requestData) throws Exception {
 		Long billableId = null, nonBillableId = null, overtimeId = null, beachId = null, projectId = null,
-				userId = null;
+				userId = null,sessionId = null;
 		Integer year = Integer.parseInt((String) requestData.get("year"));
 		Integer month = (Integer) requestData.get("month");
 		if (requestData.get("projectId") != null && requestData.get("projectId") != "") {
@@ -2445,6 +2411,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
 			beachId = Long.valueOf(requestData.get("beachId").toString());
 		}
+		if (requestData.get("sessionId") != null && requestData.get("sessionId") != "") {
+			sessionId = Long.valueOf(requestData.get("sessionId").toString());
+		}
 		String date1 = (String) requestData.get("startDate");
 		String date2 = (String) requestData.get("endDate");
 
@@ -2461,7 +2430,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		HashMap<String, Object> nonbillableArray = new JSONObject();
 		HashMap<String, Object> overtimeArray = new JSONObject();
 		HashMap<String, Object> beachArray = new JSONObject();
-
+		UserModel approver = userService.getUserDetailsById(sessionId);
 		UserModel user = userService.getUserDetailsById(userId);
 		ProjectModel project = projectService.getProjectId(projectId);
 
@@ -2534,6 +2503,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				TaskTrackApprovalFinal taskTrackApproval = findById(billableId);
 				statusBeforeSubmit = taskTrackApproval.getSecondHalfStatus();
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				if (taskTrackApproval != null) {
 					int startDayOfMonth = cal.get(Calendar.DATE);
 
@@ -2562,7 +2532,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Billable");
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
 				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -2601,7 +2571,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 
 			if (nonBillableId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(nonBillableId);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 
 				if (taskTrackApproval != null) {
@@ -2632,7 +2602,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Non-Billable");
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
 				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -2673,7 +2643,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			intMonth = (cal.get(Calendar.MONTH) + 1);
 			if (overtimeId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(overtimeId);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 
@@ -2703,7 +2673,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Overtime");
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
 				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {
@@ -2741,7 +2711,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			intMonth = (cal.get(Calendar.MONTH) + 1);
 			if (beachId != null) {
 				TaskTrackApprovalFinal taskTrackApproval = findById(beachId);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
 				if (taskTrackApproval != null) {
 
@@ -2771,7 +2741,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 				taskTrackApproval.setUser(user);
 				taskTrackApproval.setProjectType("Beach");
 				taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
-
+				taskTrackApproval.setSecondHalfsubmittedBy(approver);
 				taskTrackApproval.setProject(project);
 				int startDayOfMonth = cal.get(Calendar.DATE);
 				for (int i = startDayOfMonth - 1; i < diffInDays + startDayOfMonth; i++) {

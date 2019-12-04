@@ -127,10 +127,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Autowired
 	private EmailNotificationService emailNotificationService;
 
-	
 	@Autowired
 	private ProjectAllocationService projectAllocationService;
-
 
 	@Value("${FINANCE_MAIL}")
 	private String financeMail;
@@ -840,7 +838,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 		AllocationModel allocationObj = allocationRepository
 				.findOneByProjectProjectIdAndUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsBillableAndActiveOrderByEndDateDesc(
-						projectId, userId, startDate, endDate, true, true);
+						projectId, userId, endDate, startDate, true, true);
 
 		Boolean isBillable = allocationObj != null ? true : false;
 
@@ -5510,23 +5508,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 //					taskTrackApproval.setApprovedDate(endDate);
 				if (taskTrackApproval != null) {
 
-					taskTrackApproval.setFirstHalfStatus(
-							taskTrackApproval.getFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: taskTrackApproval.getFirstHalfStatus());
-					taskTrackApproval.setSecondHalfStatus(
-							taskTrackApproval.getSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: taskTrackApproval.getSecondHalfStatus());
-
 					if (startCal.get(Calendar.DATE) < 16) {
-						if (taskTrackApproval.getFirstHalfStatus()
+						if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else if (taskTrackApproval.getFirstHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+						} else if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval
+								.getFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED))) {
 							List<TaskTrackRejection> rejectionEntryList = taskTrackRejectionRepository
 									.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
 											Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
@@ -5543,11 +5534,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					}
 					if (endCal.get(Calendar.DATE) > 15) {
-						if (taskTrackApproval.getSecondHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)) {
+						if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION))) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else if (taskTrackApproval.getFirstHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
+						} else if (taskTrackApproval.getSecondHalfStatus() != null
+								&& (taskTrackApproval.getSecondHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION))) {
 							List<TaskTrackRejection> rejectionEntryList = taskTrackRejectionRepository
 									.findOpenRejectionForCycleForUserForProject(userId, projectId, month, year,
 											Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
@@ -5640,38 +5632,31 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(nonBillableId);
 
 				if (taskTrackApproval != null) {
-					taskTrackApproval.setFirstHalfStatus(
-							taskTrackApproval.getFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: taskTrackApproval.getFirstHalfStatus());
-//						taskTrackApproval.setApprovedDate(endDate);
-					taskTrackApproval.setSecondHalfStatus(
-							taskTrackApproval.getSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: taskTrackApproval.getSecondHalfStatus());
 					if (startCal.get(Calendar.DATE) < 16) {
-						if (taskTrackApproval.getFirstHalfStatus()
+						if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else if (taskTrackApproval.getFirstHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+						} else if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval
+								.getFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED))) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 						} else {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 						}
 					}
 					if (endCal.get(Calendar.DATE) > 15) {
-						if (taskTrackApproval.getSecondHalfStatus()
+						if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
 								|| taskTrackApproval.getSecondHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else if (taskTrackApproval.getSecondHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+						} else if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval
+								.getSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
 								|| taskTrackApproval.getSecondHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED))) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 						} else {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
@@ -5756,38 +5741,31 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(overtimeId);
 
 				if (taskTrackApproval != null) {
-					taskTrackApproval.setFirstHalfStatus(
-							taskTrackApproval.getFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: taskTrackApproval.getFirstHalfStatus());
-//						taskTrackApproval.setApprovedDate(endDate);
-					taskTrackApproval.setSecondHalfStatus(
-							taskTrackApproval.getSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: taskTrackApproval.getSecondHalfStatus());
 					if (startCal.get(Calendar.DATE) < 16) {
-						if (taskTrackApproval.getFirstHalfStatus()
+						if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else if (taskTrackApproval.getFirstHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+						} else if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval
+								.getFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED))) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 						} else {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 						}
 					}
 					if (endCal.get(Calendar.DATE) > 15) {
-						if (taskTrackApproval.getSecondHalfStatus()
+						if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
 								|| taskTrackApproval.getSecondHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else if (taskTrackApproval.getSecondHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+						} else if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval
+								.getSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
 								|| taskTrackApproval.getSecondHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED))) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 						} else {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
@@ -5868,38 +5846,32 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				TaskTrackApproval taskTrackApproval = tasktrackApprovalService.findById(beachId);
 
 				if (taskTrackApproval != null) {
-					taskTrackApproval.setFirstHalfStatus(
-							taskTrackApproval.getFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: taskTrackApproval.getFirstHalfStatus());
-					taskTrackApproval.setSecondHalfStatus(
-							taskTrackApproval.getSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: taskTrackApproval.getSecondHalfStatus());
 
 					if (startCal.get(Calendar.DATE) < 16) {
-						if (taskTrackApproval.getFirstHalfStatus()
+						if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval.getFirstHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else if (taskTrackApproval.getFirstHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+						} else if (taskTrackApproval.getFirstHalfStatus() != null && (taskTrackApproval
+								.getFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
 								|| taskTrackApproval.getFirstHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED))) {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 						} else {
 							taskTrackApproval.setFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 						}
 					}
 					if (endCal.get(Calendar.DATE) > 15) {
-						if (taskTrackApproval.getSecondHalfStatus()
+						if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval.getSecondHalfStatus()
 								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
 								|| taskTrackApproval.getSecondHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED))) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED);
-						} else if (taskTrackApproval.getSecondHalfStatus()
-								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+						} else if (taskTrackApproval.getSecondHalfStatus() != null && (taskTrackApproval
+								.getSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
 								|| taskTrackApproval.getSecondHalfStatus()
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED)) {
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED))) {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SAVED);
 						} else {
 							taskTrackApproval.setSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_OPEN);
@@ -7488,17 +7460,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
 						// temporaryObject = new JSONObject();
-						//nonBillableHours2 = new JSONObject();
+						// nonBillableHours2 = new JSONObject();
 						nonBillableHours.put(taskDate, hours);
-						//nonBillableHours2.put(taskDate, hours);
-						//nonbillableArray2.add(nonBillableHours2);
+						// nonBillableHours2.put(taskDate, hours);
+						// nonbillableArray2.add(nonBillableHours2);
 						// nonbillableId = task.getId();
 					} else if (task.getProjectType().equalsIgnoreCase("Beach")) {
 						// temporaryObject = new JSONObject();
-						//beachHours2 = new JSONObject();
+						// beachHours2 = new JSONObject();
 						beachHours.put(taskDate, hours);
-						//beachHours2.put(taskDate, hours);
-						//beachArray2.add(beachHours2);
+						// beachHours2.put(taskDate, hours);
+						// beachArray2.add(beachHours2);
 						// nonbillableId = task.getId();
 					}
 					cal.add(Calendar.DATE, 1);
@@ -8370,12 +8342,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public ArrayList<JSONObject> getProjectWiseSubmissionDetailsTier1(int month, int year, long projectId, long userId,long regionId) {
+	public ArrayList<JSONObject> getProjectWiseSubmissionDetailsTier1(int month, int year, long projectId, long userId,
+			long regionId) {
 		// TODO Auto-generated method stub
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<JSONObject> data = new ArrayList<>();
-		//ArrayList<JSONObject> datas = new ArrayList<>();
+		// ArrayList<JSONObject> datas = new ArrayList<>();
 		Double firstHalfHour = 0.0;
 		Double secondHalfHour = 0.0;
 		Date startDate = null;
@@ -8396,128 +8369,131 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		try {
 			if (startDate != null && endDate != null) {
-				
-				//System.out.println("datas------------>" + userIdList.size());
-				
-					JSONObject eachUserData = new JSONObject();
-
-
-						List<Object[]> details = taskTrackApprovalFinalRepository
-								.getProjectWiseSubmissionDetails(month, year, projectId,userId,regionId);
-						
-						if (details != null && details.size() > 0) {
-							for (Object[] item : details) {
-								JSONObject node = new JSONObject();
-								List<JSONObject> billableArray = new ArrayList<>();
-								List<JSONObject> userArray = new ArrayList<>();
-						
-								node.put("userId", item[0]);
-								node.put("firstName", item[1]);
-								node.put("lastName", item[2]);
-								//node.put("status", item[3]);
-								int halforfull = daysInMonth;
-								if(item[9] != null && item[10] == null) {
-									if(item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
-										halforfull = 15;
-									}
-								}
-								if(item[9] != null && item[10] != null) {
-									
-									if(item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT) && !item[10].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)  ) {
-										
-										halforfull = 15;
-									}
-									
-								}
-								
-								for (int i = 1; i <= daysInMonth; i++) {
-									String j;
-									if (i < 10) {
-										j = "0" + i;
-									} else {
-										j = String.valueOf(i);
-									}
-									
-									JSONObject billableNode = new JSONObject();
-									billableNode.put(year + "-" + month + "-" + j, item[i + 10]);
-									billableArray.add(billableNode);
-								}
-								
-								Long user_id = Long.parseLong(item[0].toString());
-								Long project_id = Long.parseLong(item[4].toString());
-								// odc details
-								JSONObject odcDetails = new JSONObject();
-								UserModel userDetails = userService.getUserDetailsById(user_id);
-								odcDetails.put("odcName", userDetails.getRegion().getRegion_name());
-								
-
-								// project details
-								JSONObject projectDetails = new JSONObject();
-								ProjectModel project = projectService.getProjectDetails(project_id);
-								projectDetails.put("projectName", project.getProjectName());
-								projectDetails.put("clientName", project.getClientName().getClientName());
-								projectDetails.put("projectTier", project.getProjectTier());
-								projectDetails.put("projectType", project.getprojectType());
-								
-								
-								// submitted details
-								JSONObject submissionDetail = new JSONObject();
-								SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd");
-								String firstHalfDate = ft.format(item[6]);
-								submissionDetail.put("firstHalfsubmittedDate", firstHalfDate);
-								Long approver1 = Long.parseLong(item[7].toString());
-								UserModel approverDetails =
-								userService.getUserdetailsbyId(approver1);
-								submissionDetail.put("firstHalfsubmittedPerson",
-										(approverDetails.getLastName() + " "
-												+approverDetails.getFirstName()));
-								
-								if(halforfull != 15) {
-									Long approver2 = Long.parseLong(item[8].toString());
-									 UserModel approverD =
-									 userService.getUserdetailsbyId(approver2);
-									submissionDetail.put("secondHalfsubmittedPerson",
-											(approverD.getLastName() + " "
-													+ approverD.getFirstName()));	
-									submissionDetail.put("secondHalfsubmittedDate", firstHalfDate);
-									
-								}
-								else {
-									
-										submissionDetail.put("secondHalfsubmittedPerson","");
-										submissionDetail.put("secondHalfsubmittedDate", "");
-													
-								}
-										
-								node.put("billable", billableArray);
-								node.put("odcDetails", odcDetails);
-								node.put("projectDetails",projectDetails);
-								node.put("submissionDetails", submissionDetail);
-								node.put("approveLevel", "level1");
-								data.add(node);
+				// System.out.println("datas------------>" + userIdList.size());
+				JSONObject eachUserData = new JSONObject();
+				List<Object[]> details = taskTrackApprovalFinalRepository.getProjectWiseSubmissionDetails(month, year,
+						projectId, userId, regionId);
+				if (details != null && details.size() > 0) {
+					for (Object[] item : details) {
+						JSONObject node = new JSONObject();
+						List<JSONObject> billableArray = new ArrayList<>();
+						List<JSONObject> userArray = new ArrayList<>();
+						node.put("userId", item[0]);
+						node.put("firstName", item[1]);
+						node.put("lastName", item[2]);
+						// node.put("status", item[3]);
+						int halforfull = daysInMonth;
+						if (item[9] != null && item[10] == null) {
+							if (item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
+								halforfull = 15;
 							}
-							
-							//data.add(eachUserData);
-
 						}
+						if (item[9] != null && item[10] != null) {
+							if (item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+									&& !item[10].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
+								halforfull = 15;
+							}
+						}
+						for (int i = 1; i <= daysInMonth; i++) {
+							String j;
+							if (i < 10) {
+								j = "0" + i;
+							} else {
+								j = String.valueOf(i);
+							}
+							JSONObject billableNode = new JSONObject();
+							billableNode.put(year + "-" + month + "-" + j, item[i + 10]);
+							billableArray.add(billableNode);
+						}
+						Long user_id = Long.parseLong(item[0].toString());
+						Long project_id = Long.parseLong(item[4].toString());
+						// odc details
+						JSONObject odcDetails = new JSONObject();
+						UserModel userDetails = userService.getUserDetailsById(user_id);
+						odcDetails.put("odcName", userDetails.getRegion().getRegion_name());
+						// project details
+						JSONObject projectDetails = new JSONObject();
+						ProjectModel project = projectService.getProjectDetails(project_id);
+						projectDetails.put("projectName", project.getProjectName());
+						if (project.getClientName().getClientName() != null) {
+							projectDetails.put("clientName", project.getClientName().getClientName());
+						} else {
+							projectDetails.put("clientName", "");
+						}
+						projectDetails.put("projectTier", project.getProjectTier());
+						projectDetails.put("projectType", project.getprojectType());
+						// submitted details level2
+						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+						// first half submitted date
+						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(projectId,
+								userId, month, year);
+						Date firstHalfDateOne = null;
+						String firstHalfDateOnes = null;
+						System.out.println("---------------->" + firstHalfDates.length);
+						if (firstHalfDates.length > 0) {
+							if (firstHalfDates != null) {
+								firstHalfDateOne = (Date) firstHalfDates[0];
+								firstHalfDateOnes = ft.format(firstHalfDateOne);
+							}
+						} else {
+							firstHalfDateOnes = "-";
+						}
+						JSONObject submissionDetail = new JSONObject();
+						String firstHalfDate = null;
+						if (firstHalfDateOnes != null) {
+							submissionDetail.put("firstHalfsubmittedDate", firstHalfDateOnes);
+						} else {
+							submissionDetail.put("firstHalfsubmittedDate", "-");
+						}
+						if (item[7] != null) {
+							Long approver21 = Long.parseLong(item[7].toString());
+							UserModel approverDetails = userService.getUserdetailsbyId(approver21);
+							submissionDetail.put("firstHalfsubmittedPerson",
+									(approverDetails.getLastName() + " " + approverDetails.getFirstName()));
+						} else {
+							submissionDetail.put("firstHalfsubmittedPerson", "-");
+						}
+						if (halforfull != 15) {
+							if (item[8] != null && item[6] != null) {
+								firstHalfDate = ft.format(item[6]);
+								Long approver2 = Long.parseLong(item[8].toString());
+								UserModel approverD = userService.getUserdetailsbyId(approver2);
+								submissionDetail.put("secondHalfsubmittedPerson",
+										(approverD.getLastName() + " " + approverD.getFirstName()));
+								submissionDetail.put("secondHalfsubmittedDate", firstHalfDate);
+							} else {
+								submissionDetail.put("secondHalfsubmittedPerson", "-");
+								submissionDetail.put("secondHalfsubmittedDate", "-");
+							}
+						} else {
+							submissionDetail.put("secondHalfsubmittedPerson", "-");
+							submissionDetail.put("secondHalfsubmittedDate", "-");
+						}
+						node.put("billable", billableArray);
+						node.put("odcDetails", odcDetails);
+						node.put("projectDetails", projectDetails);
+						node.put("submissionDetails", submissionDetail);
+						node.put("approveLevel", "level1");
+						data.add(node);
+					}
+					// data.add(eachUserData);
+				}
 				/*
 				 * for(JSONObject eachNode : data) {
-				 * 
+				 *
 				 * if(!eachNode.isEmpty()) { datas.add(eachNode); } }
 				 */
-
-				
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
 		return data;
 	}
 
 	@Override
-	public ArrayList<JSONObject> getProjectWiseSubmissionDetailsTier2(int month, int year, long projectId, long userId , long regionId) {
+	public ArrayList<JSONObject> getProjectWiseSubmissionDetailsTier2(int month, int year, long projectId, long userId,
+			long regionId) {
 		// TODO Auto-generated method stub
 		// approver level2 submitted details
 		YearMonth yearMonthObject = YearMonth.of(year, month);
@@ -8544,118 +8520,125 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		try {
 			if (startDate != null && endDate != null) {
-					
-				
-					// approver level1 submitted details
-					List<Object[]> details = taskTrackApprovalFinalRepository
-							.getProjectWiseSubmissionDetails(month, year, projectId,userId,regionId);
-					
-					
-					if (details != null && details.size() > 0) {
-						for (Object[] item : details) {
-							JSONObject eachUserData = new JSONObject();
-							JSONObject node = new JSONObject();
-							List<JSONObject> billableArray = new ArrayList<>();
-							List<JSONObject> userArray = new ArrayList<>();
-					
-							node.put("userId", item[0]);
-							node.put("firstName", item[1]);
-							node.put("lastName", item[2]);
-							//node.put("status", item[3]);
-							int halforfull = daysInMonth;
-							if(item[9] != null && item[10] == null) {
-								if(item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
-									halforfull = 15;
-								}
+				// approver level1 submitted details
+				List<Object[]> details = taskTrackApprovalFinalRepository.getProjectWiseSubmissionDetails(month, year,
+						projectId, userId, regionId);
+				if (details != null && details.size() > 0) {
+					for (Object[] item : details) {
+						JSONObject eachUserData = new JSONObject();
+						JSONObject node = new JSONObject();
+						List<JSONObject> billableArray = new ArrayList<>();
+						List<JSONObject> userArray = new ArrayList<>();
+						node.put("userId", item[0]);
+						node.put("firstName", item[1]);
+						node.put("lastName", item[2]);
+						// node.put("status", item[3]);
+						int halforfull = daysInMonth;
+						if (item[9] != null && item[10] == null) {
+							if (item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
+								halforfull = 15;
 							}
-							if(item[9] != null && item[10] != null) {
-								
-								if(item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT) && !item[10].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)  ) {
-									
-									halforfull = 15;
-								}
-								
+						}
+						if (item[9] != null && item[10] != null) {
+							if (item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+									&& !item[10].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
+								halforfull = 15;
 							}
-							for (int i = 1; i <= daysInMonth; i++) {
-								String j;
-								if (i < 10) {
-									j = "0" + i;
-								} else {
-									j = String.valueOf(i);
-								}
-								JSONObject billableNode = new JSONObject();
-								billableNode.put(year + "-" + month + "-" + j, item[i + 10]);
-								billableArray.add(billableNode);
+						}
+						for (int i = 1; i <= daysInMonth; i++) {
+							String j;
+							if (i < 10) {
+								j = "0" + i;
+							} else {
+								j = String.valueOf(i);
 							}
-							
-							Long user_id = Long.parseLong(item[0].toString());
-							Long project_id = Long.parseLong(item[4].toString());
-							// odc details
-							JSONObject odcDetails = new JSONObject();
-							UserModel userDetails = userService.getUserDetailsById(user_id);
-							odcDetails.put("odcName", userDetails.getRegion().getRegion_name());
-							
-
-							// project details
-							JSONObject projectDetails = new JSONObject();
-							ProjectModel project = projectService.getProjectDetails(project_id);
-							projectDetails.put("projectName", project.getProjectName());
+							JSONObject billableNode = new JSONObject();
+							billableNode.put(year + "-" + month + "-" + j, item[i + 10]);
+							billableArray.add(billableNode);
+						}
+						Long user_id = Long.parseLong(item[0].toString());
+						Long project_id = Long.parseLong(item[4].toString());
+						// odc details
+						JSONObject odcDetails = new JSONObject();
+						UserModel userDetails = userService.getUserDetailsById(user_id);
+						odcDetails.put("odcName", userDetails.getRegion().getRegion_name());
+						// project details
+						JSONObject projectDetails = new JSONObject();
+						ProjectModel project = projectService.getProjectDetails(project_id);
+						projectDetails.put("projectName", project.getProjectName());
+						if (project.getClientName().getClientName() != null) {
 							projectDetails.put("clientName", project.getClientName().getClientName());
-							projectDetails.put("projectTier", project.getProjectTier());
-							projectDetails.put("projectType", project.getprojectType());
-							
-							
-							// submitted details level2
-							JSONObject submissionDetail = new JSONObject();
-							SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd");
-							String firstHalfDate = ft.format(item[6]);
-							submissionDetail.put("firstHalfsubmittedDate", firstHalfDate);
+						} else {
+							projectDetails.put("clientName", "");
+						}
+						projectDetails.put("projectTier", project.getProjectTier());
+						projectDetails.put("projectType", project.getprojectType());
+						// submitted details level2
+						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+						// first half submitted date
+						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(projectId,
+								userId, month, year);
+						Date firstHalfDateOne = null;
+						String firstHalfDateOnes = null;
+						System.out.println("---------------->" + firstHalfDates.length);
+						if (firstHalfDates.length > 0) {
+							if (firstHalfDates != null) {
+								firstHalfDateOne = (Date) firstHalfDates[0];
+								firstHalfDateOnes = ft.format(firstHalfDateOne);
+							}
+						} else {
+							firstHalfDateOnes = "-";
+						}
+						JSONObject submissionDetail = new JSONObject();
+						String firstHalfDate = null;
+						if (firstHalfDateOnes != null) {
+							submissionDetail.put("firstHalfsubmittedDate", firstHalfDateOnes);
+						} else {
+							submissionDetail.put("firstHalfsubmittedDate", "-");
+						}
+						if (item[7] != null) {
 							Long approver21 = Long.parseLong(item[7].toString());
-							UserModel approverDetails =
-							userService.getUserdetailsbyId(approver21);
+							UserModel approverDetails = userService.getUserdetailsbyId(approver21);
 							submissionDetail.put("firstHalfsubmittedPerson",
-									(approverDetails.getLastName() + " "
-											+approverDetails.getFirstName()));
-							
-							if(halforfull != 15) {
+									(approverDetails.getLastName() + " " + approverDetails.getFirstName()));
+						} else {
+							submissionDetail.put("firstHalfsubmittedPerson", "-");
+						}
+						if (halforfull != 15) {
+							if (item[8] != null && item[6] != null) {
+								firstHalfDate = ft.format(item[6]);
 								Long approver2 = Long.parseLong(item[8].toString());
-								 UserModel approverD =
-								 userService.getUserdetailsbyId(approver2);
+								UserModel approverD = userService.getUserdetailsbyId(approver2);
 								submissionDetail.put("secondHalfsubmittedPerson",
-										(approverD.getLastName() + " "
-												+ approverD.getFirstName()));	
+										(approverD.getLastName() + " " + approverD.getFirstName()));
 								submissionDetail.put("secondHalfsubmittedDate", firstHalfDate);
-								
+							} else {
+								submissionDetail.put("secondHalfsubmittedPerson", "-");
+								submissionDetail.put("secondHalfsubmittedDate", "-");
 							}
-							else {
-								submissionDetail.put("secondHalfsubmittedPerson","");
-								submissionDetail.put("secondHalfsubmittedDate", "");
-							}
-							
-							node.put("billable", billableArray);
-							node.put("odcDetails", odcDetails);
-							node.put("projectDetails",projectDetails);
-							node.put("submissionDetails", submissionDetail);
-							node.put("approverLevel", "level2");
-							data.add(node);
-							
+						} else {
+							submissionDetail.put("secondHalfsubmittedPerson", "-");
+							submissionDetail.put("secondHalfsubmittedDate", "-");
+						}
+						node.put("billable", billableArray);
+						node.put("odcDetails", odcDetails);
+						node.put("projectDetails", projectDetails);
+						node.put("submissionDetails", submissionDetail);
+						node.put("approverLevel", "level2");
+						data.add(node);
 //							for(JSONObject eachNode : data) {
 //								
 //								if(!eachNode.isEmpty()) {
 //									datas.add(eachNode);
 //								}
 //							}
-							
-						}
-					
 					}
+				}
 			}
-
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-
 		return data;
 	}
 
@@ -8666,8 +8649,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		YearMonth yearMonthObject = YearMonth.of(year, month);
 		int daysInMonth = yearMonthObject.lengthOfMonth();
 		ArrayList<Object[]> data = new ArrayList<>();
-		//ArrayList<JSONObject> datas = new ArrayList<>();
-		List<Object[]> details  = new ArrayList<Object[]>();
+		// ArrayList<JSONObject> datas = new ArrayList<>();
+		List<Object[]> details = new ArrayList<Object[]>();
 		Double firstHalfHour = 0.0;
 		Double secondHalfHour = 0.0;
 		Date startDate = null;
@@ -8688,123 +8671,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		try {
 			if (startDate != null && endDate != null) {
-				
-				//System.out.println("datas------------>" + userIdList.size());
-				
-					JSONObject eachUserData = new JSONObject();
-
-
-						 details = taskTrackApprovalFinalRepository
-								.getProjectWiseSubmissionDetails(month, year, projectId,userId,regionId);
-						
-						if (details != null && details.size() > 0) {
-							for (Object[] item : details) {
-								JSONObject node = new JSONObject();
-								List<JSONObject> billableArray = new ArrayList<>();
-								List<JSONObject> userArray = new ArrayList<>();
-						
-								node.put("userId", item[0]);
-								node.put("firstName", item[1]);
-								node.put("lastName", item[2]);
-								//node.put("status", item[3]);
-								int halforfull = daysInMonth;
-								if(item[9] != null && item[10] == null) {
-									if(item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
-										halforfull = 15;
-									}
-								}
-								if(item[9] != null && item[10] != null) {
-									
-									if(item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT) && !item[10].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)  ) {
-										
-										halforfull = 15;
-									}
-									
-								}
-								
-								for (int i = 1; i <= daysInMonth; i++) {
-									String j;
-									if (i < 10) {
-										j = "0" + i;
-									} else {
-										j = String.valueOf(i);
-									}
-									
-									JSONObject billableNode = new JSONObject();
-									billableNode.put(year + "-" + month + "-" + j, item[i + 10]);
-									billableArray.add(billableNode);
-								}
-								
-								Long user_id = Long.parseLong(item[0].toString());
-								Long project_id = Long.parseLong(item[4].toString());
-								// odc details
-								JSONObject odcDetails = new JSONObject();
-								UserModel userDetails = userService.getUserDetailsById(user_id);
-								odcDetails.put("odcName", userDetails.getRegion().getRegion_name());
-								
-
-								// project details
-								JSONObject projectDetails = new JSONObject();
-								ProjectModel project = projectService.getProjectDetails(project_id);
-								projectDetails.put("projectName", project.getProjectName());
-								projectDetails.put("clientName", project.getClientName().getClientName());
-								projectDetails.put("projectTier", project.getProjectTier());
-								projectDetails.put("projectType", project.getprojectType());
-								
-								
-								// submitted details
-								JSONObject submissionDetail = new JSONObject();
-								SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd");
-								String firstHalfDate = ft.format(item[6]);
-								submissionDetail.put("firstHalfsubmittedDate", firstHalfDate);
-								Long approver1 = Long.parseLong(item[7].toString());
-								UserModel approverDetails =
-								userService.getUserdetailsbyId(approver1);
-								submissionDetail.put("firstHalfsubmittedPerson",
-										(approverDetails.getLastName() + " "
-												+approverDetails.getFirstName()));
-								
-								if(halforfull != 15) {
-									Long approver2 = Long.parseLong(item[8].toString());
-									 UserModel approverD =
-									 userService.getUserdetailsbyId(approver2);
-									submissionDetail.put("secondHalfsubmittedPerson",
-											(approverD.getLastName() + " "
-													+ approverD.getFirstName()));	
-									submissionDetail.put("secondHalfsubmittedDate", firstHalfDate);
-									
-								}
-								else {
-									
-										submissionDetail.put("secondHalfsubmittedPerson","");
-										submissionDetail.put("secondHalfsubmittedDate", "");
-													
-								}
-										
-								node.put("billable", billableArray);
-								node.put("odcDetails", odcDetails);
-								node.put("projectDetails",projectDetails);
-								node.put("submissionDetails", submissionDetail);
-								node.put("approveLevel", "level1");
-								//data.add(node);
-							}
-							
-							//data.add(eachUserData);
-
-						}
+				// System.out.println("datas------------>" + userIdList.size());
+				JSONObject eachUserData = new JSONObject();
+				details = taskTrackApprovalFinalRepository.getProjectWiseSubmissionDetails(month, year, projectId,
+						userId, regionId);
 				/*
 				 * for(JSONObject eachNode : data) {
-				 * 
+				 *
 				 * if(!eachNode.isEmpty()) { datas.add(eachNode); } }
 				 */
-
-				
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
 		return details;
 	}
 
@@ -8837,118 +8717,310 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		try {
 			if (startDate != null && endDate != null) {
-					
-				
-					// approver level1 submitted details
-					 details = taskTrackApprovalFinalRepository
-							.getProjectWiseSubmissionDetails(month, year, projectId,userId,regionId);
-					
-					
-					if (details != null && details.size() > 0) {
-						for (Object[] item : details) {
-							JSONObject eachUserData = new JSONObject();
-							JSONObject node = new JSONObject();
-							List<JSONObject> billableArray = new ArrayList<>();
-							List<JSONObject> userArray = new ArrayList<>();
-					
-							node.put("userId", item[0]);
-							node.put("firstName", item[1]);
-							node.put("lastName", item[2]);
-							//node.put("status", item[3]);
-							int halforfull = daysInMonth;
-							if(item[9] != null && item[10] == null) {
-								if(item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
-									halforfull = 15;
-								}
+				// approver level1 submitted details
+				details = taskTrackApprovalFinalRepository.getProjectWiseSubmissionDetails(month, year, projectId,
+						userId, regionId);
+				if (details != null && details.size() > 0) {
+					for (Object[] item : details) {
+						JSONObject eachUserData = new JSONObject();
+						JSONObject node = new JSONObject();
+						List<JSONObject> billableArray = new ArrayList<>();
+						List<JSONObject> userArray = new ArrayList<>();
+						node.put("userId", item[0]);
+						node.put("firstName", item[1]);
+						node.put("lastName", item[2]);
+						// node.put("status", item[3]);
+						int halforfull = daysInMonth;
+						if (item[9] != null && item[10] == null) {
+							if (item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
+								halforfull = 15;
 							}
-							if(item[9] != null && item[10] != null) {
-								
-								if(item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT) && !item[10].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)  ) {
-									
-									halforfull = 15;
-								}
-								
+						}
+						if (item[9] != null && item[10] != null) {
+							if (item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+									&& !item[10].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
+								halforfull = 15;
 							}
-							for (int i = 1; i <= daysInMonth; i++) {
-								String j;
-								if (i < 10) {
-									j = "0" + i;
-								} else {
-									j = String.valueOf(i);
-								}
-								JSONObject billableNode = new JSONObject();
-								billableNode.put(year + "-" + month + "-" + j, item[i + 10]);
-								billableArray.add(billableNode);
+						}
+						for (int i = 1; i <= daysInMonth; i++) {
+							String j;
+							if (i < 10) {
+								j = "0" + i;
+							} else {
+								j = String.valueOf(i);
 							}
-							
-							Long user_id = Long.parseLong(item[0].toString());
-							Long project_id = Long.parseLong(item[4].toString());
-							// odc details
-							JSONObject odcDetails = new JSONObject();
-							UserModel userDetails = userService.getUserDetailsById(user_id);
-							odcDetails.put("odcName", userDetails.getRegion().getRegion_name());
-							
-
-							// project details
-							JSONObject projectDetails = new JSONObject();
-							ProjectModel project = projectService.getProjectDetails(project_id);
-							projectDetails.put("projectName", project.getProjectName());
+							JSONObject billableNode = new JSONObject();
+							billableNode.put(year + "-" + month + "-" + j, item[i + 10]);
+							billableArray.add(billableNode);
+						}
+						Long user_id = Long.parseLong(item[0].toString());
+						Long project_id = Long.parseLong(item[4].toString());
+						// odc details
+						JSONObject odcDetails = new JSONObject();
+						UserModel userDetails = userService.getUserDetailsById(user_id);
+						odcDetails.put("odcName", userDetails.getRegion().getRegion_name());
+						// project details
+						JSONObject projectDetails = new JSONObject();
+						ProjectModel project = projectService.getProjectDetails(project_id);
+						projectDetails.put("projectName", project.getProjectName());
+						if (project.getClientName().getClientName() != null) {
 							projectDetails.put("clientName", project.getClientName().getClientName());
-							projectDetails.put("projectTier", project.getProjectTier());
-							projectDetails.put("projectType", project.getprojectType());
-							
-							
-							// submitted details level2
-							JSONObject submissionDetail = new JSONObject();
-							SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd");
-							String firstHalfDate = ft.format(item[6]);
-							submissionDetail.put("firstHalfsubmittedDate", firstHalfDate);
+						} else {
+							projectDetails.put("clientName", "");
+						}
+						projectDetails.put("projectTier", project.getProjectTier());
+						projectDetails.put("projectType", project.getprojectType());
+						// submitted details level2
+						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+						// first half submitted date
+						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(projectId,
+								userId, month, year);
+						Date firstHalfDateOne = null;
+						String firstHalfDateOnes = null;
+						System.out.println("---------------->" + firstHalfDates.length);
+						if (firstHalfDates.length > 0) {
+							if (firstHalfDates != null) {
+								firstHalfDateOne = (Date) firstHalfDates[0];
+								firstHalfDateOnes = ft.format(firstHalfDateOne);
+							}
+						} else {
+							firstHalfDateOnes = "-";
+						}
+						JSONObject submissionDetail = new JSONObject();
+						String firstHalfDate = null;
+						if (firstHalfDateOnes != null) {
+							submissionDetail.put("firstHalfsubmittedDate", firstHalfDateOnes);
+						} else {
+							submissionDetail.put("firstHalfsubmittedDate", "-");
+						}
+						if (item[7] != null) {
 							Long approver21 = Long.parseLong(item[7].toString());
-							UserModel approverDetails =
-							userService.getUserdetailsbyId(approver21);
+							UserModel approverDetails = userService.getUserdetailsbyId(approver21);
 							submissionDetail.put("firstHalfsubmittedPerson",
-									(approverDetails.getLastName() + " "
-											+approverDetails.getFirstName()));
-							
-							if(halforfull != 15) {
+									(approverDetails.getLastName() + " " + approverDetails.getFirstName()));
+						} else {
+							submissionDetail.put("firstHalfsubmittedPerson", "-");
+						}
+						if (halforfull != 15) {
+							if (item[8] != null && item[6] != null) {
+								firstHalfDate = ft.format(item[6]);
 								Long approver2 = Long.parseLong(item[8].toString());
-								 UserModel approverD =
-								 userService.getUserdetailsbyId(approver2);
+								UserModel approverD = userService.getUserdetailsbyId(approver2);
 								submissionDetail.put("secondHalfsubmittedPerson",
-										(approverD.getLastName() + " "
-												+ approverD.getFirstName()));	
+										(approverD.getLastName() + " " + approverD.getFirstName()));
 								submissionDetail.put("secondHalfsubmittedDate", firstHalfDate);
-								
+							} else {
+								submissionDetail.put("secondHalfsubmittedPerson", "-");
+								submissionDetail.put("secondHalfsubmittedDate", "-");
 							}
-							else {
-								submissionDetail.put("secondHalfsubmittedPerson","");
-								submissionDetail.put("secondHalfsubmittedDate", "");
-							}
-							
-							node.put("billable", billableArray);
-							node.put("odcDetails", odcDetails);
-							node.put("projectDetails",projectDetails);
-							node.put("submissionDetails", submissionDetail);
-							node.put("approverLevel", "level2");
-							data.add(node);
-							
+						} else {
+							submissionDetail.put("secondHalfsubmittedPerson", "-");
+							submissionDetail.put("secondHalfsubmittedDate", "-");
+						}
+						node.put("billable", billableArray);
+						node.put("odcDetails", odcDetails);
+						node.put("projectDetails", projectDetails);
+						node.put("submissionDetails", submissionDetail);
+						node.put("approverLevel", "level2");
+						data.add(node);
 //							for(JSONObject eachNode : data) {
 //								
 //								if(!eachNode.isEmpty()) {
 //									datas.add(eachNode);
 //								}
 //							}
-							
-						}
-					
 					}
+				}
 			}
-
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+		return details;
+	}
 
+	@Override
+	public ArrayList<JSONObject> getUserWiseSubmissionDetails(int month, int year, long projectId, long userId,
+			long regionId) {
+		// TODO Auto-generated method stub
+		YearMonth yearMonthObject = YearMonth.of(year, month);
+		int daysInMonth = yearMonthObject.lengthOfMonth();
+		ArrayList<JSONObject> data = new ArrayList<>();
+		List<Object[]> details = new ArrayList<Object[]>();
+		Double firstHalfHour = 0.0;
+		Double secondHalfHour = 0.0;
+		Date startDate = null;
+		Date endDate = null;
+		TaskTrackApproval submissionDetails = new TaskTrackApproval();
+		int firstHalfDay = 15;
+		try {
+			String start = year + "-" + month + "-01";
+			startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(startDate);
+			int total = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+			String end = year + "-" + month + "-" + total;
+			endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			if (startDate != null && endDate != null) {
+				// approver level1 submitted details
+				details = taskTrackApprovalFinalRepository.getProjectWiseSubmissionDetails(month, year, projectId,
+						userId, regionId);
+				if (details != null && details.size() > 0) {
+					for (Object[] item : details) {
+						JSONObject eachUserData = new JSONObject();
+						JSONObject node = new JSONObject();
+						List<JSONObject> billableArray = new ArrayList<>();
+						List<JSONObject> userArray = new ArrayList<>();
+						node.put("projectId", item[4]);
+						node.put("ProjectName", item[3]);
+						// node.put("lastName", item[2]);
+						// node.put("status", item[3]);
+						int halforfull = daysInMonth;
+						if (item[9] != null && item[10] == null) {
+							if (item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
+								halforfull = 15;
+							}
+						}
+						if (item[9] != null && item[10] != null) {
+							if (item[9].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+									&& !item[10].toString().equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)) {
+								halforfull = 15;
+							}
+						}
+						for (int i = 1; i <= daysInMonth; i++) {
+							String j;
+							if (i < 10) {
+								j = "0" + i;
+							} else {
+								j = String.valueOf(i);
+							}
+							JSONObject billableNode = new JSONObject();
+							billableNode.put(year + "-" + month + "-" + j, item[i + 10]);
+							billableArray.add(billableNode);
+						}
+						Long user_id = Long.parseLong(item[0].toString());
+						Long project_id = Long.parseLong(item[4].toString());
+						// odc details
+						JSONObject odcDetails = new JSONObject();
+						UserModel userDetails = userService.getUserDetailsById(user_id);
+						odcDetails.put("odcName", userDetails.getRegion().getRegion_name());
+						// project details
+						JSONObject projectDetails = new JSONObject();
+						ProjectModel project = projectService.getProjectDetails(project_id);
+						projectDetails.put("projectName", project.getProjectName());
+						if (project.getClientName() != null) {
+							if (project.getClientName().getClientName() != null) {
+								projectDetails.put("clientName", project.getClientName().getClientName());
+							}
+						} else {
+							projectDetails.put("clientName", "");
+						}
+						projectDetails.put("projectTier", project.getProjectTier());
+						projectDetails.put("projectType", project.getprojectType());
+						// submitted details level2
+						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+						// first half submitted date
+						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(projectId,
+								userId, month, year);
+						Date firstHalfDateOne = null;
+						String firstHalfDateOnes = null;
+						System.out.println("---------------->" + firstHalfDates.length);
+						if (firstHalfDates.length > 0) {
+							if (firstHalfDates != null) {
+								firstHalfDateOne = (Date) firstHalfDates[0];
+								firstHalfDateOnes = ft.format(firstHalfDateOne);
+							}
+						} else {
+							firstHalfDateOnes = "-";
+						}
+						JSONObject submissionDetail = new JSONObject();
+						String firstHalfDate = null;
+						if (firstHalfDateOnes != null) {
+							submissionDetail.put("firstHalfsubmittedDate", firstHalfDateOnes);
+						} else {
+							submissionDetail.put("firstHalfsubmittedDate", "-");
+						}
+						if (item[7] != null) {
+							Long approver21 = Long.parseLong(item[7].toString());
+							UserModel approverDetails = userService.getUserdetailsbyId(approver21);
+							submissionDetail.put("firstHalfsubmittedPerson",
+									(approverDetails.getLastName() + " " + approverDetails.getFirstName()));
+						} else {
+							submissionDetail.put("firstHalfsubmittedPerson", "-");
+						}
+						if (halforfull != 15) {
+							if (item[8] != null && item[6] != null) {
+								firstHalfDate = ft.format(item[6]);
+								Long approver2 = Long.parseLong(item[8].toString());
+								UserModel approverD = userService.getUserdetailsbyId(approver2);
+								submissionDetail.put("secondHalfsubmittedPerson",
+										(approverD.getLastName() + " " + approverD.getFirstName()));
+								submissionDetail.put("secondHalfsubmittedDate", firstHalfDate);
+							} else {
+								submissionDetail.put("secondHalfsubmittedPerson", "-");
+								submissionDetail.put("secondHalfsubmittedDate", "-");
+							}
+						} else {
+							submissionDetail.put("secondHalfsubmittedPerson", "-");
+							submissionDetail.put("secondHalfsubmittedDate", "-");
+						}
+						node.put("billable", billableArray);
+						node.put("odcDetails", odcDetails);
+						node.put("projectDetails", projectDetails);
+						node.put("submissionDetails", submissionDetail);
+						node.put("approverLevel", "level2");
+						data.add(node);
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+	@Override
+	public List<Object[]> getUserWiseSubmissionDetailsExport(int month, int year, long projectId, long userId,
+			long regionId) {
+		// TODO Auto-generated method stub
+		YearMonth yearMonthObject = YearMonth.of(year, month);
+		int daysInMonth = yearMonthObject.lengthOfMonth();
+		ArrayList<JSONObject> data = new ArrayList<>();
+		List<Object[]> details = new ArrayList<Object[]>();
+		Double firstHalfHour = 0.0;
+		Double secondHalfHour = 0.0;
+		Date startDate = null;
+		Date endDate = null;
+		TaskTrackApproval submissionDetails = new TaskTrackApproval();
+		int firstHalfDay = 15;
+		try {
+			String start = year + "-" + month + "-01";
+			startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(startDate);
+			int total = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+			String end = year + "-" + month + "-" + total;
+			endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			if (startDate != null && endDate != null) {
+				// approver level1 submitted details
+				details = taskTrackApprovalFinalRepository.getProjectWiseSubmissionDetails(month, year, projectId,
+						userId, regionId);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 		return details;
 	}
 }
