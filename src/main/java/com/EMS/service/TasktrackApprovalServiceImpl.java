@@ -6951,9 +6951,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
 			mailBody.append("<br/><br/>Project Name : " + project.get().getProjectName());
 			mailBody.append("<br/>Resource Name : " + resource);
-			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name() + " 1-15 days requires correction.");
+			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name() + " 1-15 days has been Rejected.");
 			mailBody.append("<br/>Comments : " + remarks);
-			mailBody.append("<br/><br/>Correction Requested by : " + approverTwo);
+			mailBody.append("<br/><br/>Rejected by : " + approverTwo);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
 		} catch (Exception e) {
@@ -7001,9 +7001,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
 			mailBody.append("<br/><br/>Project Name : " + project.get().getProjectName());
 			mailBody.append("<br/>Resource Name : " + resource);
-			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name() + " 16-31 days requires correction.");
+			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name() + " 16-31 days has been Rejected.");
 			mailBody.append("<br/>Comments : " + remarks);
-			mailBody.append("<br/><br/>Correction Requested by : " + approverTwo);
+			mailBody.append("<br/><br/>Rejected by : " + approverTwo);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
 		} catch (Exception e) {
