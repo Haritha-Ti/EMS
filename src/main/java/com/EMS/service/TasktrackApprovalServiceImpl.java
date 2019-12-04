@@ -7290,9 +7290,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		JSONObject overtimeHours2;
 		JSONObject nonBillableHours2;
 		JSONObject beachHours2;
+		JSONObject billableHoursOneCopy;
+		JSONObject nonBillableHoursOneCopy;
+		JSONObject overTimeHoursOneCopy;
+		JSONObject beachHoursOneCopy;
 		List<Integer> correctionDays = null;
 		List<JSONObject> billableArrayOne = new ArrayList<>();
 		List<JSONObject> overTimeArrayOne = new ArrayList<>();
+		List<JSONObject> billableArrayOneCopy = new ArrayList<>();
+		List<JSONObject> overTimeArrayOneCopy = new ArrayList<>();
+		List<JSONObject> nonBillableArrayOneCopy = new ArrayList<>();
+		List<JSONObject> beachArrayOneCopy = new ArrayList<>();
 		List<JSONObject> billableArray = new ArrayList<>();
 		List<JSONObject> overTimeArray = new ArrayList<>();
 		List<JSONObject> nonbillableArray = new ArrayList<>();
@@ -7454,11 +7462,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						approverOneSecodHalfStatus = task.getSecondHalfStatus() == null
 								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 								: task.getSecondHalfStatus();
+						 billableHoursOneCopy = new JSONObject();
+						 billableArrayOneCopy.add(billableHoursOneCopy);
+
 					} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
 
+						 overTimeHoursOneCopy = new JSONObject();
+						 overTimeArrayOneCopy.add(overTimeHoursOneCopy);
 						overtimeHours.put(taskDate, hours);
 
 					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
+						 nonBillableHoursOneCopy = new JSONObject();
+						 nonBillableArrayOneCopy.add(nonBillableHoursOneCopy);
 						// temporaryObject = new JSONObject();
 						// nonBillableHours2 = new JSONObject();
 						nonBillableHours.put(taskDate, hours);
@@ -7466,6 +7481,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						// nonbillableArray2.add(nonBillableHours2);
 						// nonbillableId = task.getId();
 					} else if (task.getProjectType().equalsIgnoreCase("Beach")) {
+						 beachHoursOneCopy = new JSONObject();
+						 beachArrayOneCopy.add(beachHoursOneCopy);
 						// temporaryObject = new JSONObject();
 						// beachHours2 = new JSONObject();
 						beachHours.put(taskDate, hours);
@@ -7524,7 +7541,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		JSONObject nonBillableHours3;
 		JSONObject beachHours3;
 		if (approverTwoData != null && approverTwoData.size() > 0) {
-
+			if(approverTwoData.get(0).getSecondHalfStatus() != null ){
 			for (TaskTrackApproval task : approverTwoData) {
 
 				cal.setTime(startDate);
@@ -7535,174 +7552,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							+ (day < 10 ? "0" + day : "" + day);
 
 					switch (i) {
-					case 1:
-						hours = (Double) task.getDay1();
-						break;
-					case 2:
-						hours = (Double) task.getDay2();
-						break;
-					case 3:
-						hours = (Double) task.getDay3();
-						break;
-					case 4:
-						hours = (Double) task.getDay4();
-						break;
-					case 5:
-						hours = (Double) task.getDay5();
-						break;
-					case 6:
-						hours = (Double) task.getDay6();
-						break;
-					case 7:
-						hours = (Double) task.getDay7();
-						break;
-					case 8:
-						hours = (Double) task.getDay8();
-						break;
-					case 9:
-						hours = (Double) task.getDay9();
-						break;
-					case 10:
-						hours = (Double) task.getDay10();
-						break;
-					case 11:
-						hours = (Double) task.getDay11();
-						break;
-					case 12:
-						hours = (Double) task.getDay12();
-						break;
-					case 13:
-						hours = (Double) task.getDay13();
-						break;
-					case 14:
-						hours = (Double) task.getDay14();
-						break;
-					case 15:
-						hours = (Double) task.getDay15();
-						break;
-					case 16:
-						hours = (Double) task.getDay16();
-						break;
-					case 17:
-						hours = (Double) task.getDay17();
-						break;
-					case 18:
-						hours = (Double) task.getDay18();
-						break;
-					case 19:
-						hours = (Double) task.getDay19();
-						break;
-					case 20:
-						hours = (Double) task.getDay20();
-						break;
-					case 21:
-						hours = (Double) task.getDay21();
-						break;
-					case 22:
-						hours = (Double) task.getDay22();
-						break;
-					case 23:
-						hours = (Double) task.getDay23();
-						break;
-					case 24:
-						hours = (Double) task.getDay24();
-						break;
-					case 25:
-						hours = (Double) task.getDay25();
-						break;
-					case 26:
-						hours = (Double) task.getDay26();
-						break;
-					case 27:
-						hours = (Double) task.getDay27();
-						break;
-					case 28:
-						hours = (Double) task.getDay28();
-						break;
-					case 29:
-						hours = (Double) task.getDay29();
-						break;
-					case 30:
-						hours = (Double) task.getDay30();
-						break;
-					case 31:
-						hours = (Double) task.getDay31();
-						break;
-					}
-					if (task.getProjectType().equalsIgnoreCase("Billable")) {
-						billableHours2 = new JSONObject();
-						billableHours2.put(taskDate, hours);
-						billableArray2.add(billableHours2);
-						billableId = task.getId();
-						approverTwoFirstHalfStatus = task.getFirstHalfStatus() == null
-								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-								: task.getFirstHalfStatus();
-						approverTwoSecodHalfStatus = task.getSecondHalfStatus() == null
-								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-								: task.getSecondHalfStatus();
-					} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
-						overtimeHours2 = new JSONObject();
-						overtimeHours2.put(taskDate, hours);
-						overTimeArray2.add(overtimeHours2);
-						overtimeId = task.getId();
-					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
-						nonBillableHours3 = new JSONObject();
-						nonBillableHours3.put(taskDate, hours);
-						nonbillableArray3.add(nonBillableHours3);
-						nonbillableId = task.getId();
-					} else if (task.getProjectType().equalsIgnoreCase("Beach")) {
-						beachHours3 = new JSONObject();
-						beachHours3.put(taskDate, hours);
-						beachArray3.add(beachHours3);
-						beachId = task.getId();
-					}
-
-					if (task.getProjectType().equalsIgnoreCase("Billable")) {
-						if (startDay <= firstHalfDay) {
-							approvalStatus = task.getFirstHalfStatus() == null
-									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: task.getFirstHalfStatus();
-						} else {
-							approvalStatus = task.getSecondHalfStatus() == null
-									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: task.getSecondHalfStatus();
-						}
-						if (approvalStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
-								|| approvalStatus
-										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
-							List<TaskTrackCorrection> corrections = taskTrackCorrectionRepository.findCorrectionDays(
-									task.getUser().getUserId(), task.getProject().getProjectId(), task.getMonth(),
-									task.getYear(), startDay, endDay);
-							correctionDays = new ArrayList<Integer>();
-							for (TaskTrackCorrection correction : corrections) {
-								correctionDays.add(correction.getDay());
-							}
-						}
-					}
-					cal.add(Calendar.DATE, 1);
-				}
-
-			}
-			approverTwoDatas.put("billable", billableArray2);
-			approverTwoDatas.put("overTime", overTimeArray2);
-			approverTwoDatas.put("nonBillable", nonbillableArray3);
-			approverTwoDatas.put("beach", beachArray3);
-			approverTwoDatas.put("billableId", billableId);
-			approverTwoDatas.put("nonBillableId", nonbillableId);
-			approverTwoDatas.put("overtimeId", overtimeId);
-			approverTwoDatas.put("beachId", beachId);
-		} else {
-			// first table data
-			if (approverOneData != null && approverOneData.size() > 0) {
-				for (TaskTrackApproval task : approverOneData) {
-					cal.setTime(startDate);
-					Double hours = 0.0;
-					for (int i = startDay; i <= endDay; i++) {
-						int day = cal.get(Calendar.DATE);
-						String taskDate = cal.get(Calendar.YEAR) + "-" + (month < 10 ? "0" + month : "" + month) + "-"
-								+ (day < 10 ? "0" + day : "" + day);
-
-						switch (i) {
 						case 1:
 							hours = (Double) task.getDay1();
 							break;
@@ -7796,39 +7645,106 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						case 31:
 							hours = (Double) task.getDay31();
 							break;
-						}
-						if (task.getProjectType().equalsIgnoreCase("Billable")) {
-							billableHours2 = new JSONObject();
-							billableHours2.put(taskDate, hours);
-							billableArray2.add(billableHours2);
-							// billableId = task.getId();
-
-						} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
-							overtimeHours2 = new JSONObject();
-
-							overtimeHours2.put(taskDate, hours);
-							overTimeArray2.add(overtimeHours2);
-							// overtimeId = task.getId();
-						} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
-							nonBillableHours2 = new JSONObject();
-							nonBillableHours2.put(taskDate, hours);
-							nonbillableArray2.add(nonBillableHours2);
-							// nonbillableId = task.getId();
-						} else if (task.getProjectType().equalsIgnoreCase("Beach")) {
-							beachHours2 = new JSONObject();
-							beachHours2.put(taskDate, hours);
-							beachArray2.add(beachHours2);
-							// nonbillableId = task.getId();
-						}
-
-						cal.add(Calendar.DATE, 1);
+					}
+					if (task.getProjectType().equalsIgnoreCase("Billable")) {
+						billableHours2 = new JSONObject();
+						billableHours2.put(taskDate, hours);
+						billableArray2.add(billableHours2);
+						billableId = task.getId();
+						approverTwoFirstHalfStatus = task.getFirstHalfStatus() == null
+								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: task.getFirstHalfStatus();
+						approverTwoSecodHalfStatus = task.getSecondHalfStatus() == null
+								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: task.getSecondHalfStatus();
+					} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
+						overtimeHours2 = new JSONObject();
+						overtimeHours2.put(taskDate, hours);
+						overTimeArray2.add(overtimeHours2);
+						overtimeId = task.getId();
+					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
+						nonBillableHours3 = new JSONObject();
+						nonBillableHours3.put(taskDate, hours);
+						nonbillableArray3.add(nonBillableHours3);
+						nonbillableId = task.getId();
+					} else if (task.getProjectType().equalsIgnoreCase("Beach")) {
+						beachHours3 = new JSONObject();
+						beachHours3.put(taskDate, hours);
+						beachArray3.add(beachHours3);
+						beachId = task.getId();
 					}
 
+					if (task.getProjectType().equalsIgnoreCase("Billable")) {
+						if (startDay <= firstHalfDay) {
+							approvalStatus = task.getFirstHalfStatus() == null
+									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: task.getFirstHalfStatus();
+						} else {
+							approvalStatus = task.getSecondHalfStatus() == null
+									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: task.getSecondHalfStatus();
+						}
+						if (approvalStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION)
+								|| approvalStatus
+								.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTION_SAVED)) {
+							List<TaskTrackCorrection> corrections = taskTrackCorrectionRepository.findCorrectionDays(
+									task.getUser().getUserId(), task.getProject().getProjectId(), task.getMonth(),
+									task.getYear(), startDay, endDay);
+							correctionDays = new ArrayList<Integer>();
+							for (TaskTrackCorrection correction : corrections) {
+								correctionDays.add(correction.getDay());
+							}
+						}
+					}
+					cal.add(Calendar.DATE, 1);
 				}
-				approverTwoDatas.put("billable", billableArray2);
-				approverTwoDatas.put("overTime", overTimeArray2);
-				approverTwoDatas.put("nonBillable", nonbillableArray2);
-				approverTwoDatas.put("beach", beachArray2);
+
+			}
+			approverTwoDatas.put("billable", billableArray2);
+			approverTwoDatas.put("overTime", overTimeArray2);
+			approverTwoDatas.put("nonBillable", nonbillableArray3);
+			approverTwoDatas.put("beach", beachArray3);
+			approverTwoDatas.put("billableId", billableId);
+			approverTwoDatas.put("nonBillableId", nonbillableId);
+			approverTwoDatas.put("overtimeId", overtimeId);
+			approverTwoDatas.put("beachId", beachId);
+		}else{
+			//first table data
+				for (TaskTrackApproval task : approverTwoData) {
+					if (task.getProjectType().equalsIgnoreCase("Billable")) {
+
+						billableId = task.getId();
+						approverTwoFirstHalfStatus = task.getFirstHalfStatus() == null
+								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: task.getFirstHalfStatus();
+						approverTwoSecodHalfStatus = task.getSecondHalfStatus() == null
+								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: task.getSecondHalfStatus();
+					} else if (task.getProjectType().equalsIgnoreCase("Overtime")) {
+
+						overtimeId = task.getId();
+					} else if (task.getProjectType().equalsIgnoreCase("Non-Billable")) {
+						nonbillableId = task.getId();
+					} else if (task.getProjectType().equalsIgnoreCase("Beach")) {
+						beachId = task.getId();
+					}
+				}
+				approverTwoDatas.put("billable", billableArrayOneCopy);
+				approverTwoDatas.put("overTime", overTimeArrayOneCopy);
+				approverTwoDatas.put("nonBillable", nonBillableArrayOneCopy);
+				approverTwoDatas.put("beach", beachArrayOneCopy);
+				approverTwoDatas.put("billableId", billableId);
+				approverTwoDatas.put("nonBillableId", nonbillableId);
+				approverTwoDatas.put("overtimeId", overtimeId);
+				approverTwoDatas.put("beachId", beachId);
+		}
+		} else {
+			// first table data
+			if (approverOneData != null && approverOneData.size() > 0) {
+				approverTwoDatas.put("billable", billableArrayOneCopy);
+				approverTwoDatas.put("overTime", overTimeArrayOneCopy);
+				approverTwoDatas.put("nonBillable", nonBillableArrayOneCopy);
+				approverTwoDatas.put("beach", beachArrayOneCopy);
 				approverTwoDatas.put("billableId", billableId);
 				approverTwoDatas.put("nonBillableId", nonbillableId);
 				approverTwoDatas.put("overtimeId", overtimeId);
