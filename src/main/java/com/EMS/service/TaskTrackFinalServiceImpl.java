@@ -112,6 +112,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	@Value("${FINANCE_MAIL}")
 	private String financeMail;
 
+	@Value("${CONTEXT_PATH}")
+	private String CONTEXT_PATH;
+	
 	@Override
 	public Boolean checkIsUserExists(Long id) {
 		Boolean exist = taskTrackFinalJPARepository.existsByUser(id);
@@ -1465,12 +1468,12 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			sendCC = project.getProjectOwner().getEmail();
 			sendTo = financeMail;
 			emailReceiver = "Finance Team,";
-
 			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
 			mailBody.append("<br/><br/>Project Name : " + project.getProjectName());
 			mailBody.append("<br/>Resource Name : " + resource);
 			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
 					+ " 1-15 days has been Approved & Submitted for the resource.");
+			mailBody.append("<br/><a href="+CONTEXT_PATH+"/correction>Click here to Review</a>");
 			mailBody.append("<br/><br/>Approved by : " + approverOne);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
@@ -1948,6 +1951,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			mailBody.append("<br/>Resource Name : " + resource);
 			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
 					+ " 16-31 days has been Approved & Submitted for the resource.");
+			mailBody.append("<br/><a href="+CONTEXT_PATH+"/correction>Click here to Review</a>");
 			mailBody.append("<br/><br/>Approved by : " + approverOne);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
@@ -2379,6 +2383,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			mailBody.append("<br/>Resource Name : " + resource);
 			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
 					+ " 1-15 days has been Approved & Submitted for the resource.");
+			mailBody.append("<br/><a href="+CONTEXT_PATH+"/correction>Click here to Review</a>");
 			mailBody.append("<br/><br/>Approved by : " + approverOne);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
@@ -2812,6 +2817,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			mailBody.append("<br/>Resource Name : " + resource);
 			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
 					+ " 16-31 days has been Approved & Submitted for the resource.");
+			mailBody.append("<br/><a href="+CONTEXT_PATH+"/correction>Click here to Review</a>");
 			mailBody.append("<br/><br/>Approved by : " + approverOne);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
