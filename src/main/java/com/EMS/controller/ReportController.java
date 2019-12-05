@@ -1001,9 +1001,9 @@ public class ReportController {
 			// TODO: handle exception
 			e.printStackTrace();
 			jsonDataRes.put("status", "Error");
-			jsonDataRes.put("code", HttpServletResponse.SC_BAD_GATEWAY);
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
 			jsonDataRes.put("message", e.getMessage());
-			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.BAD_GATEWAY);
+			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -1058,9 +1058,9 @@ public class ReportController {
 	public ResponseEntity exportProjectWiseSubmissionData(@RequestBody JsonNode requestdata,
 			HttpServletResponse response) {
 		JSONObject jsonDataRes = new JSONObject();
-		long projectId =  0;
-		long regionId =  0;
-		long userId =  0;
+		long projectId = 0;
+		long regionId = 0;
+		long userId = 0;
 		long sessionId = 0;
 		int month = 0;
 		int year = 0;
@@ -1079,11 +1079,11 @@ public class ReportController {
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				sessionId = requestdata.get("sessionId").asLong();
 			}
-			
+
 			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
-			
-			if(loggedUser.getRole().getroleId() == 6) {
-				
+
+			if (loggedUser.getRole().getroleId() == 6) {
+
 				regionId = loggedUser.getRegion().getId();
 			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
@@ -1167,10 +1167,10 @@ public class ReportController {
 	public ResponseEntity exportUserWiseSubmissionData(@RequestBody JsonNode requestdata,
 			HttpServletResponse response) {
 		JSONObject jsonDataRes = new JSONObject();
-		long projectId =  0;
-		long regionId =  0;
+		long projectId = 0;
+		long regionId = 0;
 		long sessionId = 0;
-		long userId =  0;
+		long userId = 0;
 		int month = 0;
 		int year = 0;
 
@@ -1188,11 +1188,11 @@ public class ReportController {
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				sessionId = requestdata.get("sessionId").asLong();
 			}
-			
+
 			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
-			
-			if(loggedUser.getRole().getroleId() == 6) {
-				
+
+			if (loggedUser.getRole().getroleId() == 6) {
+
 				regionId = loggedUser.getRegion().getId();
 			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
@@ -1292,9 +1292,9 @@ public class ReportController {
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 			responseObj.put("status", "Error");
-			responseObj.put("code", HttpServletResponse.SC_BAD_GATEWAY);
+			responseObj.put("code", HttpServletResponse.SC_BAD_REQUEST);
 			responseObj.put("message", e.getMessage());
-			response = new ResponseEntity<Object>(responseObj, HttpStatus.BAD_GATEWAY);
+			response = new ResponseEntity<Object>(responseObj, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 			responseObj.put("status", "Error");
