@@ -1492,6 +1492,48 @@ public class ProjectController {
 
 	}*/
 
+	@PostMapping(value = "/getProjectsByRegionId")
+	public ObjectNode getProjectsListByRegionId(@RequestBody JsonNode requestdata,HttpServletResponse statusResponse) {
+		
+		ObjectNode response = objectMapper.createObjectNode();
+		ArrayNode  nodes = objectMapper.createArrayNode();
+		ArrayList<ProjectModel> projects = null;
+		Long regionId = null;
+		if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
+			regionId = requestdata.get("regionId").asLong();
+		}
+		try {
+		if(regionId != null) {
+			
+			 projects = projectservice.getProjectsByRegion(regionId);
+		}
+		else {
+			
+			 projects = projectservice.getProjectsByRegion();
+		}
+		
+		for(ProjectModel each : projects) {
+			ObjectNode node = objectMapper.createObjectNode();
+			node.put("projectId", each.getProjectId());
+			node.put("projectName", each.getProjectName());
+			node.put("startDate", each.getStartDate().toString());
+			node.put("endDate",each.getEndDate().toString());
+			nodes.add(node);
+		}
+		
+		response.put("status", "success");
+		response.put("message", "success");
+		response.put("code", statusResponse.getStatus());
+		response.set("payload", nodes);
+	}catch (Exception e) {
+		// TODO: handle exception
+		response.put("status", "Failed");
+		response.put("code", statusResponse.getStatus());
+		response.put("message", "Exception " + e);
+		response.put("payload", "");
+	}
+		return response;
+	}
 	
 
 }
