@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.ProjectSubmissionDataDTO;
 import com.EMS.dto.Taskdetails;
+import com.EMS.exceptions.BadInputException;
 import com.EMS.service.ProjectAllocationService;
 import com.EMS.service.ProjectExportService;
 import com.EMS.service.ProjectRegionService;
@@ -83,7 +84,7 @@ public class ReportController {
 
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	private TasktrackApprovalService tasktrackApprovalService;
 
@@ -978,20 +979,36 @@ public class ReportController {
 	@SuppressWarnings("unchecked")
 	@GetMapping(value = "getSubmissionDataForFinance")
 	public ResponseEntity<Object> getSubmissionDataForFinance(@RequestParam("month") Integer month,
-			@RequestParam("year") Integer year) {
+			@RequestParam("year") Integer year, @RequestParam(name = "regionId", required = false) Integer regionId,
+			@RequestParam("sessionId") Integer sessionId) {
 		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		JSONObject jsonDataRes = new JSONObject();
 		try {
-			List<ProjectSubmissionDataDTO> submittedDataList = reportService.getProjectSubmissionDetails(month, year);
+			List<ProjectSubmissionDataDTO> submittedDataList = new ArrayList<ProjectSubmissionDataDTO>();
+			if (regionId == null || regionId == 0) {
+				UserModel user = userRepository.getOne(Long.valueOf(sessionId));
+				regionId = (int) user.getRegion().getId();
+			}
+			if (regionId == null || regionId == 0) {
+				throw new BadInputException("RegionId not found for the login user.");
+			}
+			submittedDataList = reportService.getProjectSubmissionDetails(month, year, Long.valueOf(regionId));
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
 			jsonDataRes.put("data", submittedDataList);
 			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (BadInputException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			jsonDataRes.put("status", "Error");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			jsonDataRes.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			jsonDataRes.put("status", "Success");
-			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			jsonDataRes.put("status", "Error");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			jsonDataRes.put("message", e.getMessage());
 			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -1029,7 +1046,7 @@ public class ReportController {
 		}
 		return response;
 	}
-	
+
 	/***
 	 * @author drishya dinesh
 	 * @param requestdata
@@ -1038,11 +1055,12 @@ public class ReportController {
 	 * @return
 	 */
 	@PostMapping(value = "/exportProjectWiseSubmissionData")
-	public ResponseEntity exportProjectWiseSubmissionData(@RequestBody JsonNode requestdata, HttpServletResponse response) {
+	public ResponseEntity exportProjectWiseSubmissionData(@RequestBody JsonNode requestdata,
+			HttpServletResponse response) {
 		JSONObject jsonDataRes = new JSONObject();
-		long projectId =  0;
-		long regionId =  0;
-		long userId =  0;
+		long projectId = 0;
+		long regionId = 0;
+		long userId = 0;
 		long sessionId = 0;
 		int month = 0;
 		int year = 0;
@@ -1061,11 +1079,11 @@ public class ReportController {
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				sessionId = requestdata.get("sessionId").asLong();
 			}
-			
+
 			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
-			
-			if(loggedUser.getRole().getroleId() == 6) {
-				
+
+			if (loggedUser.getRole().getroleId() == 6) {
+
 				regionId = loggedUser.getRegion().getId();
 			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
@@ -1076,58 +1094,55 @@ public class ReportController {
 			ArrayList<JSONObject> node1 = new ArrayList<JSONObject>();
 
 			List<Object[]> result = new ArrayList<Object[]>();
-			
-			ProjectModel project  = projectService.findById(projectId);
+
+			ProjectModel project = projectService.findById(projectId);
 			String nameofReport = "Report Of project " + project.getProjectName();
 			Workbook workrbook = new XSSFWorkbook();
-			if(project.getProjectTier() == 1) {
-				
+			if (project.getProjectTier() == 1) {
+
 				for (JsonNode rangenode : range) {
 					JSONObject node = new JSONObject();
 					month = Integer.parseInt(rangenode.get("month").toString());
 					year = Integer.parseInt(rangenode.get("year").toString());
 					String monthName = Month.of(month).name();
-					
-					  if (month != 0 && year != 0 ) {
-							Sheet sheet = workrbook.createSheet(monthName + "-" + year);
-						  result = tasktrackApprovalService.getProjectWiseSubmissionDetailsTierOne(month, year,
-								projectId,userId,regionId);
-						  projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
-									result);
+
+					if (month != 0 && year != 0) {
+						Sheet sheet = workrbook.createSheet(monthName + "-" + year);
+						result = tasktrackApprovalService.getProjectWiseSubmissionDetailsTierOne(month, year, projectId,
+								userId, regionId);
+						projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
+								result);
 						node.put("timeTracks", resultData);
 						node.put("month", month);
 						node.put("year", year);
 						node1.add(node);
 
-					} 
+					}
 
 				}
-			}
-			else if(project.getProjectTier() == 2) {
+			} else if (project.getProjectTier() == 2) {
 				for (JsonNode rangenode : range) {
 					JSONObject node = new JSONObject();
 					month = Integer.parseInt(rangenode.get("month").toString());
 					year = Integer.parseInt(rangenode.get("year").toString());
 					String monthName = Month.of(month).name();
-					
-					  if (month != 0 && year != 0 ) {
-							Sheet sheet = workrbook.createSheet(monthName + "-" + year);
-						  result = tasktrackApprovalService.getProjectWiseSubmissionDetailsTierTwo(month, year,
-								projectId,userId,regionId);
-						  projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
-									result);
+
+					if (month != 0 && year != 0) {
+						Sheet sheet = workrbook.createSheet(monthName + "-" + year);
+						result = tasktrackApprovalService.getProjectWiseSubmissionDetailsTierTwo(month, year, projectId,
+								userId, regionId);
+						projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
+								result);
 						node.put("timeTracks", resultData);
 						node.put("month", month);
 						node.put("year", year);
 						node1.add(node);
 
-					} 
+					}
 
 				}
 			}
 
-			
-			
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			response.setHeader("Content-Disposition", "filename=\"" + "BillingProjectWise.xlsx" + "\"");
@@ -1136,12 +1151,11 @@ public class ReportController {
 
 		} catch (Exception e) {
 			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return new ResponseEntity(HttpStatus.OK);
 	}
-	
-	
+
 	/***
 	 * @author drishya dinesh
 	 * @param requestdata
@@ -1150,12 +1164,13 @@ public class ReportController {
 	 * @return
 	 */
 	@PostMapping(value = "/exportUserWiseSubmissionData")
-	public ResponseEntity exportUserWiseSubmissionData(@RequestBody JsonNode requestdata, HttpServletResponse response) {
+	public ResponseEntity exportUserWiseSubmissionData(@RequestBody JsonNode requestdata,
+			HttpServletResponse response) {
 		JSONObject jsonDataRes = new JSONObject();
-		long projectId =  0;
-		long regionId =  0;
+		long projectId = 0;
+		long regionId = 0;
 		long sessionId = 0;
-		long userId =  0;
+		long userId = 0;
 		int month = 0;
 		int year = 0;
 
@@ -1173,11 +1188,11 @@ public class ReportController {
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				sessionId = requestdata.get("sessionId").asLong();
 			}
-			
+
 			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
-			
-			if(loggedUser.getRole().getroleId() == 6) {
-				
+
+			if (loggedUser.getRole().getroleId() == 6) {
+
 				regionId = loggedUser.getRegion().getId();
 			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
@@ -1188,30 +1203,29 @@ public class ReportController {
 			ArrayList<JSONObject> node1 = new ArrayList<JSONObject>();
 
 			List<Object[]> result = new ArrayList<Object[]>();
-			
-			UserModel  user  = userService.getUserDetailsById(userId);
-			String nameofReport = "Report Of User " + user.getLastName()+ " "+user.getFirstName();
-			Workbook workrbook = new XSSFWorkbook();				
-				for (JsonNode rangenode : range) {
-					JSONObject node = new JSONObject();
-					month = Integer.parseInt(rangenode.get("month").toString());
-					year = Integer.parseInt(rangenode.get("year").toString());
-					String monthName = Month.of(month).name();
-					
-					  if (month != 0 && year != 0 ) {
-							Sheet sheet = workrbook.createSheet(monthName + "-" + year);
-						  result = tasktrackApprovalService.getUserWiseSubmissionDetailsExport(month, year,
-								projectId,userId,regionId);
-						  projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year,
-									result);
-						node.put("timeTracks", resultData);
-						node.put("month", month);
-						node.put("year", year);
-						node1.add(node);
 
-					} 
+			UserModel user = userService.getUserDetailsById(userId);
+			String nameofReport = "Report Of User " + user.getLastName() + " " + user.getFirstName();
+			Workbook workrbook = new XSSFWorkbook();
+			for (JsonNode rangenode : range) {
+				JSONObject node = new JSONObject();
+				month = Integer.parseInt(rangenode.get("month").toString());
+				year = Integer.parseInt(rangenode.get("year").toString());
+				String monthName = Month.of(month).name();
+
+				if (month != 0 && year != 0) {
+					Sheet sheet = workrbook.createSheet(monthName + "-" + year);
+					result = tasktrackApprovalService.getUserWiseSubmissionDetailsExport(month, year, projectId, userId,
+							regionId);
+					projectExportService.exportBillingProjectWise(workrbook, sheet, nameofReport, month, year, result);
+					node.put("timeTracks", resultData);
+					node.put("month", month);
+					node.put("year", year);
+					node1.add(node);
 
 				}
+
+			}
 			response.setContentType("application/vnd.ms-excel");
 			response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
 			response.setHeader("Content-Disposition", "filename=\"" + "BillingUserWise.xlsx" + "\"");
@@ -1220,11 +1234,11 @@ public class ReportController {
 
 		} catch (Exception e) {
 			return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-			
+
 		}
 		return new ResponseEntity(HttpStatus.OK);
 	}
-	
+
 	@PostMapping(value = "getFreeAllocationReport")
 	public ResponseEntity<Object> getFreeAllocationReport(@RequestBody Taskdetails requestdata,
 			HttpServletResponse httpstatus) {
@@ -1254,5 +1268,40 @@ public class ReportController {
 		}
 		return response;
 	}
-	
+
+	/**
+	 * @author sreejith.j
+	 * @param requestData
+	 * @return
+	 */
+	@PostMapping(value = "getRegionLeaveReport")
+	public ResponseEntity<Object> getRegionLeaveReport(@RequestBody JSONObject requestData) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		JSONObject responseObj = new JSONObject();
+		try {
+			Integer month = Integer.parseInt(requestData.get("month").toString());
+			Integer year = Integer.parseInt(requestData.get("year").toString());
+			Integer regionId = Integer.parseInt(requestData.get("region").toString());
+
+			List<HashMap<String, Object>> regionLeaves = reportService.getRegionLeaves(regionId, month, year);
+
+			responseObj.put("status", "Success");
+			responseObj.put("code", HttpServletResponse.SC_OK);
+			responseObj.put("data", regionLeaves);
+			response = new ResponseEntity<Object>(responseObj, HttpStatus.OK);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			responseObj.put("status", "Error");
+			responseObj.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			responseObj.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(responseObj, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			responseObj.put("status", "Error");
+			responseObj.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			responseObj.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(responseObj, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
 }

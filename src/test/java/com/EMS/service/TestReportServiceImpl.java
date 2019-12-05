@@ -29,7 +29,7 @@ public class TestReportServiceImpl {
 	public void testGetProjectSubmissionDetails() {
 		try {
 			System.out.println("Started testing...");
-			List<ProjectSubmissionDataDTO> resultArr = service.getProjectSubmissionDetails(10, 2019);
+			List<ProjectSubmissionDataDTO> resultArr = service.getProjectSubmissionDetails(10, 2019,1l);
 
 			System.out.println("Completed the operation...");
 			System.out.println(resultArr.size());

@@ -8209,9 +8209,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				secondHalfRemark = rejectionObj.getRemark();
 			}
 			approverTwoFirstHalfStatus = approverTwoFirstHalfStatus.equalsIgnoreCase(
-					Constants.TASKTRACK_FINAL_STATUS_OPEN) ? Constants.NOT_SUBMITTED : approverTwoFirstHalfStatus;
+					Constants.TASKTRACK_FINAL_STATUS_OPEN) || approverTwoFirstHalfStatus.equalsIgnoreCase(
+					Constants.TASKTRACK_APPROVER_STATUS_REJECTION) ? Constants.NOT_SUBMITTED : approverTwoFirstHalfStatus;
 			approverTwoSecodHalfStatus = approverTwoSecodHalfStatus.equalsIgnoreCase(
-					Constants.TASKTRACK_FINAL_STATUS_OPEN) ? Constants.NOT_SUBMITTED : approverTwoSecodHalfStatus;
+					Constants.TASKTRACK_FINAL_STATUS_OPEN) || approverTwoSecodHalfStatus.equalsIgnoreCase(
+					Constants.TASKTRACK_APPROVER_STATUS_REJECTION) ? Constants.NOT_SUBMITTED : approverTwoSecodHalfStatus;
 			response.put("userId", userId);
 			response.put("userName", userName);
 			response.put("month", month);
@@ -8231,9 +8233,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			response.put("month", month);
 			JSONObject totalHour = new JSONObject();
 			approverTwoFirstHalfStatus = approverTwoFirstHalfStatus.equalsIgnoreCase(
-					Constants.TASKTRACK_FINAL_STATUS_OPEN) ? Constants.NOT_SUBMITTED : approverTwoFirstHalfStatus;
+					Constants.TASKTRACK_FINAL_STATUS_OPEN) || approverTwoFirstHalfStatus.equalsIgnoreCase(
+					Constants.TASKTRACK_APPROVER_STATUS_REJECTION) ? Constants.NOT_SUBMITTED : approverTwoFirstHalfStatus;
 			approverTwoSecodHalfStatus = approverTwoSecodHalfStatus.equalsIgnoreCase(
-					Constants.TASKTRACK_FINAL_STATUS_OPEN) ? Constants.NOT_SUBMITTED : approverTwoSecodHalfStatus;
+					Constants.TASKTRACK_FINAL_STATUS_OPEN) || approverTwoSecodHalfStatus.equalsIgnoreCase(
+					Constants.TASKTRACK_APPROVER_STATUS_REJECTION) ? Constants.NOT_SUBMITTED : approverTwoSecodHalfStatus;
 			totalHour.put("firstHalfTotal", firstHalfHour);
 			totalHour.put("secondHalfTotal", secondHalfHour);
 			response.put("approvalOneHours", totalHour);
@@ -8393,8 +8397,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								submissionDetail.put("secondHalfsubmittedDate", "-");
 							}
 						} else {
-							submissionDetail.put("secondHalfsubmittedPerson", "-");
-							submissionDetail.put("secondHalfsubmittedDate", "-");
+							submissionDetail.put("secondHalfsubmittedPerson", "");
+							submissionDetail.put("secondHalfsubmittedDate", "");
 						}
 						node.put("billable", billableArray);
 						node.put("odcDetails", odcDetails);
@@ -8544,8 +8548,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								submissionDetail.put("secondHalfsubmittedDate", "-");
 							}
 						} else {
-							submissionDetail.put("secondHalfsubmittedPerson", "-");
-							submissionDetail.put("secondHalfsubmittedDate", "-");
+							submissionDetail.put("secondHalfsubmittedPerson", " ");
+							submissionDetail.put("secondHalfsubmittedDate", " ");
 						}
 						node.put("billable", billableArray);
 						node.put("odcDetails", odcDetails);
@@ -8893,8 +8897,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								submissionDetail.put("secondHalfsubmittedDate", "-");
 							}
 						} else {
-							submissionDetail.put("secondHalfsubmittedPerson", "-");
-							submissionDetail.put("secondHalfsubmittedDate", "-");
+							submissionDetail.put("secondHalfsubmittedPerson", "");
+							submissionDetail.put("secondHalfsubmittedDate", "");
 						}
 						node.put("billable", billableArray);
 						node.put("odcDetails", odcDetails);

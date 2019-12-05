@@ -13,7 +13,7 @@ public class QueryConstants {
 			+ "left join user ap2Usr on ap2Usr.user_id= p.onsite_lead_user_id "
 			+ "left join client c on c.client_id= p.client_name_client_id "
 			+ "join allocation a on a.project_project_id= p.project_id and (?1 between a.start_date and a.end_date or last_day(?1) between a.start_date and a.end_date) "
-			+ "join user u on u.user_id=a.user_user_id " + "left join region r on r.id= u.region_id "
+			+ "join user u on u.user_id=a.user_user_id and u.region_id=?2 " + "left join region r on r.id= u.region_id "
 			+ "left join tasktrack_approval ta on ta.project_project_id = p.project_id and ta.user_user_id= u.user_id and ta.month=month(?1) and ta.year=year(?1)) "
 			+ "union "
 			+ "(select p.project_id as projectId,p.project_name as projectName,p.project_tier as projectTier, c.client_name as clientName, u.user_id as userId, concat(u.last_name,' ', u.first_name) as userName, r.region_name as region, "
@@ -27,7 +27,7 @@ public class QueryConstants {
 			+ "left join user ap2Usr on ap2Usr.user_id= p.onsite_lead_user_id "
 			+ "left join client c on c.client_id= p.client_name_client_id "
 			+ "join allocation a on a.project_project_id= p.project_id and (?1 between a.start_date and a.end_date or last_day(?1) between a.start_date and a.end_date) "
-			+ "join user u on u.user_id=a.user_user_id " + "left join region r on r.id= u.region_id "
+			+ "join user u on u.user_id=a.user_user_id and u.region_id=?2 " + "left join region r on r.id= u.region_id "
 			+ "left join tasktrack_approval_final tf on tf.project_project_id = p.project_id and tf.user_user_id= u.user_id and tf.month=month(?1) and tf.year=year(?1)) order by projectId asc, userName";
 
 }
