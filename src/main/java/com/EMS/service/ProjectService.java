@@ -88,6 +88,10 @@ public interface ProjectService {
 
 		List<ProjectModel> getProjectsBasedOnMonthYearRegion(int month, int year);
 
+		ArrayList<ProjectModel> getProjectsByRegion(Long regionId);
+
+		ArrayList<ProjectModel> getProjectsByRegion();
+
 	
 	
 }
