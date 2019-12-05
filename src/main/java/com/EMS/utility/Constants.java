@@ -46,4 +46,6 @@ public class Constants {
 
 	public static final String QUICK_TIME_TRACK_DESC = "Quick Time Track";
 
+	public static final String HALF_DAY_LEAVE = "HD";
+
 }

@@ -26,10 +26,13 @@ public interface ReportService {
 	public List<Object[]> getAllocationDetailsTechWiseRegionwise(Long techId, Date fromDate, Date toDate, Long regionId)
 			throws Exception;
 
-	public List<ProjectSubmissionDataDTO> getProjectSubmissionDetails(Integer month, Integer year) throws Exception;
+	public List<ProjectSubmissionDataDTO> getProjectSubmissionDetails(Integer month, Integer year, Long regionId)
+			throws Exception;
 
 	public HashMap<String, Object> getUsersProjectSubmissionDetails(Long projectid, Integer projectTyre, Long userId,
 			Integer month, Integer year, String session) throws Exception;
 
 	public JSONObject getFreeAllocationReport(Long regionId_selected, Date fromDate, Date toDate);
+
+	List<HashMap<String, Object>> getRegionLeaves(Integer region, Integer month, Integer year) throws Exception;
 }

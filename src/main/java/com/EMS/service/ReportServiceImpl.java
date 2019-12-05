@@ -24,13 +24,16 @@ import com.EMS.model.FreeAllocationReportModel;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.TaskTrackApprovalFinal;
 import com.EMS.model.Tasktrack;
+import com.EMS.model.UserLeaveSummary;
 import com.EMS.repository.HolidayRepository;
+import com.EMS.repository.LeaveRepository;
 import com.EMS.repository.ProjectAllocationRepository;
 import com.EMS.repository.ProjectReportsRepository;
 import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.TaskTrackFinalJPARepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.TimeTrackApprovalJPARepository;
+import com.EMS.repository.UserLeaveSummaryRepository;
 import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -64,6 +67,9 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired
 	TaskTrackFinalJPARepository tasktrackFinalRepository;
+
+	@Autowired
+	UserLeaveSummaryRepository userLeaveSummaryRepository;
 
 	public ArrayNode getProjectReportDetails(long projectId, Date fromDate, Date toDate) {
 		ArrayNode array = objectMapper.createArrayNode();
@@ -254,11 +260,13 @@ public class ReportServiceImpl implements ReportService {
 	 * @author sreejith.j
 	 */
 	@Override
-	public List<ProjectSubmissionDataDTO> getProjectSubmissionDetails(Integer month, Integer year) throws Exception {
+	public List<ProjectSubmissionDataDTO> getProjectSubmissionDetails(Integer month, Integer year, Long regionId)
+			throws Exception {
 		Object[][] resultList = null;
 		List<ProjectSubmissionDataDTO> submissionDataList = new ArrayList<ProjectSubmissionDataDTO>();
 
-		resultList = projectRepository.getProjectWiseApprovalReportForFirstHalf(year + "-" + month + "-" + "01");
+		resultList = projectRepository.getProjectWiseApprovalReportForFirstHalf(year + "-" + month + "-" + "01",
+				regionId);
 
 		HashMap<Long, ProjectSubmissionDataDTO> projectSubmissionMap = new HashMap<Long, ProjectSubmissionDataDTO>();
 		HashMap<Long, HashMap<Integer, UsersEntryApprovalDetailsDTO>> projectMap = new HashMap<Long, HashMap<Integer, UsersEntryApprovalDetailsDTO>>();
@@ -732,20 +740,19 @@ public class ReportServiceImpl implements ReportService {
 		}
 		return response;
 	}
-	
-	
-	public JSONObject getFreeAllocationReport(Long regionId_selected,Date fromDate, Date toDate) {
+
+	public JSONObject getFreeAllocationReport(Long regionId_selected, Date fromDate, Date toDate) {
 		SimpleDateFormat frmt = new SimpleDateFormat("yyyy-MM-dd");
 		List<FreeAllocationReportModel> list = null;
 		JSONObject response = new JSONObject();
 		try {
 			list = projectReportsRepository.getFreeAllocationReportList(fromDate, toDate, regionId_selected);
-			LinkedHashMap<Long,String> fullyAllocatedResources = new LinkedHashMap<Long,String>();
-			LinkedHashMap<String,LinkedHashMap<String,JSONArray>> userMap= new LinkedHashMap<String,LinkedHashMap<String,JSONArray>>();
+			LinkedHashMap<Long, String> fullyAllocatedResources = new LinkedHashMap<Long, String>();
+			LinkedHashMap<String, LinkedHashMap<String, JSONArray>> userMap = new LinkedHashMap<String, LinkedHashMap<String, JSONArray>>();
 			JSONArray userData = new JSONArray();
 			JSONArray projectList = new JSONArray();
-			LinkedHashMap<String,JSONArray> dateObj = new LinkedHashMap<String,JSONArray>();
-			boolean bench =false;
+			LinkedHashMap<String, JSONArray> dateObj = new LinkedHashMap<String, JSONArray>();
+			boolean bench = false;
 			for (FreeAllocationReportModel obj : list) {
 				long userId = obj.getUserId();
 				String resourceName = obj.getResourceName();
@@ -753,122 +760,113 @@ public class ReportServiceImpl implements ReportService {
 				projectList = new JSONArray();
 				bench = false;
 				// Stop iteration for users those who already allocated for whole month;
-				if(fullyAllocatedResources.containsKey(userId))
-						continue;
+				if (fullyAllocatedResources.containsKey(userId))
+					continue;
 				Date alcStartDate = obj.getStartDate();
 				Date alcEndDate = obj.getEndDate();
 				Date joiningDate = obj.getJoiningDate();
 				Date terminationDate = obj.getTerminationDate();
-				//Add users to list those who already allocated for whole month
-				if(alcStartDate!=null && ( alcStartDate.before(fromDate) || alcStartDate.equals(frmt.parse(frmt.format(fromDate))))
-						&& alcEndDate!=null && (alcEndDate.after(toDate) || alcEndDate.equals(frmt.parse(frmt.format(toDate)))))
-				{
-					fullyAllocatedResources.put(userId,resourceName);
+				// Add users to list those who already allocated for whole month
+				if (alcStartDate != null
+						&& (alcStartDate.before(fromDate) || alcStartDate.equals(frmt.parse(frmt.format(fromDate))))
+						&& alcEndDate != null
+						&& (alcEndDate.after(toDate) || alcEndDate.equals(frmt.parse(frmt.format(toDate))))) {
+					fullyAllocatedResources.put(userId, resourceName);
 					continue;
-				}	
-				//Non allocated resource, those who does not have any project
-				if(projectName.equals("") || alcStartDate == null || alcEndDate == null) {
+				}
+				// Non allocated resource, those who does not have any project
+				if (projectName.equals("") || alcStartDate == null || alcEndDate == null) {
 					bench = true;
 				}
-				//Iterate over through dates
+				// Iterate over through dates
 				Calendar calender = Calendar.getInstance();
 				calender.setTime(fromDate);
 				int month = (calender.get(Calendar.MONTH) + 1);
 				int year = calender.get(Calendar.YEAR);
 				calender.setTime(toDate);
 				int lastDay = calender.get(Calendar.DATE);
-				for(int day = 1 ; day <= lastDay ; day++) {
+				for (int day = 1; day <= lastDay; day++) {
 					String date = year + "-" + (month < 10 ? "0" : "") + month + "-" + (day < 10 ? "0" : "") + day;
 					Date loopDate = frmt.parse(date);
-					if(joiningDate!=null && (joiningDate.after(loopDate) || joiningDate.equals(loopDate))) {
+					if (joiningDate != null && (joiningDate.after(loopDate) || joiningDate.equals(loopDate))) {
 						projectList = new JSONArray();
 						projectList.add(null);
-						dateObj.put(date, projectList );
-					}
-					else if(terminationDate!=null && terminationDate.before(loopDate)) {
+						dateObj.put(date, projectList);
+					} else if (terminationDate != null && terminationDate.before(loopDate)) {
 						projectList = new JSONArray();
 						projectList.add(null);
-						dateObj.put(date, projectList );
-					}
-					else if(bench) {
+						dateObj.put(date, projectList);
+					} else if (bench) {
 						projectList = new JSONArray();
 						projectList.add("Free Allocation");
-						dateObj.put(date, projectList );
-					}
-					else if((loopDate.after(alcStartDate) || loopDate.equals(alcStartDate)) &&
-							(loopDate.before(alcEndDate) || loopDate.equals(alcEndDate))) {
-						if(userMap.containsKey(resourceName)){
+						dateObj.put(date, projectList);
+					} else if ((loopDate.after(alcStartDate) || loopDate.equals(alcStartDate))
+							&& (loopDate.before(alcEndDate) || loopDate.equals(alcEndDate))) {
+						if (userMap.containsKey(resourceName)) {
 							dateObj = userMap.get(resourceName);
-							if(dateObj.containsKey(date)) {
+							if (dateObj.containsKey(date)) {
 								projectList = dateObj.get(date);
-								if(!projectList.contains(projectName)) {
+								if (!projectList.contains(projectName)) {
 									projectList.remove("Free Allocation");
 									projectList.add(projectName);
 								}
-							}
-							else {
+							} else {
 								projectList = new JSONArray();
 								projectList.add(projectName);
-								dateObj.put(date, projectList );
+								dateObj.put(date, projectList);
 							}
-						}
-						else {
+						} else {
 							projectList = new JSONArray();
 							projectList.add(projectName);
-							dateObj.put(date, projectList );
+							dateObj.put(date, projectList);
 						}
-					}
-					else {
-						if(userMap.containsKey(resourceName)){
+					} else {
+						if (userMap.containsKey(resourceName)) {
 							dateObj = userMap.get(resourceName);
-							if(dateObj.containsKey(date)) {
+							if (dateObj.containsKey(date)) {
 								projectList = dateObj.get(date);
-								if(projectList.size()<=0)
+								if (projectList.size() <= 0)
 									projectList.add("Free Allocation");
-							}
-							else {
+							} else {
 								projectList = new JSONArray();
 								projectList.add(projectName);
-								dateObj.put(date, projectList );
+								dateObj.put(date, projectList);
 							}
-						}
-						else
-						{
+						} else {
 							projectList = new JSONArray();
 							projectList.add("Free Allocation");
-							dateObj.put(date, projectList );
+							dateObj.put(date, projectList);
 						}
 					}
 				}
 				userMap.put(resourceName, dateObj);
-				dateObj = new LinkedHashMap<String,JSONArray>();
+				dateObj = new LinkedHashMap<String, JSONArray>();
 				userData.add(userMap);
 			}
 			JSONArray userDetails = new JSONArray();
-			LinkedHashMap<String,Integer> freeResourceCount = new LinkedHashMap<String,Integer>();
-			//Iterate through Map to find bench resource count
+			LinkedHashMap<String, Integer> freeResourceCount = new LinkedHashMap<String, Integer>();
+			// Iterate through Map to find bench resource count
 			projectList = new JSONArray();
 			Integer count = 0;
 			Map singleUser = new HashMap();
-			for (Map.Entry<String,LinkedHashMap<String,JSONArray>> userEntry : userMap.entrySet()) {
+			for (Map.Entry<String, LinkedHashMap<String, JSONArray>> userEntry : userMap.entrySet()) {
 				singleUser = new HashMap();
 				singleUser.put("userName", userEntry.getKey());
 				singleUser.put("dateList", userEntry.getValue());
 				userDetails.add(singleUser);
-			    LinkedHashMap<String,JSONArray> dateObject = userEntry.getValue();
-			    for (Map.Entry<String,JSONArray> dateEntry : dateObject.entrySet()) {
-			    	String date = dateEntry.getKey();
-			    	projectList = dateEntry.getValue();
-			    	if(projectList.contains("Free Allocation")) {
-			    		if(freeResourceCount.get(date)!=null) {
-			    			count = freeResourceCount.get(date);
-			    			count++;
-			    			freeResourceCount.put(date, count);
-			    		}
-			    		else
-			    			freeResourceCount.put(date, 1);
-			    	}
-			    }
+				LinkedHashMap<String, JSONArray> dateObject = userEntry.getValue();
+				for (Map.Entry<String, JSONArray> dateEntry : dateObject.entrySet()) {
+					String date = dateEntry.getKey();
+					projectList = dateEntry.getValue();
+					if (projectList.contains("Free Allocation")) {
+						if (freeResourceCount.get(date) != null) {
+							count = freeResourceCount.get(date);
+							count++;
+							freeResourceCount.put(date, count);
+						} else
+							freeResourceCount.put(date, 1);
+					}
+				}
 			}
 			response.put("userInfo", userDetails);
 			response.put("freeResourceCount", freeResourceCount);
@@ -879,4 +877,45 @@ public class ReportServiceImpl implements ReportService {
 		return response;
 	}
 
+	/**
+	 * @author sreejith.j
+	 */
+	@Override
+	public List<HashMap<String, Object>> getRegionLeaves(Integer region, Integer month, Integer year) throws Exception {
+		List<HashMap<String, Object>> leaveResponse = new ArrayList<HashMap<String, Object>>();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar monthStartDate = Calendar.getInstance();
+		monthStartDate.setTime(formatter.parse(year + "-" + month + "-01"));
+		Calendar monthEndDate = Calendar.getInstance();
+		monthEndDate
+				.setTime(formatter.parse(year + "-" + month + "-" + monthStartDate.getActualMaximum(Calendar.DATE)));
+
+		List<UserLeaveSummary> leaveSummaryList = userLeaveSummaryRepository
+				.getUserLeaveListByMonthRegion(monthStartDate.getTime(), monthEndDate.getTime(), Long.valueOf(region));
+		HashMap<Long, HashMap<String, Object>> userHashMap = new HashMap<Long, HashMap<String, Object>>();
+		HashMap<String, Object> userObj = new HashMap<String, Object>();
+		HashMap<Integer, Object> leavesObj = new HashMap<Integer, Object>();
+		for (UserLeaveSummary obj : leaveSummaryList) {
+			if (userHashMap.containsKey(obj.getUser().getEmpId())) {
+				userObj = userHashMap.get(obj.getUser().getEmpId());
+			} else {
+				userObj = new HashMap<String, Object>();
+				String name = obj.getUser().getLastName() + " " + obj.getUser().getFirstName();
+				userObj.put("name", name.trim());
+				userObj.put("empId", obj.getUser().getEmpId());
+				userObj.put("totalLeaves", 0);
+				leavesObj = new HashMap<Integer, Object>();
+				userObj.put("leaves", leavesObj);
+				userHashMap.put(obj.getUser().getEmpId(), userObj);
+				leaveResponse.add(userHashMap.get(obj.getUser().getEmpId()));
+			}
+			leavesObj = (HashMap<Integer, Object>) userObj.get("leaves");
+			Calendar leaveDate = Calendar.getInstance();
+			leaveDate.setTime(obj.getLeaveDate());
+			Double leaveAmt = obj.getLeaveType().equalsIgnoreCase(Constants.HALF_DAY_LEAVE) ? 0.5 : 1;
+			leavesObj.put(leaveDate.get(Calendar.DATE), leaveAmt);
+			userObj.put("totalLeaves", Double.parseDouble(userObj.get("totalLeaves").toString()) + leaveAmt);
+		}
+		return leaveResponse;
+	}
 }
