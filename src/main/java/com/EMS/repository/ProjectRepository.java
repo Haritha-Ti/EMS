@@ -113,4 +113,10 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 	@Query(value = "select p from ProjectModel p  inner join AllocationModel a on (a.project.projectId = p.projectId) where (( ?1 between p.startDate and p.endDate) or (last_day(?1) between p.startDate and p.endDate)) and a.user.userId = ?2")
 	List<ProjectModel> getProjectsBasedOnMonthYearAndUser(Date date1, Long userId);
 
+	@Query(value="select p from ProjectModel p inner join ProjectRegion pr on (p.projectId = pr.project_Id.projectId ) where pr.region_Id.id = ?1 and p.projectStatus=1 and p.parentProjectId != 0 and p.projectStatus = 1")
+	ArrayList<ProjectModel> getProjectsByRegion(Long regionId);
+	
+	@Query(value="select p from ProjectModel p  where p.projectStatus=1 and p.parentProjectId != 0 and projectStatus = 1")
+	ArrayList<ProjectModel> getProjectsByRegion();
+
 }

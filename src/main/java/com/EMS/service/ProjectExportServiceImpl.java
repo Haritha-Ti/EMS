@@ -987,7 +987,15 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate, endDate);
 				}
 				if (terminationDate != null) {
-					if ((terminationDate.compareTo(endDate) < 0)) {
+					if ((terminationDate.compareTo(endDate) < 0) && (startDate.compareTo(joiningDate) < 0)) {
+						working_days = calculateWorkingDays(joiningDate, terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate, terminationDate,
+								regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id, joiningDate,
+								terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate,
+								terminationDate);
+					} else if ((terminationDate.compareTo(endDate) < 0)) {
 						working_days = calculateWorkingDays(startDate, terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate, terminationDate,
 								regionId);
@@ -1021,7 +1029,15 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate, end_date);
 				}
 				if (terminationDate != null) {
-					if ((terminationDate.compareTo(end_date) < 0)) {
+					if ((terminationDate.compareTo(end_date) < 0) && (startDate.compareTo(joiningDate) < 0)) {
+						working_days = calculateWorkingDays(joiningDate, terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate, terminationDate,
+								regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id, joiningDate,
+								terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate,
+								terminationDate);
+					} else if ((terminationDate.compareTo(end_date) < 0)) {
 						working_days = calculateWorkingDays(startDate, terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate, terminationDate,
 								regionId);
@@ -1288,7 +1304,15 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate, endDate);
 				}
 				if (terminationDate != null) {
-					if ((terminationDate.compareTo(endDate) < 0)) {
+					if ((terminationDate.compareTo(endDate) < 0) && (startDate.compareTo(joiningDate) < 0)) {
+						working_days = calculateWorkingDays(joiningDate, terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate, terminationDate,
+								regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id, joiningDate,
+								terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate,
+								terminationDate);
+					} else if ((terminationDate.compareTo(endDate) < 0)) {
 						working_days = calculateWorkingDays(startDate, terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate, terminationDate,
 								regionId);
@@ -1296,7 +1320,6 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 								terminationDate);
 						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, startDate,
 								terminationDate);
-
 					}
 				}
 
@@ -1331,7 +1354,15 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate, end_date);
 				}
 				if (terminationDate != null) {
-					if ((terminationDate.compareTo(end_date) < 0)) {
+					if ((terminationDate.compareTo(end_date) < 0) && (startDate.compareTo(joiningDate) < 0)) {
+						working_days = calculateWorkingDays(joiningDate, terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate, terminationDate,
+								regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id, joiningDate,
+								terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate,
+								terminationDate);
+					} else if ((terminationDate.compareTo(end_date) < 0)) {
 						working_days = calculateWorkingDays(startDate, terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate, terminationDate,
 								regionId);
@@ -1339,7 +1370,6 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 								terminationDate);
 						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, startDate,
 								terminationDate);
-
 					}
 				}
 			}
@@ -1699,7 +1729,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		endDay.setTime(endDate);
 //		Integer dayDiff= ChronoUnit.DAYS.between(startDay.getTime(), endDay.getTime());
 //		Integer dayDiff=31;
-		Integer idx=0;
+		Integer idx = 0;
 		String[] headers = new String[53];
 //		headers[idx++] = "Name";
 //		headers[idx++] = "Employee Id";
@@ -1872,7 +1902,15 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate, endDate);
 				}
 				if (terminationDate != null) {
-					if ((terminationDate.compareTo(endDate) < 0)) {
+					if ((terminationDate.compareTo(endDate) < 0) && (startDate.compareTo(joiningDate) < 0)) {
+						working_days = calculateWorkingDays(joiningDate, terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate, terminationDate,
+								regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id, joiningDate,
+								terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate,
+								terminationDate);
+					} else if ((terminationDate.compareTo(endDate) < 0)) {
 						working_days = calculateWorkingDays(startDate, terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate, terminationDate,
 								regionId);
@@ -1897,6 +1935,15 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate, end_date);
 				}
 				if (terminationDate != null) {
+					if ((terminationDate.compareTo(end_date) < 0) && (startDate.compareTo(joiningDate) < 0)) {
+						working_days = calculateWorkingDays(joiningDate, terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate, terminationDate,
+								regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id, joiningDate,
+								terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id, joiningDate,
+								terminationDate);
+					}
 					if ((terminationDate.compareTo(end_date) < 0)) {
 						working_days = calculateWorkingDays(startDate, terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate, terminationDate,
@@ -2807,12 +2854,19 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellValue(summary[3].toString());
 			cell.setCellStyle(borderedCellStyle);
 
-			UserModel user1 = userRepository.getOne(Long.parseLong(summary[7].toString()));
+			String approver1 = null;
+			String approver2 = null;
 
+			if (summary[7] != null) {
+				UserModel user1 = userRepository.getOne(Long.parseLong(summary[7].toString()));
+				approver1 = user1.getLastName() + " " + user1.getFirstName();
+			} else {
+				approver1 = "-";
+			}
 			SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
 
-			Object[] firstHalfDates = taskTrackApprovalFinalRepository
-					.getSubmittedDateFromAudit(Long.parseLong(summary[4].toString()), user1.getUserId(), month, year);
+			Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(
+					Long.parseLong(summary[4].toString()), Long.parseLong(summary[0].toString()), month, year);
 
 			String firstHalfDate = null;
 			Date firstHalf = null;
@@ -2834,17 +2888,21 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 				secondHalfDate = "-";
 			}
 			cell = row.createCell(2);
-			cell.setCellValue(user1.getLastName() + " " + user1.getFirstName());
+			cell.setCellValue(approver1);
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(3);
 			cell.setCellValue(firstHalfDate);
 			cell.setCellStyle(borderedCellStyle);
 
-			UserModel user2 = userRepository.getOne(Long.parseLong(summary[8].toString()));
-
+			if (summary[7] != null) {
+				UserModel user2 = userRepository.getOne(Long.parseLong(summary[8].toString()));
+				approver2 = user2.getLastName() + " " + user2.getFirstName();
+			} else {
+				approver2 = "-";
+			}
 			cell = row.createCell(4);
-			cell.setCellValue(user2.getLastName() + " " + user2.getFirstName());
+			cell.setCellValue(approver2);
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(5);

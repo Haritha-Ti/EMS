@@ -3253,6 +3253,7 @@ public class TasktrackController {
 		long projectId = 0;
 		long regionId = 0;
 		long userId = 0;
+		long sessionId = 0;
 		int month = 0;
 		int year = 0;
 
@@ -3267,6 +3268,17 @@ public class TasktrackController {
 			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
 				regionId = requestdata.get("regionId").asLong();
 			}
+			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
+				sessionId = requestdata.get("sessionId").asLong();
+			}
+			
+			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
+			
+			if(loggedUser.getRole().getroleId() == 6) {
+				
+				regionId = loggedUser.getRegion().getId();
+			}
+			
 			ArrayNode range = (ArrayNode) requestdata.get("range");
 
 			JSONObject outputdata = new JSONObject();
@@ -3343,6 +3355,7 @@ public class TasktrackController {
 		JSONObject jsonDataRes = new JSONObject();
 		long projectId = 0;
 		long regionId = 0;
+		long sessionId = 0;
 		long userId = 0;
 		int month = 0;
 		int year = 0;
@@ -3357,6 +3370,16 @@ public class TasktrackController {
 			}
 			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
 				regionId = requestdata.get("regionId").asLong();
+			}
+			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
+				sessionId = requestdata.get("sessionId").asLong();
+			}
+			
+			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
+			
+			if(loggedUser.getRole().getroleId() == 6) {
+				
+				regionId = loggedUser.getRegion().getId();
 			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
 

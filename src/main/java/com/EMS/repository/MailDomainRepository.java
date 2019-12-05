@@ -20,7 +20,7 @@ public interface MailDomainRepository extends JpaRepository<EmailNotification, L
 	int updateEmailStatus(Long mailDomainId);
 
 	
-	@Query(value="SELECT count(*) FROM pms_staging.email_notification where mail_domain_id=?1",nativeQuery=true)
+	@Query(value="SELECT count(*) FROM email_notification where mail_domain_id=?1",nativeQuery=true)
 	int getEmailCount(Long mailDomainId);
 
 }

@@ -13,7 +13,7 @@ public interface AuditRepository extends JpaRepository<TaskTrackApproval,Long>{
 @Query(value="SELECT u.user_name,p.project_name,"
 		+ "  case  when t.revtype=0 then 'Created'  when t.revtype=1 then 'Updated'  when t.revtype=2 then 'Deleted' else null end as revtype , "
 		+ " DATE_FORMAT(t.trx_date,'%d-%m-%Y %H:%i:%s') as trx_date ,concat(uia.first_name,' ',uia.last_name) as user_in_action,\r\n" + 
-		"DATE_FORMAT(t.approved_date, '%d/%m/%Y') as approved_date,coalesce(t.day1,0) as day1 ,coalesce(t.day2,0) as day2,coalesce(t.day3,0) as day3,coalesce(t.day4,0) as day4,coalesce(t.day5,0) as day5 ,coalesce(t.day6,0) as day6,coalesce(t.day7,0) as day7,coalesce(t.day8,0) as day8,\r\n" + 
+		" coalesce(t.day1,0) as day1 ,coalesce(t.day2,0) as day2,coalesce(t.day3,0) as day3,coalesce(t.day4,0) as day4,coalesce(t.day5,0) as day5 ,coalesce(t.day6,0) as day6,coalesce(t.day7,0) as day7,coalesce(t.day8,0) as day8,\r\n" + 
 		"coalesce(t.day9,0) as day9 ,coalesce(t.day10,0) as day10,coalesce(t.day11,0) as day11,coalesce(t.day12,0) as day12,coalesce(t.day13,0) as day13,coalesce(t.day14,0) as day14,coalesce(t.day15,0) as day15,coalesce(t.day16,0) as day16,coalesce(t.day17,0) as day17,coalesce(t.day18,0) as day18 ,coalesce(t.day19,0) as day19 ,coalesce(t.day20,0) as day20,\r\n" + 
 		"coalesce(t.day21,0) as day21,coalesce(t.day22,0) as day22,coalesce(t.day23,0) as day23 ,coalesce(t.day24,0) as day24 ,coalesce(t.day25,0) as day25,coalesce(t.day26,0) as day26,coalesce(t.day27,0) as day27,coalesce(t.day28,0) as day28,coalesce(t.day29,0) as day29,coalesce(t.day30,0) as day30,coalesce(t.day31,0) as day31 ,t.first_half_status,t.`month`,\r\n" + 
 		"t.project_type,t.second_half_status,t.`year` FROM tasktrack_approval_aud t\r\n" + 
@@ -29,7 +29,7 @@ public interface AuditRepository extends JpaRepository<TaskTrackApproval,Long>{
 @Query(value="SELECT u.user_name,p.project_name,"
 		+ "  case  when t.revtype=0 then 'Created'  when t.revtype=1 then 'Updated'  when t.revtype=2 then 'Deleted' else null end as revtype , "
 		+ " DATE_FORMAT(t.trx_date,'%d-%m-%Y %H:%i:%s') as trx_date ,concat(uia.first_name,' ',uia.last_name) as user_in_action,\r\n" + 
-		"DATE_FORMAT(t.approved_date, '%d/%m/%Y') as approved_date,coalesce(t.day1,0) as day1 ,coalesce(t.day2,0) as day2,coalesce(t.day3,0) as day3,coalesce(t.day4,0) as day4,coalesce(t.day5,0) as day5 ,coalesce(t.day6,0) as day6,coalesce(t.day7,0) as day7,coalesce(t.day8,0) as day8,\r\n" + 
+		" coalesce(t.day1,0) as day1 ,coalesce(t.day2,0) as day2,coalesce(t.day3,0) as day3,coalesce(t.day4,0) as day4,coalesce(t.day5,0) as day5 ,coalesce(t.day6,0) as day6,coalesce(t.day7,0) as day7,coalesce(t.day8,0) as day8,\r\n" + 
 		"coalesce(t.day9,0) as day9 ,coalesce(t.day10,0) as day10,coalesce(t.day11,0) as day11,coalesce(t.day12,0) as day12,coalesce(t.day13,0) as day13,coalesce(t.day14,0) as day14,coalesce(t.day15,0) as day15,coalesce(t.day16,0) as day16,coalesce(t.day17,0) as day17,coalesce(t.day18,0) as day18 ,coalesce(t.day19,0) as day19 ,coalesce(t.day20,0) as day20,\r\n" + 
 		"coalesce(t.day21,0) as day21,coalesce(t.day22,0) as day22,coalesce(t.day23,0) as day23 ,coalesce(t.day24,0) as day24 ,coalesce(t.day25,0) as day25,coalesce(t.day26,0) as day26,coalesce(t.day27,0) as day27,coalesce(t.day28,0) as day28,coalesce(t.day29,0) as day29,coalesce(t.day30,0) as day30,coalesce(t.day31,0) as day31 ,t.first_half_status,t.`month`,\r\n" + 
 		"t.project_type,t.second_half_status,t.`year` FROM tasktrack_approval_final_aud t\r\n" + 

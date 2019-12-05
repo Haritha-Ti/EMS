@@ -303,5 +303,17 @@ public class ProjectServiceImpl implements ProjectService {
 			return project_repositary.getProjectsBasedOnMonthYearRegion(date1);
 		}
 
+		@Override
+		public ArrayList<ProjectModel> getProjectsByRegion(Long regionId) {
+			// TODO Auto-generated method stub
+			return project_repositary.getProjectsByRegion(regionId);
+		}
+
+		@Override
+		public ArrayList<ProjectModel> getProjectsByRegion() {
+			// TODO Auto-generated method stub
+			return project_repositary.getProjectsByRegion();
+		}
+
 
 }
