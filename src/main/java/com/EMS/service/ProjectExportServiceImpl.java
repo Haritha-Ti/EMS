@@ -987,7 +987,14 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,endDate);
 				}
 				if(terminationDate !=null){
-					if((terminationDate.compareTo(endDate) < 0)){
+					if((terminationDate.compareTo(endDate) < 0) && (startDate.compareTo(joiningDate) < 0))
+					{
+						working_days = calculateWorkingDays(joiningDate,terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate,terminationDate,regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,joiningDate,terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,terminationDate);
+					}
+					else if((terminationDate.compareTo(endDate) < 0)){
 						working_days = calculateWorkingDays(startDate,terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,terminationDate,regionId);
 						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,terminationDate);
@@ -1013,7 +1020,14 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,end_date);
 				}
 				if(terminationDate !=null){
-					if((terminationDate.compareTo(end_date) < 0)){
+					if((terminationDate.compareTo(end_date) < 0) && (startDate.compareTo(joiningDate) < 0))
+					{
+						working_days = calculateWorkingDays(joiningDate,terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate,terminationDate,regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,joiningDate,terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,terminationDate);
+					}
+					else if((terminationDate.compareTo(end_date) < 0)){
 						working_days = calculateWorkingDays(startDate,terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,terminationDate,regionId);
 						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,terminationDate);
@@ -1291,7 +1305,14 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,endDate);
 				}
 				if(terminationDate !=null){
-					if((terminationDate.compareTo(endDate) < 0)){
+					if((terminationDate.compareTo(endDate) < 0) && (startDate.compareTo(joiningDate) < 0))
+					{
+						working_days = calculateWorkingDays(joiningDate,terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate,terminationDate,regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,joiningDate,terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,terminationDate);
+					}
+					else if((terminationDate.compareTo(endDate) < 0)){
 						working_days = calculateWorkingDays(startDate,terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,terminationDate,regionId);
 						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,terminationDate);
@@ -1323,7 +1344,14 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,end_date);
 				}
 				if(terminationDate !=null){
-					if((terminationDate.compareTo(end_date) < 0)){
+					if((terminationDate.compareTo(end_date) < 0) && (startDate.compareTo(joiningDate) < 0))
+					{
+						working_days = calculateWorkingDays(joiningDate,terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate,terminationDate,regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,joiningDate,terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,terminationDate);
+					}
+					else if((terminationDate.compareTo(end_date) < 0)){
 						working_days = calculateWorkingDays(startDate,terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,terminationDate,regionId);
 						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,terminationDate);
@@ -1765,7 +1793,14 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,endDate);
 				}
 				if(terminationDate !=null){
-					if((terminationDate.compareTo(endDate) < 0)){
+					if((terminationDate.compareTo(endDate) < 0) && (startDate.compareTo(joiningDate) < 0))
+					{
+						working_days = calculateWorkingDays(joiningDate,terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate,terminationDate,regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,joiningDate,terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,terminationDate);
+					}
+					else if((terminationDate.compareTo(endDate) < 0)){
 						working_days = calculateWorkingDays(startDate,terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,terminationDate,regionId);
 						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,startDate,terminationDate);
@@ -1787,6 +1822,13 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 					halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,end_date);
 				}
 				if(terminationDate !=null){
+					if((terminationDate.compareTo(end_date) < 0) && (startDate.compareTo(joiningDate) < 0))
+					{
+						working_days = calculateWorkingDays(joiningDate,terminationDate);
+						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(joiningDate,terminationDate,regionId);
+						fullDayLeaveDays = userLeaveSummaryRepository.getFullDayLeaveDays(id,joiningDate,terminationDate);
+						halfDayLeaveDays = userLeaveSummaryRepository.getHalfDayLeaveDays(id,joiningDate,terminationDate);
+					}
 					if((terminationDate.compareTo(end_date) < 0)){
 						working_days = calculateWorkingDays(startDate,terminationDate);
 						holidays = holidayRepository.getNationalHolidayListsByMonthRegion(startDate,terminationDate,regionId);
