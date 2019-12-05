@@ -8397,8 +8397,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								submissionDetail.put("secondHalfsubmittedDate", "-");
 							}
 						} else {
-							submissionDetail.put("secondHalfsubmittedPerson", "-");
-							submissionDetail.put("secondHalfsubmittedDate", "-");
+							submissionDetail.put("secondHalfsubmittedPerson", "");
+							submissionDetail.put("secondHalfsubmittedDate", "");
 						}
 						node.put("billable", billableArray);
 						node.put("odcDetails", odcDetails);
@@ -8548,8 +8548,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								submissionDetail.put("secondHalfsubmittedDate", "-");
 							}
 						} else {
-							submissionDetail.put("secondHalfsubmittedPerson", "-");
-							submissionDetail.put("secondHalfsubmittedDate", "-");
+							submissionDetail.put("secondHalfsubmittedPerson", " ");
+							submissionDetail.put("secondHalfsubmittedDate", " ");
 						}
 						node.put("billable", billableArray);
 						node.put("odcDetails", odcDetails);
@@ -8897,8 +8897,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								submissionDetail.put("secondHalfsubmittedDate", "-");
 							}
 						} else {
-							submissionDetail.put("secondHalfsubmittedPerson", "-");
-							submissionDetail.put("secondHalfsubmittedDate", "-");
+							submissionDetail.put("secondHalfsubmittedPerson", "");
+							submissionDetail.put("secondHalfsubmittedDate", "");
 						}
 						node.put("billable", billableArray);
 						node.put("odcDetails", odcDetails);
