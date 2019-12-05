@@ -5,7 +5,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.EMS.model.UserModel;
@@ -122,7 +125,5 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 
 	@Query("Select u From UserModel u where  (u.terminationDate >= ?1 or u.terminationDate IS NULL) and u.joiningDate <=?1 and  u.role.roleId in('2','3','5','11','9') and u.department.departmentId in('1','2','3','4','8') ")
 	List<UserModel> getUsersBasedOnMonthYearRegion(Date date1);
-
-
 
 }

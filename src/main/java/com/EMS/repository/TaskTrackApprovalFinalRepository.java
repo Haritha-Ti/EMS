@@ -195,7 +195,7 @@ public interface TaskTrackApprovalFinalRepository extends JpaRepository<TaskTrac
 	List<Object[]> getProjectWiseSubmissionDetails(int month, int year, long projectId, long userId,long regionId);
 	
 	@Query(value ="SELECT trx_date FROM `tasktrack_approval_final_aud` WHERE  project_project_id = ?1 and user_user_id = ?2 and ((first_half_status = 'SUBMITTED' or first_half_status = 'CORRECTION_SAVED')) and month = ?3 and year = ?4 " + 
-			" order by trx_date " + 
+			" order by trx_date ASC" + 
 			" limit 1 ",nativeQuery = true)
 	Object[] getSubmittedDateFromAudit(Long projectId, Long userId, int month, int year);
 	

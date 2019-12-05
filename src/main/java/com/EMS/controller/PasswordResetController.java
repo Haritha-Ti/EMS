@@ -118,7 +118,7 @@ public class PasswordResetController {
 				return response;
 			}
 //	    	UserModel user = (UserModel) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			long userId = requestdata.get("userId").asLong();
+			Long userId = requestdata.get("userId").asLong();
 			String token = requestdata.get("token").asText();
 			PasswordResetModel passwordResetModel = passwordResetService.validateBeforeResetPassword(userId, token);
 			if(passwordResetModel.getStatus() != null) {
@@ -139,6 +139,7 @@ public class PasswordResetController {
 	    
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			response.put("status", "Failed");
 			response.put("message", "Password Updation Failed");
 		}

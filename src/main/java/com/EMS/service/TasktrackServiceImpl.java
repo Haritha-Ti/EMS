@@ -357,7 +357,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 							hours = hours + (Double) item[2];
 
 						}
-						name = (String) item[0] + " " + item[1];
+						name = (String) item[1] + " " + item[0];
 					}
 					jsonObject.put(vl, hours);
 					cal.add(Calendar.DATE, 1);
