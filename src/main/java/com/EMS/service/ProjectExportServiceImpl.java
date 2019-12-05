@@ -1675,7 +1675,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 		List<Object[]> Listdata = new ArrayList<>();
 		for (UserLeaveSummary item : userList) {
-			String name = item.getUser().getFirstName() + " " + item.getUser().getLastName();
+			String name = item.getUser().getLastName() + " " + item.getUser().getFirstName();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String leaveDate = sdf.format(item.getLeaveDate());
 			String leaveType = item.getLeaveType();
@@ -1694,7 +1694,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			 */
 
 			Cell cell = row.createCell(0);
-			cell.setCellValue(name);
+			cell.setCellValue(name.trim());
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(1);
