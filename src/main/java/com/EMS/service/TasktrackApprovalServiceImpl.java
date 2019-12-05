@@ -133,6 +133,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Value("${FINANCE_MAIL}")
 	private String financeMail;
 
+	@Value("${CONTEXT_PATH}")
+	private String CONTEXT_PATH;
+	
 	@Override
 	public Boolean checkIsUserExists(Long id) {
 		Boolean exist = tasktrackRepository.existsByUser(id);
@@ -6415,6 +6418,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			mailBody.append("<br/>Resource Name : " + resource);
 			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
 					+ " 1-15 days has been Forwarded for Level 2 Approval");
+			mailBody.append("<br/><a href="+CONTEXT_PATH+"/approve-log-two>Click here to Review and Submit</a>");
 			mailBody.append("<br/><br/>Forwarded by : " + approverOne);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
@@ -6902,6 +6906,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			mailBody.append("<br/>Resource Name : " + resource);
 			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
 					+ " 16-31 days has been Forwarded for Level 2 Approval");
+			mailBody.append("<br/><a href="+CONTEXT_PATH+"/approve-log-two>Click here to Review and Submit</a>");
 			mailBody.append("<br/><br/>Forwarded by : " + approverOne);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
@@ -6953,6 +6958,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			mailBody.append("<br/>Resource Name : " + resource);
 			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name() + " 1-15 days has been Rejected.");
 			mailBody.append("<br/>Comments : " + remarks);
+			mailBody.append("<br/><a href="+CONTEXT_PATH+"/approve-log>Click here to Re-Submit timesheet</a>");
 			mailBody.append("<br/><br/>Rejected by : " + approverTwo);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
@@ -7003,6 +7009,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			mailBody.append("<br/>Resource Name : " + resource);
 			mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name() + " 16-31 days has been Rejected.");
 			mailBody.append("<br/>Comments : " + remarks);
+			mailBody.append("<br/><a href="+CONTEXT_PATH+"/approve-log>Click here to Re-Submit timesheet</a>");
 			mailBody.append("<br/><br/>Rejected by : " + approverTwo);
 
 			sendMail(sendTo, sendCC, subject, mailBody);
