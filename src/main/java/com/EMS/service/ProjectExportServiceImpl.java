@@ -4,10 +4,12 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -70,6 +72,9 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 	@Autowired
 	TaskTrackFinanceRepository taskTrackFinanceRepository;
+
+	@Autowired
+	ReportService reportService;
 
 	@Override
 	public void exportProjectTaskReport(List<ExportProjectTaskReportModel> data, HttpServletResponse response)
@@ -1670,7 +1675,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 		List<Object[]> Listdata = new ArrayList<>();
 		for (UserLeaveSummary item : userList) {
-			String name = item.getUser().getFirstName() + " " + item.getUser().getLastName();
+			String name = item.getUser().getLastName() + " " + item.getUser().getFirstName();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String leaveDate = sdf.format(item.getLeaveDate());
 			String leaveType = item.getLeaveType();
@@ -1689,7 +1694,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			 */
 
 			Cell cell = row.createCell(0);
-			cell.setCellValue(name);
+			cell.setCellValue(name.trim());
 			cell.setCellStyle(borderedCellStyle);
 
 			cell = row.createCell(1);
@@ -1721,23 +1726,24 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 
 	@Override
 	public void exportLeaveSummaryReport(Workbook workbook, Sheet sheet, ArrayList<String> colNames, String reportName,
-			Integer monthIndex, Integer yearIndex, Date startDate, Date endDate, Long regionId) throws ParseException {
+			Integer monthIndex, Integer yearIndex, Date startDate, Date endDate, Long regionId) throws Exception {
 
-		Calendar startDay = Calendar.getInstance();
-		Calendar endDay = Calendar.getInstance();
-		startDay.setTime(startDate);
-		endDay.setTime(endDate);
-//		Integer dayDiff= ChronoUnit.DAYS.between(startDay.getTime(), endDay.getTime());
-//		Integer dayDiff=31;
+		Long dayDiff = ChronoUnit.DAYS.between(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+				endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 		Integer idx = 0;
-		String[] headers = new String[53];
-//		headers[idx++] = "Name";
-//		headers[idx++] = "Employee Id";
-//		for(;idx<)
-//Removing grids
+		Integer monthsCurrentDayIdx = 1;
+		Integer totColumns = (int) (dayDiff + 3l);
+		String[] headers = new String[totColumns];
+		headers[idx++] = "Name";
+		headers[idx++] = "Employee Id";
+		while (idx < totColumns - 1) {
+			headers[idx++] = String.valueOf(monthsCurrentDayIdx++);
+		}
+		headers[idx] = "Total";
+		// Removing grids
 		sheet.setDisplayGridlines(false);
 		// Freezing columns and rows from scrooling
-		sheet.createFreezePane(0, 3);
+		sheet.createFreezePane(0, 1);
 
 		// Bordered Cell Style
 		CellStyle borderedCellStyle = workbook.createCellStyle();
@@ -1783,54 +1789,47 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellStyle(headerCellStyle);
 		}
 
-		// Create Other rows and cells with contacts data
 		int rowNum = 3;
-		ExportApprovalReportModel totalSummary = new ExportApprovalReportModel();
-		// List<Object[]> userList =
-		// userLeaveSummaryRepository.getUserLeaveListByMonth(startDate,endDate);
-		// List<UserLeaveSummary> userList =
-		// userLeaveSummaryRepository.getUserLeaveListByMonth(startDate,endDate);
-		List<UserLeaveSummary> userList = userLeaveSummaryRepository.getUserLeaveListByMonthRegion(startDate, endDate,
-				regionId);
 
-		List<Object[]> Listdata = new ArrayList<>();
-		for (UserLeaveSummary item : userList) {
-			String name = item.getUser().getFirstName() + " " + item.getUser().getLastName();
+		List<HashMap<String, Object>> regionLeaves = reportService.getRegionLeaves(Integer.valueOf(regionId.toString()),
+				monthIndex, yearIndex);
+
+		for (HashMap<String, Object> item : regionLeaves) {
+			String name = String.valueOf(item.get("name"));
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			String leaveDate = sdf.format(item.getLeaveDate());
-			String leaveType = item.getLeaveType();
-			String contractorName = " ";
-			String employeeType = "FT";
-			if (item.getUser().getContractor() != null) {
-				contractorName = item.getUser().getContractor().getContractorName();
-				employeeType = "SC";
-			}
-
+			Long empId = Long.valueOf(item.get("empId").toString());
+			Double totLeaves = Double.valueOf(item.get("totalLeaves").toString());
+			HashMap<Integer, Object> leavesObj = (HashMap<Integer, Object>) item.get("leaves");
 			Row row = sheet.createRow(rowNum++);
 
 			/*
 			 * Cell cell = row.createCell(0); cell.setCellValue((Long) summary[0]);
 			 * cell.setCellStyle(borderedCellStyle);
 			 */
+			int cellIndx = 0;
 
-			Cell cell = row.createCell(0);
+			Cell cell = row.createCell(cellIndx++);
 			cell.setCellValue(name);
 			cell.setCellStyle(borderedCellStyle);
 
-			cell = row.createCell(1);
-			cell.setCellValue(leaveDate);
+			cell = row.createCell(cellIndx++);
+			cell.setCellValue(empId);
 			cell.setCellStyle(borderedCellStyle);
 
-			cell = row.createCell(2);
-			cell.setCellValue(leaveType);
-			cell.setCellStyle(borderedCellStyle);
+			int monthsDayCount = 1;
+			while (cellIndx < totColumns - 1) {
+				Double leaveAmt = 0d;
+				leaveAmt = leavesObj.containsKey(monthsDayCount)
+						? Double.valueOf(leavesObj.get(monthsDayCount).toString())
+						: 0;
+				cell = row.createCell(cellIndx++);
+				cell.setCellValue(leaveAmt);
+				cell.setCellStyle(borderedCellStyle);
+				monthsDayCount++;
+			}
 
-			cell = row.createCell(3);
-			cell.setCellValue(employeeType);
-			cell.setCellStyle(borderedCellStyle);
-
-			cell = row.createCell(4);
-			cell.setCellValue(contractorName);
+			cell = row.createCell(cellIndx++);
+			cell.setCellValue(totLeaves);
 			cell.setCellStyle(borderedCellStyle);
 
 		}
@@ -1841,7 +1840,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		}
 
 		// Adding filter menu in column headers
-		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 4));
+		sheet.setAutoFilter(new CellRangeAddress(2, rowNum, 0, 1));
 	}
 
 	public void exportVacationReport(Workbook workrbook, Sheet sheet4, ArrayList<String> colNames, String nameofReport4,

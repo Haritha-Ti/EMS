@@ -68,16 +68,7 @@ public class LoginServiceImpl implements LoginService {
 	// method for creating user record
 	@Override
 	public UserModel adduser(UserModel requestdata) {
-		UserModel user=null;
-		try {
-
-			user=user_repositary.save(requestdata);
-			return user;
-		}catch(Exception e) {
-			System.out.println("Exception : "+e);
-			return user;
-		}
-		
+		return user_repositary.save(requestdata);
 	}
 	
 	//method for creating records on usertechnology
