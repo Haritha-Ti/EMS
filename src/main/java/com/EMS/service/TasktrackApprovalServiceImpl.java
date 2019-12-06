@@ -8356,7 +8356,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						// submitted details level2
 						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 						// first half submitted date
-						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(projectId,
+						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
 								userId, month, year);
 						Date firstHalfDateOne = null;
 						String firstHalfDateOnes = null;
@@ -8507,7 +8507,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						// submitted details level2
 						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 						// first half submitted date
-						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(projectId,
+						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
 								userId, month, year);
 						Date firstHalfDateOne = null;
 						String firstHalfDateOnes = null;
@@ -8704,7 +8704,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						// submitted details level2
 						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 						// first half submitted date
-						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(projectId,
+						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
 								userId, month, year);
 						Date firstHalfDateOne = null;
 						String firstHalfDateOnes = null;
@@ -8856,7 +8856,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						// submitted details level2
 						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 						// first half submitted date
-						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(projectId,
+						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
 								userId, month, year);
 						Date firstHalfDateOne = null;
 						String firstHalfDateOnes = null;
