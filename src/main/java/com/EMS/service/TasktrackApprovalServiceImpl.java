@@ -8354,7 +8354,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						projectDetails.put("projectTier", project.getProjectTier());
 						projectDetails.put("projectType", project.getprojectType());
 						// submitted details level2
-						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+						SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
 						// first half submitted date
 						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
 								userId, month, year);
@@ -8505,7 +8505,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						projectDetails.put("projectTier", project.getProjectTier());
 						projectDetails.put("projectType", project.getprojectType());
 						// submitted details level2
-						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+						SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
 						// first half submitted date
 						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
 								userId, month, year);
@@ -8854,7 +8854,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						projectDetails.put("projectTier", project.getProjectTier());
 						projectDetails.put("projectType", project.getprojectType());
 						// submitted details level2
-						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
+						SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
 						// first half submitted date
 						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
 								userId, month, year);
