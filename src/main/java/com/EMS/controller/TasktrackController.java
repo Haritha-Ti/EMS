@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.Taskdetails;
+import com.EMS.exceptions.BadInputException;
 import com.EMS.exceptions.DuplicateEntryException;
 import com.EMS.repository.TaskRepository;
 import com.EMS.repository.TaskTrackApprovalLevel2Repository;
@@ -130,9 +131,9 @@ public class TasktrackController {
 			if (requestdata.get("toDate") != null && requestdata.get("toDate").asText() != null) {
 				toDate = sdf.parse(requestdata.get("toDate").asText());
 			}
-			
-			List<Tasktrack> list = tasktrackService.getByDate(fromDate, toDate,userId);
-			
+
+			List<Tasktrack> list = tasktrackService.getByDate(fromDate, toDate, userId);
+
 			ObjectNode taskDetails = objectMapper.createObjectNode();
 			for (Tasktrack obj : list) {
 				if (taskDetails.get(sdf.format(obj.getDate())) != null) {
@@ -142,7 +143,8 @@ public class TasktrackController {
 					objectNode.put("isBeach", obj.getProject().getProjectId() == Constants.BEACH_PROJECT_ID);
 					objectNode.put("Project",
 							(obj.getProject().getProjectName() != null) ? obj.getProject().getProjectName() : null);
-					objectNode.put("taskType", (obj.getTask().getTaskName() != null) ? obj.getTask().getTaskName() : null);
+					objectNode.put("taskType",
+							(obj.getTask().getTaskName() != null) ? obj.getTask().getTaskName() : null);
 					objectNode.put("taskSummary",
 							(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 					objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
@@ -165,21 +167,21 @@ public class TasktrackController {
 						objectNode.put("taskSummary",
 								(obj.getDescription() != null) ? obj.getDescription() : obj.getDescription());
 						objectNode.put("hours", (obj.getHours() != null) ? obj.getHours() : null);
-						boolean isBlocked = isTaskTrackApproved(obj.getProject().getProjectTier(), obj.getApprovalStatus());
+						boolean isBlocked = isTaskTrackApproved(obj.getProject().getProjectTier(),
+								obj.getApprovalStatus());
 						objectNode.put("isBlocked", isBlocked);
 						arrayNode.add(objectNode);
 					}
-	
+
 					taskDetails.set(sdf.format(obj.getDate()), arrayNode);
 				}
 			}
-	
+
 			ObjectNode dataNode = objectMapper.createObjectNode();
 			dataNode.set("taskDetails", taskDetails);
 			responseNode.put("status", "success");
 			responseNode.set("data", dataNode);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			responseNode.put("status", "failed");
 			responseNode.put("message", e.getMessage());
 		}
@@ -1103,33 +1105,44 @@ public class TasktrackController {
 	}
 
 	@GetMapping("/getProjectNamesForApproval")
-	public JsonNode getProjectNamesForApproval(@RequestParam("uId") Long uId) throws Exception {
+	public JsonNode getProjectNamesForApproval(@RequestParam("uId") Long uId, @RequestParam("regionId") Long regionId,
+			@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws Exception {
 		ArrayNode projectTitle = objectMapper.createArrayNode();
+
+		SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy-MM-dd");
+
+		Calendar startCal = Calendar.getInstance();
+		Calendar endCal = Calendar.getInstance();
+		try {
+			startCal.setTime(dateFrmt.parse(startDate));
+			endCal.setTime(dateFrmt.parse(endDate));
+		} catch (Exception e) {
+			throw new BadInputException("Date should be in the format 'YYYY-MM-dd'");
+		}
 
 		UserModel user = userService.getUserDetailsById(uId);
 
-		if (user.getRole().getroleName().equals("FINANCE") || user.getRole().getroleName().equals("ADMIN")) {// Finance
-			for (ProjectModel alloc : tasktrackServiceImpl.getProjectNamesForApproval()) {
+		if (user.getRole().getroleName().equals("GLOBAL_FINANCE") || user.getRole().getroleName().equals("ADMIN")) {// Finance
+			for (ProjectModel alloc : tasktrackServiceImpl.getProjectNamesForApproval(startCal.getTime(),
+					endCal.getTime())) {
 
 				ObjectNode node = objectMapper.createObjectNode();
 				node.put("id", alloc.getProjectId());
 				node.put("value", alloc.getProjectName());
 				node.put("tier", alloc.getProjectTier());
 				// get region list
-				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
-				ArrayNode regionsArray = objectMapper.createArrayNode();
-				ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
-				if (regions.isEmpty()) {
-					node.set("projectRegion", regionsArray);
-				} else {
-
-					for (ProjectRegion regioneach : regions) {
-						ObjectNode resource = objectMapper.createObjectNode();
-						regionsArray.add((int) regioneach.getRegion_Id().getId());
-
-					}
-					node.set("projectRegion", regionsArray);
-				}
+//				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
+//				ArrayNode regionsArray = objectMapper.createArrayNode();
+//				if (regions.isEmpty()) {
+//					node.set("projectRegion", regionsArray);
+//				} else {
+//
+//					for (ProjectRegion regioneach : regions) {
+//						regionsArray.add((int) regioneach.getRegion_Id().getId());
+//
+//					}
+//					node.set("projectRegion", regionsArray);
+//				}
 				//
 
 				projectTitle.add(node);
@@ -1139,24 +1152,29 @@ public class TasktrackController {
 			if (user.getRole().getroleId() == 7) {
 				// System.out.println("_________________________________________APPROVER_LEVEL_2
 				// " +uId );
-				projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId);
+				projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, startCal.getTime(),
+						endCal.getTime());
 			} else if (user.getRole().getroleId() == 2) {
 				// System.out.println("_________________________________________APPROVER_LEVEL_1/Lead
 				// "+uId);
-				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId);
+				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, startCal.getTime(),
+						endCal.getTime());
 			} else if (user.getRole().getroleId() == 11) {
-				projectList = tasktrackRepository.getProjectNamesForApproverOnly(uId);
+				projectList = tasktrackRepository.getProjectNamesForApproverOnly(uId, startCal.getTime(),
+						endCal.getTime());
 			}
 			// Renjith
-			else if (user.getRole().getroleId() == 5) {
+			else if (user.getRole().getroleId() == 5 || user.getRole().getroleId() == 6) {
 				// System.out.println("_________________________________________Sub Admin
 				// "+uId);
-				projectList = projectRegionService.getObjProjectsByRegionId(user.getRegion().getId());
+				projectList = projectRegionService.getObjProjectsByRegionId(user.getRegion().getId(),
+						startCal.getTime(), endCal.getTime());
 			}
 
 			else {
 				System.out.println("_________________________________________Other" + uId);
-				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId);
+				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId, startCal.getTime(),
+						endCal.getTime());
 			}
 
 			for (Object[] alloc : projectList) {
@@ -1166,20 +1184,20 @@ public class TasktrackController {
 					node.put("value", (String) alloc[0]);
 					node.put("tier", (Integer) alloc[2]);
 					// get region list
-					List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
-					ArrayNode regionsArray = objectMapper.createArrayNode();
-					ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
-					if (regions.isEmpty()) {
-						node.set("projectRegion", regionsArray);
-					} else {
-
-						for (ProjectRegion regioneach : regions) {
-							ObjectNode resource = objectMapper.createObjectNode();
-							regionsArray.add((int) regioneach.getRegion_Id().getId());
-
-						}
-						node.set("projectRegion", regionsArray);
-					}
+//					List<ProjectRegion> regions = projectservice.getregionlist((Long) alloc[1]);
+//					ArrayNode regionsArray = objectMapper.createArrayNode();
+//					ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+//					if (regions.isEmpty()) {
+//						node.set("projectRegion", regionsArray);
+//					} else {
+//
+//						for (ProjectRegion regioneach : regions) {
+//							ObjectNode resource = objectMapper.createObjectNode();
+//							regionsArray.add((int) regioneach.getRegion_Id().getId());
+//
+//						}
+//						node.set("projectRegion", regionsArray);
+//					}
 					//
 					projectTitle.add(node);
 				} catch (Exception e) {
@@ -2764,6 +2782,10 @@ public class TasktrackController {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate = formatter.parse(year + "-" + month + "-" + "01");
 		UserModel user = userService.getUserDetailsById(uId);
+		Calendar startCal = Calendar.getInstance();
+		startCal.setTime(startDate);
+		Calendar endCal = Calendar.getInstance();
+		endCal.setTime(formatter.parse(year + "-" + month + "-" + startCal.getActualMaximum(Calendar.DATE)));
 
 		if (user.getRole().getroleId() == 6 || user.getRole().getroleId() == 1) {// Finance
 			for (ProjectModel alloc : tasktrackRepository.getProjectNamesForApproval(month, year)) {
@@ -2806,7 +2828,8 @@ public class TasktrackController {
 			else if (user.getRole().getroleId() == 5) {
 				// System.out.println("_________________________________________Sub Admin
 				// "+uId);
-				projectList = projectRegionService.getObjProjectsByRegionId(user.getRegion().getId());
+				projectList = projectRegionService.getObjProjectsByRegionId(user.getRegion().getId(),
+						startCal.getTime(), endCal.getTime());
 			} else if (user.getRole().getroleId() == 11) {
 				// System.out.println("_________________________________________Approver
 				// "+uId);
@@ -2815,7 +2838,8 @@ public class TasktrackController {
 
 			else {
 				// System.out.println("_________________________________________Other"+uId);
-				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId);
+				projectList = tasktrackRepository.getProjectNamesForApprovalnew(uId, startCal.getTime(),
+						endCal.getTime());
 			}
 
 			for (Object[] alloc : projectList) {
@@ -3271,14 +3295,14 @@ public class TasktrackController {
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				sessionId = requestdata.get("sessionId").asLong();
 			}
-			
+
 			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
-			
-			if(loggedUser.getRole().getroleId() == 6) {
-				
+
+			if (loggedUser.getRole().getroleId() == 6) {
+
 				regionId = loggedUser.getRegion().getId();
 			}
-			
+
 			ArrayNode range = (ArrayNode) requestdata.get("range");
 
 			JSONObject outputdata = new JSONObject();
@@ -3374,11 +3398,11 @@ public class TasktrackController {
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				sessionId = requestdata.get("sessionId").asLong();
 			}
-			
+
 			UserModel loggedUser = userService.getUserdetailsbyId(sessionId);
-			
-			if(loggedUser.getRole().getroleId() == 6) {
-				
+
+			if (loggedUser.getRole().getroleId() == 6) {
+
 				regionId = loggedUser.getRegion().getId();
 			}
 			ArrayNode range = (ArrayNode) requestdata.get("range");
@@ -3388,22 +3412,22 @@ public class TasktrackController {
 			ArrayList<JSONObject> resultData = new ArrayList<JSONObject>();
 			ArrayList<JSONObject> node1 = new ArrayList<JSONObject>();
 
-				for (JsonNode rangenode : range) {
-					JSONObject node = new JSONObject();
-					month = Integer.parseInt(rangenode.get("month").toString());
-					year = Integer.parseInt(rangenode.get("year").toString());
-					if (month != 0 && year != 0) {
+			for (JsonNode rangenode : range) {
+				JSONObject node = new JSONObject();
+				month = Integer.parseInt(rangenode.get("month").toString());
+				year = Integer.parseInt(rangenode.get("year").toString());
+				if (month != 0 && year != 0) {
 
-						resultData = tasktrackApprovalService.getUserWiseSubmissionDetails(month, year,
-								projectId, userId, regionId);
-						node.put("timeTracks", resultData);
-						node.put("month", month);
-						node.put("year", year);
-						node1.add(node);
-
-					}
+					resultData = tasktrackApprovalService.getUserWiseSubmissionDetails(month, year, projectId, userId,
+							regionId);
+					node.put("timeTracks", resultData);
+					node.put("month", month);
+					node.put("year", year);
+					node1.add(node);
 
 				}
+
+			}
 
 			jsonDataRes.put("data", node1);
 			jsonDataRes.put("status", "success");
@@ -3418,6 +3442,4 @@ public class TasktrackController {
 		return jsonDataRes;
 	}
 
-	
-	
 }
