@@ -86,7 +86,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 	@Value("${FINANCE_MAIL}")
 	private String financeMail;
-	
+
 	@Value("${CONTEXT_PATH}")
 	private String CONTEXT_PATH;
 
@@ -302,6 +302,15 @@ public class TasktrackServiceImpl implements TasktrackService {
 	public List<ProjectModel> getProjectNamesForApproval() {
 		try {
 			return tasktrackRepository.getProjectNamesForApproval();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ArrayList<ProjectModel>();
+		}
+	}
+
+	public List<ProjectModel> getProjectNamesForApproval(Date startDate, Date endDate) {
+		try {
+			return tasktrackRepository.getProjectNamesForApproval(startDate, endDate);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ArrayList<ProjectModel>();
@@ -787,7 +796,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 						mailBody.append("<br/>Resource Name : " + resource);
 						mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
 								+ " 1-15 days requires correction.");
-						mailBody.append("<br/><a href="+CONTEXT_PATH+"/approve-log>Click here to Re-Submit timesheet</a>");
+						mailBody.append(
+								"<br/><a href=" + CONTEXT_PATH + "/approve-log>Click here to Re-Submit timesheet</a>");
 						mailBody.append("<br/><br/>Comments : " + comment);
 						if (isRecorrection && projectTier == 2)
 							mailBody.append("<br/><br/>Correction Requested by : " + approverTwo);
@@ -814,7 +824,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 						mailBody.append("<br/><br/>Timesheet for " + Month.of(month).name()
 								+ " 16-31 days requires correction.");
 						mailBody.append("<br/><br/>Comments : " + comment);
-						mailBody.append("<br/><a href="+CONTEXT_PATH+"/approve-log>Click here to Re-Submit timesheet</a>");
+						mailBody.append(
+								"<br/><a href=" + CONTEXT_PATH + "/approve-log>Click here to Re-Submit timesheet</a>");
 						if (isRecorrection && projectTier == 2)
 							mailBody.append("<br/><br/>Correction Requested by : " + approverTwo);
 						else

@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.security.NoSuchAlgorithmException;
 
 import javax.persistence.Column;
@@ -86,44 +87,37 @@ public class LoginController {
 
 		try {
 
-			if ((username != null) && (username.length() > 0) && (!username.equals(" ")) && (password != null)
-					&& (password.length() > 0)) {
+			if(username != null && username.length() > 0 && !username.equals(" ") && password != null && password.length() > 0) {
 
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-				String token = jwtTokenProvider.createToken(username,
-						this.userRepository.findByUserName(username)
-								.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
-								.getRole().getroleName(),
-						this.userRepository.findByUserName(username)
-								.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
-								.getRole().getroleId());
-
 				UserModel usercheck = login_service.login_authentication(username);
-
-				if (usercheck == null) {
-					LOGGER.info("User Authentication Failed");
+				
+				if(!usercheck.isActive()) {
+					LOGGER.info("Inactive User");
 					response.put("status", "Failed");
 					response.put("code", httpstatus.getStatus());
-					response.put("message", "Invalid user");
+					response.put("message", "Inactive User");
 					response.put("payload", "");
-				} else {
-					LOGGER.info("User Authentication Success");
-					response.put("status", "success");
-					response.put("code", httpstatus.getStatus());
-					response.put("message", "Valid user");
-					data.put("username", usercheck.getUserName());
-					data.put("userId", usercheck.getUserId());
-					data.put("roleId", usercheck.getRole().getroleId());
-					data.put("roleName", usercheck.getRole().getroleName());
-					data.put("regionName", usercheck.getRegion().getRegion_name());
-
-					ObjectMapper mapper = new ObjectMapper();
-					ArrayNode array = getBlockedPageList(usercheck.getRole().getroleId());
-					data.putArray("allowedPages").addAll(array);
-					data.put("token", token);
-
-					response.set("payload", data);
+					return response;
 				}
+				
+				String token = jwtTokenProvider.createToken(username, usercheck.getRole().getroleName(), usercheck.getRole().getroleId());
+
+				LOGGER.info("User Authentication Success");
+				response.put("status", "success");
+				response.put("code", httpstatus.getStatus());
+				response.put("message", "Valid user");
+				data.put("username", usercheck.getUserName());
+				data.put("userId", usercheck.getUserId());
+				data.put("roleId", usercheck.getRole().getroleId());
+				data.put("roleName", usercheck.getRole().getroleName());
+				data.put("regionName", usercheck.getRegion().getRegion_name());
+
+				ArrayNode array = getBlockedPageList(usercheck.getRole().getroleId());
+				data.putArray("allowedPages").addAll(array);
+				data.put("token", token);
+
+				response.set("payload", data);
 
 			} else {
 				LOGGER.info("Invalid credientials");
