@@ -17,7 +17,7 @@ import com.EMS.listener.ModelListener;
 @Audited
 @EntityListeners(ModelListener.class)
 @Entity
-@Table(name = "Skills")
+@Table(name = "User_Skills")
 public class SkillsModel extends Auditable<Long> {
 	@Id
 	@Column(name = "skiilsId")

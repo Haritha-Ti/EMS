@@ -19,7 +19,7 @@ import com.EMS.listener.ModelListener;
 @Audited
 @EntityListeners(ModelListener.class)
 @Entity
-@Table(name = "Performance_Mangement")
+@Table(name = "User_PerformanceMangement")
 public class PerformanceMangementModel extends Auditable<Long> {
 	@Id
 	@Column(name = "Performance_MangementId")
