@@ -81,7 +81,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	@Query("SELECT u FROM UserModel u WHERE u.role in (11,8)")
 	List<UserModel> getOnsiteLeads();
 
-	@Query("SELECT u FROM UserModel u WHERE u.role in(2,3,5) AND department_department_id in('1','2','3','4','8','6','5','7')   order by u.lastName")
+	@Query("SELECT u FROM UserModel u WHERE u.role in (11,3,5) AND department_department_id in('1','2','3','4','8','6','5','7')   order by u.lastName")
 	List<UserModel> getUserLists();
 	
 	@Query(value="SELECT count(*) FROM user where active=1 AND termination_date IS NULL",nativeQuery=true)
@@ -125,5 +125,8 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 
 	@Query("Select u From UserModel u where  (u.terminationDate >= ?1 or u.terminationDate IS NULL) and u.joiningDate <=?1 and  u.role.roleId in('2','3','5','11','9') and u.department.departmentId in('1','2','3','4','8') ")
 	List<UserModel> getUsersBasedOnMonthYearRegion(Date date1);
+
+	@Query("Select u FROM UserModel u where u.region.id = ?1  and (u.terminationDate >= ?2 or u.terminationDate IS NULL) and u.joiningDate <=?3 and u.role.roleId in ('3','5','11','9') and u.department.departmentId in ('1') ")
+	List<UserModel> getUsersByRegionAndDate(Long regionId, Date startDate, Date endDate);
 
 }

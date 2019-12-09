@@ -8357,11 +8357,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
 						// first half submitted date
 						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
-								userId, month, year);
+								user_id, month, year);
 						Date firstHalfDateOne = null;
 						String firstHalfDateOnes = null;
-						System.out.println("---------------->" + firstHalfDates.length);
+						//System.out.println("---------------->" + firstHalfDates.length);
 						if (firstHalfDates.length > 0) {
+							//System.out.println("here--------------------------->");
 							if (firstHalfDates != null) {
 								firstHalfDateOne = (Date) firstHalfDates[0];
 								firstHalfDateOnes = ft.format(firstHalfDateOne);
@@ -8508,10 +8509,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						SimpleDateFormat ft = new SimpleDateFormat("MM-dd-yyyy");
 						// first half submitted date
 						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
-								userId, month, year);
+								user_id, month, year);
 						Date firstHalfDateOne = null;
 						String firstHalfDateOnes = null;
-						System.out.println("---------------->" + firstHalfDates.length);
+						//System.out.println("---------------->" + firstHalfDates.length);
 						if (firstHalfDates.length > 0) {
 							if (firstHalfDates != null) {
 								firstHalfDateOne = (Date) firstHalfDates[0];
@@ -8705,10 +8706,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd");
 						// first half submitted date
 						Object[] firstHalfDates = taskTrackApprovalFinalRepository.getSubmittedDateFromAudit(project_id,
-								userId, month, year);
+								user_id, month, year);
 						Date firstHalfDateOne = null;
 						String firstHalfDateOnes = null;
-						System.out.println("---------------->" + firstHalfDates.length);
+						//System.out.println("---------------->" + firstHalfDates.length);
 						if (firstHalfDates.length > 0) {
 							if (firstHalfDates != null) {
 								firstHalfDateOne = (Date) firstHalfDates[0];
@@ -8860,7 +8861,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								userId, month, year);
 						Date firstHalfDateOne = null;
 						String firstHalfDateOnes = null;
-						System.out.println("---------------->" + firstHalfDates.length);
+						//System.out.println("---------------->" + firstHalfDates.length);
 						if (firstHalfDates.length > 0) {
 							if (firstHalfDates != null) {
 								firstHalfDateOne = (Date) firstHalfDates[0];
