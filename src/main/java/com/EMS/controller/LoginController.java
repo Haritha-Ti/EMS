@@ -3,14 +3,18 @@ package com.EMS.controller;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.security.NoSuchAlgorithmException;
 
 import javax.persistence.Column;
 import javax.servlet.http.HttpServletResponse;
 
 import com.EMS.model.*;
+
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,44 +90,37 @@ public class LoginController {
 
 		try {
 
-			if ((username != null) && (username.length() > 0) && (!username.equals(" ")) && (password != null)
-					&& (password.length() > 0)) {
+			if(username != null && username.length() > 0 && !username.equals(" ") && password != null && password.length() > 0) {
 
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-				String token = jwtTokenProvider.createToken(username,
-						this.userRepository.findByUserName(username)
-								.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
-								.getRole().getroleName(),
-						this.userRepository.findByUserName(username)
-								.orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"))
-								.getRole().getroleId());
-
 				UserModel usercheck = login_service.login_authentication(username);
-
-				if (usercheck == null) {
-					LOGGER.info("User Authentication Failed");
+				
+				if(!usercheck.isActive()) {
+					LOGGER.info("Inactive User");
 					response.put("status", "Failed");
 					response.put("code", httpstatus.getStatus());
-					response.put("message", "Invalid user");
+					response.put("message", "Inactive User");
 					response.put("payload", "");
-				} else {
-					LOGGER.info("User Authentication Success");
-					response.put("status", "success");
-					response.put("code", httpstatus.getStatus());
-					response.put("message", "Valid user");
-					data.put("username", usercheck.getUserName());
-					data.put("userId", usercheck.getUserId());
-					data.put("roleId", usercheck.getRole().getroleId());
-					data.put("roleName", usercheck.getRole().getroleName());
-					data.put("regionName", usercheck.getRegion().getRegion_name());
-
-					ObjectMapper mapper = new ObjectMapper();
-					ArrayNode array = getBlockedPageList(usercheck.getRole().getroleId());
-					data.putArray("allowedPages").addAll(array);
-					data.put("token", token);
-
-					response.set("payload", data);
+					return response;
 				}
+				
+				String token = jwtTokenProvider.createToken(username, usercheck.getRole().getroleName(), usercheck.getRole().getroleId());
+
+				LOGGER.info("User Authentication Success");
+				response.put("status", "success");
+				response.put("code", httpstatus.getStatus());
+				response.put("message", "Valid user");
+				data.put("username", usercheck.getUserName());
+				data.put("userId", usercheck.getUserId());
+				data.put("roleId", usercheck.getRole().getroleId());
+				data.put("roleName", usercheck.getRole().getroleName());
+				data.put("regionName", usercheck.getRegion().getRegion_name());
+
+				ArrayNode array = getBlockedPageList(usercheck.getRole().getroleId());
+				data.putArray("allowedPages").addAll(array);
+				data.put("token", token);
+
+				response.set("payload", data);
 
 			} else {
 				LOGGER.info("Invalid credientials");
@@ -1023,6 +1020,68 @@ public class LoginController {
 			node.set("data", dataNode);
 		}
 		return node;
+	}
+	/***
+	 * @author drishya dinesh
+	 * @des get users by region and date
+	 * @param requestdata
+	 * @param httpstatus
+	 * @return
+	 * @throws ParseException
+	 */
+	@PostMapping("/getAllUserListByRegionAndDate")
+	public ObjectNode getAllUserListByRegionAndDate(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
+		Long userId = null;
+		Long regionId = null;
+		ObjectNode response = objectMapper.createObjectNode();
+		ArrayNode userNodes = objectMapper.createArrayNode();
+		if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
+			regionId = requestdata.get("regionId").asLong();
+		}
+		String date1 = requestdata.get("startDate").asText();
+		String date2 = requestdata.get("endDate").asText();
+
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = null;
+		Date endDate = null;
+		if (!date1.isEmpty() && !date2.isEmpty()) {
+			startDate = outputFormat.parse(date1);
+			endDate = outputFormat.parse(date2);
+		}
+		List<UserModel> users = new ArrayList<UserModel>();
+	try	{
+		if(startDate != null && endDate != null) {
+			
+			 users = userService.getUsersByRegionAndDate(regionId,startDate,endDate);
+		}
+		
+		if(users.size() >0 && users != null) {
+			
+			for(UserModel user : users) {
+				ObjectNode node = objectMapper.createObjectNode();
+				node.put("userName",user.getLastName()+" "+user.getFirstName());
+				node.put("firstName", user.getFirstName());
+				node.put("lastName", user.getLastName());
+				node.put("userId", user.getUserId());
+				node.put("regionId", user.getRegion().getId());
+				userNodes.add(node);
+			}
+			
+		}
+		response.put("status", "success");
+		response.put("code", httpstatus.getStatus());
+		response.set("payload", userNodes);
+		response.put("message", "successfully saved. ");
+		
+	}
+	catch (Exception e) {
+		// TODO: handle exception
+		response.put("status", "Failure");
+		response.put("code", httpstatus.getStatus());
+		response.put("message", "Exception occured.");
+	}
+		return response;
 	}
 
 }
