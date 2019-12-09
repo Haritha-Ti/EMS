@@ -1,9 +1,11 @@
 package com.EMS.service;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.EMS.model.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface ProjectService {
 
@@ -92,7 +94,10 @@ public interface ProjectService {
 
 		ArrayList<ProjectModel> getProjectsByRegion();
 
-	
-	
+	    //nisha
+	    ObjectNode getProjectHealthData(Long regionId, String currentDate) throws ParseException;
+
+
+    int duplicationCheckingProjectCode(String projectCode);
 }
 
