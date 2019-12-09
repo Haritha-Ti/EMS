@@ -96,7 +96,7 @@ public class LoginController {
 					LOGGER.info("Inactive User");
 					response.put("status", "Failed");
 					response.put("code", httpstatus.getStatus());
-					response.put("message", "Inactive User");
+					response.put("message", "User account has been deactivated");
 					response.put("payload", "");
 					return response;
 				}
@@ -127,21 +127,18 @@ public class LoginController {
 				response.put("payload", "");
 			}
 
-		} catch (BadCredentialsException b) {
+		} catch (BadCredentialsException exception) {
 			LOGGER.info("Exception in adminLogin Method");
-			b.printStackTrace();
-			// Setting status on json object
-			response.put("status", "Failed");
-			response.put("code", "Invalid credientials");
-			response.put("message", "Exception " + b);
-			response.put("payload", "");
-		} catch (Exception e) {
-			LOGGER.info("Exception in adminLogin Method");
-			e.printStackTrace();
-			// Setting status on json object
 			response.put("status", "Failed");
 			response.put("code", httpstatus.getStatus());
-			response.put("message", "Exception " + e);
+			response.put("message", "Invalid username or password");
+			response.put("payload", "");
+		} catch (Exception exception) {
+			LOGGER.info("Exception in adminLogin Method");
+			exception.printStackTrace();
+			response.put("status", "Failed");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "Exception : " + exception);
 			response.put("payload", "");
 		}
 		return response;

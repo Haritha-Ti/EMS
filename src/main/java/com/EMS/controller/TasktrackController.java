@@ -1105,7 +1105,8 @@ public class TasktrackController {
 	}
 
 	@GetMapping("/getProjectNamesForApproval")
-	public JsonNode getProjectNamesForApproval(@RequestParam("uId") Long uId, @RequestParam("regionId") Long regionId,
+	public JsonNode getProjectNamesForApproval(@RequestParam("uId") Long uId,
+			@RequestParam(value = "regionId", required = false) Long regionId,
 			@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws Exception {
 		ArrayNode projectTitle = objectMapper.createArrayNode();
 
@@ -1123,14 +1124,15 @@ public class TasktrackController {
 		UserModel user = userService.getUserDetailsById(uId);
 
 		if (user.getRole().getroleName().equals("GLOBAL_FINANCE") || user.getRole().getroleName().equals("ADMIN")) {// Finance
-			for (ProjectModel alloc : tasktrackServiceImpl.getProjectNamesForApproval(startCal.getTime(),
-					endCal.getTime())) {
+			if (regionId == null || regionId == 0) {
+				for (ProjectModel alloc : tasktrackServiceImpl.getProjectNamesForApproval(startCal.getTime(),
+						endCal.getTime())) {
 
-				ObjectNode node = objectMapper.createObjectNode();
-				node.put("id", alloc.getProjectId());
-				node.put("value", alloc.getProjectName());
-				node.put("tier", alloc.getProjectTier());
-				// get region list
+					ObjectNode node = objectMapper.createObjectNode();
+					node.put("id", alloc.getProjectId());
+					node.put("value", alloc.getProjectName());
+					node.put("tier", alloc.getProjectTier());
+					// get region list
 //				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
 //				ArrayNode regionsArray = objectMapper.createArrayNode();
 //				if (regions.isEmpty()) {
@@ -1143,9 +1145,23 @@ public class TasktrackController {
 //					}
 //					node.set("projectRegion", regionsArray);
 //				}
-				//
+					//
 
-				projectTitle.add(node);
+					projectTitle.add(node);
+				}
+			} else {
+				for (Object[] alloc : projectRegionService.getObjProjectsByRegionId(regionId, startCal.getTime(),
+						endCal.getTime())) {
+					try {
+						ObjectNode node = objectMapper.createObjectNode();
+						node.put("id", (Long) alloc[1]);
+						node.put("value", (String) alloc[0]);
+						node.put("tier", (Integer) alloc[2]);
+						projectTitle.add(node);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		} else {
 			List<Object[]> projectList = null;
@@ -2787,7 +2803,7 @@ public class TasktrackController {
 		Calendar endCal = Calendar.getInstance();
 		endCal.setTime(formatter.parse(year + "-" + month + "-" + startCal.getActualMaximum(Calendar.DATE)));
 
-		if (user.getRole().getroleId() == 6 || user.getRole().getroleId() == 1) {// Finance
+		if (user.getRole().getroleId() == 10 || user.getRole().getroleId() == 1) {// Finance
 			for (ProjectModel alloc : tasktrackRepository.getProjectNamesForApproval(month, year)) {
 
 				ObjectNode node = objectMapper.createObjectNode();
@@ -2825,7 +2841,7 @@ public class TasktrackController {
 				projectList = tasktrackRepository.getProjectNamesForApprovalLevel1(uId, startDate, month, year);
 			}
 			// Renjith
-			else if (user.getRole().getroleId() == 5) {
+			else if (user.getRole().getroleId() == 5 || user.getRole().getroleId() == 6) {
 				// System.out.println("_________________________________________Sub Admin
 				// "+uId);
 				projectList = projectRegionService.getObjProjectsByRegionId(user.getRegion().getId(),
