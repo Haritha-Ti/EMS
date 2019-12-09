@@ -3,6 +3,7 @@ package com.EMS.controller;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,8 @@ import javax.persistence.Column;
 import javax.servlet.http.HttpServletResponse;
 
 import com.EMS.model.*;
+
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1014,6 +1017,68 @@ public class LoginController {
 			node.set("data", dataNode);
 		}
 		return node;
+	}
+	/***
+	 * @author drishya dinesh
+	 * @des get users by region and date
+	 * @param requestdata
+	 * @param httpstatus
+	 * @return
+	 * @throws ParseException
+	 */
+	@PostMapping("/getAllUserListByRegionAndDate")
+	public ObjectNode getAllUserListByRegionAndDate(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
+		Long userId = null;
+		Long regionId = null;
+		ObjectNode response = objectMapper.createObjectNode();
+		ArrayNode userNodes = objectMapper.createArrayNode();
+		if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
+			regionId = requestdata.get("regionId").asLong();
+		}
+		String date1 = requestdata.get("startDate").asText();
+		String date2 = requestdata.get("endDate").asText();
+
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = null;
+		Date endDate = null;
+		if (!date1.isEmpty() && !date2.isEmpty()) {
+			startDate = outputFormat.parse(date1);
+			endDate = outputFormat.parse(date2);
+		}
+		List<UserModel> users = new ArrayList<UserModel>();
+	try	{
+		if(startDate != null && endDate != null) {
+			
+			 users = userService.getUsersByRegionAndDate(regionId,startDate,endDate);
+		}
+		
+		if(users.size() >0 && users != null) {
+			
+			for(UserModel user : users) {
+				ObjectNode node = objectMapper.createObjectNode();
+				node.put("userName",user.getLastName()+" "+user.getFirstName());
+				node.put("firstName", user.getFirstName());
+				node.put("lastName", user.getLastName());
+				node.put("userId", user.getUserId());
+				node.put("regionId", user.getRegion().getId());
+				userNodes.add(node);
+			}
+			
+		}
+		response.put("status", "success");
+		response.put("code", httpstatus.getStatus());
+		response.set("payload", userNodes);
+		response.put("message", "successfully saved. ");
+		
+	}
+	catch (Exception e) {
+		// TODO: handle exception
+		response.put("status", "Failure");
+		response.put("code", httpstatus.getStatus());
+		response.put("message", "Exception occured.");
+	}
+		return response;
 	}
 
 }

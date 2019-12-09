@@ -94,7 +94,7 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 				toDate);
 		Map<Long, List<String>> projectClientMap = new HashMap<Long, List<String>>();
 		Map<Long, List<String>> projectDateMap = new HashMap<Long, List<String>>();
-
+		
 		if (projectAllocList != null) {
 			for (Object[] allocation : projectAllocList) {
 				Long projectId = Long.valueOf(allocation[0].toString());
@@ -138,6 +138,7 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 		List<Object[]> taskTrackList = tasktrackRepository.getTasksFortimeTrack(userId, fromDate, toDate);
 		if (taskTrackList != null && taskTrackList.size() > 0) {
 			for (Object[] taskTrack : taskTrackList) {
+				int projectTier = Integer.parseInt(taskTrack[6].toString());
 				Long projectId = Long.valueOf(taskTrack[0].toString());
 				if(projectId == Constants.BEACH_PROJECT_ID) {
 					containsBeach = true;
@@ -155,7 +156,7 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 					task.put("date", taskTrackDate);
 					task.put("qTrackId", taskTrack[3]);
 					task.put("hour", taskTrack[5]);
-					task.put("enable", checkDateEnabled(projectDateMap, projectId, taskTrackDate));
+					task.put("enable", checkDateEnabled(projectDateMap, projectId, sdf.parse(taskTrackDate), userId, projectTier));
 					taskDetailsMap.put(taskTrackDate, task);
 				} else {
 					projectObject.put("projectId", taskTrack[0]);
@@ -166,7 +167,7 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 					task.put("date", taskTrackDate);
 					task.put("qTrackId", taskTrack[3]);
 					task.put("hour", taskTrack[5]);
-					task.put("enable", checkDateEnabled(projectDateMap, projectId, taskTrackDate));
+					task.put("enable", checkDateEnabled(projectDateMap, projectId, sdf.parse(taskTrackDate), userId,  projectTier));
 
 					taskDetailsMap.put(taskTrackDate, task);
 					taskListMap.put(projectId, taskDetailsMap);
@@ -200,7 +201,7 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 					task.put("date", taskTrackDate);
 					task.put("qTrackId", null);
 					task.put("hour", 0.0);
-					task.put("enable", checkDateEnabled(projectDateMap, map.getKey(), taskTrackDate));
+					task.put("enable", checkDateEnabled(projectDateMap, map.getKey(), sdf.parse(taskTrackDate), userId, 1));
 					taskList.add(task);
 				} else {
 					taskList.add(taskMap.get(taskTrackDate));
@@ -222,12 +223,34 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 		return response;
 	}
 
-	private Boolean checkDateEnabled(Map<Long, List<String>> projectDateMap, Long projectId, String date) {
-		List<String> projectDateList = projectDateMap.get(projectId);
-		if (projectDateList != null && projectDateList.contains(date)) {
-			return Boolean.TRUE;
+	private Boolean checkDateEnabled(Map<Long, List<String>> projectDateMap, Long projectId, Date date, long userId, int projectTier) {
+		List<Long> projectIds = Arrays.asList(projectId);
+		
+		List<Object[]> taskApprovalStatusArr = new ArrayList<Object[]>();
+
+		if (projectTier == 1) {
+			taskApprovalStatusArr.addAll(
+					tasktrackRepository.getTaskApprovalStatusForProjectsTire1(userId, date, projectIds));
 		}
-		return Boolean.FALSE;
+
+		else if (projectTier == 2) {
+			taskApprovalStatusArr.addAll(
+					tasktrackRepository.getTaskApprovalStatusForProjectsTire2(userId, date, projectIds));
+		}
+		
+		boolean isBlocked = false;
+		isBlocked = (taskApprovalStatusArr == null || taskApprovalStatusArr.isEmpty())? isBlocked : !isBlocked ;
+		
+		if (taskApprovalStatusArr != null && !taskApprovalStatusArr.isEmpty()) {
+			isBlocked = isTaskTrackApproved(projectTier, taskApprovalStatusArr.get(0)[0].toString());
+		}
+		
+		boolean isEnabled = false;
+		List<String> projectDateList = projectDateMap.get(projectId);
+		if (projectDateList != null && projectDateList.contains(date) || !isBlocked) {
+			isEnabled =  Boolean.TRUE;
+		}	
+		return isEnabled;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -286,4 +309,20 @@ public class QuickTaskTrackServiceImpl implements QuickTaskTrackService {
 
 	}
 
+	private boolean isTaskTrackApproved(int projectTier, String status) {
+
+		if (projectTier == 2) {
+			List<String> tireTwoStatus = Arrays.asList(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT,
+					Constants.TASKTRACK_APPROVER_STATUS_LOCK, Constants.TASKTRACK_APPROVER_STATUS_CORRECTED,
+					Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED);
+			return tireTwoStatus.contains(status);
+		}
+
+		else if (projectTier == 1) {
+			List<String> tireOneStatus = Arrays.asList(Constants.TASKTRACK_FINAL_STATUS_SUBMIT);
+			return tireOneStatus.contains(status);
+		}
+		return false;
+	}
+	
 }

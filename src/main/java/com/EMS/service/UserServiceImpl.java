@@ -571,4 +571,10 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
+	public List<UserModel> getUsersByRegionAndDate(Long regionId, Date startDate, Date endDate) {
+		// TODO Auto-generated method stub
+		return userRepository.getUsersByRegionAndDate(regionId,startDate,endDate);
+	}
+
 }

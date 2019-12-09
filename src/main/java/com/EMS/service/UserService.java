@@ -135,6 +135,8 @@ public interface UserService {
 	    JSONObject  getPayrollByUserId(Long userID);
 	    
 	    PayrollModel  PayrollByUserId(Long userID);
+
+		List<UserModel> getUsersByRegionAndDate(Long regionId, Date startDate, Date endDate);
 	
 	
 	
