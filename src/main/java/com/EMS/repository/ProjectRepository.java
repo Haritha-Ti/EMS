@@ -119,4 +119,14 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 	@Query(value="select p from ProjectModel p  where p.projectStatus=1 and p.parentProjectId != 0 and projectStatus = 1")
 	ArrayList<ProjectModel> getProjectsByRegion();
 
+	//Nisha
+	@Query(value = "SELECT * FROM project p Join  project_region r ON  (p.project_id=r.project_id_project_id)  where p.start_date<=?1 AND p.end_date>=?1  AND r.region_id_id=?2 AND p.project_category=1", nativeQuery = true)
+	List<ProjectModel> getAllActiveProjectsByRegion(String datestring, Long regionId);
+
+	@Query(value = "SELECT * FROM project p Join  project_region r ON  (p.project_id=r.project_id_project_id)  where p.start_date<=?1 AND p.end_date>=?1  AND p.project_category=1 ", nativeQuery = true)
+	List<ProjectModel> getAllActiveProjectsByDate(String datestring);
+
+	@Query("SELECT count(p) FROM ProjectModel p WHERE p.projectCode=?1")
+	int findprojectbycode(String projectCode);
+
 }

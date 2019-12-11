@@ -1,5 +1,6 @@
 package com.EMS.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -219,7 +220,8 @@ public class ProjectController {
 					&& (project.getProjectCode().length() > 0)) {
 				// method invocation for checking duplicate entry for project name
 				//int result = projectservice.duplicationchecking(project.getProjectName());
-			//	if (result == 0) {
+				int result = projectservice.duplicationCheckingProjectCode(project.getProjectCode());
+				if (result == 0) {
 					// Method invocation for creating new project record
 
 					ProjectModel projectmodel = projectservice.save_project_record(project);
@@ -301,10 +303,10 @@ public class ProjectController {
 
 					}
 
-				//} else {
-					//responseflag = 1;
-					//responsedata.put("message", "Insertion failed due to duplicate entry");
-			//	}
+				} else {
+					responseflag = 1;
+					responsedata.put("message", "Insertion failed due to duplicate entry");
+				}
 
 			} else {
 				responseflag = 1;
@@ -1534,6 +1536,44 @@ public class ProjectController {
 	}
 		return response;
 	}
-	
+	//nisha - projectHealthData
+	@PostMapping(value = "/getProjectHealthData")
+	public ObjectNode getProjectHealthData(@RequestBody ObjectNode requestdata,
+										   HttpServletResponse httpstatus) throws  ParseException {
+		ObjectNode resData = objectMapper.createObjectNode();
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		Long userId = null;
+		Long regionId = null;
+		Long userRoleId = null;
+		String currentDate = null;
+
+		if (requestdata.get("sessionId") != null && (!requestdata.get("sessionId").asText().trim().isEmpty())) {
+			userId = requestdata.get("sessionId").asLong();
+		}
+		if (requestdata.get("currentDate") != null && (!requestdata.get("currentDate").asText().trim().isEmpty())) {
+			currentDate = requestdata.get("currentDate").asText();
+		}
+		if(userId!= null && !currentDate.isEmpty() ){
+
+			UserModel userData = userservice.getUserDetailsById(userId);
+			regionId = userData.getRegion().getId();
+			userRoleId = userData.getRole().getroleId();
+			if(userRoleId!=1 && userRoleId!=10) {
+				regionId = null;
+			}
+			resData = projectservice.getProjectHealthData(regionId, currentDate);
+			jsonDataRes.put("status", "success");
+			jsonDataRes.put("message", "success ");
+
+		}
+		else{
+			jsonDataRes.put("status", "Failure");
+			jsonDataRes.put("message", "Missing request params ");
+		}
+		jsonDataRes.set("data", resData);
+		jsonDataRes.put("code", httpstatus.getStatus());
+		return jsonDataRes;
+
+	}
 
 }
