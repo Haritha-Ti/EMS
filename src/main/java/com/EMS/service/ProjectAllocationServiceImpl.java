@@ -245,4 +245,12 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 		return projectAllocationRepository.getAllocationProjectForUserId(userId,fromDate,toDate);
 	}
 
+	@Override
+	public  List<AllocationModel> saveAllocation(List<AllocationModel> allocations) {
+		// TODO Auto-generated method stub
+		List<AllocationModel> allocs = projectAllocationRepository.saveAll(allocations);
+		
+		return allocs;
+	}
+
 }

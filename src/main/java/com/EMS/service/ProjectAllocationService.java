@@ -53,6 +53,7 @@ public interface ProjectAllocationService {
 	List<AllocationModel> getUserDataByProjectAndDate(Long projectId,Date startDate, Date endDate);
 	
 	public List<Object[]> getAllocationProjectForUserId(Long userId, Date fromDate, Date toDate);
+	public  List<AllocationModel> saveAllocation(List<AllocationModel> allocations);
 
 }
 

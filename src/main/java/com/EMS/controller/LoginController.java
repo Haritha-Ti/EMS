@@ -970,6 +970,9 @@ public class LoginController {
 				userId = requestdata.get("sessionId").asLong();
 			}
 			regionId = userService.getUserdetailsbyId(userId).getRegion().getId();
+			if (requestdata.has("regionId")) {
+				regionId = requestdata.get("regionId").asLong();
+			}
 			JsonNode userList = userService.getAllUsersByRegion(regionId);
 			for (JsonNode nodeItem : userList) {
 				ArrayNode techarray = objectMapper.createArrayNode();

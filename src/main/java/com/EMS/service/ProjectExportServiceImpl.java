@@ -2894,7 +2894,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellValue(firstHalfDate);
 			cell.setCellStyle(borderedCellStyle);
 
-			if (summary[7] != null) {
+			if (summary[8] != null) {
 				UserModel user2 = userRepository.getOne(Long.parseLong(summary[8].toString()));
 				approver2 = user2.getLastName() + " " + user2.getFirstName();
 			} else {
