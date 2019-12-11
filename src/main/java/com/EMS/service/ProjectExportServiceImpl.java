@@ -1736,7 +1736,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		String[] headers = new String[totColumns];
 		headers[idx++] = "Name";
 		headers[idx++] = "Employee Id";
-		while (idx < totColumns - 1) {
+		while (idx < totColumns ) {
 			headers[idx++] = String.valueOf(monthsCurrentDayIdx++);
 		}
 		headers[idx] = "Total";
