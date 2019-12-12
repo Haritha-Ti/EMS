@@ -154,7 +154,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "        `date` as date1,\r\n" + "        COALESCE(SUM(hours),0) AS hours \r\n"
 			+ "        FROM tasktrack WHERE DATE(`date`) >=?1 && DATE(`date`) <=?2 \r\n" + "        GROUP BY 1,2,3\r\n"
 			+ "    ) t ON t.user_user_id = u.user_id\r\n"
-			+ "    LEFT JOIN allocation alc ON alc.user_user_id = u.user_id AND alc.project_project_id = t.project_project_id\r\n"
+			+ "    LEFT JOIN allocation alc ON alc.user_user_id = u.user_id\r\n"
 			+ "    LEFT JOIN project prj ON prj.project_id = alc.project_project_id\r\n" 
 			+ " LEFT JOIN department d on d.department_id = u.department_department_id\r\n" + ")pms\r\n"
 			+ "LEFT JOIN allocation al ON al.user_user_id = pms.untracked_user\r\n"
@@ -326,5 +326,8 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "	AND ta.project.projectId IN :projectIds")
 	public List<Object[]> getTaskApprovalStatusForProjectsTire2(@Param("userId") long userId,
 			@Param("currentDate") Date currentDate, @Param("projectIds") List<Long> projectIds);
+	
+	@Query("select Date(allocation.startDate),Date(allocation.endDate),allocation.user.userName from AllocationModel allocation where allocation.project.projectName = ?2 and allocation.endDate >= Date(?1)")
+	List<Object[]> getAllocationDateList(LocalDate fromDate, String projectName);
 
 }

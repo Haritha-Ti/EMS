@@ -121,9 +121,11 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	UserModel getNonActiveUser(Long id);
 
 	@Query("Select u From UserModel u where u.region.id = ?1 and  (u.terminationDate >= ?2 or u.terminationDate IS NULL) and u.joiningDate <=?2 and  u.role.roleId in('2','3','5','11','9') and u.department.departmentId in('1','2','3','4','8')")
+	//@Query("Select u From UserModel u where u.region.id = ?1 and  (u.terminationDate >= ?2 or u.terminationDate IS NULL) and u.joiningDate <=?2 and  u.role.roleId not in('1') ")
 	List<UserModel> getUsersBasedOnMonthYearRegion(Long regionId, Date date1);
 
 	@Query("Select u From UserModel u where  (u.terminationDate >= ?1 or u.terminationDate IS NULL) and u.joiningDate <=?1 and  u.role.roleId in('2','3','5','11','9') and u.department.departmentId in('1','2','3','4','8') ")
+	//@Query("Select u From UserModel u where  (u.terminationDate >= ?1 or u.terminationDate IS NULL) and u.joiningDate <=?1 and  u.role.roleId not in('1')")
 	List<UserModel> getUsersBasedOnMonthYearRegion(Date date1);
 
 
@@ -142,5 +144,11 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 
 	@Query("Select u FROM UserModel u where u.region.id = ?1  and (u.terminationDate >= ?2 or u.terminationDate IS NULL) and u.joiningDate <=?3 and u.role.roleId in ('3','5','11','9') and u.department.departmentId in ('1') ")
 	List<UserModel> getUsersByRegionAndDate(Long regionId, Date startDate, Date endDate);
+
+	@Query("Select u From UserModel u where u.region.id = ?1 and  (u.terminationDate >= ?2 or u.terminationDate IS NULL) and u.joiningDate <=?2 and  u.role.roleId not in('1') ")
+	List<UserModel> getAllActiveUsersBasedOnDate(Long regionId, Date date1);
+
+	@Query("Select u From UserModel u where  (u.terminationDate >= ?1 or u.terminationDate IS NULL) and u.joiningDate <=?1 and  u.role.roleId not in('1')")
+	List<UserModel> getAllActiveUsersBasedOnDate(Date date1);
 
 }

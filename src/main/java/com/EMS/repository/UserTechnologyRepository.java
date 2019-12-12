@@ -48,7 +48,7 @@ public class UserTechnologyRepository extends DbConnectionUtility{
 	}
 	
 	public int  save (UserTechnology user){
-		String sql ="INSERT INTO user_technology (experience,technology_technology_id,user_user_id)VALUES('"+user.getExperience()+"','"+user.getTechnology().getTechnologyId()+"','"+user.getUser().getUserId()+"')";
+		String sql ="INSERT INTO user_technology (experience,technology_technology_id,user_user_id,skill_level,comment)VALUES('"+user.getExperience()+"','"+user.getTechnology().getTechnologyId()+"','"+user.getUser().getUserId()+"','"+user.getSkill_level()+"','"+user.getComment()+"')";
 		int result=0;
 		try {
 		 result = jdbcTemplate.update(sql);	

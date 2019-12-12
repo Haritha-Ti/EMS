@@ -65,7 +65,7 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 	@Query(value = "SELECT COUNT(allocation.user_user_id) FROM allocation where allocation.project_project_id = ?1",nativeQuery = true)
 	Long getUserCount(Long projectId);
 	
-	@Query("SELECT a.isBillable FROM AllocationModel a where a.user.userId = ?1 and a.project.projectId = ?2")
+	@Query(value = "SELECT a.is_billable FROM allocation a where a.user_user_id = ?1 and a.project_project_id = ?2 order by alloc_id desc limit 1",nativeQuery = true)
 	Boolean getIsBillable(Long id, Long projectId);
 
 	@Query(value="SELECT * FROM allocation where project_project_id=:projectId AND date(start_date)>=:startDate AND date(end_date)<=:endDate",nativeQuery=true)

@@ -453,15 +453,21 @@ public class ReportServiceImpl implements ReportService {
 			Integer month, Integer year, String session) throws Exception {
 		HashMap<String, Object> response = new HashMap<String, Object>();
 		int startDay = 1, endDay = 15;
-		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat frmt = new SimpleDateFormat("yyyy-MM-dd");
-		cal.setTime(frmt.parse(year + "-" + month + "-" + 1));
+		Calendar startCal = Calendar.getInstance();
+		Calendar endCal = Calendar.getInstance();
 
 		if (!session.equalsIgnoreCase("FIRST")) {
 			startDay = 16;
-			endDay = cal.getActualMaximum(Calendar.DATE);
+			endDay = startCal.getActualMaximum(Calendar.DATE);
 		}
+
+		startCal.setTime(frmt.parse(year + "-" + month + "-" + startDay));
+		Date startDate = startCal.getTime();
+		endCal.setTime(frmt.parse(year + "-" + month + "-" + endDay));
+		Date endDate = endCal.getTime();
 		Map<String, Double> timeTrackEntriesMap = new LinkedHashMap<String, Double>();
+		Map<String, String> vacationEntriesMap = new LinkedHashMap<String, String>();
 
 		Map<String, LinkedHashMap<String, Double>> timeTrackApprover1EntriesMap = new LinkedHashMap<String, LinkedHashMap<String, Double>>();
 		LinkedHashMap<String, Double> billableApprover1EntriesMap = new LinkedHashMap<String, Double>();
@@ -483,6 +489,7 @@ public class ReportServiceImpl implements ReportService {
 		timeTrackApprover2EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_OVERTIME, overtimeApprover2EntriesMap);
 		timeTrackApprover2EntriesMap.put(Constants.TASKTRACK_PROJECT_TYPE_BEACH, beachApprover2EntriesMap);
 		response.put("timetrack", timeTrackEntriesMap);
+		response.put("vacation", vacationEntriesMap);
 		response.put("approver2Timetrack", timeTrackApprover2EntriesMap);
 
 		List<TaskTrackApproval> appr1TimeTrackEntriesObj = new ArrayList<TaskTrackApproval>();
@@ -505,6 +512,13 @@ public class ReportServiceImpl implements ReportService {
 			timeTrackEntriesMap.put(String.valueOf(obj[0]),
 					timeTrackEntriesMap.get(String.valueOf(obj[0])) + Double.valueOf(String.valueOf(obj[1])));
 		}
+
+		List<UserLeaveSummary> userLeaves = userLeaveSummaryRepository.getLeaveListForUserByDateRange(userId, startDate,
+				endDate);
+		for (UserLeaveSummary leaveObj : userLeaves) {
+			vacationEntriesMap.put(frmt.format(leaveObj.getLeaveDate()), leaveObj.getLeaveType());
+		}
+
 		if (projectTyre == 2) {
 			response.put("approver1Timetrack", timeTrackApprover1EntriesMap);
 			appr1TimeTrackEntriesObj = tasktrackApprovalRepository

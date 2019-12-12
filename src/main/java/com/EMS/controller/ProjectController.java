@@ -1031,6 +1031,7 @@ public class ProjectController {
 				// method invocation for checking duplicate entry for project name
 
 				int result = projectservice.duplicationchecking(project.getProjectName());
+
 				//if (result <= 1) {
 					// Method invocation for creating new project record
 					ProjectModel projectmodel = projectservice.save_project_record(project);
@@ -1558,7 +1559,7 @@ public class ProjectController {
 			UserModel userData = userservice.getUserDetailsById(userId);
 			regionId = userData.getRegion().getId();
 			userRoleId = userData.getRole().getroleId();
-			if(userRoleId!=1 && userRoleId!=10) {
+			if(userRoleId==1 || userRoleId==10) {
 				regionId = null;
 			}
 			resData = projectservice.getProjectHealthData(regionId, currentDate);
@@ -1576,4 +1577,4 @@ public class ProjectController {
 
 	}
 
-}
+	}
