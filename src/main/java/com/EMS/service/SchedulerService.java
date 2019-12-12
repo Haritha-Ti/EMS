@@ -18,6 +18,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -59,6 +60,8 @@ public class SchedulerService {
 	@Scheduled(cron = "#{getCronCreateTaskTrack}")
 	public void createTaskTrack() throws Exception {
 
+
+
 		Date date = null, croneDate = null;
 		LocalDateTime now = LocalDateTime.now();
 		TimeZone zone = TimeZone.getTimeZone("MST");
@@ -88,7 +91,8 @@ public class SchedulerService {
 					LocalDate toDate = now.minusDays(1).toLocalDate();
 					LocalDate fromDate = now.minusMonths(1).minusDays(toDate.getDayOfMonth()).toLocalDate();
 					List<Object[]> trackTaskList = taskRepo.getTrackTaskList(fromDate, toDate);
-
+					
+					
 					for (Object[] obj : trackTaskList) {
 						String userName = obj[5].toString();
 						String projectName = obj[1].toString();
@@ -132,6 +136,8 @@ public class SchedulerService {
 					}
 
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 					Iterator it = userMap.entrySet().iterator();
 					while (it.hasNext()) {
 						Map.Entry entry = (Map.Entry) it.next();
@@ -144,56 +150,110 @@ public class SchedulerService {
 								.collect(Collectors.toList());
 
 						for (String projectName : projectList) {
-							List<LocalDate> dateList = (List<LocalDate>) projectMap.get(projectName);
-							StringBuilder sb = new StringBuilder();
-							LocalDate startDate = fromDate;
+							System.out.println(projectName);
+							
+							Map allocationDateMap = new HashMap<String, ArrayList<JSONArray>>();
 
-							if (Integer.parseInt(userActiveMap.get(userName).toString()) == 1) {
-
-								while (!startDate.isAfter(toDate)) {
-
-									if ((sdf.parse(projectActiveMap.get(projectName).toString())
-											.after(sdf.parse(startDate.toString())))
-											|| (sdf.parse(projectActiveMap.get(projectName).toString())
-													.equals((sdf.parse(startDate.toString()))))) {
-										if ((dateList == null || !dateList.contains(startDate.toString()))
-												&& !holidays.contains(sdf.parse(startDate.toString()))
-												&& !startDate.getDayOfWeek().equals(DayOfWeek.SATURDAY)
-												&& !startDate.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-
-											if (sb.length() != 0)
-												sb.append(", ");
-											sb.append(startDate.format(DateTimeFormatter.ofPattern("MMM d")));
-										}
+							List<Object[]> allocationDateList = taskRepo.getAllocationDateList(fromDate,projectName);
+							if(allocationDateList != null && allocationDateList.size() > 0) {
+								
+								for(Object[] allocationItem : allocationDateList) {
+									String username = allocationItem[2].toString();
+									String startDate = allocationItem[0].toString();
+									String endDate  = allocationItem[1].toString();
+									
+									ArrayList<JSONArray> dateList = new ArrayList<JSONArray>();
+											
+									if(allocationDateMap.containsKey(username)) {
+										dateList =  (ArrayList<JSONArray>) allocationDateMap.get(username);
+									    JSONArray arrayItem = new JSONArray();
+									    arrayItem.add(startDate);
+									    arrayItem.add(endDate);
+									    dateList.add(arrayItem);
+									    allocationDateMap.put(username, dateList);
+//									    
+									} 
+									else {
+										JSONArray arrayItem = new JSONArray();
+									    arrayItem.add(startDate);
+									    arrayItem.add(endDate);
+									    dateList.add(arrayItem);
+									    allocationDateMap.put(username, dateList);
 									}
-
-									startDate = startDate.plusDays(1);
-
+									
 								}
-							} else {
-								continue;
+								
+								
+								
+								List<LocalDate> dateList = (List<LocalDate>) projectMap.get(projectName);
+								StringBuilder sb = new StringBuilder();
+								LocalDate startDate = fromDate;
+
+								if (Integer.parseInt(userActiveMap.get(userName).toString()) == 1) {
+
+									while (!startDate.isAfter(toDate)) {
+										ArrayList<JSONArray> allocationDateArray = (ArrayList<JSONArray>) allocationDateMap.get(userName);
+
+										if(allocationDateArray != null && allocationDateArray.size() > 0) {
+											for (ArrayList<String> dateItem : allocationDateArray) {
+										        LocalDate date1 = LocalDate.parse(dateItem.get(0).toString(), format);
+										        LocalDate date2 = LocalDate.parse(dateItem.get(1).toString(), format);
+												if((startDate.isAfter(date1) || startDate.isEqual(date1)) && (startDate.isBefore(date2) || startDate.isEqual(date2))) {
+													
+													
+													if ((sdf.parse(projectActiveMap.get(projectName).toString())
+															.after(sdf.parse(startDate.toString())))
+															|| (sdf.parse(projectActiveMap.get(projectName).toString())
+																	.equals((sdf.parse(startDate.toString()))))) {
+														if ((dateList == null || !dateList.contains(startDate.toString()))
+																&& !holidays.contains(sdf.parse(startDate.toString()))
+																&& !startDate.getDayOfWeek().equals(DayOfWeek.SATURDAY)
+																&& !startDate.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+
+															if (sb.length() != 0)
+																sb.append(", ");
+															sb.append(startDate.format(DateTimeFormatter.ofPattern("MMM d")));
+														}
+													}
+
+												}
+											}
+										}
+
+										startDate = startDate.plusDays(1);
+
+									}
+								} else {
+									continue;
+								}
+
+								if (sb.length() != 0) {
+									MailDomainDto mailDomainDto = new MailDomainDto();
+									mailDomainDto.setSubject("RCG Time Sheet- Please Submit ASAP ");
+
+									StringBuilder mailBody = new StringBuilder(
+											"Hi " + userFullNameMap.get(userName) + ", ");
+									mailBody.append("<br/><br/>Project: " + projectName);
+									mailBody.append(
+											"<br/><br/>Your timetrack is pending for the following days: <br/>" + sb);
+
+									Template t = freemarkerConfig.getTemplate("email_template.ftl");
+									String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto))
+											.replace("MAIL_BODY", mailBody)
+											.replace("Title", "Please submit your time sheet !");
+
+									mailDomainDto.setMailBody(html);
+									mailDomainDto.setTo(userEmailMap.get(userName).toString());
+									String token = UUID.randomUUID().toString();
+									String msg = emailNotificationService.sendMail(token, mailDomainDto, false);
+								}
+								
+								
+								
 							}
-
-							if (sb.length() != 0) {
-								MailDomainDto mailDomainDto = new MailDomainDto();
-								mailDomainDto.setSubject("RCG Time Sheet- Please Submit ASAP ");
-
-								StringBuilder mailBody = new StringBuilder(
-										"Hi " + userFullNameMap.get(userName) + ", ");
-								mailBody.append("<br/><br/>Project: " + projectName);
-								mailBody.append(
-										"<br/><br/>Your timetrack is pending for the following days: <br/>" + sb);
-
-								Template t = freemarkerConfig.getTemplate("email_template.ftl");
-								String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto))
-										.replace("MAIL_BODY", mailBody)
-										.replace("Title", "Please submit your time sheet !");
-
-								mailDomainDto.setMailBody(html);
-								mailDomainDto.setTo(userEmailMap.get(userName).toString());
-								String token = UUID.randomUUID().toString();
-								String msg = emailNotificationService.sendMail(token, mailDomainDto, false);
-							}
+	
+							
+							
 						}
 
 					}
@@ -293,7 +353,7 @@ public class SchedulerService {
 							StringBuilder mailBody = new StringBuilder(
 									"Hi " + userFullNameMap.get(entry.getKey()) + ", ");
 							mailBody.append("<br/><br/>Your timetrack is pending for the following days: <br/>" + sb);
-
+							mailBody.append("<br/><br/>If there is no project exist,choose beach project.");
 							Template t = freemarkerConfig.getTemplate("email_template.ftl");
 							String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto))
 									.replace("MAIL_BODY", mailBody).replace("Title", "Please submit your time sheet !");

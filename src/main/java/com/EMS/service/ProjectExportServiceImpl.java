@@ -1736,7 +1736,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 		String[] headers = new String[totColumns];
 		headers[idx++] = "Name";
 		headers[idx++] = "Employee Id";
-		while (idx < totColumns - 1) {
+		while (idx < totColumns ) {
 			headers[idx++] = String.valueOf(monthsCurrentDayIdx++);
 		}
 		headers[idx] = "Total";
@@ -2894,7 +2894,7 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			cell.setCellValue(firstHalfDate);
 			cell.setCellStyle(borderedCellStyle);
 
-			if (summary[7] != null) {
+			if (summary[8] != null) {
 				UserModel user2 = userRepository.getOne(Long.parseLong(summary[8].toString()));
 				approver2 = user2.getLastName() + " " + user2.getFirstName();
 			} else {

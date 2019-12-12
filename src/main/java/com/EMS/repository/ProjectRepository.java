@@ -88,7 +88,7 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, Long> {
 
 	// Renjith
 
-	@Query(value = "SELECT DISTINCT(u.user_id),CONCAT(u.last_name,' ',u.first_name) AS users ,t.technology_name FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN user_technology ut ON ut.user_user_id = u.user_id LEFT JOIN technology t ON ut.technology_technology_id = t.technology_id WHERE t.technology_id =?1 AND a.start_date <= ?3 AND a.end_date  >= ?2 AND u.region_id = ?4", nativeQuery = true)
+	@Query(value = "SELECT DISTINCT(u.user_id),CONCAT(u.last_name,' ',u.first_name) AS users ,t.technology_name FROM allocation a LEFT JOIN `user` u ON u.user_id = a. user_user_id LEFT JOIN user_technology ut ON ut.user_user_id = u.user_id LEFT JOIN technology t ON ut.technology_technology_id = t.technology_id WHERE t.technology_id =?1 AND ut.skill_level=1 AND a.start_date <= ?3 AND a.end_date  >= ?2 AND u.region_id = ?4", nativeQuery = true)
 	public List<Object[]> getAllocationDetailsTechWiseRegionwise(Long techId, Date fromDate, Date toDate, Long regionId)
 			throws Exception;
 

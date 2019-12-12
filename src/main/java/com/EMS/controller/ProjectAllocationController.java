@@ -1565,6 +1565,108 @@ public class ProjectAllocationController {
 		
 		return node;
 	}
+	@PostMapping("/v2/saveAllocation")
+	public ObjectNode saveAllocations(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) throws ParseException {
+		ObjectNode response = objectMapper.createObjectNode();
+		ArrayNode arrayNodes = null;
+	    arrayNodes = (ArrayNode) requestdata.get("projectAllocations");
+	    List<AllocationModel>  allocations = new ArrayList<AllocationModel>();
+
+	   
+	    try{
+	    	if(arrayNodes != null) {
+
+	    		for(JsonNode node : arrayNodes) {
+	    			AllocationModel allocation = new AllocationModel();
+	    	    	allocation.setAllocatedPerce(node.get("allocatedPerce").asDouble());
+	    	    	allocation.setActive(node.get("active").asBoolean());
+	    	    	String date1 = node.get("startDate").asText();
+	    			String date2 = node.get("endDate").asText();
+	    			TimeZone zone = TimeZone.getTimeZone("MST");
+	    			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+	    			outputFormat.setTimeZone(zone);
+	    			// Formating the date values
+	    			Date startDate = null, endDate = null;
+	    			if (!date1.isEmpty()) {
+	    				startDate = outputFormat.parse(date1);
+	    			}
+	    			if (!date2.isEmpty()) {
+	    				endDate = outputFormat.parse(date2);
+	    			}
+	    			allocation.setStartDate(startDate);
+	    			allocation.setEndDate(endDate);
+	    			// Setting values to Allocation model object
+	    			Long projectId = node.get("projectId").asLong();
+	    			Long userId = node.get("userId").asLong();
+	    			Boolean isBillable = node.get("isBillable").asBoolean();
+	    			allocation.setIsBillable(isBillable);
+	    			ProjectModel project = projectService.findById(projectId);
+	    			UserModel user = userService.getUserDetailsById(userId);
+	    			allocation.setuser(user);
+	    			allocation.setproject(project);
+	    			allocation.setAllocId(node.get("allocId").asLong());
+	    			allocations.add(allocation);
+	    			
+	    		}
+	    	
+			 List<AllocationModel> allocs = projectAllocation.saveAllocation(allocations);
+			
+			response.put("status", "success");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "successfully saved. ");
+		}
+	    }catch (Exception e) {
+			response.put("status", "failure");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "failed. " + e);
+		}
+	    
+		return response;
+	}	
 	
 	
+	/**
+	 * 
+	 *@throws ParseException 
+	 * @desc edit the project period from the project allocation page
+	 * */
+	@PostMapping("/modifyProjectPeriod")
+	public ObjectNode modifyProjectPeriod(@RequestBody ObjectNode requestdata,HttpServletResponse httpstatus) throws ParseException {
+		
+		Long projectId = null;
+		ObjectNode responsedata = objectMapper.createObjectNode();
+		String date1 = requestdata.get("startDate").asText();
+		String date2 = requestdata.get("endDate").asText();
+		TimeZone zone = TimeZone.getTimeZone("MST");
+		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+		outputFormat.setTimeZone(zone);
+		// Formating the date values
+		Date startDate = null, endDate = null;
+		if (!requestdata.get("startDate").toString().isEmpty() && requestdata.get("startDate").toString() != null) {
+			date1 = requestdata.get("startDate").toString();
+			if (!date1.isEmpty()) {
+				startDate = outputFormat.parse(date1);
+
+			}
+		}
+			if (!requestdata.get("endDate").toString().isEmpty() && requestdata.get("endDate").toString() != null) {
+				date2 = requestdata.get("endDate").toString();
+				if (!date2.isEmpty()) {
+					endDate = outputFormat.parse(date2);
+
+				}
+			}
+		if(requestdata.get("projectId").toString()!= null  || requestdata.get("projectId").toString() != ""){
+			projectId = requestdata.get("projectId").asLong();
+		}
+		if(projectId != null) {
+			ProjectModel project = projectService.findById(projectId);
+			project.setStartDate(startDate);
+			project.setEndDate(endDate);
+			project.setStartDate(startDate);
+			project.setEndDate(endDate);
+			projectService.save_project_record(project);
+			}
+		return responsedata; 
+	}
 }

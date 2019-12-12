@@ -37,14 +37,37 @@ public class UserTechnology  extends Auditable<Long> {
 	@ManyToOne
 	private Technology technology;
 	private Double experience;
+	private String comment;
+	private int skill_level;
 	
+	
+	
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public int getSkill_level() {
+		return skill_level;
+	}
+	public void setSkill_level(int skill_level) {
+		this.skill_level = skill_level;
+	}
 	public UserTechnology() {
 		
 	}
-	public UserTechnology(long userTechnologyId,double experience) {
+	
+	public UserTechnology(long userTechnologyId, UserModel user, Technology technology, Double experience,
+			String comment, int skill_level) {
 		super();
 		this.userTechnologyId = userTechnologyId;
+		this.user = user;
+		this.technology = technology;
 		this.experience = experience;
+		this.comment = comment;
+		this.skill_level = skill_level;
 	}
 	public long getUserTechnologyId() {
 		return userTechnologyId;
