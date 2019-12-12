@@ -357,7 +357,10 @@ public class ProjectServiceImpl implements ProjectService {
 				projectObj.put("isBillable", projectData.getisBillable());
 				projectObj.put("startDate", sdf.format(projectData.getStartDate()));
 				projectObj.put("endDate", sdf.format(projectData.getEndDate()));
-				projectObj.put("currentAllocCount", allocationMap.containsKey(projectData.getProjectId()));
+				projectObj.put("currentAllocCount",
+						allocationMap.containsKey(projectData.getProjectId())
+								? allocationMap.get(projectData.getProjectId())
+								: 0);
 				// get region list
 				List<ProjectRegion> regions = getregionlist(projectData.getProjectId());
 				ArrayNode regionsArray = objectMapper.createArrayNode();

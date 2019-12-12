@@ -1024,14 +1024,14 @@ public class ReportController {
 	 */
 	@SuppressWarnings("unchecked")
 	@GetMapping(value = "getUsersSubmissionDataForFinance")
-	public ResponseEntity<Object> getUsersSubmissionDataForFinance(@RequestParam("pId") Long projectid,
+	public ResponseEntity<Object> getUsersSubmissionDataForFinance(@RequestParam("pId") Long projectId,
 			@RequestParam("pTyre") Integer projectTyre, @RequestParam("uId") Long userId,
 			@RequestParam("month") Integer month, @RequestParam("year") Integer year,
 			@RequestParam("ses") String session) {
 		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		JSONObject jsonDataRes = new JSONObject();
 		try {
-			HashMap<String, Object> submittedDataList = reportService.getUsersProjectSubmissionDetails(projectid,
+			HashMap<String, Object> submittedDataList = reportService.getUsersProjectSubmissionDetails(projectId,
 					projectTyre, userId, month, year, session);
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);
@@ -1304,4 +1304,40 @@ public class ReportController {
 		}
 		return response;
 	}
+
+	/**
+	 * @author sreejith.j
+	 * @param projectId
+	 * @param projectTyre
+	 * @param userId
+	 * @param month
+	 * @param year
+	 * @param session
+	 * @return
+	 */
+	@GetMapping(value = "getFullReportSubmissionForFinance")
+	public ResponseEntity<Object> getFullReportSubmissionForFinance(
+			@RequestParam(value = "pId", required = false) Long projectId,
+			@RequestParam(value = "pTyre", required = false) Integer projectTyre,
+			@RequestParam(value = "uId", required = false) Long userId, @RequestParam("month") Integer month,
+			@RequestParam("year") Integer year) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		JSONObject jsonDataRes = new JSONObject();
+		try {
+			HashMap<String, Object> submittedDataList = reportService
+					.getSubmissionDetailsForFinanceFullReport(projectId, projectTyre, userId, month, year, "FULL");
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			jsonDataRes.put("data", submittedDataList);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			jsonDataRes.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
+
 }

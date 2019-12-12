@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.catalina.User;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,13 @@ import com.EMS.model.AllocationModel;
 import com.EMS.model.ApprovalTimeTrackReportModel;
 import com.EMS.model.BenchProjectReportModel;
 import com.EMS.model.FreeAllocationReportModel;
+import com.EMS.model.ProjectModel;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.TaskTrackApprovalFinal;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserLeaveSummary;
+import com.EMS.model.UserModel;
+import com.EMS.repository.AllocationRepository;
 import com.EMS.repository.HolidayRepository;
 import com.EMS.repository.LeaveRepository;
 import com.EMS.repository.ProjectAllocationRepository;
@@ -34,6 +38,7 @@ import com.EMS.repository.TaskTrackFinalJPARepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.repository.TimeTrackApprovalJPARepository;
 import com.EMS.repository.UserLeaveSummaryRepository;
+import com.EMS.repository.UserRepository;
 import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -70,6 +75,12 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired
 	UserLeaveSummaryRepository userLeaveSummaryRepository;
+
+	@Autowired
+	AllocationRepository allocationRepository;
+
+	@Autowired
+	UserRepository userRepository;
 
 	public ArrayNode getProjectReportDetails(long projectId, Date fromDate, Date toDate) {
 		ArrayNode array = objectMapper.createArrayNode();
@@ -457,8 +468,10 @@ public class ReportServiceImpl implements ReportService {
 		Calendar startCal = Calendar.getInstance();
 		Calendar endCal = Calendar.getInstance();
 
-		if (!session.equalsIgnoreCase("FIRST")) {
+		if (session.equalsIgnoreCase("SECOND")) {
 			startDay = 16;
+			endDay = startCal.getActualMaximum(Calendar.DATE);
+		} else if (session.equalsIgnoreCase("FULL")) {
 			endDay = startCal.getActualMaximum(Calendar.DATE);
 		}
 
@@ -931,5 +944,74 @@ public class ReportServiceImpl implements ReportService {
 			userObj.put("totalLeaves", Double.parseDouble(userObj.get("totalLeaves").toString()) + leaveAmt);
 		}
 		return leaveResponse;
+	}
+
+	/**
+	 * @author sreejith.j
+	 */
+	@Override
+	public HashMap<String, Object> getSubmissionDetailsForFinanceFullReport(Long projectId, Integer projectTyre,
+			Long userId, Integer month, Integer year, String session) throws Exception {
+		HashMap<String, Object> response = new HashMap<String, Object>();
+		List<AllocationModel> userAllocationList = new ArrayList<AllocationModel>();
+		List<Map<String, Object>> projectList = new ArrayList<Map<String, Object>>();
+		Map<Long, Map<String, Object>> projectsMap = new HashMap<Long, Map<String, Object>>();
+		Map<String, Object> projectMap = new HashMap<String, Object>();
+
+		List<Map<String, Object>> usersList = new ArrayList<Map<String, Object>>();
+		Map<Long, Map<String, Object>> usersMap = new HashMap<Long, Map<String, Object>>();
+		Map<String, Object> userMap = new HashMap<String, Object>();
+
+		ProjectModel projectModel = new ProjectModel();
+		Calendar startCal = Calendar.getInstance();
+		Calendar endCal = Calendar.getInstance();
+		SimpleDateFormat frmt = new SimpleDateFormat("yyyy-MM-dd");
+		startCal.setTime(frmt.parse(year + "-" + month + "-01"));
+		endCal.setTime(frmt.parse(year + "-" + month + "-" + startCal.getActualMaximum(Calendar.DATE)));
+
+		if (projectId != null) {
+			projectModel = projectRepository.getOne(projectId);
+			projectMap.put("projectId", projectModel.getProjectId());
+			projectMap.put("projectName", projectModel.getProjectName());
+			projectMap.put("projectTier", projectModel.getProjectTier());
+			projectMap.put("clientName", projectModel.getClientName().getClientName());
+			if (userId == null) {
+				userAllocationList = allocationRepository
+						.findByProjectProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndActive(projectId,
+								endCal.getTime(), startCal.getTime(), true);
+				usersList = new ArrayList<Map<String, Object>>();
+				for (AllocationModel modelObj : userAllocationList) {
+					if (!usersMap.containsKey(modelObj.getuser().getUserId())) {
+						userMap = new HashMap<String, Object>();
+						userMap.put("userId", modelObj.getuser().getUserId());
+						userMap.put("userName", (modelObj.getuser().getLastName().trim() + " "
+								+ modelObj.getuser().getFirstName().trim()).trim());
+						userMap.put("userRegion", modelObj.getuser().getRegion().getRegion_name());
+						userMap.put("userDetails", this.getUsersProjectSubmissionDetails(projectId, projectTyre,
+								modelObj.getuser().getUserId(), month, year, session));
+						usersMap.put(modelObj.getuser().getUserId(), userMap);
+						usersList.add(userMap);
+					}
+				}
+			}else {
+				usersList = new ArrayList<Map<String, Object>>();
+//						UserModel userObj= userRepository.getUserById(userId);
+//						userMap = new HashMap<String, Object>();
+//						userMap.put("userId", modelObj.getuser().getUserId());
+//						userMap.put("userName", (modelObj.getuser().getLastName().trim() + " "
+//								+ modelObj.getuser().getFirstName().trim()).trim());
+//						userMap.put("userRegion", modelObj.getuser().getRegion().getRegion_name());
+//						userMap.put("userDetails", this.getUsersProjectSubmissionDetails(projectId, projectTyre,
+//								modelObj.getuser().getUserId(), month, year, session));
+//						usersMap.put(modelObj.getuser().getUserId(), userMap);
+						usersList.add(userMap);
+					}
+			projectMap.put("users", usersList);
+
+			response.put("project", projectMap);
+		} else if (projectId == null && userId != null) {
+
+		}
+		return response;
 	}
 }
