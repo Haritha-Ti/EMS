@@ -54,6 +54,7 @@ public interface ProjectAllocationService {
 	
 	public List<Object[]> getAllocationProjectForUserId(Long userId, Date fromDate, Date toDate);
 	public  List<AllocationModel> saveAllocation(List<AllocationModel> allocations);
+	public Boolean checkPreviouslyAllocatedOrNot(Long userId, Long projectId);
 
 }
 

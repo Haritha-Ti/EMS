@@ -453,17 +453,17 @@ public class ReportServiceImpl implements ReportService {
 			Integer month, Integer year, String session) throws Exception {
 		HashMap<String, Object> response = new HashMap<String, Object>();
 		int startDay = 1, endDay = 15;
-		Calendar startCal = Calendar.getInstance();
 		SimpleDateFormat frmt = new SimpleDateFormat("yyyy-MM-dd");
-		startCal.setTime(frmt.parse(year + "-" + month + "-" + 1));
-		Date startDate = startCal.getTime();
+		Calendar startCal = Calendar.getInstance();
 		Calendar endCal = Calendar.getInstance();
-		endCal = (Calendar) startCal.clone();
 
 		if (!session.equalsIgnoreCase("FIRST")) {
 			startDay = 16;
 			endDay = startCal.getActualMaximum(Calendar.DATE);
 		}
+
+		startCal.setTime(frmt.parse(year + "-" + month + "-" + startDay));
+		Date startDate = startCal.getTime();
 		endCal.setTime(frmt.parse(year + "-" + month + "-" + endDay));
 		Date endDate = endCal.getTime();
 		Map<String, Double> timeTrackEntriesMap = new LinkedHashMap<String, Double>();

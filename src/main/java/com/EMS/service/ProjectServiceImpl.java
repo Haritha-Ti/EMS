@@ -2,16 +2,26 @@ package com.EMS.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.EMS.model.*;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.EMS.model.ClientModel;
+import com.EMS.model.ContractModel;
+import com.EMS.model.DepartmentModel;
+import com.EMS.model.EmployeeContractors;
+import com.EMS.model.ProjectModel;
+import com.EMS.model.ProjectRegion;
+import com.EMS.model.Resources;
+import com.EMS.model.UserModel;
+import com.EMS.repository.AllocationRepository;
 import com.EMS.repository.ClientRepository;
 import com.EMS.repository.ContractRepository;
 import com.EMS.repository.DepartmentRepository;
@@ -21,6 +31,9 @@ import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.ResourceRepository;
 import com.EMS.repository.TermRepository;
 import com.EMS.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -48,13 +61,16 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	EmployeeContractorsRepository employeeContractorsRepository;
-	
+
 	@Autowired
 	ProjectRegionRepository projectRegionRepository;
-	
+
 	@Autowired
 	TermRepository termRepository;
-	
+
+	@Autowired
+	AllocationRepository allocationRepository;
+
 	@Override
 	public ProjectModel save_project_record(ProjectModel projectmodel) {
 
@@ -120,7 +136,6 @@ public class ProjectServiceImpl implements ProjectService {
 		return contract;
 	}
 
-
 	@Override
 	public int duplicationchecking(String getprojectName) {
 		int value = project_repositary.findproject(getprojectName);
@@ -141,59 +156,58 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public ArrayList<ProjectModel> getListofProjects() {
-		ArrayList<ProjectModel> projectlist=project_repositary.getAllNonParentProjects();
+		ArrayList<ProjectModel> projectlist = project_repositary.getAllNonParentProjects();
 		return projectlist;
 	}
-	private Sort sortByIdAsc() {
-        return new Sort(Sort.Direction.ASC, "projectName");
-    }
 
+	private Sort sortByIdAsc() {
+		return new Sort(Sort.Direction.ASC, "projectName");
+	}
 
 	@Override
 	public List<Resources> getResourceList(long projectId) {
 
-		List<Resources> list=resource_repository.getResourceList(projectId);
+		List<Resources> list = resource_repository.getResourceList(projectId);
 		return list;
 	}
 
 	@Override
 	public ProjectModel getProjectId(long projectId) {
-		
-		ProjectModel project=new ProjectModel();
+
+		ProjectModel project = new ProjectModel();
 		try {
-			project=project_repositary.getOne(projectId);
+			project = project_repositary.getOne(projectId);
 			return project;
-		}catch(Exception e) {
-			System.out.println("Exception "+e);
+		} catch (Exception e) {
+			System.out.println("Exception " + e);
 			return project;
 		}
-		
-		
+
 	}
 
 	@Override
 	public ClientModel getClientName(long id) {
 
-		ClientModel getclient=client_repository.getOne(id);
+		ClientModel getclient = client_repository.getOne(id);
 		return getclient;
 	}
 
 	@Override
 	public Resources getResourceById(long long1) {
-		Resources resource=resource_repository.getOne(long1);
+		Resources resource = resource_repository.getOne(long1);
 		return resource;
 	}
 
 	@Override
 	public List<ClientModel> getClientList() {
-		List<ClientModel> list=client_repository.getAll();
+		List<ClientModel> list = client_repository.getAll();
 		return list;
 	}
 
 	@Override
 	public List<String> getclientLocation() {
-		List<String> location=client_repository.getLocation();
-		System.out.println("loca :"+location.size());
+		List<String> location = client_repository.getLocation();
+		System.out.println("loca :" + location.size());
 		return location;
 	}
 
@@ -211,13 +225,13 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	public List<EmployeeContractors> getEmployeeContractorsList() {
-		List<EmployeeContractors> list=employeeContractorsRepository.findAll();
+		List<EmployeeContractors> list = employeeContractorsRepository.findAll();
 		return list;
 	}
 
 	@Override
 	public ArrayList<ProjectModel> getListofParentProjects() {
-		ArrayList<ProjectModel> projectlist= project_repositary.getparentProjects();
+		ArrayList<ProjectModel> projectlist = project_repositary.getparentProjects();
 		return projectlist;
 	}
 
@@ -225,13 +239,13 @@ public class ProjectServiceImpl implements ProjectService {
 	public void save_project_region(ProjectRegion region) {
 		// TODO Auto-generated method stub
 		ProjectRegion region1 = projectRegionRepository.save(region);
-		
+
 	}
 
 	@Override
 	public List<ProjectRegion> getregionlist(long projectId) {
 		// TODO Auto-generated method stub
-		List<ProjectRegion> list=projectRegionRepository.getRegionList(projectId);
+		List<ProjectRegion> list = projectRegionRepository.getRegionList(projectId);
 		return list;
 	}
 
@@ -252,89 +266,99 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public int deleteProjectRegions(long projectId) {
 		// TODO Auto-generated method stub
-		int i =  termRepository.deleteByProjectId(projectId);
-		return i ;
+		int i = termRepository.deleteByProjectId(projectId);
+		return i;
 	}
 
-	//Renjith
-	
-		public List<ProjectModel>  getProjectListByLevel1(Long userId){
-			return project_repositary.getProjectListByLevel1(userId);
-		}
-		
-		public List<ProjectModel>  getProjectListByLevel2(Long userId){
-			return project_repositary.getProjectListByLevel2(userId);
-		}
-		
-		public List<ProjectModel>  getAllActiveProjectList(){
-			return project_repositary.getAllActiveProjectList();
-		}
-		//Renjith
+	// Renjith
 
-		@Override
-		public List<ProjectModel> getProjectsBasedOnMonthYearRegion(Long regionId, int month, int year) {
-			// TODO Auto-generated method stub
-			String startDate = year+"-"+month+"-01"; 
-			SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd");  
-			Date date1 = null;
-			try {
-				 date1=formatter1.parse(startDate);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return project_repositary.getProjectsBasedOnMonthYearRegion(regionId,date1);
-		}
+	public List<ProjectModel> getProjectListByLevel1(Long userId) {
+		return project_repositary.getProjectListByLevel1(userId);
+	}
 
-		@Override
-		public List<ProjectModel> getProjectsBasedOnMonthYearRegion(int month, int year) {
-			// TODO Auto-generated method stub
-			String startDate = year+"-"+month+"-01"; 
-			SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd");  
-			Date date1 = null;
-			try {
-				 date1=formatter1.parse(startDate);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return project_repositary.getProjectsBasedOnMonthYearRegion(date1);
-		}
+	public List<ProjectModel> getProjectListByLevel2(Long userId) {
+		return project_repositary.getProjectListByLevel2(userId);
+	}
 
-		@Override
-		public ArrayList<ProjectModel> getProjectsByRegion(Long regionId) {
-			// TODO Auto-generated method stub
-			return project_repositary.getProjectsByRegion(regionId);
-		}
+	public List<ProjectModel> getAllActiveProjectList() {
+		return project_repositary.getAllActiveProjectList();
+	}
+	// Renjith
 
-		@Override
-		public ArrayList<ProjectModel> getProjectsByRegion() {
-			// TODO Auto-generated method stub
-			return project_repositary.getProjectsByRegion();
+	@Override
+	public List<ProjectModel> getProjectsBasedOnMonthYearRegion(Long regionId, int month, int year) {
+		// TODO Auto-generated method stub
+		String startDate = year + "-" + month + "-01";
+		SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
+		Date date1 = null;
+		try {
+			date1 = formatter1.parse(startDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		return project_repositary.getProjectsBasedOnMonthYearRegion(regionId, date1);
+	}
+
+	@Override
+	public List<ProjectModel> getProjectsBasedOnMonthYearRegion(int month, int year) {
+		// TODO Auto-generated method stub
+		String startDate = year + "-" + month + "-01";
+		SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
+		Date date1 = null;
+		try {
+			date1 = formatter1.parse(startDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return project_repositary.getProjectsBasedOnMonthYearRegion(date1);
+	}
+
+	@Override
+	public ArrayList<ProjectModel> getProjectsByRegion(Long regionId) {
+		// TODO Auto-generated method stub
+		return project_repositary.getProjectsByRegion(regionId);
+	}
+
+	@Override
+	public ArrayList<ProjectModel> getProjectsByRegion() {
+		// TODO Auto-generated method stub
+		return project_repositary.getProjectsByRegion();
+	}
 
 	public ObjectNode getProjectHealthData(Long regionId, String currentDate) throws ParseException {
 
-		//Active Project List
+		// Active Project List
 		ArrayNode projectArray = objectMapper.createArrayNode();
 		ObjectNode data = objectMapper.createObjectNode();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		List<ProjectModel> activeProjectList;
-		if(regionId!= null) {
+		if (regionId != null) {
 			activeProjectList = project_repositary.getAllActiveProjectsByRegion(currentDate, regionId);
-		}
-		else{
-			 activeProjectList = project_repositary.getAllActiveProjectsByDate(currentDate);
+		} else {
+			activeProjectList = project_repositary.getAllActiveProjectsByDate(currentDate);
 		}
 		int activeProjectCount = 0;
 		activeProjectCount = activeProjectList.size();
+		Map<Long, Integer> allocationMap = new HashMap<Long, Integer>();
+
+		Object[][] allocationList = allocationRepository.getActiveAllocationCountByProjects(currentDate);
+		for (Object[] allocObj : allocationList) {
+			allocationMap.put(Long.valueOf(allocObj[0].toString()), Integer.valueOf(allocObj[1].toString()));
+		}
+
 		if (activeProjectCount > 0) {
 			for (ProjectModel projectData : activeProjectList) {
 				ObjectNode projectObj = objectMapper.createObjectNode();
 				projectObj.put("projectName", projectData.getProjectName());
-				projectObj.put("projectName", projectData.getProjectCode());
+				projectObj.put("projectCode", projectData.getProjectCode());
 				projectObj.put("projectTier", projectData.getProjectTier());
-				//get region list
+				projectObj.put("isBillable", projectData.getisBillable());
+				projectObj.put("startDate", sdf.format(projectData.getStartDate()));
+				projectObj.put("endDate", sdf.format(projectData.getEndDate()));
+				projectObj.put("currentAllocCount", allocationMap.containsKey(projectData.getProjectId()));
+				// get region list
 				List<ProjectRegion> regions = getregionlist(projectData.getProjectId());
 				ArrayNode regionsArray = objectMapper.createArrayNode();
 				ArrayList<String> regionArraylist = new ArrayList<String>();
@@ -343,8 +367,8 @@ public class ProjectServiceImpl implements ProjectService {
 				} else {
 					for (ProjectRegion regioneach : regions) {
 						ObjectNode resource = objectMapper.createObjectNode();
-						resource.put("regionId",regioneach.getRegion_Id().getId());
-						resource.put("regionName",regioneach.getRegion_Id().getId());
+						resource.put("regionId", regioneach.getRegion_Id().getId());
+						resource.put("regionName", regioneach.getRegion_Id().getRegion_name());
 						regionsArray.add(resource);
 					}
 					projectObj.set("projectRegion", regionsArray);
@@ -353,32 +377,31 @@ public class ProjectServiceImpl implements ProjectService {
 			}
 
 		}
-		//Active User List
+		// Active User List
 		ArrayNode userArray = objectMapper.createArrayNode();
 		List<UserModel> userList;
 
-		if(regionId!= null) {
-			userList = user_repositary.getAllActiveUsersBasedOnDate(regionId,sdf.parse(currentDate));
-		}
-		else{
+		if (regionId != null) {
+			userList = user_repositary.getAllActiveUsersBasedOnDate(regionId, sdf.parse(currentDate));
+		} else {
 			userList = user_repositary.getAllActiveUsersBasedOnDate(sdf.parse(currentDate));
 		}
-		int userListCount = 0 ;
+		int userListCount = 0;
 		userListCount = userList.size();
-		if(userListCount > 0){
-			for(UserModel userData : userList){
+		if (userListCount > 0) {
+			for (UserModel userData : userList) {
 				ObjectNode userObj = objectMapper.createObjectNode();
-				userObj.put("firstName",userData.getFirstName());
-				userObj.put("lastName",userData.getLastName());
-				userObj.put("cppLevel",userData.getCpplevels().getLevelName());
-				userObj.put("regionId",userData.getRegion().getId());
-				userObj.put("regionName",userData.getRegion().getRegion_name());
-				userObj.put("roleName",userData.getRole().getroleName());
-				userObj.put("departmentName",userData.getDepartment().getdepartmentName());
+				userObj.put("firstName", userData.getFirstName());
+				userObj.put("lastName", userData.getLastName());
+				userObj.put("cppLevel", userData.getCpplevels().getLevelName());
+				userObj.put("regionId", userData.getRegion().getId());
+				userObj.put("regionName", userData.getRegion().getRegion_name());
+				userObj.put("roleName", userData.getRole().getroleName());
+				userObj.put("departmentName", userData.getDepartment().getdepartmentName());
 				userArray.add(userObj);
 			}
 		}
-		//New joinies list of last 30 days
+		// New joinies list of last 30 days
 
 		Calendar c = Calendar.getInstance();
 		c.setTime(sdf.parse(currentDate));
@@ -386,59 +409,58 @@ public class ProjectServiceImpl implements ProjectService {
 		String startDate = sdf.format(c.getTime());
 		ArrayNode newjoinesArray = objectMapper.createArrayNode();
 		List<UserModel> newjoinesList;
-		if(regionId!= null) {
-			 newjoinesList = user_repositary.getNewJoinesListByregion(sdf.parse(startDate), sdf.parse(currentDate), regionId);
-		}
-		else{
+		if (regionId != null) {
+			newjoinesList = user_repositary.getNewJoinesListByregion(sdf.parse(startDate), sdf.parse(currentDate),
+					regionId);
+		} else {
 			newjoinesList = user_repositary.getNewJoinesList(sdf.parse(startDate), sdf.parse(currentDate));
 		}
 		int newjoinesListCount = 0;
 		newjoinesListCount = newjoinesList.size();
-		if(newjoinesListCount>0){
-			for(UserModel newjoinesData : newjoinesList){
+		if (newjoinesListCount > 0) {
+			for (UserModel newjoinesData : newjoinesList) {
 				ObjectNode newjoinesObj = objectMapper.createObjectNode();
-				newjoinesObj.put("firstName",newjoinesData.getFirstName());
-				newjoinesObj.put("lastName",newjoinesData.getLastName());
-				newjoinesObj.put("cppLevel",newjoinesData.getCpplevels().getLevelName());
+				newjoinesObj.put("firstName", newjoinesData.getFirstName());
+				newjoinesObj.put("lastName", newjoinesData.getLastName());
+				newjoinesObj.put("cppLevel", newjoinesData.getCpplevels().getLevelName());
 				newjoinesObj.put("joiningDate", sdf.format(newjoinesData.getJoiningDate()));
-				newjoinesObj.put("regionId",newjoinesData.getRegion().getId());
-				newjoinesObj.put("regionName",newjoinesData.getRegion().getRegion_name());
-				newjoinesObj.put("roleName",newjoinesData.getRole().getroleName());
-				newjoinesObj.put("departmentName",newjoinesData.getDepartment().getdepartmentName());
+				newjoinesObj.put("regionId", newjoinesData.getRegion().getId());
+				newjoinesObj.put("regionName", newjoinesData.getRegion().getRegion_name());
+				newjoinesObj.put("roleName", newjoinesData.getRole().getroleName());
+				newjoinesObj.put("departmentName", newjoinesData.getDepartment().getdepartmentName());
 				newjoinesArray.add(newjoinesObj);
 			}
 		}
-		//Leaved users list of last 30 days
+		// Leaved users list of last 30 days
 		ArrayNode leavedUsersArray = objectMapper.createArrayNode();
 		List<UserModel> leavedUsersList;
-		if(regionId!= null) {
-			 leavedUsersList = user_repositary.getleavedUsersByregion(sdf.parse(startDate), sdf.parse(currentDate), regionId);
-		}
-		else{
+		if (regionId != null) {
+			leavedUsersList = user_repositary.getleavedUsersByregion(sdf.parse(startDate), sdf.parse(currentDate),
+					regionId);
+		} else {
 			leavedUsersList = user_repositary.getleavedUsers(sdf.parse(startDate), sdf.parse(currentDate));
 		}
 		int leavedUsersListCount = 0;
 		leavedUsersListCount = leavedUsersList.size();
-		if(leavedUsersListCount>0){
-			for(UserModel leavedUsersData : leavedUsersList){
+		if (leavedUsersListCount > 0) {
+			for (UserModel leavedUsersData : leavedUsersList) {
 				ObjectNode leavedUsersObj = objectMapper.createObjectNode();
-				leavedUsersObj.put("firstName",leavedUsersData.getFirstName());
-				leavedUsersObj.put("lastName",leavedUsersData.getLastName());
-				leavedUsersObj.put("cppLevel",leavedUsersData.getCpplevels().getLevelName());
+				leavedUsersObj.put("firstName", leavedUsersData.getFirstName());
+				leavedUsersObj.put("lastName", leavedUsersData.getLastName());
+				leavedUsersObj.put("cppLevel", leavedUsersData.getCpplevels().getLevelName());
 				leavedUsersObj.put("terminationDate", sdf.format(leavedUsersData.getTerminationDate()));
-				leavedUsersObj.put("regionId",leavedUsersData.getRegion().getId());
-				leavedUsersObj.put("regionName",leavedUsersData.getRegion().getRegion_name());
-				leavedUsersObj.put("roleName",leavedUsersData.getRole().getroleName());
-				leavedUsersObj.put("departmentName",leavedUsersData.getDepartment().getdepartmentName());
+				leavedUsersObj.put("regionId", leavedUsersData.getRegion().getId());
+				leavedUsersObj.put("regionName", leavedUsersData.getRegion().getRegion_name());
+				leavedUsersObj.put("roleName", leavedUsersData.getRole().getroleName());
+				leavedUsersObj.put("departmentName", leavedUsersData.getDepartment().getdepartmentName());
 				leavedUsersArray.add(leavedUsersObj);
 			}
 		}
 
-
-		data.set("projectData",projectArray);
-		data.set("userData",userArray);
-		data.set("newJoinesData",newjoinesArray);
-		data.set("leavedUsersData",leavedUsersArray);
+		data.set("projectData", projectArray);
+		data.set("userData", userArray);
+		data.set("newJoinesData", newjoinesArray);
+		data.set("leavedUsersData", leavedUsersArray);
 		return data;
 	}
 

@@ -1729,14 +1729,17 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			Integer monthIndex, Integer yearIndex, Date startDate, Date endDate, Long regionId) throws Exception {
 
 		Long dayDiff = ChronoUnit.DAYS.between(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-				endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+				endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())+1;
+		System.out.println("##################################");
+		System.out.println(dayDiff);
+		System.out.println("#################################");
 		Integer idx = 0;
 		Integer monthsCurrentDayIdx = 1;
 		Integer totColumns = (int) (dayDiff + 3l);
 		String[] headers = new String[totColumns];
 		headers[idx++] = "Name";
 		headers[idx++] = "Employee Id";
-		while (idx < totColumns ) {
+		while (idx < totColumns-1 ) {
 			headers[idx++] = String.valueOf(monthsCurrentDayIdx++);
 		}
 		headers[idx] = "Total";
@@ -2880,7 +2883,8 @@ public class ProjectExportServiceImpl implements ProjectExportService {
 			String secondHalfDate = null;
 			Date secondHalf = null;
 
-			if (summary[6] != null) {
+			if (summary[6] != null && summary[8] != null) {
+				System.out.println("2nd half date------------------->");
 				secondHalf = (Date) summary[6];
 				secondHalfDate = ft.format(secondHalf);
 			} else {

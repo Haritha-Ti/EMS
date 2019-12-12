@@ -253,4 +253,15 @@ public class ProjectAllocationServiceImpl implements ProjectAllocationService{
 		return allocs;
 	}
 
+	@Override
+	public Boolean checkPreviouslyAllocatedOrNot(Long userId, Long projectId) {
+		// TODO Auto-generated method stub
+		Boolean deactiveStatus = true;
+		int count = projectAllocationRepository.checkPreviouslyAllocatedOrNot(userId,projectId);
+		if(count>0) {
+			deactiveStatus = false;
+		}
+		return deactiveStatus;
+	}
+
 }

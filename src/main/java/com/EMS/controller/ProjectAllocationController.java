@@ -1294,6 +1294,7 @@ public class ProjectAllocationController {
 								jsonObject.put("firstName", item.getuser().getFirstName());
 								jsonObject.put("lastName", item.getuser().getLastName());
 								jsonObject.put("role", item.getuser().getRole().getroleId());
+								jsonObject.put("userRegion",item.getuser().getRegion().getId());
 							}
 
 							jsonObject.put("startDate", projectStartDate);
@@ -1669,4 +1670,44 @@ public class ProjectAllocationController {
 			}
 		return responsedata; 
 	}
+	 
+	@PostMapping("/checkPreviouslyAllocatedOrNot")
+	public ObjectNode checkPreviouslyAllocatedOrNot(@RequestBody ObjectNode requestdata,HttpServletResponse httpstatus) throws ParseException {
+		 
+		ObjectNode response = objectMapper.createObjectNode();
+		Long userId = null;
+		Long projectId = null;
+		if(requestdata.get("userId").toString()!= null  || requestdata.get("userId").toString() != ""){
+			userId = requestdata.get("userId").asLong();
+		}
+		if(requestdata.get("projectId").toString()!= null  || requestdata.get("projectId").toString() != ""){
+			projectId = requestdata.get("projectId").asLong();
+		}
+		try {
+			
+			Boolean deactiveStatus = projectAllocation.checkPreviouslyAllocatedOrNot(userId,projectId);
+			
+			if(deactiveStatus) {
+				response.put("status", "success");
+				response.put("allocationStatus", deactiveStatus);
+				response.put("code", httpstatus.getStatus());
+				response.put("message", "No exsisting allocation ");
+			}
+			else {
+				response.put("status", "success");
+				response.put("code", httpstatus.getStatus());
+				response.put("allocationStatus", deactiveStatus);
+				response.put("message", "Deactivate the exsisting allocation");
+			}
+			
+			
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			response.put("status", "failure");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "failed. " + e);
+		}
+		return response;
+	 }
 }
