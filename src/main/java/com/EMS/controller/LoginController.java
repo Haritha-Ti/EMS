@@ -361,6 +361,7 @@ public class LoginController {
 								}
 								usertech.setUser(userdata);
 								usertech.setExperience(node.get("experience").asDouble());
+								usertech.setSkill_level(1);
 								int userTechnology = login_service.addusertechnology(usertech);
 								// System.out.println("userTechnology
 								// :"+userTechnology);
@@ -833,6 +834,7 @@ public class LoginController {
 							}
 							usertech.setUser(userModel);
 							usertech.setExperience(node.get("experience").asDouble());
+							usertech.setSkill_level(1);
 							int userTechnology = login_service.addusertechnology(usertech);
 
 						}
