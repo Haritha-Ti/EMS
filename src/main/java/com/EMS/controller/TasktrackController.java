@@ -1200,7 +1200,7 @@ public class TasktrackController {
 
 		UserModel user = userService.getUserDetailsById(uId);
 
-		if (user.getRole().getroleName().equals("GLOBAL_FINANCE") || user.getRole().getroleName().equals("ADMIN")) {// Finance
+		if (user.getRole().getroleId()==10 || user.getRole().getroleId()==1) {// Finance
 			if (regionId == null || regionId == 0) {
 				for (ProjectModel alloc : tasktrackServiceImpl.getProjectNamesForApproval(startCal.getTime(),
 						endCal.getTime())) {
@@ -1210,19 +1210,19 @@ public class TasktrackController {
 					node.put("value", alloc.getProjectName());
 					node.put("tier", alloc.getProjectTier());
 					// get region list
-//				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
-//				ArrayNode regionsArray = objectMapper.createArrayNode();
-//				if (regions.isEmpty()) {
-//					node.set("projectRegion", regionsArray);
-//				} else {
-//
-//					for (ProjectRegion regioneach : regions) {
-//						regionsArray.add((int) regioneach.getRegion_Id().getId());
-//
-//					}
-//					node.set("projectRegion", regionsArray);
-//				}
-					//
+				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
+				ArrayNode regionsArray = objectMapper.createArrayNode();
+				if (regions.isEmpty()) {
+					node.set("projectRegion", regionsArray);
+				} else {
+
+					for (ProjectRegion regioneach : regions) {
+						regionsArray.add((int) regioneach.getRegion_Id().getId());
+
+					}
+					node.set("projectRegion", regionsArray);
+			}
+
 
 					projectTitle.add(node);
 				}
