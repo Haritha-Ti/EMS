@@ -358,10 +358,10 @@ public class ProjectServiceImpl implements ProjectService {
 		List<UserModel> userList;
 
 		if(regionId!= null) {
-			userList = user_repositary.getUsersBasedOnMonthYearRegion(regionId,sdf.parse(currentDate));
+			userList = user_repositary.getAllActiveUsersBasedOnDate(regionId,sdf.parse(currentDate));
 		}
 		else{
-			userList = user_repositary.getUsersBasedOnMonthYearRegion(sdf.parse(currentDate));
+			userList = user_repositary.getAllActiveUsersBasedOnDate(sdf.parse(currentDate));
 		}
 		int userListCount = 0 ;
 		userListCount = userList.size();
@@ -373,6 +373,8 @@ public class ProjectServiceImpl implements ProjectService {
 				userObj.put("cppLevel",userData.getCpplevels().getLevelName());
 				userObj.put("regionId",userData.getRegion().getId());
 				userObj.put("regionName",userData.getRegion().getRegion_name());
+				userObj.put("roleName",userData.getRole().getroleName());
+				userObj.put("departmentName",userData.getDepartment().getdepartmentName());
 				userArray.add(userObj);
 			}
 		}
@@ -401,6 +403,8 @@ public class ProjectServiceImpl implements ProjectService {
 				newjoinesObj.put("joiningDate", sdf.format(newjoinesData.getJoiningDate()));
 				newjoinesObj.put("regionId",newjoinesData.getRegion().getId());
 				newjoinesObj.put("regionName",newjoinesData.getRegion().getRegion_name());
+				newjoinesObj.put("roleName",newjoinesData.getRole().getroleName());
+				newjoinesObj.put("departmentName",newjoinesData.getDepartment().getdepartmentName());
 				newjoinesArray.add(newjoinesObj);
 			}
 		}
@@ -424,6 +428,8 @@ public class ProjectServiceImpl implements ProjectService {
 				leavedUsersObj.put("terminationDate", sdf.format(leavedUsersData.getTerminationDate()));
 				leavedUsersObj.put("regionId",leavedUsersData.getRegion().getId());
 				leavedUsersObj.put("regionName",leavedUsersData.getRegion().getRegion_name());
+				leavedUsersObj.put("roleName",leavedUsersData.getRole().getroleName());
+				leavedUsersObj.put("departmentName",leavedUsersData.getDepartment().getdepartmentName());
 				leavedUsersArray.add(leavedUsersObj);
 			}
 		}

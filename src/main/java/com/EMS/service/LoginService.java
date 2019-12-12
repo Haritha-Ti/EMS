@@ -6,7 +6,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.EMS.model.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public interface LoginService {
 
@@ -47,5 +51,8 @@ public interface LoginService {
 
 	public EmployeeContractors getContractor(long contractorId);
 	
+	JsonNode adminLogin(UserModel usercheck, HttpServletResponse httpstatus);
+	
+	ArrayNode getBlockedPageList(long roleid);
 
 }

@@ -82,69 +82,17 @@ public class LoginController {
 	@ResponseBody
 	public JsonNode adminLogin(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 
-		ObjectNode response = objectMapper.createObjectNode();
-		ObjectNode data = objectMapper.createObjectNode();
-
+		UserModel usercheck  = null;
 		String username = requestdata.get("username").asText();
 		String password = requestdata.get("password").asText();
-
-		try {
 
 			if(username != null && username.length() > 0 && !username.equals(" ") && password != null && password.length() > 0) {
 
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-				UserModel usercheck = login_service.login_authentication(username);
+				 usercheck = login_service.login_authentication(username);
 				
-				if(!usercheck.isActive()) {
-					LOGGER.info("Inactive User");
-					response.put("status", "Failed");
-					response.put("code", httpstatus.getStatus());
-					response.put("message", "User account has been deactivated");
-					response.put("payload", "");
-					return response;
-				}
-				
-				String token = jwtTokenProvider.createToken(username, usercheck.getRole().getroleName(), usercheck.getRole().getroleId());
-
-				LOGGER.info("User Authentication Success");
-				response.put("status", "success");
-				response.put("code", httpstatus.getStatus());
-				response.put("message", "Valid user");
-				data.put("username", usercheck.getUserName());
-				data.put("userId", usercheck.getUserId());
-				data.put("roleId", usercheck.getRole().getroleId());
-				data.put("roleName", usercheck.getRole().getroleName());
-				data.put("regionName", usercheck.getRegion().getRegion_name());
-
-				ArrayNode array = getBlockedPageList(usercheck.getRole().getroleId());
-				data.putArray("allowedPages").addAll(array);
-				data.put("token", token);
-
-				response.set("payload", data);
-
-			} else {
-				LOGGER.info("Invalid credientials");
-				response.put("status", "Failed");
-				response.put("code", httpstatus.getStatus());
-				response.put("message", "Invalid credientials");
-				response.put("payload", "");
-			}
-
-		} catch (BadCredentialsException exception) {
-			LOGGER.info("Exception in adminLogin Method");
-			response.put("status", "Failed");
-			response.put("code", httpstatus.getStatus());
-			response.put("message", "Invalid username or password");
-			response.put("payload", "");
-		} catch (Exception exception) {
-			LOGGER.info("Exception in adminLogin Method");
-			exception.printStackTrace();
-			response.put("status", "Failed");
-			response.put("code", httpstatus.getStatus());
-			response.put("message", "Exception : " + exception);
-			response.put("payload", "");
-		}
-		return response;
+			} 
+		return login_service.adminLogin(usercheck, httpstatus);
 	}
 
 	// //api call for registering new user
