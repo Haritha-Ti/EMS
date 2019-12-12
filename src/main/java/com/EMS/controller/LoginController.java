@@ -82,17 +82,43 @@ public class LoginController {
 	@ResponseBody
 	public JsonNode adminLogin(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 
+		ObjectNode response = objectMapper.createObjectNode();
+		
 		UserModel usercheck  = null;
 		String username = requestdata.get("username").asText();
 		String password = requestdata.get("password").asText();
 
+		try {
 			if(username != null && username.length() > 0 && !username.equals(" ") && password != null && password.length() > 0) {
 
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-				 usercheck = login_service.login_authentication(username);
-				
+				usercheck = login_service.login_authentication(username);
+				response = login_service.adminLogin(usercheck, httpstatus);			
 			} 
-		return login_service.adminLogin(usercheck, httpstatus);
+			else {
+				LOGGER.info("Invalid credientials");
+				response.put("status", "Failed");
+				response.put("code", httpstatus.getStatus());
+				response.put("message", "Invalid credientials");
+				response.put("payload", "");
+			}
+		}
+		catch (BadCredentialsException exception) {
+			LOGGER.info("Exception in adminLogin Method");
+			response.put("status", "Failed");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "Invalid username or password");
+			response.put("payload", "");
+		} catch (Exception exception) {
+			LOGGER.info("Exception in adminLogin Method");
+			exception.printStackTrace();
+			response.put("status", "Failed");
+			response.put("code", httpstatus.getStatus());
+			response.put("message", "Exception : " + exception);
+			response.put("payload", "");
+		}
+		
+		return response;
 	}
 
 	// //api call for registering new user

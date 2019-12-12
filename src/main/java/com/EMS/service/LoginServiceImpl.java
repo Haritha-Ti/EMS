@@ -229,7 +229,7 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	@Override
-	public JsonNode adminLogin(UserModel usercheck, HttpServletResponse httpstatus) {
+	public ObjectNode adminLogin(UserModel usercheck, HttpServletResponse httpstatus) {
 
 		ObjectNode response = objectMapper.createObjectNode();
 		ObjectNode data = objectMapper.createObjectNode();
@@ -262,12 +262,6 @@ public class LoginServiceImpl implements LoginService {
 
 				response.set("payload", data);
 
-		} catch (BadCredentialsException exception) {
-			LOGGER.info("Exception in adminLogin Method");
-			response.put("status", "Failed");
-			response.put("code", httpstatus.getStatus());
-			response.put("message", "Invalid username or password");
-			response.put("payload", "");
 		} catch (Exception exception) {
 			LOGGER.info("Exception in adminLogin Method");
 			exception.printStackTrace();
