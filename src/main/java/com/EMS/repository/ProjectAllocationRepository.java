@@ -112,5 +112,8 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
             "(?2 <= alc.start_date and ?3 >= alc.end_date)) " +
             "order by 1,2,3,4,5",nativeQuery=true)
     List<Object[]> getAllocationProjectForUserId(Long userId, Date fromDate, Date toDate);
+
+	@Query(value = "SELECT COUNT(*) FROM allocation WHERE user_user_id = ?1 and project_project_id = ?2 AND active = 1",nativeQuery = true)
+    int checkPreviouslyAllocatedOrNot(Long userId, Long projectId);
 	
 }
