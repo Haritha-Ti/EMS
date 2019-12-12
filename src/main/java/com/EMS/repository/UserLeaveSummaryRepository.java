@@ -37,4 +37,6 @@ public interface UserLeaveSummaryRepository extends JpaRepository<UserLeaveSumma
     @Query("select u from UserLeaveSummary u where u.leaveDate<=?2 and u.leaveDate>=?1 and u.user.region.id = ?3 order by u.user.firstName")
     List<UserLeaveSummary> getUserLeaveListByMonthRegion(Date startDate, Date endDate,Long regionId);
 
+    @Query("select u from UserLeaveSummary u where u.user.userId=?1 and u.leaveDate<=?3 and u.leaveDate>=?2 order by u.user.firstName")
+    List<UserLeaveSummary> getLeaveListForUserByDateRange(long userId,Date startDate, Date endDate);
 }
