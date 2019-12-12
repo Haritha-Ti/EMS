@@ -143,4 +143,6 @@ public interface UserRepository extends JpaRepository<UserModel, Long>{
 	@Query("Select u FROM UserModel u where u.region.id = ?1  and (u.terminationDate >= ?2 or u.terminationDate IS NULL) and u.joiningDate <=?3 and u.role.roleId in ('3','5','11','9') and u.department.departmentId in ('1') ")
 	List<UserModel> getUsersByRegionAndDate(Long regionId, Date startDate, Date endDate);
 
+	UserModel findByEmail(String email);
+
 }

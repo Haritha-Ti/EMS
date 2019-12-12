@@ -577,4 +577,10 @@ public class UserServiceImpl implements UserService {
 		return userRepository.getUsersByRegionAndDate(regionId,startDate,endDate);
 	}
 
+	@Override
+	public UserModel getUserByEmail(String email) {
+		
+		return userRepository.findByEmail(email);
+	}
+
 }

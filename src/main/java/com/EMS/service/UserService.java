@@ -137,6 +137,8 @@ public interface UserService {
 	    PayrollModel  PayrollByUserId(Long userID);
 
 		List<UserModel> getUsersByRegionAndDate(Long regionId, Date startDate, Date endDate);
+
+		UserModel getUserByEmail(String object);
 	
 	
 	
