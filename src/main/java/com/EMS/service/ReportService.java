@@ -3,6 +3,7 @@ package com.EMS.service;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -36,6 +37,6 @@ public interface ReportService {
 
 	List<HashMap<String, Object>> getRegionLeaves(Integer region, Integer month, Integer year) throws Exception;
 
-	public HashMap<String, Object> getSubmissionDetailsForFinanceFullReport(Long projectid, Integer projectTyre,
+	public List<Map<String, Object>> getSubmissionDetailsForFinanceFullReport(Long projectid, Integer projectTyre,
 			Long userId, Integer month, Integer year, String session) throws Exception;
 }
