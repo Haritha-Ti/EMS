@@ -1324,7 +1324,7 @@ public class ReportController {
 		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		JSONObject jsonDataRes = new JSONObject();
 		try {
-			HashMap<String, Object> submittedDataList = reportService
+			List<Map<String, Object>> submittedDataList = reportService
 					.getSubmissionDetailsForFinanceFullReport(projectId, projectTyre, userId, month, year, "FULL");
 			jsonDataRes.put("status", "Success");
 			jsonDataRes.put("code", HttpServletResponse.SC_OK);

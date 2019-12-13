@@ -950,17 +950,15 @@ public class ReportServiceImpl implements ReportService {
 	 * @author sreejith.j
 	 */
 	@Override
-	public HashMap<String, Object> getSubmissionDetailsForFinanceFullReport(Long projectId, Integer projectTyre,
+	public List<Map<String, Object>> getSubmissionDetailsForFinanceFullReport(Long projectId, Integer projectTyre,
 			Long userId, Integer month, Integer year, String session) throws Exception {
-		HashMap<String, Object> response = new HashMap<String, Object>();
+		List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
+		HashMap<String, Object> dataObj = new HashMap<String, Object>();
 		List<AllocationModel> userAllocationList = new ArrayList<AllocationModel>();
-		List<Map<String, Object>> projectList = new ArrayList<Map<String, Object>>();
 		Map<Long, Map<String, Object>> projectsMap = new HashMap<Long, Map<String, Object>>();
-		Map<String, Object> projectMap = new HashMap<String, Object>();
 
-		List<Map<String, Object>> usersList = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
 		Map<Long, Map<String, Object>> usersMap = new HashMap<Long, Map<String, Object>>();
-		Map<String, Object> userMap = new HashMap<String, Object>();
 
 		ProjectModel projectModel = new ProjectModel();
 		Calendar startCal = Calendar.getInstance();
@@ -971,47 +969,68 @@ public class ReportServiceImpl implements ReportService {
 
 		if (projectId != null) {
 			projectModel = projectRepository.getOne(projectId);
-			projectMap.put("projectId", projectModel.getProjectId());
-			projectMap.put("projectName", projectModel.getProjectName());
-			projectMap.put("projectTier", projectModel.getProjectTier());
-			projectMap.put("clientName", projectModel.getClientName().getClientName());
+
 			if (userId == null) {
 				userAllocationList = allocationRepository
-						.findByProjectProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndActive(projectId,
-								endCal.getTime(), startCal.getTime(), true);
-				usersList = new ArrayList<Map<String, Object>>();
+						.findByProjectProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(projectId,
+								endCal.getTime(), startCal.getTime());
+				usersMap = new HashMap<Long, Map<String, Object>>();
 				for (AllocationModel modelObj : userAllocationList) {
+					dataObj = new HashMap<String, Object>();
 					if (!usersMap.containsKey(modelObj.getuser().getUserId())) {
-						userMap = new HashMap<String, Object>();
-						userMap.put("userId", modelObj.getuser().getUserId());
-						userMap.put("userName", (modelObj.getuser().getLastName().trim() + " "
+						dataObj.put("userId", modelObj.getuser().getUserId());
+						dataObj.put("userName", (modelObj.getuser().getLastName().trim() + " "
 								+ modelObj.getuser().getFirstName().trim()).trim());
-						userMap.put("userRegion", modelObj.getuser().getRegion().getRegion_name());
-						userMap.put("userDetails", this.getUsersProjectSubmissionDetails(projectId, projectTyre,
+						dataObj.put("userRegion", modelObj.getuser().getRegion().getRegion_name());
+						dataObj.put("taskTrackDetails", this.getUsersProjectSubmissionDetails(projectId, projectTyre,
 								modelObj.getuser().getUserId(), month, year, session));
-						usersMap.put(modelObj.getuser().getUserId(), userMap);
-						usersList.add(userMap);
+						dataObj.put("projectId", projectModel.getProjectId());
+						dataObj.put("projectName", projectModel.getProjectName());
+						dataObj.put("projectTier", projectModel.getProjectTier());
+						dataObj.put("clientName", projectModel.getClientName().getClientName());
+						usersMap.put(modelObj.getuser().getUserId(), dataObj);
+						dataList.add(dataObj);
 					}
 				}
-			}else {
-				usersList = new ArrayList<Map<String, Object>>();
-//						UserModel userObj= userRepository.getUserById(userId);
-//						userMap = new HashMap<String, Object>();
-//						userMap.put("userId", modelObj.getuser().getUserId());
-//						userMap.put("userName", (modelObj.getuser().getLastName().trim() + " "
-//								+ modelObj.getuser().getFirstName().trim()).trim());
-//						userMap.put("userRegion", modelObj.getuser().getRegion().getRegion_name());
-//						userMap.put("userDetails", this.getUsersProjectSubmissionDetails(projectId, projectTyre,
-//								modelObj.getuser().getUserId(), month, year, session));
-//						usersMap.put(modelObj.getuser().getUserId(), userMap);
-						usersList.add(userMap);
-					}
-			projectMap.put("users", usersList);
+			} else {
+				dataObj = new HashMap<String, Object>();
+				UserModel userObj = userRepository.findOneByUserId(userId);
+				dataObj.put("userId", userObj.getUserId());
+				dataObj.put("userName", (userObj.getLastName().trim() + " " + userObj.getFirstName().trim()).trim());
+				dataObj.put("userRegion", userObj.getRegion().getRegion_name());
+				dataObj.put("taskTrackDetails", this.getUsersProjectSubmissionDetails(projectId, projectTyre,
+						userObj.getUserId(), month, year, session));
+				dataObj.put("projectId", projectModel.getProjectId());
+				dataObj.put("projectName", projectModel.getProjectName());
+				dataObj.put("projectTier", projectModel.getProjectTier());
+				dataObj.put("clientName", projectModel.getClientName().getClientName());
+				dataList.add(dataObj);
+			}
 
-			response.put("project", projectMap);
-		} else if (projectId == null && userId != null) {
-
+		} else if (userId != null) {
+			UserModel userObj = userRepository.findOneByUserId(userId);
+			userAllocationList = allocationRepository
+					.findByUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId, endCal.getTime(),
+							startCal.getTime());
+			for (AllocationModel modelObj : userAllocationList) {
+				if (!projectsMap.containsKey(modelObj.getproject().getProjectId())) {
+					dataObj.put("projectId", modelObj.getproject().getProjectId());
+					dataObj.put("projectName", modelObj.getproject().getProjectName());
+					dataObj.put("projectTier", modelObj.getproject().getProjectTier());
+					dataObj.put("clientName", modelObj.getproject().getClientName().getClientName());
+					dataObj.put("taskTrackDetails",
+							this.getUsersProjectSubmissionDetails(modelObj.getproject().getProjectId(),
+									modelObj.getproject().getProjectTier(), userId, month, year, session));
+					dataObj.put("userId", userObj.getUserId());
+					dataObj.put("userName",
+							(userObj.getLastName().trim() + " " + userObj.getFirstName().trim()).trim());
+					dataObj.put("userRegion", userObj.getRegion().getRegion_name());
+					projectsMap.put(modelObj.getproject().getProjectId(), dataObj);
+					dataList.add(dataObj);
+				}
+			}
 		}
+		response.addAll(dataList);
 		return response;
 	}
 }

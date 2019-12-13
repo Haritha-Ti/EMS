@@ -840,8 +840,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		int startDay = cal.get(Calendar.DATE);
 
 		AllocationModel allocationObj = allocationRepository
-				.findOneByProjectProjectIdAndUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsBillableAndActiveOrderByEndDateDesc(
-						projectId, userId, endDate, startDate, true, true);
+				.findOneByProjectProjectIdAndUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsBillableOrderByEndDateDesc(
+						projectId, userId, endDate, startDate, true);
 
 		Boolean isBillable = allocationObj != null ? true : false;
 
@@ -7147,7 +7147,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_CORRECTED)
 								|| approverOneSecodHalfStatus
 										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_REJECTION_SUBMITTED)
-								|| approverOneFirstHalfStatus
+								|| approverOneSecodHalfStatus
 										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_LOCK))
 							secondHalfHour += approverOneHourList.get(i);
 					}
@@ -7195,7 +7195,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							firstHalfHour += approverTwoHourList.get(i);
 					} else {
 						if (approverTwoSecodHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
-								|| approverTwoFirstHalfStatus
+								|| approverTwoSecodHalfStatus
 										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION)
 								|| approverTwoFirstHalfStatus
 										.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_CORRECTION_SAVED))
@@ -7552,8 +7552,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		JSONObject nonBillableHours3;
 		JSONObject beachHours3;
 		if (approverTwoData != null && approverTwoData.size() > 0) {
-				if(((firstHalfDay >= startDay) && approverTwoData.get(0).getFirstHalfStatus() != null) || 
-						((firstHalfDay <= startDay) && approverTwoData.get(0).getSecondHalfStatus() != null)) {
+			if (((firstHalfDay >= startDay) && approverTwoData.get(0).getFirstHalfStatus() != null)
+					|| ((firstHalfDay <= startDay) && approverTwoData.get(0).getSecondHalfStatus() != null)) {
 				for (TaskTrackApproval task : approverTwoData) {
 
 					cal.setTime(startDate);
@@ -7721,8 +7721,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				approverTwoDatas.put("nonBillableId", nonbillableId);
 				approverTwoDatas.put("overtimeId", overtimeId);
 				approverTwoDatas.put("beachId", beachId);
-			}
-			 else {
+			} else {
 				// first table data
 				for (TaskTrackApproval task : approverTwoData) {
 					if (task.getProjectType().equalsIgnoreCase("Billable")) {
