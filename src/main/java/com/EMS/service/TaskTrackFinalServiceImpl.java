@@ -1986,7 +1986,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
 			beachId = Long.valueOf(requestData.get("beachId").toString());
 		}
-		if (requestData.get("sessionId") != null && requestData.get("sessionId") != "") {
+		if (requestData.get("sessionId") != null) {
 			sessionId = Long.valueOf(requestData.get("sessionId").toString());
 		}
 		String date1 = (String) requestData.get("startDate");
@@ -2967,7 +2967,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					JSONObject approverTwoData = (JSONObject) userLevelInfo.get("approverTwoData");
 					JSONObject dataToSave = new JSONObject();
 					dataToSave.put("projectId", projectId);
-					dataToSave.put("sessionId ",sessionId);
+					dataToSave.put("sessionId",sessionId);
 					dataToSave.put("year", requestData.get("year").toString());
 					dataToSave.put("month", requestData.get("month"));
 					dataToSave.put("userId", userId);
