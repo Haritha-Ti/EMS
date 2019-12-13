@@ -360,7 +360,7 @@ public class ProjectServiceImpl implements ProjectService {
 				projectObj.put("currentAllocCount",
 						allocationMap.containsKey(projectData.getProjectId())
 								? allocationMap.get(projectData.getProjectId())
-								: 0);
+								: 0l);
 				// get region list
 				List<ProjectRegion> regions = getregionlist(projectData.getProjectId());
 				ArrayNode regionsArray = objectMapper.createArrayNode();
