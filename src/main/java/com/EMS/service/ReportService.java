@@ -35,4 +35,7 @@ public interface ReportService {
 	public JSONObject getFreeAllocationReport(Long regionId_selected, Date fromDate, Date toDate);
 
 	List<HashMap<String, Object>> getRegionLeaves(Integer region, Integer month, Integer year) throws Exception;
+
+	public HashMap<String, Object> getSubmissionDetailsForFinanceFullReport(Long projectid, Integer projectTyre,
+			Long userId, Integer month, Integer year, String session) throws Exception;
 }
