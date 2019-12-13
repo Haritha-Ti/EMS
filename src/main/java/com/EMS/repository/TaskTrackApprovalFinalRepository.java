@@ -172,7 +172,7 @@ public interface TaskTrackApprovalFinalRepository extends JpaRepository<TaskTrac
 			"month=?1 and year=?2 and ta.project_type in('Billable','Overtime') group by user_user_id,project.project_name",nativeQuery = true)
 	List<Object[]> getFinanceDataByMonthYear(int month, int year);
 
-	@Query(value ="SELECT user_user_id as id,first_name,last_name,project.project_name,project.project_id,r.region_name,ta.trx_date,ta.first_halfsubmitted_by_user_id,ta.second_halfsubmitted_by_user_id,first_half_status,second_half_status,sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4,\n" + 
+	@Query(value ="SELECT user_user_id as id,first_name,last_name,project.project_name,project.project_id,r.region_name,DATE(ta.trx_date) AS trx_date,ta.first_halfsubmitted_by_user_id,ta.second_halfsubmitted_by_user_id,first_half_status,second_half_status,sum(COALESCE(day1,0)) as day1,sum(COALESCE(day2,0)) as day2,sum(COALESCE(day3,0)) as day3,sum(COALESCE(day4,0)) as day4,\n" + 
 			"			sum(COALESCE(day5,0)) as day5,sum(COALESCE(day6,0)) as day6,sum(COALESCE(day7,0)) as day7,sum(COALESCE(day8,0)) as day8,sum(COALESCE(day9,0)) as day9,\n" + 
 			"			sum(COALESCE(day10,0)) as day10,sum(COALESCE(day11,0)) as day11,sum(COALESCE(day12,0)) as day12,sum(COALESCE(day13,0)) as day13,sum(COALESCE(day14,0)) as day14,\n" + 
 			"			sum(COALESCE(day15,0)) as day15,sum(COALESCE(day16,0)) as day16,sum(COALESCE(day17,0)) as day17,sum(COALESCE(day18,0)) as day18,sum(COALESCE(day19,0)) as day19,\n" + 
@@ -191,7 +191,7 @@ public interface TaskTrackApprovalFinalRepository extends JpaRepository<TaskTrac
 			"      		THEN pr.region_id_id = ?5 \n" + 
 			"      		ELSE pr.region_id_id != 0 END) and ta.year = ?2 and ta.month = ?1 and ta.project_type in('Billable','Overtime')\n" + 
 			"            and ((ta.first_half_status = 'SUBMITTED' or ta.first_half_status = 'CORRECTION_SAVED') or ( ta.second_half_status = 'SUBMITTED' or ta.second_half_status = 'CORRECTION_SAVED' ))\n" + 
-			"            group by user_user_id,project.project_name,r.region_name,project.project_id,ta.trx_date,ta.first_halfsubmitted_by_user_id,ta.second_halfsubmitted_by_user_id,first_half_status,second_half_status",nativeQuery = true)
+			"            group by user_user_id,project.project_name,r.region_name,project.project_id,trx_date,ta.first_halfsubmitted_by_user_id,ta.second_halfsubmitted_by_user_id,first_half_status,second_half_status",nativeQuery = true)
 	List<Object[]> getProjectWiseSubmissionDetails(int month, int year, long projectId, long userId,long regionId);
 	
 	@Query(value ="SELECT trx_date FROM `tasktrack_approval_final_aud` WHERE  project_project_id = ?1 and user_user_id = ?2 and ((first_half_status = 'SUBMITTED' or first_half_status = 'CORRECTION_SAVED')) and month = ?3 and year = ?4 " + 
