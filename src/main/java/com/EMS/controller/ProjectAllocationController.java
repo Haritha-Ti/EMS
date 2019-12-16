@@ -1559,7 +1559,7 @@ public class ProjectAllocationController {
 		else {
 			node.set("userList", null);
 			//node.set("data", jsonData);
-			node.put("status", "failed");
+			node.put("status", "success");
 			node.put("code", httpStatus.getStatus());
 			node.put("message", "failed");
 		}
