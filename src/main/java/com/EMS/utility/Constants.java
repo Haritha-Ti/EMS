@@ -48,4 +48,14 @@ public class Constants {
 
 	public static final String HALF_DAY_LEAVE = "HD";
 
+	public static final Integer DEFAULT_DECIMAL_PRECISION = 2;
+
+	public static final Double roundToDefaultPrecision(Double value) {
+
+		Double multiplicationConstant = Math.pow(10, Constants.DEFAULT_DECIMAL_PRECISION);
+		value = Math.round(value * multiplicationConstant) / multiplicationConstant;
+
+		return value;
+	}
+
 }
