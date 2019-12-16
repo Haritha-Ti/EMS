@@ -1986,7 +1986,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		if (requestData.get("beachId") != null && requestData.get("beachId") != "") {
 			beachId = Long.valueOf(requestData.get("beachId").toString());
 		}
-		if (requestData.get("sessionId") != null && requestData.get("sessionId") != "") {
+		if (requestData.get("sessionId") != null) {
 			sessionId = Long.valueOf(requestData.get("sessionId").toString());
 		}
 		String date1 = (String) requestData.get("startDate");
@@ -2905,7 +2905,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void bulkApproveLevel2(JSONObject requestData) throws Exception {
 
-		Long projectId = null;
+		Long projectId = null,sessionId=null;
 		List<Integer> userIds = new ArrayList<Integer>();
 		Integer monthPeriod = null, userId = null;
 		String date1 = null, date2 = null;
@@ -2924,7 +2924,9 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 		if (requestData.get("endDate") != null && !requestData.get("endDate").equals("")) {
 			date2 = (String) requestData.get("endDate");
 		}
-
+		if (requestData.get("sessionId") != null && requestData.get("sessionId") != "") {
+			sessionId = Long.valueOf(requestData.get("sessionId").toString());
+		}
 		SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate = null, endDate = null;
 		if (date1 != null) {
@@ -2941,6 +2943,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 			HashMap<String, Object> billableArray = new JSONObject();
 			HashMap<String, Object> nonbillableArray = new JSONObject();
 			HashMap<String, Object> overtimeArray = new JSONObject();
+			HashMap<String, Object> beachArray = new JSONObject();
 
 			userId = userIds.get(i);
 			userLevelInfo = tasktrackApprovalService.getDataForApprovalLevelTwo(new Long(userId), startDate, endDate,
@@ -2964,6 +2967,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					JSONObject approverTwoData = (JSONObject) userLevelInfo.get("approverTwoData");
 					JSONObject dataToSave = new JSONObject();
 					dataToSave.put("projectId", projectId);
+					dataToSave.put("sessionId",sessionId);
 					dataToSave.put("year", requestData.get("year").toString());
 					dataToSave.put("month", requestData.get("month"));
 					dataToSave.put("userId", userId);
@@ -2972,6 +2976,7 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 					dataToSave.put("billableId", approverTwoData.get("billableId"));
 					dataToSave.put("nonBillableId", approverTwoData.get("nonBillableId"));
 					dataToSave.put("overtimeId", approverTwoData.get("overtimeId"));
+					dataToSave.put("beachId", approverTwoData.get("beachId"));
 
 					ArrayList<JSONObject> billable = new ArrayList<JSONObject>();
 					billable = (ArrayList<JSONObject>) approverOneData.get("billable");
@@ -2997,9 +3002,18 @@ public class TaskTrackFinalServiceImpl implements TaskTrackFinalService {
 						overtimeArray.put((String) keyStr, keyvalue);
 					});
 
+					ArrayList<JSONObject> beach = new ArrayList<JSONObject>();
+					beach = (ArrayList<JSONObject>) approverOneData.get("beach");
+					JSONObject beachObj = beach.get(0);
+					beachObj.keySet().forEach(keyStr -> {
+						Object keyvalue = beachObj.get(keyStr);
+						beachArray.put((String) keyStr, keyvalue);
+					});
+
 					dataToSave.put("billable", billableArray);
 					dataToSave.put("nonBillable", nonbillableArray);
 					dataToSave.put("overtime", overtimeArray);
+					dataToSave.put("beach", beachArray);
 
 					if (monthPeriod == 1)
 						submitFirstHalfHoursForApproval2(dataToSave);
