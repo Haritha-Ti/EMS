@@ -15,14 +15,14 @@ import javax.persistence.Transient;
 import org.hibernate.envers.Audited;
 
 import com.EMS.listener.ModelListener;
+import com.EMS.utility.Constants;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 
 @Audited
 @EntityListeners(ModelListener.class)
 @Entity
 @Table(name = "Tasktrack")
-public class Tasktrack  extends  Auditable<Long> implements Comparable<Tasktrack> {
+public class Tasktrack extends Auditable<Long> implements Comparable<Tasktrack> {
 
 	@Id
 	@Column(name = "id")
@@ -50,10 +50,10 @@ public class Tasktrack  extends  Auditable<Long> implements Comparable<Tasktrack
 
 	@Transient
 	private long projectId;
-	
+
 	@Transient
 	private long taskTypeId;
-	
+
 	public long getId() {
 		return id;
 	}
@@ -79,11 +79,11 @@ public class Tasktrack  extends  Auditable<Long> implements Comparable<Tasktrack
 	}
 
 	public Double getHours() {
-		return hours;
+		return Constants.roundToDefaultPrecision(hours);
 	}
 
 	public void setHours(Double hours) {
-		this.hours = hours;
+		this.hours = Constants.roundToDefaultPrecision(hours);
 	}
 
 	public ProjectModel getProject() {
@@ -110,7 +110,6 @@ public class Tasktrack  extends  Auditable<Long> implements Comparable<Tasktrack
 		this.task = task;
 	}
 
-	
 	public long getProjectId() {
 		return projectId;
 	}
@@ -129,21 +128,21 @@ public class Tasktrack  extends  Auditable<Long> implements Comparable<Tasktrack
 
 	@Transient
 	private String approvalStatus;
-	
+
 	public String getApprovalStatus() {
 		return approvalStatus;
 	}
-	
+
 	public void setApprovalStatus(String approvalStatus) {
 		this.approvalStatus = approvalStatus;
 	}
-	
-	
+
 	@Override
 	public String toString() {
-		return this.project.getProjectId()+" | "+this.id+" | "+this.task.getId()+" | "+this.description+" | "+this.hours+" | "+this.date;
+		return this.project.getProjectId() + " | " + this.id + " | " + this.task.getId() + " | " + this.description
+				+ " | " + this.hours + " | " + this.date;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return this.getDate().hashCode();

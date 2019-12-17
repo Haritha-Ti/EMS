@@ -246,11 +246,11 @@ public class TasktrackController {
 				projectId = objectNode.get("projectId").asLong();
 			}
 
-			ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(projectId);			
+			ProjectModel projectModel = tasktrackServiceImpl.getProjectModelById(projectId);
 			int userId = Integer.parseInt(objectNode.get("uId").toString());
 			int projectTier = projectModel.getProjectTier();
 			Date currentDate = sdf.parse(objectNode.get("date").asText());
-			
+
 			List<Long> projectIds = Arrays.asList(projectId);
 			List<Object[]> taskApprovalStatusArr = new ArrayList<Object[]>();
 
@@ -268,28 +268,28 @@ public class TasktrackController {
 			if (taskApprovalStatusArr != null && !taskApprovalStatusArr.isEmpty()) {
 				isBlocked = isTaskTrackApproved(projectTier, taskApprovalStatusArr.get(0)[0].toString());
 			}
-			
-		if (!isBlocked) {
-		
-			Task taskCategory = tasktrackService.getTaskById(objectNode.get("taskTypeId").asLong());
-			Tasktrack tasktrack = new Tasktrack();
-			tasktrack.setTask(taskCategory);
-			tasktrack.setProject(projectModel);
-			tasktrack.setDescription(objectNode.get("taskSummary").asText());
-			tasktrack.setId(objectNode.get("taskId").asLong());
-			tasktrack.setHours(objectNode.get("hours").asDouble());
-			tasktrack.setDate(sdf.parse(objectNode.get("date").asText()));
-			
-			if (tasktrackServiceImpl.updateTaskById(tasktrack)) {
-				node.put("status", "success");
-				node.put("message", "Task updated Successfully");
-			} else {
-				node.put("status", "failure");
-				node.put("message", "Task couldn't be updated");
+
+			if (!isBlocked) {
+
+				Task taskCategory = tasktrackService.getTaskById(objectNode.get("taskTypeId").asLong());
+				Tasktrack tasktrack = new Tasktrack();
+				tasktrack.setTask(taskCategory);
+				tasktrack.setProject(projectModel);
+				tasktrack.setDescription(objectNode.get("taskSummary").asText());
+				tasktrack.setId(objectNode.get("taskId").asLong());
+				tasktrack.setHours(objectNode.get("hours").asDouble());
+				tasktrack.setDate(sdf.parse(objectNode.get("date").asText()));
+
+				if (tasktrackServiceImpl.updateTaskById(tasktrack)) {
+					node.put("status", "success");
+					node.put("message", "Task updated Successfully");
+				} else {
+					node.put("status", "failure");
+					node.put("message", "Task couldn't be updated");
+				}
+
 			}
-			
-		}
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			node.put("status", "failure");
@@ -496,7 +496,7 @@ public class TasktrackController {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			Long uId = taskData.get("uId").asLong();
-			
+
 			Boolean saveFailed = false;
 
 			if (!uId.equals(null)) {
@@ -505,7 +505,7 @@ public class TasktrackController {
 				UserModel user = userService.getUserDetailsById(uId);
 
 				if (!user.equals(null)) {
-					
+
 					boolean isBlocked = false;
 
 					for (JsonNode node : arrayNode) {
@@ -532,39 +532,38 @@ public class TasktrackController {
 						}
 						if (projectId != 0L) {
 							ProjectModel proj = projectService.findById(projectId);
-							
+
 							if (proj != null)
 								tasktrack.setProject(proj);
 							else {
 								saveFailed = true;
 								dataResponse.put("message", "Process failed due to invalid project Id");
 							}
-							
-							int projectTier = proj.getProjectTier(); 
+
+							int projectTier = proj.getProjectTier();
 							List<Long> projectIds = Arrays.asList(projectId);
 							Date currentDate = sdf.parse(node.get("date").asText());
 							List<Object[]> taskApprovalStatusArr = new ArrayList<Object[]>();
 
 							if (projectTier == 1) {
-								taskApprovalStatusArr.addAll(
-										tasktrackRepository.getTaskApprovalStatusForProjectsTire1(uId, currentDate, projectIds));
+								taskApprovalStatusArr.addAll(tasktrackRepository
+										.getTaskApprovalStatusForProjectsTire1(uId, currentDate, projectIds));
 							}
 
 							else if (projectTier == 2) {
-								taskApprovalStatusArr.addAll(
-										tasktrackRepository.getTaskApprovalStatusForProjectsTire2(uId, currentDate, projectIds));
+								taskApprovalStatusArr.addAll(tasktrackRepository
+										.getTaskApprovalStatusForProjectsTire2(uId, currentDate, projectIds));
 							}
-							
-							
+
 							if (taskApprovalStatusArr != null && !taskApprovalStatusArr.isEmpty()) {
-								isBlocked = isTaskTrackApproved(projectTier, taskApprovalStatusArr.get(0)[0].toString());
+								isBlocked = isTaskTrackApproved(projectTier,
+										taskApprovalStatusArr.get(0)[0].toString());
 							}
-							
+
 							if (isBlocked) {
 								continue;
 							}
-							
-							
+
 						} else {
 							saveFailed = true;
 							dataResponse.put("message", "Process failed due to empty project Id");
@@ -594,7 +593,7 @@ public class TasktrackController {
 							saveFailed = true;
 							dataResponse.put("message", "Process failed due to empty date value ");
 						}
-						if (!saveFailed) {														
+						if (!saveFailed) {
 							tasktrackService.saveTaskDetails(tasktrack);
 							dataResponse.put("message", "success");
 
@@ -1200,7 +1199,7 @@ public class TasktrackController {
 
 		UserModel user = userService.getUserDetailsById(uId);
 
-		if (user.getRole().getroleId()==10 || user.getRole().getroleId()==1) {// Finance
+		if (user.getRole().getroleId() == 10 || user.getRole().getroleId() == 1) {// Finance
 			if (regionId == null || regionId == 0) {
 				for (ProjectModel alloc : tasktrackServiceImpl.getProjectNamesForApproval(startCal.getTime(),
 						endCal.getTime())) {
@@ -1210,19 +1209,18 @@ public class TasktrackController {
 					node.put("value", alloc.getProjectName());
 					node.put("tier", alloc.getProjectTier());
 					// get region list
-				List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
-				ArrayNode regionsArray = objectMapper.createArrayNode();
-				if (regions.isEmpty()) {
-					node.set("projectRegion", regionsArray);
-				} else {
+					List<ProjectRegion> regions = projectservice.getregionlist(alloc.getProjectId());
+					ArrayNode regionsArray = objectMapper.createArrayNode();
+					if (regions.isEmpty()) {
+						node.set("projectRegion", regionsArray);
+					} else {
 
-					for (ProjectRegion regioneach : regions) {
-						regionsArray.add((int) regioneach.getRegion_Id().getId());
+						for (ProjectRegion regioneach : regions) {
+							regionsArray.add((int) regioneach.getRegion_Id().getId());
 
+						}
+						node.set("projectRegion", regionsArray);
 					}
-					node.set("projectRegion", regionsArray);
-			}
-
 
 					projectTitle.add(node);
 				}

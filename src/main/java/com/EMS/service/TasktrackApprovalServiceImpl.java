@@ -184,7 +184,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					Date date = dateFormat.parse(String.valueOf(logged[3]));
 					cal.setTime(date);
 					int day = cal.get(Calendar.DATE);
-					Double hour = Double.valueOf(logged[2].toString());
+					Double hour = Constants.roundToDefaultPrecision(Double.valueOf(logged[2].toString()));
 					if (day <= firstHalfDay) {
 						firstHalfHour += hour;
 					} else {
@@ -194,8 +194,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 
 			JSONObject logged = new JSONObject();
-			logged.put("firstHalfTotal", firstHalfHour);
-			logged.put("secondHalfTotal", secondHalfHour);
+			logged.put("firstHalfTotal", Constants.roundToDefaultPrecision(firstHalfHour));
+			logged.put("secondHalfTotal", Constants.roundToDefaultPrecision(secondHalfHour));
 
 			// For Billable Details
 			List<TaskTrackApproval> approvalUserList = new ArrayList<TaskTrackApproval>();
@@ -265,16 +265,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				List<Double> completeHourList = getApprovalTotalBillableHour(billableData, overtimeData);
 				for (int i = 0; i < completeHourList.size(); i++) {
 					if (i < firstHalfDay) {
-						firstHalfHour += completeHourList.get(i);
+						firstHalfHour += Constants.roundToDefaultPrecision(completeHourList.get(i));
 					} else {
-						secondHalfHour += completeHourList.get(i);
+						secondHalfHour += Constants.roundToDefaultPrecision(completeHourList.get(i));
 					}
 				}
 			}
 
 			JSONObject billable = new JSONObject();
-			billable.put("firstHalfTotal", firstHalfHour);
-			billable.put("secondHalfTotal", secondHalfHour);
+			billable.put("firstHalfTotal", Constants.roundToDefaultPrecision(firstHalfHour));
+			billable.put("secondHalfTotal", Constants.roundToDefaultPrecision(secondHalfHour));
 
 			if (userName == null || userName.isEmpty()) {
 				String uName = userService.getUserName(userId);
@@ -610,12 +610,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						String st = String.valueOf(item[3]);
 
 						if (st.equals(vl)) {
-							hours = hours + (Double) item[2];
+							hours = hours + Constants.roundToDefaultPrecision((Double) item[2]);
 
 						}
 						name = (String) item[0] + " " + item[1];
 					}
-					jsonObject.put(vl, hours);
+					jsonObject.put(vl, Constants.roundToDefaultPrecision(hours));
 					cal.add(Calendar.DATE, 1);
 					loggedJsonArray.add(jsonObject);
 
