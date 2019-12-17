@@ -1,19 +1,26 @@
-2019-11-11 18:22:56,384 INFO com.EMS.TimetrackerApplication [main] Starting TimetrackerApplication on TID002 with PID 13120 (started by Akshath in D:\Downloads\EMS pull\EMS)
-2019-11-11 18:22:56,390 DEBUG com.EMS.TimetrackerApplication [main] Running with Spring Boot v2.1.3.RELEASE, Spring v5.1.5.RELEASE
-2019-11-11 18:22:56,391 INFO com.EMS.TimetrackerApplication [main] No active profile set, falling back to default profiles: default
-2019-11-11 18:22:58,395 INFO org.apache.catalina.core.StandardService [main] Starting service [Tomcat]
-2019-11-11 18:22:58,396 INFO org.apache.catalina.core.StandardEngine [main] Starting Servlet engine: [Apache Tomcat/9.0.16]
-2019-11-11 18:22:58,406 INFO org.apache.catalina.core.AprLifecycleListener [main] The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [C:\Program Files\Java\jdk1.8.0_202\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:/Program Files/Java/jdk1.8.0_202/bin/../jre/bin/server;C:/Program Files/Java/jdk1.8.0_202/bin/../jre/bin;C:/Program Files/Java/jdk1.8.0_202/bin/../jre/lib/amd64;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Intel\UCRT\;C:\Program Files\Intel\UCRT\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Amazon\AWSCLI\bin\;C:\Program Files\Java\jdk1.8.0_202\bin;C:\Program Files\Java\jre1.8.0_202\bin;ZOOKEEPER_HOME = C:\Tools\zookeeper-3.5.4-beta;C:\Users\rajsen\AppData\Local\Programs\Python\Python37-32;C:\apache-maven-3.6.1-bin\apache-maven-3.6.1\bin;C:\Program Files\PostgreSQL\11\bin;C:\Program Files\PuTTY\;C:\zookeeper-3.5.4\bin;C:\Users\Akshath\AppData\Local\Microsoft\WindowsApps;C:\Users\Akshath\AppData\Local\Programs\Git\cmd;;C:\Users\Akshath\eclipse\jee-2019-03\eclipse;;.]
-2019-11-11 18:22:58,495 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [main] Initializing Spring embedded WebApplicationContext
-2019-11-11 18:22:58,674 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
-2019-11-11 18:22:58,832 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
-2019-11-11 18:22:58,894 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [
+2019-12-16 18:26:22,227 INFO com.EMS.TimetrackerApplication [main] Starting TimetrackerApplication on tid074-System-Product-Name with PID 9577 (/home/suhail/pms-login-outlook/EMS/target/classes started by suhail in /home/suhail/pms-login-outlook/EMS)
+2019-12-16 18:26:22,232 DEBUG com.EMS.TimetrackerApplication [main] Running with Spring Boot v2.1.3.RELEASE, Spring v5.1.5.RELEASE
+2019-12-16 18:26:22,233 INFO com.EMS.TimetrackerApplication [main] No active profile set, falling back to default profiles: default
+2019-12-16 18:26:26,159 INFO org.apache.catalina.core.StandardService [main] Starting service [Tomcat]
+2019-12-16 18:26:26,159 INFO org.apache.catalina.core.StandardEngine [main] Starting Servlet engine: [Apache Tomcat/9.0.16]
+2019-12-16 18:26:26,170 INFO org.apache.catalina.core.AprLifecycleListener [main] The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [/usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib]
+2019-12-16 18:26:26,450 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [main] Initializing Spring embedded WebApplicationContext
+2019-12-16 18:26:26,798 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2019-12-16 18:26:27,194 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2019-12-16 18:26:27,320 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [
 	name: default
 	...]
-2019-11-11 18:22:59,408 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.3.7.Final}
-2019-11-11 18:22:59,409 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
-2019-11-11 18:22:59,563 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
-2019-11-11 18:22:59,760 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
-2019-11-11 18:23:09,808 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
-2019-11-11 18:23:11,578 INFO com.EMS.TimetrackerApplication [main] Started TimetrackerApplication in 15.561 seconds (JVM running for 20.275)
-2019-11-11 18:23:15,363 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [http-nio-8080-exec-1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-12-16 18:26:27,484 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.3.7.Final}
+2019-12-16 18:26:27,487 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
+2019-12-16 18:26:27,823 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
+2019-12-16 18:26:28,095 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-12-16 18:26:28,187 INFO org.hibernate.envers.boot.internal.EnversServiceImpl [main] Envers integration enabled? : true
+2019-12-16 18:26:38,516 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
+2019-12-16 18:26:42,584 INFO com.EMS.TimetrackerApplication [main] Started TimetrackerApplication in 21.43 seconds (JVM running for 22.565)
+2019-12-16 18:27:20,333 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [http-nio-8080-exec-1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-12-16 18:27:23,298 INFO com.EMS.service.LoginServiceImpl [http-nio-8080-exec-2] User Authentication Success
+2019-12-16 18:35:49,761 INFO com.EMS.service.LoginServiceImpl [http-nio-8080-exec-7] User Authentication Success
+2019-12-16 18:36:30,079 INFO com.EMS.service.LoginServiceImpl [http-nio-8080-exec-9] User Authentication Success
+2019-12-16 18:39:23,861 INFO com.EMS.service.LoginServiceImpl [http-nio-8080-exec-1] User Authentication Success
+2019-12-16 18:39:47,628 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(4)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2019-12-16 18:39:47,635 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(4)-127.0.0.1] HikariPool-1 - Shutdown completed.
