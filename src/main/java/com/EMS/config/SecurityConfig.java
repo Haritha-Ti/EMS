@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .authorizeRequests()
                 .antMatchers("/login/getLoginCredentials").permitAll()
-                .antMatchers("/user/resetPassword*","/user/validateResetPassword*","/user/savePassword*").permitAll()
+                .antMatchers("/user/resetPassword*","/user/validateResetPassword*","/user/savePassword*", "/outlook_login", "/authorize").permitAll()
                 .anyRequest().authenticated()
             .and()
             .apply(new JwtConfigurer(jwtTokenProvider));

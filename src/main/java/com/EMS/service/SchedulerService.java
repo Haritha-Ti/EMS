@@ -56,7 +56,7 @@ public class SchedulerService {
 
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "unlikely-arg-type" })
-//	@Scheduled(cron = "0 35 16 * * *")
+	//@Scheduled(cron = "0 35 16 * * *")
 	@Scheduled(cron = "#{getCronCreateTaskTrack}")
 	public void createTaskTrack() throws Exception {
 
@@ -265,8 +265,8 @@ public class SchedulerService {
 
 	
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "unlikely-arg-type" })
-//	@Scheduled(cron = "* * * * * *")
-//	@Scheduled(cron = "#{getCronTaskTrackSchedulerAtUserlevel}")
+//	//@Scheduled(cron = "* * * * * *")
+	@Scheduled(cron = "#{getCronTaskTrackSchedulerAtUserlevel}")
 	public void taskTrackSchedulerAtUserlevel() throws Exception {
 
 		Date date = null, croneDate = null;
@@ -370,8 +370,8 @@ public class SchedulerService {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "unlikely-arg-type" })
-//	@Scheduled(cron = "* * * * * *")
-//	@Scheduled(cron = "#{getCronForApproverTwoFirstHalf}")
+//	//@Scheduled(cron = "* * * * * *")
+	@Scheduled(cron = "#{getCronForApproverTwoFirstHalf}")
 	public void approverTwoFirstHalfScheduler() throws Exception {
 
 		Date date = null, croneDate = null;
@@ -569,8 +569,8 @@ public class SchedulerService {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
-//	@Scheduled(cron = "* * * * * *")
-//	@Scheduled(cron = "#{getCronForApproverTwoSecondHalf}")
+//	//@Scheduled(cron = "* * * * * *")
+	@Scheduled(cron = "#{getCronForApproverTwoSecondHalf}")
 	public void approverTwoSecondHalfScheduler() throws Exception {
 
 		Date date = null, croneDate = null;
@@ -770,8 +770,8 @@ public class SchedulerService {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused", "null" })
-//	@Scheduled(cron = "* * * * * *")
-//	@Scheduled(cron = "#{getCronForApproverOneFirstHalf}")
+//	//@Scheduled(cron = "* * * * * *")
+	@Scheduled(cron = "#{getCronForApproverOneFirstHalf}")
 	public void approverOneFirstHalfScheduler() throws Exception {
 
 		Date date = null, croneDate = null;
@@ -972,7 +972,7 @@ public class SchedulerService {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
-//	@Scheduled(cron = "#{getCronForApproverOneSecondHalf}")
+	@Scheduled(cron = "#{getCronForApproverOneSecondHalf}")
 	public void approverOneSecondHalfScheduler() throws Exception {
 
 		Date date = null, croneDate = null;

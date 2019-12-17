@@ -25,6 +25,9 @@ public interface TechnologyRepository extends JpaRepository<Technology, Long>{
 	@Query(value = "SELECT t FROM Technology t order by technologyName")
 	ArrayList<Technology> getAll();
 
+	@Query(value = "SELECT t FROM Technology t where t.technologyId=?1")
+	Technology findTechnology(Long id);
+
 	
 	
 }
