@@ -55,5 +55,11 @@ public interface LoginService {
 	ObjectNode adminLogin(UserModel usercheck, HttpServletResponse httpstatus);
 	
 	ArrayNode getBlockedPageList(long roleid);
+	
+	UserTechnology getUserTechnology(Long userTechId);
+
+	int deleteUserTechnology(Long userTechnologyId);
+
+	int updateusertechnology(UserTechnology userTechnology);
 
 }

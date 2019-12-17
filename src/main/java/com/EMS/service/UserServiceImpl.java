@@ -216,7 +216,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserModel getUserdetailsbyId(long userId) {
-		UserModel user=userRepository.getOne(userId);
+		UserModel user=userRepository.getNonActiveUser(userId);
 		return user;
 	}
 	
@@ -409,7 +409,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public JSONObject getSkillsByUserId(Long userId) {
-		List<JSONObject> ls=skillsRepository.getSkillsByUserId(userId);
+		JSONObject ls=userTechnologyRepository.getSkillsByUserId(userId);
 		if(ls.isEmpty())
 			return null;
 		JSONObject  node = new JSONObject();

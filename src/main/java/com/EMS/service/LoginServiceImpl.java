@@ -113,7 +113,7 @@ public class LoginServiceImpl implements LoginService {
 	@Override
 	public Technology findtechnology(Long id) {
 
-		Technology technology=technology_repository.getOne(id);
+		Technology technology=technology_repository.findTechnology(id);
 		return technology;
 	}
 	
@@ -277,5 +277,26 @@ public class LoginServiceImpl implements LoginService {
 	public ArrayNode getBlockedPageList(long roleid) {
 		ArrayNode blockedPageList = pageruleService.getBlockedPageList(roleid);
 		return blockedPageList;
+	}
+
+
+	@Override
+	public UserTechnology getUserTechnology(Long userTechId) {
+		UserTechnology tech=usertechnology_repository.getUsertechnology(userTechId);
+		return tech;
+	}
+
+
+	@Override
+	public int deleteUserTechnology(Long userTechnologyId) {
+		int result=usertechnology_repository.deleteUserTechnology(userTechnologyId);
+		return result;
+	}
+
+
+	@Override
+	public int updateusertechnology(UserTechnology userTechnology) {
+		int result=usertechnology_repository.updateusertechnology(userTechnology);
+		return result;
 	}
 }
