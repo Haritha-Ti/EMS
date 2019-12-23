@@ -2,15 +2,19 @@ package com.EMS.controller;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
+@Scope
 public class OutlookAuthController {
 
 	@Autowired
@@ -48,7 +53,12 @@ public class OutlookAuthController {
 
 	@Autowired
 	private LoginService loginService;
-
+	
+	@Autowired
+	HttpSession session;
+	
+	static Map<UUID, UUID> stateNonceMap = new HashMap<>();
+	  
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	@RequestMapping("/outlook_login")
@@ -56,13 +66,12 @@ public class OutlookAuthController {
 		UUID state = UUID.randomUUID();
 		UUID nonce = UUID.randomUUID();
 
+		stateNonceMap.put(state, nonce);
+		
 		String loginUrl = authOutlookHelper.getLoginUrl(state, nonce);
 
 		ObjectNode responseNode = objectMapper.createObjectNode();
 		responseNode.put("loginUrl", loginUrl);
-
-		request.getSession().setAttribute("expected_state", state.toString());
-		request.getSession().setAttribute("expected_nonce", nonce.toString());
 
 		return responseNode;
 	}
@@ -76,17 +85,9 @@ public class OutlookAuthController {
 		UserModel userModel = null;
 
 		try {
-			String expectedState = request.getSession().getAttribute("expected_state").toString();
-			String expectedNonce = request.getSession().getAttribute("expected_nonce").toString();
 
-			if (!state.toString().equals(expectedState)) {		
-				response.put("status", "Failed");
-				response.put("message", "Invalid request.");
-				return response;
-			}
-
-			IdToken idTokenObj = IdToken.parseEncodedToken(idToken, expectedNonce.toString());
-
+			IdToken idTokenObj = IdToken.parseEncodedToken(idToken, stateNonceMap.get(state).toString());
+			stateNonceMap.remove(state);
 			userModel = userService.getUserByEmail(idTokenObj.getPreferredUsername());
 			if (userModel == null) {
 				LOGGER.info("Invalid User");
