@@ -75,8 +75,8 @@ public class OutlookAuthController {
 
 	@PostMapping(value = "/authorize")
 	@ResponseBody
-	public JsonNode authorize(@RequestParam("code") String code, @RequestParam("id_token") String idToken,
-			@RequestParam("state") UUID state, HttpServletRequest request, HttpServletResponse httpResponse)
+	public JsonNode authorize(@RequestParam("id_token") String idToken,
+			@RequestParam("state") UUID state, HttpServletResponse httpResponse)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectNode response = objectMapper.createObjectNode();
