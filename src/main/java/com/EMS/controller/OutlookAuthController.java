@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
-@Scope
 public class OutlookAuthController {
 
 	@Autowired
@@ -53,11 +53,8 @@ public class OutlookAuthController {
 
 	@Autowired
 	private LoginService loginService;
-	
-	@Autowired
-	HttpSession session;
-	
-	static Map<UUID, UUID> stateNonceMap = new HashMap<>();
+		
+	private static Map<UUID, UUID> stateNonceMap = new HashMap<>();
 	  
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -77,6 +74,7 @@ public class OutlookAuthController {
 	}
 
 	@PostMapping(value = "/authorize")
+	@ResponseBody
 	public JsonNode authorize(@RequestParam("code") String code, @RequestParam("id_token") String idToken,
 			@RequestParam("state") UUID state, HttpServletRequest request, HttpServletResponse httpResponse)
 			throws JsonParseException, JsonMappingException, IOException {
