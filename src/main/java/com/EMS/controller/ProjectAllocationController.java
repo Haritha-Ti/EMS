@@ -21,9 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer.UserInfoEndpointConfig;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.exceptions.BadInputException;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
@@ -1294,7 +1298,7 @@ public class ProjectAllocationController {
 								jsonObject.put("firstName", item.getuser().getFirstName());
 								jsonObject.put("lastName", item.getuser().getLastName());
 								jsonObject.put("role", item.getuser().getRole().getroleId());
-								jsonObject.put("userRegion",item.getuser().getRegion().getId());
+								jsonObject.put("userRegion", item.getuser().getRegion().getId());
 							}
 
 							jsonObject.put("startDate", projectStartDate);
@@ -1405,7 +1409,7 @@ public class ProjectAllocationController {
 			regionId = requestData.get("regionId").asLong();
 		}
 		for (JsonNode rangeNode : range) {
-			projectList= new ArrayList<ProjectModel>();
+			projectList = new ArrayList<ProjectModel>();
 			month = Integer.parseInt(rangeNode.get("month").toString());
 			year = Integer.parseInt(rangeNode.get("year").toString());
 			if (month != 0 && year != 0 && regionId != null) {
@@ -1417,7 +1421,6 @@ public class ProjectAllocationController {
 			}
 
 			allProject.addAll(projectList);
-			
 
 		}
 
@@ -1429,23 +1432,22 @@ public class ProjectAllocationController {
 				jsonProjectArray.add(jsonObject);
 			}
 			node.set("projectList", jsonProjectArray);
-			//node.set("data", jsonData);
+			// node.set("data", jsonData);
 			node.put("status", "success");
 			node.put("code", httpStatus.getStatus());
 			node.put("message", "success");
-			
-		}
-		else {
+
+		} else {
 			node.set("projectList", null);
-			//node.set("data", jsonData);
+			// node.set("data", jsonData);
 			node.put("status", "failed");
 			node.put("code", httpStatus.getStatus());
 			node.put("message", "failed");
 		}
-		
+
 		return node;
 	}
-	
+
 	@PostMapping(value = "/getUserNamesBasedOnMonthAndYear")
 	public ObjectNode getUserNamesBasedOnMonthAndYear(@RequestBody ObjectNode requestData,
 			HttpServletResponse httpStatus) {
@@ -1463,13 +1465,12 @@ public class ProjectAllocationController {
 			regionId = requestData.get("regionId").asLong();
 		}
 		for (JsonNode rangeNode : range) {
-			userList= new ArrayList<UserModel>();
+			userList = new ArrayList<UserModel>();
 			month = Integer.parseInt(rangeNode.get("month").toString());
 			year = Integer.parseInt(rangeNode.get("year").toString());
 			if (month != 0 && year != 0 && regionId != null) {
 
 				userList = userService.getUsesrsBasedOnMonthYearRegion(regionId, month, year);
-				
 
 			} else if ((month != 0 && year != 0 && regionId == null)) {
 				userList = userService.getUsesrsBasedOnMonthYearRegion(month, year);
@@ -1478,32 +1479,31 @@ public class ProjectAllocationController {
 			allUser.addAll(userList);
 
 		}
-		
-		
+
 		if (!(allUser).isEmpty() && allUser.size() > 0) {
 			for (UserModel user : allUser) {
 				ObjectNode jsonObject = objectMapper.createObjectNode();
 				jsonObject.put("userId", user.getUserId());
-				jsonObject.put("userName", user.getLastName()+ " "+user.getFirstName());
+				jsonObject.put("userName", user.getLastName() + " " + user.getFirstName());
 				jsonProjectArray.add(jsonObject);
 			}
 			node.set("userList", jsonProjectArray);
-			//node.set("data", jsonData);
+			// node.set("data", jsonData);
 			node.put("status", "success");
 			node.put("code", httpStatus.getStatus());
 			node.put("message", "success");
-			
-		}
-		else {
+
+		} else {
 			node.set("userList", null);
-			//node.set("data", jsonData);
+			// node.set("data", jsonData);
 			node.put("status", "failed");
 			node.put("code", httpStatus.getStatus());
 			node.put("message", "failed");
 		}
-		
+
 		return node;
 	}
+
 	@PostMapping(value = "/getProjectNamesBasedOnMonthYearAndUser")
 	public ObjectNode getProjectNamesBasedOnMonthAndYearAndUser(@RequestBody ObjectNode requestData,
 			HttpServletResponse httpStatus) {
@@ -1525,23 +1525,21 @@ public class ProjectAllocationController {
 			userId = requestData.get("userId").asLong();
 		}
 		for (JsonNode rangeNode : range) {
-			userList= new ArrayList<ProjectModel>();
+			userList = new ArrayList<ProjectModel>();
 			month = Integer.parseInt(rangeNode.get("month").toString());
 			year = Integer.parseInt(rangeNode.get("year").toString());
 			if (month != 0 && year != 0 && regionId != null) {
 
-				userList = userService.getProjectNamesBasedOnMonthAndYearAndUser(regionId, month, year,userId);
-				
+				userList = userService.getProjectNamesBasedOnMonthAndYearAndUser(regionId, month, year, userId);
 
 			} else if ((month != 0 && year != 0 && regionId == null)) {
-				userList = userService.getProjectNamesBasedOnMonthAndYearAndUser(month, year,userId);
+				userList = userService.getProjectNamesBasedOnMonthAndYearAndUser(month, year, userId);
 			}
 
 			allUser.addAll(userList);
 
 		}
-		
-		
+
 		if (!(allUser).isEmpty() && allUser.size() > 0) {
 			for (ProjectModel user : allUser) {
 				ObjectNode jsonObject = objectMapper.createObjectNode();
@@ -1550,90 +1548,90 @@ public class ProjectAllocationController {
 				jsonProjectArray.add(jsonObject);
 			}
 			node.set("projectList", jsonProjectArray);
-			//node.set("data", jsonData);
+			// node.set("data", jsonData);
 			node.put("status", "success");
 			node.put("code", httpStatus.getStatus());
 			node.put("message", "success");
-			
-		}
-		else {
+
+		} else {
 			node.set("userList", null);
-			//node.set("data", jsonData);
+			// node.set("data", jsonData);
 			node.put("status", "success");
 			node.put("code", httpStatus.getStatus());
 			node.put("message", "failed");
 		}
-		
+
 		return node;
 	}
+
 	@PostMapping("/v2/saveAllocation")
-	public ObjectNode saveAllocations(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) throws ParseException {
+	public ObjectNode saveAllocations(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
 		ObjectNode response = objectMapper.createObjectNode();
 		ArrayNode arrayNodes = null;
-	    arrayNodes = (ArrayNode) requestdata.get("projectAllocations");
-	    List<AllocationModel>  allocations = new ArrayList<AllocationModel>();
+		arrayNodes = (ArrayNode) requestdata.get("projectAllocations");
+		List<AllocationModel> allocations = new ArrayList<AllocationModel>();
 
-	   
-	    try{
-	    	if(arrayNodes != null) {
+		try {
+			if (arrayNodes != null) {
 
-	    		for(JsonNode node : arrayNodes) {
-	    			AllocationModel allocation = new AllocationModel();
-	    	    	allocation.setAllocatedPerce(node.get("allocatedPerce").asDouble());
-	    	    	allocation.setActive(node.get("active").asBoolean());
-	    	    	String date1 = node.get("startDate").asText();
-	    			String date2 = node.get("endDate").asText();
-	    			TimeZone zone = TimeZone.getTimeZone("MST");
-	    			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-	    			outputFormat.setTimeZone(zone);
-	    			// Formating the date values
-	    			Date startDate = null, endDate = null;
-	    			if (!date1.isEmpty()) {
-	    				startDate = outputFormat.parse(date1);
-	    			}
-	    			if (!date2.isEmpty()) {
-	    				endDate = outputFormat.parse(date2);
-	    			}
-	    			allocation.setStartDate(startDate);
-	    			allocation.setEndDate(endDate);
-	    			// Setting values to Allocation model object
-	    			Long projectId = node.get("projectId").asLong();
-	    			Long userId = node.get("userId").asLong();
-	    			Boolean isBillable = node.get("isBillable").asBoolean();
-	    			allocation.setIsBillable(isBillable);
-	    			ProjectModel project = projectService.findById(projectId);
-	    			UserModel user = userService.getUserDetailsById(userId);
-	    			allocation.setuser(user);
-	    			allocation.setproject(project);
-	    			allocation.setAllocId(node.get("allocId").asLong());
-	    			allocations.add(allocation);
-	    			
-	    		}
-	    	
-			 List<AllocationModel> allocs = projectAllocation.saveAllocation(allocations);
-			
-			response.put("status", "success");
-			response.put("code", httpstatus.getStatus());
-			response.put("message", "successfully saved. ");
-		}
-	    }catch (Exception e) {
+				for (JsonNode node : arrayNodes) {
+					AllocationModel allocation = new AllocationModel();
+					allocation.setAllocatedPerce(node.get("allocatedPerce").asDouble());
+					allocation.setActive(node.get("active").asBoolean());
+					String date1 = node.get("startDate").asText();
+					String date2 = node.get("endDate").asText();
+					TimeZone zone = TimeZone.getTimeZone("MST");
+					SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+					outputFormat.setTimeZone(zone);
+					// Formating the date values
+					Date startDate = null, endDate = null;
+					if (!date1.isEmpty()) {
+						startDate = outputFormat.parse(date1);
+					}
+					if (!date2.isEmpty()) {
+						endDate = outputFormat.parse(date2);
+					}
+					allocation.setStartDate(startDate);
+					allocation.setEndDate(endDate);
+					// Setting values to Allocation model object
+					Long projectId = node.get("projectId").asLong();
+					Long userId = node.get("userId").asLong();
+					Boolean isBillable = node.get("isBillable").asBoolean();
+					allocation.setIsBillable(isBillable);
+					ProjectModel project = projectService.findById(projectId);
+					UserModel user = userService.getUserDetailsById(userId);
+					allocation.setuser(user);
+					allocation.setproject(project);
+					allocation.setAllocId(node.get("allocId").asLong());
+					allocations.add(allocation);
+
+				}
+
+				List<AllocationModel> allocs = projectAllocation.saveAllocation(allocations);
+
+				response.put("status", "success");
+				response.put("code", httpstatus.getStatus());
+				response.put("message", "successfully saved. ");
+			}
+		} catch (Exception e) {
 			response.put("status", "failure");
 			response.put("code", httpstatus.getStatus());
 			response.put("message", "failed. " + e);
 		}
-	    
+
 		return response;
-	}	
-	
-	
+	}
+
 	/**
 	 * 
-	 *@throws ParseException 
+	 * @throws ParseException
 	 * @desc edit the project period from the project allocation page
-	 * */
+	 */
 	@PostMapping("/modifyProjectPeriod")
-	public ObjectNode modifyProjectPeriod(@RequestBody ObjectNode requestdata,HttpServletResponse httpstatus) throws ParseException {
-		
+	public ObjectNode modifyProjectPeriod(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
+
 		Long projectId = null;
 		ObjectNode responsedata = objectMapper.createObjectNode();
 		String date1 = requestdata.get("startDate").asText();
@@ -1650,64 +1648,89 @@ public class ProjectAllocationController {
 
 			}
 		}
-			if (!requestdata.get("endDate").toString().isEmpty() && requestdata.get("endDate").toString() != null) {
-				date2 = requestdata.get("endDate").toString();
-				if (!date2.isEmpty()) {
-					endDate = outputFormat.parse(date2);
+		if (!requestdata.get("endDate").toString().isEmpty() && requestdata.get("endDate").toString() != null) {
+			date2 = requestdata.get("endDate").toString();
+			if (!date2.isEmpty()) {
+				endDate = outputFormat.parse(date2);
 
-				}
 			}
-		if(requestdata.get("projectId").toString()!= null  || requestdata.get("projectId").toString() != ""){
+		}
+		if (requestdata.get("projectId").toString() != null || requestdata.get("projectId").toString() != "") {
 			projectId = requestdata.get("projectId").asLong();
 		}
-		if(projectId != null) {
+		if (projectId != null) {
 			ProjectModel project = projectService.findById(projectId);
 			project.setStartDate(startDate);
 			project.setEndDate(endDate);
 			project.setStartDate(startDate);
 			project.setEndDate(endDate);
 			projectService.save_project_record(project);
-			}
-		return responsedata; 
+		}
+		return responsedata;
 	}
-	 
+
 	@PostMapping("/checkPreviouslyAllocatedOrNot")
-	public ObjectNode checkPreviouslyAllocatedOrNot(@RequestBody ObjectNode requestdata,HttpServletResponse httpstatus) throws ParseException {
-		 
+	public ObjectNode checkPreviouslyAllocatedOrNot(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
+
 		ObjectNode response = objectMapper.createObjectNode();
 		Long userId = null;
 		Long projectId = null;
-		if(requestdata.get("userId").toString()!= null  || requestdata.get("userId").toString() != ""){
+		if (requestdata.get("userId").toString() != null || requestdata.get("userId").toString() != "") {
 			userId = requestdata.get("userId").asLong();
 		}
-		if(requestdata.get("projectId").toString()!= null  || requestdata.get("projectId").toString() != ""){
+		if (requestdata.get("projectId").toString() != null || requestdata.get("projectId").toString() != "") {
 			projectId = requestdata.get("projectId").asLong();
 		}
 		try {
-			
-			Boolean deactiveStatus = projectAllocation.checkPreviouslyAllocatedOrNot(userId,projectId);
-			
-			if(deactiveStatus) {
+
+			Boolean deactiveStatus = projectAllocation.checkPreviouslyAllocatedOrNot(userId, projectId);
+
+			if (deactiveStatus) {
 				response.put("status", "success");
 				response.put("allocationStatus", deactiveStatus);
 				response.put("code", httpstatus.getStatus());
 				response.put("message", "No exsisting allocation ");
-			}
-			else {
+			} else {
 				response.put("status", "success");
 				response.put("code", httpstatus.getStatus());
 				response.put("allocationStatus", deactiveStatus);
 				response.put("message", "Deactivate the exsisting allocation");
 			}
-			
-			
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			// TODO: handle exception
 			response.put("status", "failure");
 			response.put("code", httpstatus.getStatus());
 			response.put("message", "failed. " + e);
 		}
 		return response;
-	 }
+	}
+
+	/**
+	 * @author sreejith.j
+	 * @param allocId
+	 * @return
+	 */
+	@DeleteMapping("/deactivateAllocation/{allocId}")
+	public ResponseEntity<Object> deactivateAllocation(@PathVariable("allocId") Long allocId) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.ACCEPTED);
+		ObjectNode jsonDataRes = objectMapper.createObjectNode();
+		try {
+			projectAllocation.deactivateAllocation(allocId);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (BadInputException e) {
+			jsonDataRes.put("status", "Error");
+			jsonDataRes.put("code", HttpServletResponse.SC_BAD_REQUEST);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Error");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
 }
