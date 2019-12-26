@@ -138,22 +138,27 @@ public class EmployeeController {
 		int responseflag = 0;
 		ObjectNode responsedata = objectMapper.createObjectNode();
 		ArrayNode skillsArray = (ArrayNode) requestBody.get("data");
-		ArrayNode deletedUserTechId=(ArrayNode) requestBody.get("deletedIds");
-		
-		for(int i=0;i<deletedUserTechId.size();i++) {
-			ObjectNode deletedObj=(ObjectNode) deletedUserTechId.get(i);
-			Long userTechnologyId=deletedObj.get("userTechnology").asLong();
-			int result=login_service.deleteUserTechnology(userTechnologyId);
-			if(result<=0)
-				responseflag=1;
+		ArrayNode deletedUserTechId = (ArrayNode) requestBody.get("deletedIds");
+
+		for (int i = 0; i < deletedUserTechId.size(); i++) {
+			ObjectNode deletedObj = (ObjectNode) deletedUserTechId.get(i);
+			Long userTechnologyId = deletedObj.get("userTechnology").asLong();
+
+			UserTechnology usertechobj = login_service.getUserTechnology(userTechnologyId);
+			if (usertechobj.equals(null)) {
+				responsedata.put("message", "Invalid User technology Id for deletion");
+			} else {
+
+				int result = login_service.deleteUserTechnology(userTechnologyId);
+				if (result <= 0)
+					responseflag = 1;
+			}
 		}
-		
-		
-		
+
 		for (int i = 0; i < skillsArray.size(); i++) {
-			
-			ObjectNode requestdata=(ObjectNode) skillsArray.get(i);
-			Long userTechId = requestdata.get("userTechId").asLong();
+
+			ObjectNode requestdata = (ObjectNode) skillsArray.get(i);
+			Long userTechId = requestdata.get("userTechnologyId").asLong();
 
 			UserTechnology userTechnology = login_service.getUserTechnology(userTechId);
 			Long techId = requestdata.get("technology").asLong();
@@ -185,7 +190,7 @@ public class EmployeeController {
 			if (userTechnology.equals(null)) {
 				responsedata.put("message", "Invalid details");
 			} else {
-				int userTechno = login_service.updateusertechnology(userTechnology); 
+				int userTechno = login_service.updateusertechnology(userTechnology);
 				if (userTechno == 0)
 					responseflag = 1;
 
