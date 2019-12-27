@@ -38,7 +38,7 @@ public class AuthOutlookHelperImpl implements AuthOutlookHelper {
 	}
 
 	@Override
-	public String getLoginUrl(UUID state, UUID nonce) {
+	public String getLoginUrl(String state, String nonce) {
 		
 		UriComponentsBuilder urlBuilder = UriComponentsBuilder.fromHttpUrl(authorizeUrl);
 		urlBuilder.queryParam("client_id", appId);

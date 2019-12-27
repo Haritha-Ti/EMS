@@ -55,14 +55,14 @@ public class OutlookAuthController {
 	@Autowired
 	private LoginService loginService;
 		
-	private static Map<UUID, UUID> stateNonceMap = new HashMap<>();
+	private static Map<String, String> stateNonceMap = new HashMap<>();
 	  
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 	@RequestMapping("/outlook_login")
 	public JsonNode loginFromOutlook(HttpServletRequest request) {
-		UUID state = UUID.randomUUID();
-		UUID nonce = UUID.randomUUID();
+		String state = String.valueOf(UUID.randomUUID());
+		String nonce = String.valueOf(UUID.randomUUID());
 
 		stateNonceMap.put(state, nonce);
 		
@@ -76,7 +76,7 @@ public class OutlookAuthController {
 
 	@PostMapping(value = "/authorize")
 	public JsonNode authorize(@RequestParam("id_token") String idToken,
-			@RequestParam("state") UUID state, HttpServletResponse httpResponse)
+			@RequestParam("state") String state, HttpServletResponse httpResponse)
 			throws JsonParseException, JsonMappingException, IOException {
 
 		ObjectNode response = objectMapper.createObjectNode();
@@ -111,14 +111,14 @@ public class OutlookAuthController {
 	@RequestMapping("/outlook/session")
 	public JsonNode getOutlookUrl() {
 		
-		UUID state = UUID.randomUUID();
-		UUID nonce = UUID.randomUUID();
+		String state = String.valueOf(UUID.randomUUID());
+		String nonce = String.valueOf(UUID.randomUUID());
 		
 		stateNonceMap.put(state, nonce);
 		
 		ObjectNode responseNode = objectMapper.createObjectNode();
-		responseNode.put("state", String.valueOf(state));
-		responseNode.put("nonce", String.valueOf(nonce));
+		responseNode.put("state", state);
+		responseNode.put("nonce", nonce);
 		return responseNode;		
 	}
 	
@@ -132,7 +132,7 @@ public class OutlookAuthController {
 		try {
 
 			String state = String.valueOf(requestBody.get("state"));
-			IdToken idTokenObj = IdToken.parseEncodedToken(String.valueOf(requestBody.get("id_token")), stateNonceMap.get(state).toString());
+			IdToken idTokenObj = IdToken.parseEncodedToken(String.valueOf(requestBody.get("id_token")), stateNonceMap.get(state));
 			stateNonceMap.remove(state);
 			userModel = userService.getUserByEmail(idTokenObj.getPreferredUsername());
 			if (userModel == null) {
