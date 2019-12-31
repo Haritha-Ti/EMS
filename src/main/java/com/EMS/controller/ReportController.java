@@ -1074,7 +1074,7 @@ public class ReportController {
 				userId = requestdata.get("userId").asLong();
 			}
 			if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
-				regionId = requestdata.get("regionId").asLong();
+				regionId = 1;//requestdata.get("regionId").asLong();
 			}
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				sessionId = requestdata.get("sessionId").asLong();
