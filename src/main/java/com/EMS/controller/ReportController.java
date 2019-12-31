@@ -1059,7 +1059,7 @@ public class ReportController {
 			HttpServletResponse response) {
 		JSONObject jsonDataRes = new JSONObject();
 		long projectId = 0;
-		long regionId = 0;
+		long regionId = 1;
 		long userId = 0;
 		long sessionId = 0;
 		int month = 0;
