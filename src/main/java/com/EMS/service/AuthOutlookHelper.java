@@ -5,5 +5,5 @@ import java.util.UUID;
 public interface AuthOutlookHelper {
 
 	String getScopes();
-	String getLoginUrl(UUID state, UUID nonce) ;
+	String getLoginUrl(String state, String nonce);
 }
