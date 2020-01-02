@@ -383,6 +383,8 @@ public class ReportServiceImpl implements ReportService {
 										obj.getAppr1FirstHalfTotalHours() + approver1FirstHalfHours);
 								obj.setAppr1SecondHalfTotalHours(
 										obj.getAppr1SecondHalfTotalHours() + approver1SecondHalfHours);
+								obj.setAppr1FirstHalfStatus(appr1FirstHalfStatus);
+								obj.setAppr1SecondHalfStatus(appr1SecondHalfStatus);
 							}
 							if (projectType2 != null && (projectType2
 									.equalsIgnoreCase(Constants.TASKTRACK_PROJECT_TYPE_BILLABLE)
@@ -391,6 +393,8 @@ public class ReportServiceImpl implements ReportService {
 										obj.getAppr2FirstHalfTotalHours() + approver2FirstHalfHours);
 								obj.setAppr2SecondHalfTotalHours(
 										obj.getAppr2SecondHalfTotalHours() + approver2SecondHalfHours);
+								obj.setAppr2FirstHalfStatus(appr2FirstHalfStatus);
+								obj.setAppr2SecondHalfStatus(appr2SecondHalfStatus);
 							}
 						} else {
 							Double ap1FHHours = 0.0;
