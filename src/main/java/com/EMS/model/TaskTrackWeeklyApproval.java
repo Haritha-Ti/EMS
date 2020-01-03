@@ -5,6 +5,7 @@ import com.EMS.utility.Constants;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Audited
 @EntityListeners(ModelListener.class)
@@ -17,7 +18,11 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	private long weekNo;
+	//private long weekNo;
+
+	private Date startDate;
+
+	private Date endDate;
 
 	private Double day1, day2, day3, day4, day5, day6, day7 = 0.0d;
 
@@ -25,6 +30,8 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 
 	@ManyToOne
 	private UserModel user;
+
+	private Date userSubmittedDate;
 
 	@ManyToOne
 	private ProjectModel project;
@@ -44,6 +51,10 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 	@Column(name = "approver2_status", length = 25)
 	private String approver2Status;
 
+	private Date approver1SubmittedDate;
+
+	private Date approver2SubmittedDate;
+
 	public long getId() {
 		return id;
 	}
@@ -52,12 +63,28 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 		this.id = id;
 	}
 
-	public long getWeekNo() {
+	/*public long getWeekNo() {
 		return weekNo;
 	}
 
 	public void setWeekNo(long weekNo) {
 		this.weekNo = weekNo;
+	}*/
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public Double getDay1() {
@@ -153,6 +180,14 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 		this.user = user;
 	}
 
+	public Date getUserSubmittedDate() {
+		return userSubmittedDate;
+	}
+
+	public void setUserSubmittedDate(Date userSubmittedDate) {
+		this.userSubmittedDate = userSubmittedDate;
+	}
+
 	public ProjectModel getProject() {
 		return project;
 	}
@@ -199,6 +234,21 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 		this.approver2Status = approver2Status;
 	}
 
+	public Date getApprover1SubmittedDate() {
+		return approver1SubmittedDate;
+	}
+
+	public void setApprover1SubmittedDate(Date approver1SubmittedDate) {
+		this.approver1SubmittedDate = approver1SubmittedDate;
+	}
+
+	public Date getApprover2SubmittedDate() {
+		return approver2SubmittedDate;
+	}
+
+	public void setApprover2SubmittedDate(Date approver2SubmittedDate) {
+		this.approver1SubmittedDate = approver1SubmittedDate;
+	}
 
 
 }
