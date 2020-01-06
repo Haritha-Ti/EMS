@@ -50,7 +50,7 @@ public class ProjectController {
 
 	@Autowired
 	private RegionService regionService;
-	
+
 	@Autowired
 	private RegionFilterService regionFilterService;
 
@@ -73,20 +73,22 @@ public class ProjectController {
 				contractModel = projectservice.getContract(contractId);
 			project.setProjectDetails(requestdata.get("projectDetails").asText());
 			project.setprojectType(requestdata.get("projectType").asInt());
-/**
- * Nisha -
- */
-			//if (project.getprojectType() == 0) { // if the project type is external(value =0)
-				Long clientid = requestdata.get("clientId").asLong();
-				ClientModel client = new ClientModel();
-				if (clientid != 0L) {
-					client = projectservice.getClientName(clientid);
-					project.setClientName(client);
-					project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
-				}
-			//}
+			project.setWorkflowType(requestdata.get("workflowType").asInt());
+			/**
+			 * Nisha -
+			 */
+			// if (project.getprojectType() == 0) { // if the project type is external(value
+			// =0)
+			Long clientid = requestdata.get("clientId").asLong();
+			ClientModel client = new ClientModel();
+			if (clientid != 0L) {
+				client = projectservice.getClientName(clientid);
+				project.setClientName(client);
+				project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
+			}
+			// }
 			project.setParentProjectId(requestdata.get("parentProjectId").asLong());
-			//project.setProject_refId(requestdata.get("projectRefId").asText());
+			// project.setProject_refId(requestdata.get("projectRefId").asText());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
 			project.setProjectName(requestdata.get("projectName").asText());
 			project.setisBillable(requestdata.get("isBillable").asInt());
@@ -95,14 +97,14 @@ public class ProjectController {
 			project.setisPOC(requestdata.get("isPOC").asInt());
 			project.setProjectTier(0);
 			UserModel createdBy = userservice.getUserDetailsById(requestdata.get("sessionId").asLong());
-			//project.setCreatedBy(createdBy);
+			// project.setCreatedBy(createdBy);
 			Date createdDate = new Date();
-			//project.setCreatedDate(createdDate);
-			//project.setModifiedBy(null);
-			//project.setModifiedDate(null);
+			// project.setCreatedDate(createdDate);
+			// project.setModifiedBy(null);
+			// project.setModifiedDate(null);
 			Long userid = null;
 
-			if(requestdata.get("projectTier").asInt() == 1) {
+			if (requestdata.get("projectTier").asInt() == 1) {
 
 				userid = requestdata.get("approver_level_1").asLong();
 
@@ -114,13 +116,9 @@ public class ProjectController {
 
 					pro_owner = userservice.getUserDetailsById(userid);
 
-
-
 				if (pro_owner != null)
 
 					project.setProjectOwner(pro_owner);
-
-				
 
 				project.setProjectTier(1);
 				project.setOnsite_lead(null);
@@ -129,8 +127,6 @@ public class ProjectController {
 
 			else if (requestdata.get("projectTier").asInt() == 2) {
 
-				
-
 				userid = requestdata.get("approver_level_1").asLong();
 
 				UserModel pro_owner = new UserModel();
@@ -141,13 +137,9 @@ public class ProjectController {
 
 					pro_owner = userservice.getUserDetailsById(userid);
 
-
-
 				if (pro_owner != null)
 
 					project.setProjectOwner(pro_owner);
-
-				
 
 				Long onsite_lead = requestdata.get("approver_level_2").asLong();
 
@@ -186,7 +178,7 @@ public class ProjectController {
 			String startdate = requestdata.get("startDate").asText();
 			String enddate = requestdata.get("endDate").asText();
 			String releasingdate = requestdata.get("releasingDate").asText();
-          
+
 			// Formatting the dates before storing
 			TimeZone zone = TimeZone.getTimeZone("MST");
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -209,17 +201,20 @@ public class ProjectController {
 				project.setReleasingDate(releaseDate);
 			}
 
-			/*if ((project.getProjectDetails() != null) && (project.getProjectDetails().length() > 0)
-					&& (!project.getProjectDetails().equals(" ")) && (project.getProjectName() != null)
-					&& (!project.getProjectName().equals(" ")) && (project.getProjectName().length() > 0)
-					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
-					&& (project.getProjectCode().length() > 0)) {*/
-			if ((project.getProjectName() != null)
-					&& (!project.getProjectName().equals(" ")) && (project.getProjectName().length() > 0)
-					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
-					&& (project.getProjectCode().length() > 0)) {
+			/*
+			 * if ((project.getProjectDetails() != null) &&
+			 * (project.getProjectDetails().length() > 0) &&
+			 * (!project.getProjectDetails().equals(" ")) && (project.getProjectName() !=
+			 * null) && (!project.getProjectName().equals(" ")) &&
+			 * (project.getProjectName().length() > 0) && (project.getProjectCode() != null)
+			 * && (!project.getProjectCode().equals(" ")) &&
+			 * (project.getProjectCode().length() > 0)) {
+			 */
+			if ((project.getProjectName() != null) && (!project.getProjectName().equals(" "))
+					&& (project.getProjectName().length() > 0) && (project.getProjectCode() != null)
+					&& (!project.getProjectCode().equals(" ")) && (project.getProjectCode().length() > 0)) {
 				// method invocation for checking duplicate entry for project name
-				//int result = projectservice.duplicationchecking(project.getProjectName());
+				// int result = projectservice.duplicationchecking(project.getProjectName());
 				int result = projectservice.duplicationCheckingProjectCode(project.getProjectCode());
 				if (result == 0) {
 					// Method invocation for creating new project record
@@ -227,79 +222,66 @@ public class ProjectController {
 					ProjectModel projectmodel = projectservice.save_project_record(project);
 					// method invocation for storing resouces of project created
 
-					
-					
-					  // regions
+					// regions
 					ArrayNode arrayNodes = null;
-					/*if(requestdata.get("projectRegion") != null)
-					{*/ 
-						 arrayNodes = (ArrayNode) requestdata.get("projectRegion");
-					
-					//}
-					if (projectmodel != null && arrayNodes.size()!=0) {
-						
-						for(JsonNode jregion : arrayNodes) {
+					/*
+					 * if(requestdata.get("projectRegion") != null) {
+					 */
+					arrayNodes = (ArrayNode) requestdata.get("projectRegion");
+
+					// }
+					if (projectmodel != null && arrayNodes.size() != 0) {
+
+						for (JsonNode jregion : arrayNodes) {
 							ProjectRegion region = new ProjectRegion();
 							region.setProject_Id(projectmodel);
 							Region regionmodel = regionService.getregion(jregion.asLong());
 							region.setRegion_Id(regionmodel);
 							projectservice.save_project_region(region);
 						}
-						
+
 					}
 					// regions
-					
-					
-					
+
 					if (projectmodel == null) {
 						responseflag = 1;
 						responsedata.put("message", "Project record creation failed");
 					} else {
 
 						// json array for storing json array from request data
-					//	ArrayNode arrayNode = (ArrayNode) requestdata.get("resources");
+						// ArrayNode arrayNode = (ArrayNode) requestdata.get("resources");
 
-					/*	if (arrayNode.equals(null)) {
-							responseflag = 1;
-							responsedata.put("message", "Failed due to project record with empty resource array");
-						} else {
-							// get totalCount of all jsonObjects
-
-							for (JsonNode node : arrayNode) {
-
-								// setting values on resource object
-								Resources resou1 = new Resources();
-								if (projectmodel != null)
-									resou1.setProject(projectmodel);
-
-								Long depart = node.get("department").asLong();
-								DepartmentModel department = new DepartmentModel();
-
-								// method for getting department details
-								if (depart != null)
-									department = projectservice.getDepartmentDetails(depart);
-
-								if (department != null)
-									resou1.setDepartment(department);
-
-								resou1.setresourceCount(node.get("resourceCount").asInt());
-
-								// checking resouce model values before storing
-								if ((resou1.getresourceCount() != 0) && (!resou1.getDepartment().equals(null))
-										&& (resou1.getProject() != null)) {
-
-									// method invocation for storing resource details
-									Resources resourcevalue = projectservice.addprojectresouce(resou1);
-
-									if (resourcevalue == null)
-										responseflag = 1;
-								} else {
-									responseflag = 1;
-									responsedata.put("message",
-											"Insertion failed due to invalid credientials for project resource");
-								}
-							}
-						}*/
+						/*
+						 * if (arrayNode.equals(null)) { responseflag = 1; responsedata.put("message",
+						 * "Failed due to project record with empty resource array"); } else { // get
+						 * totalCount of all jsonObjects
+						 * 
+						 * for (JsonNode node : arrayNode) {
+						 * 
+						 * // setting values on resource object Resources resou1 = new Resources(); if
+						 * (projectmodel != null) resou1.setProject(projectmodel);
+						 * 
+						 * Long depart = node.get("department").asLong(); DepartmentModel department =
+						 * new DepartmentModel();
+						 * 
+						 * // method for getting department details if (depart != null) department =
+						 * projectservice.getDepartmentDetails(depart);
+						 * 
+						 * if (department != null) resou1.setDepartment(department);
+						 * 
+						 * resou1.setresourceCount(node.get("resourceCount").asInt());
+						 * 
+						 * // checking resouce model values before storing if
+						 * ((resou1.getresourceCount() != 0) && (!resou1.getDepartment().equals(null))
+						 * && (resou1.getProject() != null)) {
+						 * 
+						 * // method invocation for storing resource details Resources resourcevalue =
+						 * projectservice.addprojectresouce(resou1);
+						 * 
+						 * if (resourcevalue == null) responseflag = 1; } else { responseflag = 1;
+						 * responsedata.put("message",
+						 * "Insertion failed due to invalid credientials for project resource"); } } }
+						 */
 
 					}
 
@@ -575,24 +557,27 @@ public class ProjectController {
 		}
 
 	}
-	
+
 	// api for project list
 	@PostMapping(value = "/viewAllProjects")
-	public JsonNode getAllProjectsList(@RequestBody JsonNode requestdata,HttpServletResponse statusResponse) {
+	public JsonNode getAllProjectsList(@RequestBody JsonNode requestdata, HttpServletResponse statusResponse) {
 		ObjectNode responsedata = objectMapper.createObjectNode();
 		ArrayNode projectArray = objectMapper.createArrayNode();
-       // Long userId=null;
+		// Long userId=null;
 		try {
 			// Getting all projects list to arraylist
-			ArrayList<ProjectModel> projectlist=null;
-			/*if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
-				userId = requestdata.get("sessionId").asLong();
-			}
-			if(userId == null)*/
+			ArrayList<ProjectModel> projectlist = null;
+			/*
+			 * if (requestdata.get("sessionId") != null &&
+			 * requestdata.get("sessionId").asText() != "") { userId =
+			 * requestdata.get("sessionId").asLong(); } if(userId == null)
+			 */
 			projectlist = projectservice.getListofProjects();
-			/*else
-		    projectlist =  (ArrayList<ProjectModel>) regionFilterService.getAllProjectByLoginUserRegion(userId);*/	
-				
+			/*
+			 * else projectlist = (ArrayList<ProjectModel>)
+			 * regionFilterService.getAllProjectByLoginUserRegion(userId);
+			 */
+
 			// checking for project arraylist is empty or not
 			if (projectlist.isEmpty()) {
 				responsedata.put("status", "success");
@@ -604,103 +589,99 @@ public class ProjectController {
 				// loop for getting projectwise details
 				for (ProjectModel obj : projectlist) {
 
-					  try{
-					// Object declarations
-					ObjectNode client = objectMapper.createObjectNode();
-					ContractModel contract = null;
-					ObjectNode contractobj = objectMapper.createObjectNode();
-					String parentproject = projectservice.getProjectName(obj.getParentProjectId());
+					try {
+						// Object declarations
+						ObjectNode client = objectMapper.createObjectNode();
+						ContractModel contract = null;
+						ObjectNode contractobj = objectMapper.createObjectNode();
+						String parentproject = projectservice.getProjectName(obj.getParentProjectId());
 
-					// storing projects details in json object
-					ObjectNode jsonobj = objectMapper.createObjectNode();
-					jsonobj.put("projectId", obj.getProjectId());
-					jsonobj.put("projectName", obj.getProjectName());
-					jsonobj.put("projectFullName", parentproject + "_" + obj.getProjectName());
-					jsonobj.put("isBillable", obj.getisBillable());
-					jsonobj.put("projectCode", obj.getProjectCode());
-					jsonobj.put("projectType", obj.getprojectType());
-					jsonobj.put("projectStatus", obj.getprojectStatus());
-					
-					//get region list
-                    List<ProjectRegion> regions = projectservice.getregionlist(obj.getProjectId());
-                    ArrayNode regionsArray = objectMapper.createArrayNode();
-                    ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
-                    if(regions.isEmpty()) {
-                        jsonobj.set("projectRegion", regionsArray);
-                    }
-                    else {
-                        for(ProjectRegion regioneach : regions) {
-                            ObjectNode resource = objectMapper.createObjectNode();
-                            regionsArray.add((int)regioneach.getRegion_Id().getId());
-                        }
-                        jsonobj.set("projectRegion", regionsArray);
-                    }
-                    //
-					 if(obj.getReleasingDate()!=null)
-					 {
-					jsonobj.put("releasingDate", obj.getReleasingDate().toString());
-					 }
-					if(obj.getClientName() != null)
-					{
-						client.put("clientId", obj.getClientName().getClientId());
-					    client.put("clientName", obj.getClientName().getClientName());
-					    jsonobj.set("client", client);
-					}
-					else {
-						client.set("clientId", null);
-					    client.set("clientName", null);
-					    jsonobj.set("client", client);
-						
-					}
-					
-					Long contractId=null;
-					
-					if(obj.getContract()!=null)
-					 contractId = obj.getContract().getContractTypeId() ;
+						// storing projects details in json object
+						ObjectNode jsonobj = objectMapper.createObjectNode();
+						jsonobj.put("projectId", obj.getProjectId());
+						jsonobj.put("projectName", obj.getProjectName());
+						jsonobj.put("projectFullName", parentproject + "_" + obj.getProjectName());
+						jsonobj.put("isBillable", obj.getisBillable());
+						jsonobj.put("projectCode", obj.getProjectCode());
+						jsonobj.put("projectType", obj.getprojectType());
+						jsonobj.put("projectStatus", obj.getprojectStatus());
+						jsonobj.put("workflowType", obj.getWorkflowType());
 
-					if (contractId != null) {
-						// getting contract details
-						contract = projectservice.getContract(contractId);
-					}
-					// storing contract values in jsonobject
-					if (contract == null)
-						contractobj = null;
-					else {
+						// get region list
+						List<ProjectRegion> regions = projectservice.getregionlist(obj.getProjectId());
+						ArrayNode regionsArray = objectMapper.createArrayNode();
+						ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+						if (regions.isEmpty()) {
+							jsonobj.set("projectRegion", regionsArray);
+						} else {
+							for (ProjectRegion regioneach : regions) {
+								ObjectNode resource = objectMapper.createObjectNode();
+								regionsArray.add((int) regioneach.getRegion_Id().getId());
+							}
+							jsonobj.set("projectRegion", regionsArray);
+						}
+						//
+						if (obj.getReleasingDate() != null) {
+							jsonobj.put("releasingDate", obj.getReleasingDate().toString());
+						}
+						if (obj.getClientName() != null) {
+							client.put("clientId", obj.getClientName().getClientId());
+							client.put("clientName", obj.getClientName().getClientName());
+							jsonobj.set("client", client);
+						} else {
+							client.set("clientId", null);
+							client.set("clientName", null);
+							jsonobj.set("client", client);
 
-						contractobj.put("contractTypeId", contract.getContractTypeId());
-						contractobj.put("contractTypeName", contract.getContractTypeName());
-					}
-					jsonobj.set("contractType", contractobj);
+						}
 
-					// null checking user ID
-					Long userid = obj.getProjectOwner().getUserId();
-					UserModel userdata = null;
-					if (userid != null) {
-						// getting user details
-						userdata = userservice.getUserDetailsById(userid);
-					}
+						Long contractId = null;
 
-					ObjectNode userobj = objectMapper.createObjectNode();
-					// storing user values in jsonobject
-					if (userdata == null)
-						userobj = null;
-					else {
-						userobj.put("firstName", userdata.getFirstName());
-						userobj.put("lastName", userdata.getLastName());
-						userobj.put("role", userdata.getRole().getroleId());
-						userobj.put("userId", userdata.getUserId());
-						userobj.put("regionId", userdata.getRegion().getId());
+						if (obj.getContract() != null)
+							contractId = obj.getContract().getContractTypeId();
 
-					}
-					jsonobj.set("approver_level_1", userobj);
+						if (contractId != null) {
+							// getting contract details
+							contract = projectservice.getContract(contractId);
+						}
+						// storing contract values in jsonobject
+						if (contract == null)
+							contractobj = null;
+						else {
 
-					projectArray.add(jsonobj);
-				}
-					  catch (Exception e) {
+							contractobj.put("contractTypeId", contract.getContractTypeId());
+							contractobj.put("contractTypeName", contract.getContractTypeName());
+						}
+						jsonobj.set("contractType", contractobj);
+
+						// null checking user ID
+						Long userid = obj.getProjectOwner().getUserId();
+						UserModel userdata = null;
+						if (userid != null) {
+							// getting user details
+							userdata = userservice.getUserDetailsById(userid);
+						}
+
+						ObjectNode userobj = objectMapper.createObjectNode();
+						// storing user values in jsonobject
+						if (userdata == null)
+							userobj = null;
+						else {
+							userobj.put("firstName", userdata.getFirstName());
+							userobj.put("lastName", userdata.getLastName());
+							userobj.put("role", userdata.getRole().getroleId());
+							userobj.put("userId", userdata.getUserId());
+							userobj.put("regionId", userdata.getRegion().getId());
+
+						}
+						jsonobj.set("approver_level_1", userobj);
+
+						projectArray.add(jsonobj);
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
-			   	
-			}
+
+				}
 				responsedata.put("status", "success");
 				responsedata.put("message", "success");
 				responsedata.put("code", statusResponse.getStatus());
@@ -720,21 +701,21 @@ public class ProjectController {
 
 	// api for project list
 	@PostMapping(value = "/viewProjects")
-	public JsonNode getProjectsList(@RequestBody JsonNode requestdata,HttpServletResponse statusResponse) {
+	public JsonNode getProjectsList(@RequestBody JsonNode requestdata, HttpServletResponse statusResponse) {
 		ObjectNode responsedata = objectMapper.createObjectNode();
 		ArrayNode projectArray = objectMapper.createArrayNode();
-        Long userId=null;
+		Long userId = null;
 		try {
 			// Getting all projects list to arraylist
-			ArrayList<ProjectModel> projectlist=null;
+			ArrayList<ProjectModel> projectlist = null;
 			if (requestdata.get("sessionId") != null && requestdata.get("sessionId").asText() != "") {
 				userId = requestdata.get("sessionId").asLong();
 			}
-			if(userId == null)
-			projectlist = projectservice.getListofProjects();
+			if (userId == null)
+				projectlist = projectservice.getListofProjects();
 			else
-		    projectlist =  (ArrayList<ProjectModel>) regionFilterService.getAllProjectByLoginUserRegion(userId);	
-				
+				projectlist = (ArrayList<ProjectModel>) regionFilterService.getAllProjectByLoginUserRegion(userId);
+
 			// checking for project arraylist is empty or not
 			if (projectlist.isEmpty()) {
 				responsedata.put("status", "success");
@@ -746,103 +727,99 @@ public class ProjectController {
 				// loop for getting projectwise details
 				for (ProjectModel obj : projectlist) {
 
-					  try{
-					// Object declarations
-					ObjectNode client = objectMapper.createObjectNode();
-					ContractModel contract = null;
-					ObjectNode contractobj = objectMapper.createObjectNode();
-					String parentproject = projectservice.getProjectName(obj.getParentProjectId());
+					try {
+						// Object declarations
+						ObjectNode client = objectMapper.createObjectNode();
+						ContractModel contract = null;
+						ObjectNode contractobj = objectMapper.createObjectNode();
+						String parentproject = projectservice.getProjectName(obj.getParentProjectId());
 
-					// storing projects details in json object
-					ObjectNode jsonobj = objectMapper.createObjectNode();
-					jsonobj.put("projectId", obj.getProjectId());
-					jsonobj.put("projectName", obj.getProjectName());
-					jsonobj.put("projectFullName", parentproject + "_" + obj.getProjectName());
-					jsonobj.put("isBillable", obj.getisBillable());
-					jsonobj.put("projectCode", obj.getProjectCode());
-					jsonobj.put("projectType", obj.getprojectType());
-					jsonobj.put("projectStatus", obj.getprojectStatus());
-					
-					//get region list
-                    List<ProjectRegion> regions = projectservice.getregionlist(obj.getProjectId());
-                    ArrayNode regionsArray = objectMapper.createArrayNode();
-                    ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
-                    if(regions.isEmpty()) {
-                        jsonobj.set("projectRegion", regionsArray);
-                    }
-                    else {
-                        for(ProjectRegion regioneach : regions) {
-                            ObjectNode resource = objectMapper.createObjectNode();
-                            regionsArray.add((int)regioneach.getRegion_Id().getId());
-                        }
-                        jsonobj.set("projectRegion", regionsArray);
-                    }
-                    //
-					 if(obj.getReleasingDate()!=null)
-					 {
-					jsonobj.put("releasingDate", obj.getReleasingDate().toString());
-					 }
-					if(obj.getClientName() != null)
-					{
-						client.put("clientId", obj.getClientName().getClientId());
-					    client.put("clientName", obj.getClientName().getClientName());
-					    jsonobj.set("client", client);
-					}
-					else {
-						client.set("clientId", null);
-					    client.set("clientName", null);
-					    jsonobj.set("client", client);
-						
-					}
-					
-					Long contractId=null;
-					
-					if(obj.getContract()!=null)
-					 contractId = obj.getContract().getContractTypeId() ;
+						// storing projects details in json object
+						ObjectNode jsonobj = objectMapper.createObjectNode();
+						jsonobj.put("projectId", obj.getProjectId());
+						jsonobj.put("projectName", obj.getProjectName());
+						jsonobj.put("projectFullName", parentproject + "_" + obj.getProjectName());
+						jsonobj.put("isBillable", obj.getisBillable());
+						jsonobj.put("projectCode", obj.getProjectCode());
+						jsonobj.put("projectType", obj.getprojectType());
+						jsonobj.put("projectStatus", obj.getprojectStatus());
+						jsonobj.put("workflowType", obj.getWorkflowType());
 
-					if (contractId != null) {
-						// getting contract details
-						contract = projectservice.getContract(contractId);
-					}
-					// storing contract values in jsonobject
-					if (contract == null)
-						contractobj = null;
-					else {
+						// get region list
+						List<ProjectRegion> regions = projectservice.getregionlist(obj.getProjectId());
+						ArrayNode regionsArray = objectMapper.createArrayNode();
+						ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
+						if (regions.isEmpty()) {
+							jsonobj.set("projectRegion", regionsArray);
+						} else {
+							for (ProjectRegion regioneach : regions) {
+								ObjectNode resource = objectMapper.createObjectNode();
+								regionsArray.add((int) regioneach.getRegion_Id().getId());
+							}
+							jsonobj.set("projectRegion", regionsArray);
+						}
+						//
+						if (obj.getReleasingDate() != null) {
+							jsonobj.put("releasingDate", obj.getReleasingDate().toString());
+						}
+						if (obj.getClientName() != null) {
+							client.put("clientId", obj.getClientName().getClientId());
+							client.put("clientName", obj.getClientName().getClientName());
+							jsonobj.set("client", client);
+						} else {
+							client.set("clientId", null);
+							client.set("clientName", null);
+							jsonobj.set("client", client);
 
-						contractobj.put("contractTypeId", contract.getContractTypeId());
-						contractobj.put("contractTypeName", contract.getContractTypeName());
-					}
-					jsonobj.set("contractType", contractobj);
+						}
 
-					// null checking user ID
-					Long userid = obj.getProjectOwner().getUserId();
-					UserModel userdata = null;
-					if (userid != null) {
-						// getting user details
-						userdata = userservice.getUserDetailsById(userid);
-					}
+						Long contractId = null;
 
-					ObjectNode userobj = objectMapper.createObjectNode();
-					// storing user values in jsonobject
-					if (userdata == null)
-						userobj = null;
-					else {
-						userobj.put("firstName", userdata.getFirstName());
-						userobj.put("lastName", userdata.getLastName());
-						userobj.put("role", userdata.getRole().getroleId());
-						userobj.put("userId", userdata.getUserId());
-						userobj.put("regionId", userdata.getRegion().getId());
+						if (obj.getContract() != null)
+							contractId = obj.getContract().getContractTypeId();
 
-					}
-					jsonobj.set("approver_level_1", userobj);
+						if (contractId != null) {
+							// getting contract details
+							contract = projectservice.getContract(contractId);
+						}
+						// storing contract values in jsonobject
+						if (contract == null)
+							contractobj = null;
+						else {
 
-					projectArray.add(jsonobj);
-				}
-					  catch (Exception e) {
+							contractobj.put("contractTypeId", contract.getContractTypeId());
+							contractobj.put("contractTypeName", contract.getContractTypeName());
+						}
+						jsonobj.set("contractType", contractobj);
+
+						// null checking user ID
+						Long userid = obj.getProjectOwner().getUserId();
+						UserModel userdata = null;
+						if (userid != null) {
+							// getting user details
+							userdata = userservice.getUserDetailsById(userid);
+						}
+
+						ObjectNode userobj = objectMapper.createObjectNode();
+						// storing user values in jsonobject
+						if (userdata == null)
+							userobj = null;
+						else {
+							userobj.put("firstName", userdata.getFirstName());
+							userobj.put("lastName", userdata.getLastName());
+							userobj.put("role", userdata.getRole().getroleId());
+							userobj.put("userId", userdata.getUserId());
+							userobj.put("regionId", userdata.getRegion().getId());
+
+						}
+						jsonobj.set("approver_level_1", userobj);
+
+						projectArray.add(jsonobj);
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
-			   	
-			}
+
+				}
 				responsedata.put("status", "success");
 				responsedata.put("message", "success");
 				responsedata.put("code", statusResponse.getStatus());
@@ -874,29 +851,31 @@ public class ProjectController {
 				contractModel = projectservice.getContract(contractId);
 			project.setprojectType(requestdata.get("projectType").asInt());
 			project.setContract(contractModel);
-			//if (project.getprojectType() == 0) { // if the project type is external(value =0)
-				Long clientid = requestdata.get("clientId").asLong();
-				ClientModel client = new ClientModel();
-				if (clientid != 0L) {
-					client = projectservice.getClientName(clientid);
-					project.setClientName(client);
-					project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
-				}
-			//}
+			// if (project.getprojectType() == 0) { // if the project type is external(value
+			// =0)
+			Long clientid = requestdata.get("clientId").asLong();
+			ClientModel client = new ClientModel();
+			if (clientid != 0L) {
+				client = projectservice.getClientName(clientid);
+				project.setClientName(client);
+				project.setClientPointOfContact(requestdata.get("clientPointOfContact").asText());
+			}
+			// }
 			project.setParentProjectId(requestdata.get("parentProjectId").asLong());
-			//project.setProject_refId(requestdata.get("projectRefId").asText());
+			// project.setProject_refId(requestdata.get("projectRefId").asText());
 			project.setProjectCategory(requestdata.get("projectCategory").asInt());
 			project.setProjectDetails(requestdata.get("projectDetails").asText());
 			project.setProjectName(requestdata.get("projectName").asText());
 			project.setisBillable(requestdata.get("isBillable").asInt());
 			project.setProjectCode(requestdata.get("projectCode").asText());
 			project.setprojectStatus(requestdata.get("projectStatus").asInt());
+			project.setWorkflowType(requestdata.get("workflowType").asInt());
 			project.setisPOC(requestdata.get("isPOC").asInt());
-			
+
 			UserModel modifiedBy = userservice.getUserDetailsById(requestdata.get("sessionId").asLong());
-			//project.setModifiedBy(modifiedBy);
+			// project.setModifiedBy(modifiedBy);
 			Date modifiedDate = new Date();
-			//project.setModifiedDate(modifiedDate);
+			// project.setModifiedDate(modifiedDate);
 			/*
 			 * Long userid = requestdata.get("approver_level_1").asLong(); UserModel
 			 * pro_owner = new UserModel();
@@ -919,14 +898,11 @@ public class ProjectController {
 			 * if (pro_approver_2 != null) project.setOnsite_lead(pro_approver_2);
 			 */
 
-			
 			project.setProjectTier(0);
-
-			
 
 			Long userid = null;
 
-			if(requestdata.get("projectTier").asInt() == 1) {
+			if (requestdata.get("projectTier").asInt() == 1) {
 
 				userid = requestdata.get("approver_level_1").asLong();
 
@@ -938,13 +914,9 @@ public class ProjectController {
 
 					pro_owner = userservice.getUserDetailsById(userid);
 
-
-
 				if (pro_owner != null)
 
 					project.setProjectOwner(pro_owner);
-
-				
 
 				project.setProjectTier(1);
 				project.setOnsite_lead(null);
@@ -953,8 +925,6 @@ public class ProjectController {
 
 			else if (requestdata.get("projectTier").asInt() == 2) {
 
-				
-
 				userid = requestdata.get("approver_level_1").asLong();
 
 				UserModel pro_owner = new UserModel();
@@ -965,13 +935,9 @@ public class ProjectController {
 
 					pro_owner = userservice.getUserDetailsById(userid);
 
-
-
 				if (pro_owner != null)
 
 					project.setProjectOwner(pro_owner);
-
-				
 
 				Long onsite_lead = requestdata.get("approver_level_2").asLong();
 
@@ -1019,99 +985,97 @@ public class ProjectController {
 				project.setReleasingDate(releaseDate);
 			}
 
-			/*if ((project.getProjectDetails() != null) && (project.getProjectDetails().length() > 0)
-					&& (!project.getProjectDetails().equals(" ")) && (project.getProjectName() != null)
-					&& (!project.getProjectName().equals(" ")) && (project.getProjectName().length() > 0)
-					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
-					&& (project.getProjectCode().length() > 0)) {*/
-			if ((project.getProjectName() != null)
-					&& (!project.getProjectName().equals(" ")) && (project.getProjectName().length() > 0)
-					&& (project.getProjectCode() != null) && (!project.getProjectCode().equals(" "))
-					&& (project.getProjectCode().length() > 0)) {
+			/*
+			 * if ((project.getProjectDetails() != null) &&
+			 * (project.getProjectDetails().length() > 0) &&
+			 * (!project.getProjectDetails().equals(" ")) && (project.getProjectName() !=
+			 * null) && (!project.getProjectName().equals(" ")) &&
+			 * (project.getProjectName().length() > 0) && (project.getProjectCode() != null)
+			 * && (!project.getProjectCode().equals(" ")) &&
+			 * (project.getProjectCode().length() > 0)) {
+			 */
+			if ((project.getProjectName() != null) && (!project.getProjectName().equals(" "))
+					&& (project.getProjectName().length() > 0) && (project.getProjectCode() != null)
+					&& (!project.getProjectCode().equals(" ")) && (project.getProjectCode().length() > 0)) {
 				// method invocation for checking duplicate entry for project name
 
 				int result = projectservice.duplicationchecking(project.getProjectName());
 
-				//if (result <= 1) {
-					// Method invocation for creating new project record
-					ProjectModel projectmodel = projectservice.save_project_record(project);
+				// if (result <= 1) {
+				// Method invocation for creating new project record
+				ProjectModel projectmodel = projectservice.save_project_record(project);
 
-					ArrayNode resourcenode = (ArrayNode) requestdata.get("resources");
-					ArrayNode regionsjson = (ArrayNode) requestdata.get("projectRegion");
-					
-					if (projectmodel != null)
-					{
-						ArrayList<ProjectRegion> regions = projectservice.getRegionsByprojectId(projectmodel.getProjectId());
-						
-						if(regions.size() > 0) {
+				ArrayNode resourcenode = (ArrayNode) requestdata.get("resources");
+				ArrayNode regionsjson = (ArrayNode) requestdata.get("projectRegion");
+
+				if (projectmodel != null) {
+					ArrayList<ProjectRegion> regions = projectservice
+							.getRegionsByprojectId(projectmodel.getProjectId());
+
+					if (regions.size() > 0) {
 						int i = projectservice.deleteProjectRegions(projectmodel.getProjectId());
-						System.out.println("-----------i"+i);
-						if(i>0) {
-							
-							for(JsonNode nodes : regionsjson) {
-								System.out.println("Regions--------------Id"+nodes.asLong());	
+						System.out.println("-----------i" + i);
+						if (i > 0) {
+
+							for (JsonNode nodes : regionsjson) {
+								System.out.println("Regions--------------Id" + nodes.asLong());
 								ProjectRegion regionedits = new ProjectRegion();
 								regionedits.setProject_Id(projectmodel);
 								Region region1 = regionService.getregion(nodes.asLong());
 								regionedits.setRegion_Id(region1);
 								projectservice.save_project_region(regionedits);
-								
+
 							}
-							
+
 						}
+					} else {
+						for (JsonNode nodes : regionsjson) {
+
+							ProjectRegion regionedits = new ProjectRegion();
+							regionedits.setProject_Id(projectmodel);
+							Region region1 = regionService.getregion(nodes.asLong());
+							regionedits.setRegion_Id(region1);
+							projectservice.save_project_region(regionedits);
+
 						}
-						else {
-								for(JsonNode nodes : regionsjson) {
-								
-								ProjectRegion regionedits = new ProjectRegion();
-								regionedits.setProject_Id(projectmodel);
-								Region region1 = regionService.getregion(nodes.asLong());
-								regionedits.setRegion_Id(region1);
-								projectservice.save_project_region(regionedits);
-								
-							}
-						}
-						
 					}
-				/*	for (JsonNode node : resourcenode) {
-						// setting values on resource object
-						Resources resou1 = projectservice.getResourceById(node.get("resourceId").asLong());
-						if (projectmodel != null)
-							resou1.setProject(projectmodel);
 
-						Long depart = node.get("department").asLong();
-						DepartmentModel department = new DepartmentModel();
-
-						// method for getting department details
-						if (depart != null)
-							department = projectservice.getDepartmentDetails(depart);
-
-						if (department != null)
-							resou1.setDepartment(department);
-
-						resou1.setresourceCount(node.get("resourceCount").asInt());
-
-						// checking resouce model values before storing
-						if ((resou1.getresourceCount() != 0) && (!resou1.getDepartment().equals(null))
-								&& (resou1.getProject() != null)) {
-
-							// method invocation for storing resource details
-							Resources resourcevalue = projectservice.addprojectresouce(resou1);
-
-							if (resourcevalue == null)
-								responseflag = 1;
-						} else
-							responseflag = 1;
-
-					}*/
-				//} else {
-				//	responseflag = 1;
-				//}
+				}
+				/*
+				 * for (JsonNode node : resourcenode) { // setting values on resource object
+				 * Resources resou1 =
+				 * projectservice.getResourceById(node.get("resourceId").asLong()); if
+				 * (projectmodel != null) resou1.setProject(projectmodel);
+				 * 
+				 * Long depart = node.get("department").asLong(); DepartmentModel department =
+				 * new DepartmentModel();
+				 * 
+				 * // method for getting department details if (depart != null) department =
+				 * projectservice.getDepartmentDetails(depart);
+				 * 
+				 * if (department != null) resou1.setDepartment(department);
+				 * 
+				 * resou1.setresourceCount(node.get("resourceCount").asInt());
+				 * 
+				 * // checking resouce model values before storing if
+				 * ((resou1.getresourceCount() != 0) && (!resou1.getDepartment().equals(null))
+				 * && (resou1.getProject() != null)) {
+				 * 
+				 * // method invocation for storing resource details Resources resourcevalue =
+				 * projectservice.addprojectresouce(resou1);
+				 * 
+				 * if (resourcevalue == null) responseflag = 1; } else responseflag = 1;
+				 * 
+				 * }
+				 */
+				// } else {
+				// responseflag = 1;
+				// }
 
 			}
-			/*else {
-				responseflag = 1;
-			}*/
+			/*
+			 * else { responseflag = 1; }
+			 */
 
 			// setting values on response json
 			if (responseflag == 0) {
@@ -1175,16 +1139,16 @@ public class ProjectController {
 				responseData.put("projectCategory", project.getProjectCategory());
 				responseData.put("projectCode", project.getProjectCode());
 				responseData.put("projectType", project.getprojectType());
-				if(project.getReleasingDate()!=null) {
+				if (project.getReleasingDate() != null) {
 					responseData.put("releasingDate", project.getReleasingDate().toString());
-				}
-				else{
+				} else {
 					responseData.put("releasingDate", " ");
 				}
 				responseData.put("isPOC", project.getisPOC());
 				responseData.put("projectStatus", project.getprojectStatus());
 				responseData.put("projectTier", project.getProjectTier());
-				//responseData.put("projectRefId", project.getProject_refId());
+				responseData.put("workflowType", project.getWorkflowType());
+				// responseData.put("projectRefId", project.getProject_refId());
 				System.out.println("pro" + project.getProjectId());
 				if (project.getClientName() != null)
 					clientid = project.getClientName().getClientId();
@@ -1262,26 +1226,23 @@ public class ProjectController {
 
 				}
 				responseData.set("approver_level_2", onsite_leads);
-				//get region list
+				// get region list
 				List<ProjectRegion> regions = projectservice.getregionlist(project.getProjectId());
 				ArrayNode regionsArray = objectMapper.createArrayNode();
 				ArrayList<Integer> regionArraylist = new ArrayList<Integer>();
-				if(regions.isEmpty()) {
+				if (regions.isEmpty()) {
+					responseData.set("projectRegion", regionsArray);
+				} else {
+
+					for (ProjectRegion regioneach : regions) {
+						ObjectNode resource = objectMapper.createObjectNode();
+						regionsArray.add((int) regioneach.getRegion_Id().getId());
+
+					}
 					responseData.set("projectRegion", regionsArray);
 				}
-				else {
-					
-					 for(ProjectRegion regioneach : regions) { 
-						 ObjectNode resource = objectMapper.createObjectNode(); 
-						 regionsArray.add((int)regioneach.getRegion_Id().getId());
-						 
-					 }
-					 responseData.set("projectRegion", regionsArray);
-				}
 				//
-				
-				
-				
+
 				// getting list of resources based on project
 				List<Resources> resourcelist = projectservice.getResourceList(project.getProjectId());
 				ArrayNode resourceArray = objectMapper.createArrayNode();
@@ -1409,7 +1370,7 @@ public class ProjectController {
 			project.setisBillable(0);
 			project.setEstimatedHours(0);
 			project.setProjectName(requestdata.get("projectName").asText());
-			
+
 			if ((project.getProjectName() != null) && (!project.getProjectName().equals(" "))
 					&& (project.getProjectName().length() > 0)) {
 				// method invocation for checking duplicate entry for project name
@@ -1424,7 +1385,7 @@ public class ProjectController {
 						responseflag = 1;
 						responsedata.put("message", "Project record creation failed");
 					}
-						
+
 				}
 			}
 			// setting values on response json
@@ -1448,22 +1409,22 @@ public class ProjectController {
 		}
 		return responsedata;
 	}
-	
+
 	@PostMapping("/editParentProject")
 	public JsonNode edit_Parentproject(@RequestBody JsonNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode responsedata = objectMapper.createObjectNode();
 		int responseflag = 0;
-		
+
 		try {
 			ProjectModel project = projectservice.findById(requestdata.get("projectId").asLong());
 			project.setProjectName(requestdata.get("projectName").asText());
 			ProjectModel projectmodel = projectservice.save_project_record(project);
-			
+
 			if (projectmodel == null) {
 				responseflag = 1;
 				responsedata.put("message", "Project record creation failed");
 			}
-			
+
 			if (responseflag == 0) {
 				responsedata.put("status", "success");
 				responsedata.put("code", httpstatus.getStatus());
@@ -1474,10 +1435,9 @@ public class ProjectController {
 				responsedata.put("code", httpstatus.getStatus());
 				responsedata.put("payload", "");
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
-			
+
 			responsedata.put("status", "Failed");
 			responsedata.put("code", httpstatus.getStatus());
 			responsedata.put("message", "Exception " + e);
@@ -1486,61 +1446,63 @@ public class ProjectController {
 		return responsedata;
 	}
 
-	//nisha - projectHealthData
-	/*@PostMapping(value = "/getProjectHealthData")
-	public ObjectNode getCountOfResourcesInBenchProject(@RequestBody ObjectNode requestdata,
-														HttpServletResponse httpstatus) {
-		ObjectNode resData = objectMapper.createObjectNode();
-		ObjectNode jsonDataRes = objectMapper.createObjectNode();
-
-	}*/
+	// nisha - projectHealthData
+	/*
+	 * @PostMapping(value = "/getProjectHealthData") public ObjectNode
+	 * getCountOfResourcesInBenchProject(@RequestBody ObjectNode requestdata,
+	 * HttpServletResponse httpstatus) { ObjectNode resData =
+	 * objectMapper.createObjectNode(); ObjectNode jsonDataRes =
+	 * objectMapper.createObjectNode();
+	 * 
+	 * }
+	 */
 
 	@PostMapping(value = "/getProjectsByRegionId")
-	public ObjectNode getProjectsListByRegionId(@RequestBody JsonNode requestdata,HttpServletResponse statusResponse) {
-		
+	public ObjectNode getProjectsListByRegionId(@RequestBody JsonNode requestdata, HttpServletResponse statusResponse) {
+
 		ObjectNode response = objectMapper.createObjectNode();
-		ArrayNode  nodes = objectMapper.createArrayNode();
+		ArrayNode nodes = objectMapper.createArrayNode();
 		ArrayList<ProjectModel> projects = null;
 		Long regionId = null;
 		if (requestdata.get("regionId") != null && requestdata.get("regionId").asText() != "") {
 			regionId = requestdata.get("regionId").asLong();
 		}
 		try {
-		if(regionId != null) {
-			
-			 projects = projectservice.getProjectsByRegion(regionId);
+			if (regionId != null) {
+
+				projects = projectservice.getProjectsByRegion(regionId);
+			} else {
+
+				projects = projectservice.getProjectsByRegion();
+			}
+
+			for (ProjectModel each : projects) {
+				ObjectNode node = objectMapper.createObjectNode();
+				node.put("projectId", each.getProjectId());
+				node.put("projectName", each.getProjectName());
+				node.put("startDate", each.getStartDate().toString());
+				node.put("endDate", each.getEndDate().toString());
+				nodes.add(node);
+			}
+
+			response.put("status", "success");
+			response.put("message", "success");
+			response.put("code", statusResponse.getStatus());
+			response.set("payload", nodes);
+		} catch (Exception e) {
+			// TODO: handle exception
+			response.put("status", "Failed");
+			response.put("code", statusResponse.getStatus());
+			response.put("message", "Exception " + e);
+			response.put("payload", "");
 		}
-		else {
-			
-			 projects = projectservice.getProjectsByRegion();
-		}
-		
-		for(ProjectModel each : projects) {
-			ObjectNode node = objectMapper.createObjectNode();
-			node.put("projectId", each.getProjectId());
-			node.put("projectName", each.getProjectName());
-			node.put("startDate", each.getStartDate().toString());
-			node.put("endDate",each.getEndDate().toString());
-			nodes.add(node);
-		}
-		
-		response.put("status", "success");
-		response.put("message", "success");
-		response.put("code", statusResponse.getStatus());
-		response.set("payload", nodes);
-	}catch (Exception e) {
-		// TODO: handle exception
-		response.put("status", "Failed");
-		response.put("code", statusResponse.getStatus());
-		response.put("message", "Exception " + e);
-		response.put("payload", "");
-	}
 		return response;
 	}
-	//nisha - projectHealthData
+
+	// nisha - projectHealthData
 	@PostMapping(value = "/getProjectHealthData")
-	public ObjectNode getProjectHealthData(@RequestBody ObjectNode requestdata,
-										   HttpServletResponse httpstatus) throws  ParseException {
+	public ObjectNode getProjectHealthData(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus)
+			throws ParseException {
 		ObjectNode resData = objectMapper.createObjectNode();
 		ObjectNode jsonDataRes = objectMapper.createObjectNode();
 		Long userId = null;
@@ -1554,20 +1516,19 @@ public class ProjectController {
 		if (requestdata.get("currentDate") != null && (!requestdata.get("currentDate").asText().trim().isEmpty())) {
 			currentDate = requestdata.get("currentDate").asText();
 		}
-		if(userId!= null && !currentDate.isEmpty() ){
+		if (userId != null && !currentDate.isEmpty()) {
 
 			UserModel userData = userservice.getUserDetailsById(userId);
 			regionId = userData.getRegion().getId();
 			userRoleId = userData.getRole().getroleId();
-			if(userRoleId==1 || userRoleId==10) {
+			if (userRoleId == 1 || userRoleId == 10) {
 				regionId = null;
 			}
 			resData = projectservice.getProjectHealthData(regionId, currentDate);
 			jsonDataRes.put("status", "success");
 			jsonDataRes.put("message", "success ");
 
-		}
-		else{
+		} else {
 			jsonDataRes.put("status", "Failure");
 			jsonDataRes.put("message", "Missing request params ");
 		}
@@ -1577,4 +1538,4 @@ public class ProjectController {
 
 	}
 
-	}
+}

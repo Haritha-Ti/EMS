@@ -1,10 +1,20 @@
 package com.EMS.model;
 
-import com.EMS.listener.ModelListener;
-import com.EMS.utility.Constants;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import com.EMS.listener.ModelListener;
+import com.EMS.utility.Constants;
 
 @Audited
 @EntityListeners(ModelListener.class)
@@ -20,6 +30,10 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 	private long weekNo;
 
 	private Double day1, day2, day3, day4, day5, day6, day7 = 0.0d;
+
+	private Date startDate;
+
+	private Date endDate;
 
 	private Integer year;
 
@@ -137,6 +151,22 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 		this.day7 = Constants.roundToDefaultPrecision(day7);
 	}
 
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
 	public Integer getYear() {
 		return year;
 	}
@@ -168,6 +198,7 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 	public void setTimetrackStatus(String timetrackStatus) {
 		this.timetrackStatus = timetrackStatus;
 	}
+
 	public UserModel getApprover1Id() {
 		return approver1Id;
 	}
@@ -183,6 +214,7 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 	public void setApprover2Id(UserModel approver2Id) {
 		this.approver2Id = approver2Id;
 	}
+
 	public String getApprover1Status() {
 		return approver1Status;
 	}
@@ -198,7 +230,5 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 	public void setApprover2Status(String approver2Status) {
 		this.approver2Status = approver2Status;
 	}
-
-
 
 }
