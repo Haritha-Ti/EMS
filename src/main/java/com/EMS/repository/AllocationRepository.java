@@ -21,6 +21,6 @@ public interface AllocationRepository extends JpaRepository<AllocationModel, Lon
 	public List<AllocationModel> findByProjectProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
 			Long projectId, Date endDate, Date startDate);
 
-	public List<AllocationModel> findByUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(Long projectId,
+	public List<AllocationModel> findByUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(Long userId,
 			Date endDate, Date startDate);
 }

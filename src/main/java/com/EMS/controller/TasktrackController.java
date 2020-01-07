@@ -3533,4 +3533,31 @@ public class TasktrackController {
 		return jsonDataRes;
 	}
 
+	/**
+	 * @author sreejith.j
+	 * @param month
+	 * @param year
+	 * @param uid
+	 * @return
+	 */
+	@GetMapping(value = "getTimeTrackDataByMonth")
+	public ResponseEntity<Object> getTimeTrackDataByMonth(@RequestParam("month") Integer month,
+			@RequestParam("year") Integer year, @RequestParam("uid") Long userId) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		JSONObject jsonDataRes = new JSONObject();
+		try {
+			List<Map<String, Object>> timetrackDataList = tasktrackService.getTimeTrackData(userId, month, year);
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			jsonDataRes.put("data", timetrackDataList);
+			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonDataRes.put("status", "Success");
+			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			jsonDataRes.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return response;
+	}
 }

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -50,6 +51,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 	@Autowired
 	TaskRepository taskRepository;
+
+	@Autowired
+	AllocationRepository allocationRepository;
 
 	@Autowired
 	UserRepository userRepository;
@@ -876,7 +880,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 		return tasktrackRepository.getProjectTierForTaskTrack(userId, startDate, endDate);
 	}
-	
+
 	private boolean isTaskTrackApproved(int projectTier, String status) {
 		if (projectTier == 2) {
 			List<String> tireTwoStatus = Arrays.asList(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT,
@@ -892,4 +896,59 @@ public class TasktrackServiceImpl implements TasktrackService {
 		return false;
 
 	}
+
+	/**
+	 * @author sreejith.j
+	 */
+	@Override
+	public List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+
+		SimpleDateFormat dateFrmt = new SimpleDateFormat("dd-MM-yyyy");
+		Calendar monthStartCal = Calendar.getInstance();
+		monthStartCal.setTime(dateFrmt.parse("01-" + month + "-" + year));
+
+		// For semi monthly projects without daily tasks
+		List<ProjectModel> workflow1Projects = new ArrayList<ProjectModel>();
+
+		// For semi monthly projects with daily tasks
+		List<ProjectModel> workflow2Projects = new ArrayList<ProjectModel>();
+
+		// For Weekly projects without daily tasks
+		List<ProjectModel> workflow3Projects = new ArrayList<ProjectModel>();
+
+		// For Weekly projects with daily tasks
+		List<ProjectModel> workflow4Projects = new ArrayList<ProjectModel>();
+
+		Calendar monthEndCal = Calendar.getInstance();
+		monthEndCal.setTime(dateFrmt.parse(monthStartCal.getMaximum(Calendar.DATE) + "-" + month + "-" + year));
+
+		// List all the projects for the user based on the month
+		List<AllocationModel> allocationModelList = allocationRepository
+				.findByUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId, monthEndCal.getTime(),
+						monthStartCal.getTime());
+		// Loop through the projects
+		for (AllocationModel allocationModel : allocationModelList) {
+			ProjectModel project = allocationModel.getproject();
+			switch (project.getWorkflowType()) {
+			case 1:
+				workflow1Projects.add(project);
+				break;
+			case 2:
+				workflow2Projects.add(project);
+				break;
+			case 3:
+				workflow3Projects.add(project);
+				break;
+			case 4:
+				workflow4Projects.add(project);
+				break;
+			default:
+				break;
+			}
+		}
+		// based on the workflow call the appropriate service for fetching data
+		return result;
+	}
+
 }
