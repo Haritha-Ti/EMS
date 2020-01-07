@@ -58,4 +58,11 @@ public class Constants {
 		return value;
 	}
 
+	public class TaskTrackWeeklyApproval{
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_SUBMIT = "SUBMITTED";
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_SAVED = "SAVED";
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_OPEN = "OPEN";
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED = "REJECTED";
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED = "APPROVED";
+	}
 }
