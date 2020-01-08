@@ -1,3 +1,4 @@
+
 package com.EMS.repository;
 
 import com.EMS.model.TaskTrackWeeklyApproval;
@@ -17,4 +18,8 @@ public interface TaskTrackWeeklyApprovalRepository extends JpaRepository<TaskTra
 
     @Query("SELECT a FROM TaskTrackWeeklyApproval a WHERE a.startDate=?2 AND a.endDate=?3 AND a.project.projectId = ?1 AND a.user.userId=?4  AND a.timetrackStatus='SUBMITTED'")
     TaskTrackWeeklyApproval getWeeklyUserData(Long projectId, Date weekStart, Date weekEnd, Long userId);
+
+    public List<TaskTrackWeeklyApproval> findByUserUserIdAndProjectProjectIdInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            Long userId, List<Long> projectIdList, Date endDate, Date startDate);
 }
+

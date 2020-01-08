@@ -2,6 +2,7 @@ package com.EMS.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.json.simple.JSONObject;
@@ -64,6 +65,15 @@ public interface TasktrackService {
 
 	// nisha
 	ObjectNode createCorrection(ObjectNode requestdata, Boolean isReCorrection);
-	
-	List<Object[]> getProjectTierForTaskTrack(Long userId,Date startDate, Date endDate);
+
+	List<Object[]> getProjectTierForTaskTrack(Long userId, Date startDate, Date endDate);
+
+	/**
+	 * @author sreejith.j
+	 * @param year 
+	 * @param month 
+	 * @param userId 
+	 * @return
+	 */
+	List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception;
 }

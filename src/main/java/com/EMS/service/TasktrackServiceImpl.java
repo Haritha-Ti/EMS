@@ -1,6 +1,7 @@
 package com.EMS.service;
 
 import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -11,8 +12,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -52,6 +55,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 	TaskRepository taskRepository;
 
 	@Autowired
+	AllocationRepository allocationRepository;
+
+	@Autowired
 	UserRepository userRepository;
 
 	@Autowired
@@ -77,6 +83,12 @@ public class TasktrackServiceImpl implements TasktrackService {
 //	For Task track Model
 	@Autowired
 	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
+
+	@Autowired
+	TaskTrackApprovalSemiMonthlyRepository taskTrackApprovalSemiMonthlyRepository;
+
+	@Autowired
+	TaskTrackWeeklyApprovalRepository taskTrackWeeklyApprovalRepository;
 
 	@Autowired
 	private Configuration freemarkerConfig;
@@ -876,7 +888,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 		return tasktrackRepository.getProjectTierForTaskTrack(userId, startDate, endDate);
 	}
-	
+
 	private boolean isTaskTrackApproved(int projectTier, String status) {
 		if (projectTier == 2) {
 			List<String> tireTwoStatus = Arrays.asList(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT,
@@ -892,4 +904,250 @@ public class TasktrackServiceImpl implements TasktrackService {
 		return false;
 
 	}
+
+	/**
+	 * @author sreejith.j
+	 */
+	@Override
+	public List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+
+		SimpleDateFormat dateFrmt = new SimpleDateFormat("dd-MM-yyyy");
+		Calendar monthStartCal = Calendar.getInstance();
+		monthStartCal.setTime(dateFrmt.parse("01-" + month + "-" + year));
+
+		Map<Long, HashMap<String, Object>> projectsMap = new HashMap<Long, HashMap<String, Object>>();
+
+		// For semi monthly projects without daily tasks
+		List<Long> workflow1Projects = new ArrayList<Long>();
+
+		// For semi monthly projects with daily tasks
+		List<Long> workflow2Projects = new ArrayList<Long>();
+
+		// For Weekly projects without daily tasks
+		List<Long> workflow3Projects = new ArrayList<Long>();
+
+		// For Weekly projects with daily tasks
+		List<Long> workflow4Projects = new ArrayList<Long>();
+
+		Calendar monthEndCal = Calendar.getInstance();
+		monthEndCal.setTime(dateFrmt.parse(monthStartCal.getMaximum(Calendar.DATE) + "-" + month + "-" + year));
+
+		// List all the projects for the user based on the month
+		List<AllocationModel> allocationModelList = allocationRepository
+				.findByUserUserIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId, monthEndCal.getTime(),
+						monthStartCal.getTime());
+
+		for (AllocationModel allocationModel : allocationModelList) {
+			ProjectModel project = allocationModel.getproject();
+			HashMap<String, Object> projObj = new HashMap<String, Object>();
+			List<Map<String, Object>> periodsArray = new ArrayList<Map<String, Object>>();
+
+			projObj.put("projectId", project.getProjectId());
+			projObj.put("projectName", project.getProjectName());
+			projObj.put("clientId", project.getClientName().getClientId());
+			projObj.put("clientName", project.getClientName().getClientName());
+			projObj.put("workflow", project.getWorkflowType());
+
+			projectsMap.put(project.getProjectId(), projObj);
+
+			switch (project.getWorkflowType()) {
+			case 1:
+				workflow1Projects.add(project.getProjectId());
+				break;
+			case 2:
+				workflow2Projects.add(project.getProjectId());
+				break;
+			case 3:
+				workflow3Projects.add(project.getProjectId());
+				break;
+			case 4:
+				workflow4Projects.add(project.getProjectId());
+				break;
+			default:
+				break;
+			}
+		}
+		// based on the workflow call the appropriate service for fetching data
+
+		if (!workflow1Projects.isEmpty()) {
+			// Fetch data from the monthly submission table
+			List<TasktrackApprovalSemiMonthly> semiMonthlyList = taskTrackApprovalSemiMonthlyRepository
+					.findByUserUserIdAndProjectProjectIdInAndMonthAndYear(userId, workflow1Projects, month, year);
+
+			for (TasktrackApprovalSemiMonthly modelObj : semiMonthlyList) {
+				HashMap<String, Object> projObj = projectsMap.get(modelObj.getProject().getProjectId());
+				Double firstHalfHours = modelObj.getDay1() + modelObj.getDay2() + modelObj.getDay3()
+						+ modelObj.getDay4() + modelObj.getDay5() + modelObj.getDay6() + modelObj.getDay7()
+						+ modelObj.getDay8() + modelObj.getDay9() + modelObj.getDay10() + modelObj.getDay11()
+						+ modelObj.getDay12() + modelObj.getDay13() + modelObj.getDay14() + modelObj.getDay15();
+				String firstHalfStatus = modelObj.getUserFirstHalfStatus();
+				Double secondHalfHours = modelObj.getDay16() + modelObj.getDay17() + modelObj.getDay18()
+						+ modelObj.getDay19() + modelObj.getDay20() + modelObj.getDay21() + modelObj.getDay22()
+						+ modelObj.getDay23() + modelObj.getDay24() + modelObj.getDay25() + modelObj.getDay26()
+						+ modelObj.getDay27() + modelObj.getDay28() + modelObj.getDay29() + modelObj.getDay30()
+						+ modelObj.getDay31();
+				String secondHalfStatus = modelObj.getUserSecondHalfStatus();
+				List<Map<String, Object>> periodsArray = new ArrayList<Map<String, Object>>();
+
+				Map<String, Object> firstHalfObj = new HashMap<String, Object>();
+				Map<String, Object> secondHalfObj = new HashMap<String, Object>();
+				firstHalfObj.put("hours", firstHalfHours);
+				firstHalfObj.put("status", firstHalfStatus);
+				firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
+				firstHalfObj.put("endDay", "15-" + month + "-" + year);
+				secondHalfObj.put("hours", secondHalfHours);
+				secondHalfObj.put("status", secondHalfStatus);
+				secondHalfObj.put("startDay", "16-" + month + "-" + year);
+				secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
+				periodsArray.add(firstHalfObj);
+				periodsArray.add(secondHalfObj);
+				projObj.put("periods", periodsArray);
+			}
+		}
+		if (!workflow2Projects.isEmpty()) {
+			// Fetch data from the timetrack table and status from the submission
+			// table
+			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInDateBetween(userId,
+					workflow2Projects, monthStartCal.getTime(), monthEndCal.getTime());
+
+			List<TasktrackApprovalSemiMonthly> semiMonthlyList = taskTrackApprovalSemiMonthlyRepository
+					.findByUserUserIdAndProjectProjectIdInAndMonthAndYear(userId, workflow2Projects, month, year);
+
+			Map<Long, HashMap<String, Double>> hoursProjectObj = new HashMap<Long, HashMap<String, Double>>();
+
+			for (Tasktrack modelObj : tasktrackList) {
+				HashMap<String, Double> hoursObj = new HashMap<String, Double>();
+				if (hoursProjectObj.containsKey(modelObj.getProject().getProjectId())) {
+					hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
+				} else {
+					hoursObj.put("firstHalfHours", 0d);
+					hoursObj.put("secondHalfHours", 0d);
+					hoursProjectObj.put(modelObj.getProject().getProjectId(), hoursObj);
+				}
+				if (modelObj.getDate().before(dateFrmt.parse("16-" + month + "-" + year))) {
+					hoursObj.put("firstHalfHours", hoursObj.get("firstHalfHours") + modelObj.getHours());
+				} else {
+					hoursObj.put("secondHalfHours", hoursObj.get("secondHalfHours") + modelObj.getHours());
+				}
+			}
+
+			// submitted projects
+			for (TasktrackApprovalSemiMonthly modelObj : semiMonthlyList) {
+				HashMap<String, Object> projObj = projectsMap.get(modelObj.getProject().getProjectId());
+				List<Map<String, Object>> periodsArray = new ArrayList<Map<String, Object>>();
+				// if hoursProjectObj doesnt contain the project id- Error: submission table
+				// contain data not in timetrack
+				HashMap<String, Double> hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
+
+				Map<String, Object> firstHalfObj = new HashMap<String, Object>();
+				Map<String, Object> secondHalfObj = new HashMap<String, Object>();
+				firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
+				firstHalfObj.put("status", modelObj.getUserFirstHalfStatus());
+				firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
+				firstHalfObj.put("endDay", "15-" + month + "-" + year);
+				secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
+				secondHalfObj.put("status", modelObj.getUserSecondHalfStatus());
+				secondHalfObj.put("startDay", "16-" + month + "-" + year);
+				secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
+				periodsArray.add(firstHalfObj);
+				periodsArray.add(secondHalfObj);
+				projObj.put("periods", periodsArray);
+				hoursProjectObj.remove(modelObj.getProject().getProjectId());
+			}
+
+			// non submitted projects
+			for (Long projectId : hoursProjectObj.keySet()) {
+				HashMap<String, Object> projObj = projectsMap.get(projectId);
+				List<Map<String, Object>> periodsArray = new ArrayList<Map<String, Object>>();
+				// if hoursProjectObj doesnt contain the project id- Error: submission table
+				// contain data not in timetrack
+				HashMap<String, Double> hoursObj = hoursProjectObj.get(projectId);
+
+				Map<String, Object> firstHalfObj = new HashMap<String, Object>();
+				Map<String, Object> secondHalfObj = new HashMap<String, Object>();
+				firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
+				firstHalfObj.put("status", "OPEN");
+				firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
+				firstHalfObj.put("endDay", "15-" + month + "-" + year);
+				secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
+				secondHalfObj.put("status", "OPEN");
+				secondHalfObj.put("startDay", "16-" + month + "-" + year);
+				secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
+				periodsArray.add(firstHalfObj);
+				periodsArray.add(secondHalfObj);
+				projObj.put("periods", periodsArray);
+			}
+
+		}
+		if (!workflow3Projects.isEmpty()) {
+			// Fetch data from the weekly submission table
+			List<TaskTrackWeeklyApproval> weeklyList = taskTrackWeeklyApprovalRepository
+					.findByUserUserIdAndProjectProjectIdInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId,
+							workflow3Projects, monthEndCal.getTime(), monthStartCal.getTime());
+
+			for (TaskTrackWeeklyApproval modelObj : weeklyList) {
+				HashMap<String, Object> projObj = projectsMap.get(modelObj.getProject().getProjectId());
+				Double hours = modelObj.getDay1() + modelObj.getDay2() + modelObj.getDay3() + modelObj.getDay4()
+						+ modelObj.getDay5() + modelObj.getDay6() + modelObj.getDay7();
+				String status = modelObj.getProject().getProjectTier() == 1 ? modelObj.getApprover2Status()
+						: modelObj.getApprover1Status();
+
+				List<Map<String, Object>> periodsArray = new ArrayList<Map<String, Object>>();
+
+				Map<String, Object> weekObj = new HashMap<String, Object>();
+				weekObj.put("hours", hours);
+				weekObj.put("status", status == null ? "OPEN" : status.toUpperCase());
+				weekObj.put("startDay", dateFrmt.format(modelObj.getStartDate()));
+				weekObj.put("endDay", dateFrmt.format(modelObj.getStartDate()));
+				periodsArray.add(weekObj);
+				projObj.put("periods", periodsArray);
+			}
+		}
+		if (!workflow4Projects.isEmpty()) {
+			// Fetch data from the timetrack table and status from the submission
+			// table
+			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInDateBetween(userId,
+					workflow4Projects, monthStartCal.getTime(), monthEndCal.getTime());
+
+			Calendar firstWeekStartDay = Calendar.getInstance();
+			Calendar lastWeekEndDay = Calendar.getInstance();
+			firstWeekStartDay = (Calendar) monthStartCal.clone();
+			lastWeekEndDay = (Calendar) monthEndCal.clone();
+			firstWeekStartDay.add(Calendar.DAY_OF_WEEK,
+					-(monthStartCal.get(Calendar.DAY_OF_WEEK) - Constants.WEEK_START_DAY));
+			lastWeekEndDay.add(Calendar.DAY_OF_WEEK,
+					+(6 - monthEndCal.get(Calendar.DAY_OF_WEEK) + Constants.WEEK_START_DAY));
+
+			List<TaskTrackWeeklyApproval> weeklyList = taskTrackWeeklyApprovalRepository
+					.findByUserUserIdAndProjectProjectIdInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId,
+							workflow4Projects, lastWeekEndDay.getTime(), firstWeekStartDay.getTime());
+
+			Map<Long, HashMap<String, Double>> hoursProjectObj = new HashMap<Long, HashMap<String, Double>>();
+
+			for (Tasktrack modelObj : tasktrackList) {
+				HashMap<String, Double> hoursObj = new HashMap<String, Double>();
+				if (hoursProjectObj.containsKey(modelObj.getProject().getProjectId())) {
+					hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
+				} else {
+					hoursObj.put("week1hours", 0d);
+					hoursObj.put("week2hours", 0d);
+					hoursObj.put("week3hours", 0d);
+					hoursObj.put("week4hours", 0d);
+					hoursObj.put("week5hours", 0d);
+					hoursObj.put("week6hours", 0d);
+					hoursProjectObj.put(modelObj.getProject().getProjectId(), hoursObj);
+				}
+//				if (modelObj.getDate()>= firstWeekStartDay.getTime()) {
+//					hoursObj.put("firstHalfHours", hoursObj.get("firstHalfHours") + modelObj.getHours());
+//				} else {
+//					hoursObj.put("secondHalfHours", hoursObj.get("secondHalfHours") + modelObj.getHours());
+//				}
+			}
+
+		}
+
+		return result;
+	}
+
 }

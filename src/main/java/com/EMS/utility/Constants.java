@@ -50,6 +50,9 @@ public class Constants {
 
 	public static final Integer DEFAULT_DECIMAL_PRECISION = 2;
 
+	// Sunday-1, Monday-2, Tuesday-3, Wednesday-4, Thursday-5, Friday-6, Saturday-7
+	public static final Integer WEEK_START_DAY = 1;
+
 	public static final Double roundToDefaultPrecision(Double value) {
 
 		Double multiplicationConstant = Math.pow(10, Constants.DEFAULT_DECIMAL_PRECISION);
@@ -58,4 +61,11 @@ public class Constants {
 		return value;
 	}
 
+	public class TaskTrackWeeklyApproval {
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_SUBMIT = "SUBMITTED";
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_SAVED = "SAVED";
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_OPEN = "OPEN";
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED = "REJECTED";
+		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED = "APPROVED";
+	}
 }
