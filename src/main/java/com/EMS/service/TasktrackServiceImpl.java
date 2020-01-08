@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -948,6 +949,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 			projObj.put("clientId", project.getClientName().getClientId());
 			projObj.put("clientName", project.getClientName().getClientName());
 			projObj.put("workflow", project.getWorkflowType());
+			projObj.put("periods", periodsArray);
 
 			projectsMap.put(project.getProjectId(), projObj);
 
@@ -1008,8 +1010,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 		if (!workflow2Projects.isEmpty()) {
 			// Fetch data from the timetrack table and status from the submission
 			// table
-			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInAndDateBetween(userId,
-					workflow2Projects, monthStartCal.getTime(), monthEndCal.getTime());
+			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInAndDateBetween(
+					userId, workflow2Projects, monthStartCal.getTime(), monthEndCal.getTime());
 
 			List<TasktrackApprovalSemiMonthly> semiMonthlyList = taskTrackApprovalSemiMonthlyRepository
 					.findByUserUserIdAndProjectProjectIdInAndMonthAndYear(userId, workflow2Projects, month, year);
@@ -1093,7 +1095,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				String status = modelObj.getProject().getProjectTier() == 1 ? modelObj.getApprover2Status()
 						: modelObj.getApprover1Status();
 
-				List<Map<String, Object>> periodsArray = new ArrayList<Map<String, Object>>();
+				List<Map<String, Object>> periodsArray = (List<Map<String, Object>>) projObj.get("periods");
 
 				Map<String, Object> weekObj = new HashMap<String, Object>();
 				weekObj.put("hours", hours);
@@ -1107,8 +1109,6 @@ public class TasktrackServiceImpl implements TasktrackService {
 		if (!workflow4Projects.isEmpty()) {
 			// Fetch data from the timetrack table and status from the submission
 			// table
-			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInAndDateBetween(userId,
-					workflow4Projects, monthStartCal.getTime(), monthEndCal.getTime());
 
 			Calendar firstWeekStartDay = Calendar.getInstance();
 			Calendar lastWeekEndDay = Calendar.getInstance();
@@ -1119,6 +1119,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 			lastWeekEndDay.add(Calendar.DAY_OF_WEEK,
 					+(6 - monthEndCal.get(Calendar.DAY_OF_WEEK) + Constants.WEEK_START_DAY));
 
+			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInAndDateBetween(
+					userId, workflow4Projects, firstWeekStartDay.getTime(), lastWeekEndDay.getTime());
+
 			List<TaskTrackWeeklyApproval> weeklyList = taskTrackWeeklyApprovalRepository
 					.findByUserUserIdAndProjectProjectIdInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId,
 							workflow4Projects, lastWeekEndDay.getTime(), firstWeekStartDay.getTime());
@@ -1126,6 +1129,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 			Map<Long, HashMap<String, Double>> hoursProjectObj = new HashMap<Long, HashMap<String, Double>>();
 
 			for (Tasktrack modelObj : tasktrackList) {
+				Calendar weekStartDay = (Calendar) firstWeekStartDay.clone();
+				Calendar weekEndDay = (Calendar) weekStartDay.clone();
+				weekEndDay.add(Calendar.DATE, 6);
 				HashMap<String, Double> hoursObj = new HashMap<String, Double>();
 				if (hoursProjectObj.containsKey(modelObj.getProject().getProjectId())) {
 					hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
@@ -1138,15 +1144,90 @@ public class TasktrackServiceImpl implements TasktrackService {
 					hoursObj.put("week6hours", 0d);
 					hoursProjectObj.put(modelObj.getProject().getProjectId(), hoursObj);
 				}
-//				if (modelObj.getDate()>= firstWeekStartDay.getTime()) {
-//					hoursObj.put("firstHalfHours", hoursObj.get("firstHalfHours") + modelObj.getHours());
-//				} else {
-//					hoursObj.put("secondHalfHours", hoursObj.get("secondHalfHours") + modelObj.getHours());
-//				}
+				int idx = 1;
+				while (weekStartDay.getTime().before(lastWeekEndDay.getTime())) {
+					if (!modelObj.getDate().before(weekStartDay.getTime())
+							&& !modelObj.getDate().after(weekEndDay.getTime())) {
+						hoursObj.put("week" + idx + "hours",
+								hoursObj.get("week" + (idx) + "hours") + modelObj.getHours());
+					}
+					idx++;
+					weekStartDay.add(Calendar.DATE, 7);
+					weekEndDay.add(Calendar.DATE, 7);
+				}
+			}
+
+			// submitted projects
+			for (TaskTrackWeeklyApproval modelObj : weeklyList) {
+
+				Calendar weekStartDay = (Calendar) firstWeekStartDay.clone();
+				Calendar weekEndDay = (Calendar) weekStartDay.clone();
+				weekEndDay.add(Calendar.DATE, 6);
+
+				HashMap<String, Object> projObj = projectsMap.get(modelObj.getProject().getProjectId());
+
+				List<Map<String, Object>> periodsArray = (List<Map<String, Object>>) projObj.get("periods");
+
+				// if hoursProjectObj doesnt contain the project id- Error: submission table
+				// contain data not in timetrack
+				HashMap<String, Double> hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
+
+				String status = modelObj.getProject().getProjectTier() == 1 ? modelObj.getApprover2Status()
+						: modelObj.getApprover1Status();
+
+				int idx = 1;
+				while (weekStartDay.getTime().before(lastWeekEndDay.getTime())) {
+					if (modelObj.getStartDate().equals(weekStartDay.getTime())) {
+						Map<String, Object> weekObj = new HashMap<String, Object>();
+						weekObj.put("hours", hoursObj.get("week" + idx + "hours"));
+						weekObj.put("status", status == null ? "OPEN" : status.toUpperCase());
+						weekObj.put("startDay", dateFrmt.format(weekStartDay.getTime()));
+						weekObj.put("endDay", dateFrmt.format(weekEndDay.getTime()));
+						periodsArray.add(weekObj);
+						projObj.put("periods", periodsArray);
+						hoursObj.remove("week" + (idx) + "hours");
+					}
+					weekStartDay.add(Calendar.DATE, 7);
+					weekEndDay.add(Calendar.DATE, 7);
+					if (hoursProjectObj.get(modelObj.getProject().getProjectId()).isEmpty()) {
+						hoursProjectObj.remove(modelObj.getProject().getProjectId());
+					}
+					idx++;
+				}
+			}
+
+			// non submitted projects
+			for (Long projectId : hoursProjectObj.keySet()) {
+
+				Calendar weekStartDay = (Calendar) firstWeekStartDay.clone();
+				Calendar weekEndDay = (Calendar) weekStartDay.clone();
+				weekEndDay.add(Calendar.DATE, 6);
+
+				HashMap<String, Object> projObj = projectsMap.get(projectId);
+				List<Map<String, Object>> periodsArray = (List<Map<String, Object>>) projObj.get("periods");
+				// if hoursProjectObj doesnt contain the project id- Error: submission table
+				// contain data not in timetrack
+				HashMap<String, Double> hoursObj = hoursProjectObj.get(projectId);
+
+				int idx = 1;
+				while (weekStartDay.getTime().before(lastWeekEndDay.getTime())) {
+					Map<String, Object> weekObj = new HashMap<String, Object>();
+					weekObj.put("hours", hoursObj.get("week" + idx + "hours"));
+					weekObj.put("status", "OPEN");
+					weekObj.put("startDay", dateFrmt.format(weekStartDay.getTime()));
+					weekObj.put("endDay", dateFrmt.format(weekEndDay.getTime()));
+					periodsArray.add(weekObj);
+					projObj.put("periods", periodsArray);
+					weekStartDay.add(Calendar.DATE, 7);
+					weekEndDay.add(Calendar.DATE, 7);
+					idx++;
+				}
 			}
 
 		}
 
+		Collection<HashMap<String, Object>> resultCollection = projectsMap.values();
+		result = new ArrayList<>(resultCollection);
 		return result;
 	}
 
