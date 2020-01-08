@@ -4,9 +4,9 @@ import org.json.simple.JSONObject;
 
 public interface TaskWeeklyApprovalService {
 	
-	void submitWeeklyApproval(JSONObject requestData);
+	int submitWeeklyApproval(JSONObject requestData);
 
-	void saveWeeklyApproval(JSONObject requestData);
+	int saveWeeklyApproval(JSONObject requestData);
 	
 	JSONObject getWeeklyTasktrack(JSONObject requestData);
 }
