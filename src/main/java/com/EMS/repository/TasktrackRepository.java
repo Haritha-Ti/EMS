@@ -338,4 +338,5 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	 */
 	List<Tasktrack> findByUserUserIdAndProjectProjectIdInAndDateBetween(Long userId, List<Long> projectIds, Date startDate,
 			Date endDate);
+
 }

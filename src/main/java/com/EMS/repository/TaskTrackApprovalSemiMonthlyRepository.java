@@ -19,4 +19,6 @@ public interface TaskTrackApprovalSemiMonthlyRepository extends JpaRepository<Ta
 			List<Long> projectIdList, Integer month, Integer year);
 	
 
+	TasktrackApprovalSemiMonthly findByUserUserIdAndProjectProjectIdAndMonthAndYear(Long userId,Long projectId,int month,int year);
+
 }

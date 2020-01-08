@@ -55,26 +55,5 @@ public class TasktrackApprovalController {
 		responseData.put("code", httpstatus.getStatus());
 		return responseData;
 	}
-  /*  @PostMapping(value = "/getTaskTrackDataWeeklyByUser")
-    public ObjectNode getTaskTrackDataWeeklyByUser(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-        ObjectNode responseData = objectMapper.createObjectNode();
-        ObjectNode node = objectMapper.createObjectNode();
-        try {
-            node = tasktrackApprovalService.getTaskTrackDataWeeklyByUser(requestdata);
-            responseData.set("data",node);
-            responseData.put("status", "Sucess");
-            responseData.put("message", "Sucess ");
-
-        } catch (Exception e) {
-            // TODO: handle exception
-            e.printStackTrace();
-            responseData.set("data",node);
-            responseData.put("status", "failure");
-            responseData.put("message", "failed. " + e);
-        }
-
-        responseData.put("code", httpstatus.getStatus());
-        return responseData;
-    }*/
 
 }
