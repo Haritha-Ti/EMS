@@ -1008,8 +1008,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 		if (!workflow2Projects.isEmpty()) {
 			// Fetch data from the timetrack table and status from the submission
 			// table
-			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInDateBetween(userId,
-					workflow2Projects, monthStartCal.getTime(), monthEndCal.getTime());
+			List<Tasktrack> tasktrackList = null;//tasktrackRepository.findByUserUserIdAndProjectProjectIdInDateBetween(userId,
+					//workflow2Projects, monthStartCal.getTime(), monthEndCal.getTime());
 
 			List<TasktrackApprovalSemiMonthly> semiMonthlyList = taskTrackApprovalSemiMonthlyRepository
 					.findByUserUserIdAndProjectProjectIdInAndMonthAndYear(userId, workflow2Projects, month, year);
@@ -1107,8 +1107,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 		if (!workflow4Projects.isEmpty()) {
 			// Fetch data from the timetrack table and status from the submission
 			// table
-			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInDateBetween(userId,
-					workflow4Projects, monthStartCal.getTime(), monthEndCal.getTime());
+			List<Tasktrack> tasktrackList = null;// tasktrackRepository.findByUserUserIdAndProjectProjectIdInDateBetween(userId,
+					//workflow4Projects, monthStartCal.getTime(), monthEndCal.getTime());
 
 			Calendar firstWeekStartDay = Calendar.getInstance();
 			Calendar lastWeekEndDay = Calendar.getInstance();
