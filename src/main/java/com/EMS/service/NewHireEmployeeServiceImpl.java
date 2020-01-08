@@ -52,6 +52,8 @@ public class NewHireEmployeeServiceImpl implements NewHireEmployeeService{
 		StringBuilder mailBody = new StringBuilder("Hi "+name+" ,");
 		mailBody.append("<br/><br/>Please click below link for registration:");
 		mailBody.append("<br/><br/> <a href='"+url+"'>New Employee Registration</a>");
+		mailBody.append("<br/><br/><br/>Regards,");
+		mailBody.append("<br/>RCG Support Team.");
 		Template t = freemarkerConfig.getTemplate("email_template.ftl");
         String html = (FreeMarkerTemplateUtils.processTemplateIntoString(t, mailDomainDto)).replace("MAIL_BODY", mailBody).replace("Title", "New Employee Registration");
 		
