@@ -1,11 +1,9 @@
 package com.EMS.service;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.repository.TaskTrackApprovalSemiMonthlyRepository;
-import com.EMS.service.TasktrackApprovalSemiMonthlyService;
 import com.EMS.utility.Constants;
 import com.EMS.utility.DateUtil;
 
@@ -98,22 +95,22 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				
 				
 				if (date == 16) {	
-				response.put(sdf.format(dateRanges.get(16)), approvalSemiMonthly.getDay1());
-				response.put(sdf.format(dateRanges.get(17)), approvalSemiMonthly.getDay2());
-				response.put(sdf.format(dateRanges.get(18)), approvalSemiMonthly.getDay3());
-				response.put(sdf.format(dateRanges.get(19)), approvalSemiMonthly.getDay4());
-				response.put(sdf.format(dateRanges.get(20)), approvalSemiMonthly.getDay5());
-				response.put(sdf.format(dateRanges.get(21)), approvalSemiMonthly.getDay6());
-				response.put(sdf.format(dateRanges.get(22)), approvalSemiMonthly.getDay7());
-				response.put(sdf.format(dateRanges.get(23)), approvalSemiMonthly.getDay8());
-				response.put(sdf.format(dateRanges.get(24)), approvalSemiMonthly.getDay9());
-				response.put(sdf.format(dateRanges.get(25)), approvalSemiMonthly.getDay10());
-				response.put(sdf.format(dateRanges.get(26)), approvalSemiMonthly.getDay11());
-				response.put(sdf.format(dateRanges.get(27)), approvalSemiMonthly.getDay12());
-				response.put(sdf.format(dateRanges.get(28)), approvalSemiMonthly.getDay13());
-				response.put(sdf.format(dateRanges.get(29)), approvalSemiMonthly.getDay14());
-				response.put(sdf.format(dateRanges.get(30)), approvalSemiMonthly.getDay15());
-				response.put(sdf.format(dateRanges.get(31)), approvalSemiMonthly.getDay15());
+				response.put(sdf.format(dateRanges.get(0)), approvalSemiMonthly.getDay16());
+				response.put(sdf.format(dateRanges.get(1)), approvalSemiMonthly.getDay17());
+				response.put(sdf.format(dateRanges.get(2)), approvalSemiMonthly.getDay18());
+				response.put(sdf.format(dateRanges.get(3)), approvalSemiMonthly.getDay19());
+				response.put(sdf.format(dateRanges.get(4)), approvalSemiMonthly.getDay20());
+				response.put(sdf.format(dateRanges.get(5)), approvalSemiMonthly.getDay21());
+				response.put(sdf.format(dateRanges.get(6)), approvalSemiMonthly.getDay22());
+				response.put(sdf.format(dateRanges.get(7)), approvalSemiMonthly.getDay23());
+				response.put(sdf.format(dateRanges.get(8)), approvalSemiMonthly.getDay24());
+				response.put(sdf.format(dateRanges.get(9)), approvalSemiMonthly.getDay25());
+				response.put(sdf.format(dateRanges.get(10)), approvalSemiMonthly.getDay26());
+				response.put(sdf.format(dateRanges.get(11)), approvalSemiMonthly.getDay27());
+				response.put(sdf.format(dateRanges.get(12)), approvalSemiMonthly.getDay28());
+				response.put(sdf.format(dateRanges.get(13)), approvalSemiMonthly.getDay29());
+				response.put(sdf.format(dateRanges.get(14)), approvalSemiMonthly.getDay30());
+				response.put(sdf.format(dateRanges.get(15)), approvalSemiMonthly.getDay31());
 				
 				if (taskStatusList.contains(approverOneSecondHalfStatus) || taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
