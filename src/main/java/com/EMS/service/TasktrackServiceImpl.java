@@ -1101,7 +1101,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				weekObj.put("hours", hours);
 				weekObj.put("status", status == null ? "OPEN" : status.toUpperCase());
 				weekObj.put("startDay", dateFrmt.format(modelObj.getStartDate()));
-				weekObj.put("endDay", dateFrmt.format(modelObj.getStartDate()));
+				weekObj.put("endDay", dateFrmt.format(modelObj.getEndDate()));
 				periodsArray.add(weekObj);
 				projObj.put("periods", periodsArray);
 			}
