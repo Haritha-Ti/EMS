@@ -9,6 +9,6 @@ import freemarker.template.TemplateNotFoundException;
 
 public interface NewHireEmployeeService {
 	
-	public String sendMail(String uId, String mailId,String name) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException;
+	public String sendMail(String uId, String mailId,String name,String lastName) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException;
 
 }

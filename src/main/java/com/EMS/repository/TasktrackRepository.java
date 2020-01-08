@@ -144,7 +144,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	@Query(value = "SELECT \r\n"
 			+ "pms.task_date AS \"Task Date\",COALESCE(pms.projectname,pr.project_name) AS \"Project\",\r\n"
 			+ "FullName,Email,COALESCE(pms.end_date,pr.end_date) AS \"End Date\",UserName,IsActive,IsAllocated\r\n"
-		
+
 			+ "FROM\r\n" + "(\r\n" + "    SELECT \r\n" + "     date1 AS task_date,\r\n"
 			+ "    prj.project_name AS projectname,\r\n" + "    CONCAT(u.first_name,' ',u.last_name) AS FullName,\r\n"
 			+ "    t.hours AS actual_hour,u.email AS Email,prj.end_date AS end_date,u.user_name AS UserName,u.active AS IsActive,alc.active as IsAllocated,\r\n"
@@ -155,12 +155,12 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "        FROM tasktrack WHERE DATE(`date`) >=?1 && DATE(`date`) <=?2 \r\n" + "        GROUP BY 1,2,3\r\n"
 			+ "    ) t ON t.user_user_id = u.user_id\r\n"
 			+ "    LEFT JOIN allocation alc ON alc.user_user_id = u.user_id\r\n"
-			+ "    LEFT JOIN project prj ON prj.project_id = alc.project_project_id\r\n" 
+			+ "    LEFT JOIN project prj ON prj.project_id = alc.project_project_id\r\n"
 			+ " LEFT JOIN department d on d.department_id = u.department_department_id\r\n" + ")pms\r\n"
 			+ "LEFT JOIN allocation al ON al.user_user_id = pms.untracked_user\r\n"
 			+ "LEFT JOIN project pr ON pr.project_id = al.project_project_id \r\n"
-			+ "where COALESCE(pms.projectname,pr.project_name) is not null  and  pms.department_name = 'Production' \r\n" + "GROUP BY 1,2,3,4,5,6,7,8\r\n"
-			+ "ORDER BY 1,2,3;", nativeQuery = true)
+			+ "where COALESCE(pms.projectname,pr.project_name) is not null  and  pms.department_name = 'Production' \r\n"
+			+ "GROUP BY 1,2,3,4,5,6,7,8\r\n" + "ORDER BY 1,2,3;", nativeQuery = true)
 	List<Object[]> getTrackTaskList(LocalDate fromDate, LocalDate toDate);
 
 	@Query(value = "select user_id ,t.entryDate,t.user_user_id,user_name,email,concat(last_name,\" \",first_name) AS fullName\r\n"
@@ -177,8 +177,8 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "from project p\n" + "left join user u on u.user_id = p.onsite_lead_user_id\n"
 			+ "where p.project_tier=2) po on po.project_id = tf.project_project_id\n"
 			+ "join user usr on usr.user_id = tf.user_user_id\n"
-			+ "and project_type='Billable' and tf.month = ?1 LEFT JOIN department d on d.department_id = usr.department_department_id\r\n" + 
-			"  where d.department_name = 'Production'", nativeQuery = true)
+			+ "and project_type='Billable' and tf.month = ?1 LEFT JOIN department d on d.department_id = usr.department_department_id\r\n"
+			+ "  where d.department_name = 'Production'", nativeQuery = true)
 	List<Object[]> getApproverTwoFirstHalfInfo(Integer month);
 
 	@Query(value = "select coalesce(second_half_status,'OPEN') as status,po.user_name approver,po.email approverEmail,po.project_name,\n"
@@ -188,8 +188,8 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "from project p\n" + "left join user u on u.user_id = p.onsite_lead_user_id\n"
 			+ "where p.project_tier=2) po on po.project_id = tf.project_project_id\n"
 			+ "join user usr on usr.user_id = tf.user_user_id\n"
-			+ "and project_type='Billable' and tf.month = ?1 LEFT JOIN department d on d.department_id = usr.department_department_id\r\n" + 
-			" where d.department_name = 'Production'", nativeQuery = true)
+			+ "and project_type='Billable' and tf.month = ?1 LEFT JOIN department d on d.department_id = usr.department_department_id\r\n"
+			+ " where d.department_name = 'Production'", nativeQuery = true)
 	List<Object[]> getApproverTwoSecondHalfInfo(Integer month);
 
 	@Query(value = "select coalesce(first_half_status,'OPEN') as status,po.user_name approver,po.email approverEmail,po.project_name,\n"
@@ -226,8 +226,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "(select distinct p.project_id,p.project_name,u.user_name,u.email,concat(u.last_name,\" \",u.first_name) AS approverFullName\n"
 			+ ",p.project_tier\n" + "from project p\n" + "left join user u on u.user_id = p.project_owner_user_id\n"
 			+ "where p.project_tier=1) po on po.project_id = tf.project_project_id\n"
-			+ "join user usr on usr.user_id = tf.user_user_id\n"
-			+ "and project_type='Billable' and tf.month = ?1 "
+			+ "join user usr on usr.user_id = tf.user_user_id\n" + "and project_type='Billable' and tf.month = ?1 "
 			+ " LEFT JOIN department d on d.department_id = usr.department_department_id where d.department_name = 'Production' ", nativeQuery = true)
 	List<Object[]> getApproverOneSecondHalfInfo(Integer month);
 
@@ -326,8 +325,17 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 			+ "	AND ta.project.projectId IN :projectIds")
 	public List<Object[]> getTaskApprovalStatusForProjectsTire2(@Param("userId") long userId,
 			@Param("currentDate") Date currentDate, @Param("projectIds") List<Long> projectIds);
-	
+
 	@Query("select Date(allocation.startDate),Date(allocation.endDate),allocation.user.userName from AllocationModel allocation where allocation.project.projectName = ?2 and allocation.endDate >= Date(?1)")
 	List<Object[]> getAllocationDateList(LocalDate fromDate, String projectName);
 
+	/**
+	 * @author sreejith.j
+	 * @param userId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	List<Tasktrack> findByUserUserIdAndProjectProjectIdInAndDateBetween(Long userId, List<Long> projectIds, Date startDate,
+			Date endDate);
 }
