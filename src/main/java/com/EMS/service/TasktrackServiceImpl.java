@@ -1092,8 +1092,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				HashMap<String, Object> projObj = projectsMap.get(modelObj.getProject().getProjectId());
 				Double hours = modelObj.getDay1() + modelObj.getDay2() + modelObj.getDay3() + modelObj.getDay4()
 						+ modelObj.getDay5() + modelObj.getDay6() + modelObj.getDay7();
-				String status = modelObj.getProject().getProjectTier() == 1 ? modelObj.getApprover2Status()
-						: modelObj.getApprover1Status();
+				String status = modelObj.getTimetrackStatus();
 
 				List<Map<String, Object>> periodsArray = (List<Map<String, Object>>) projObj.get("periods");
 
@@ -1172,8 +1171,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				// contain data not in timetrack
 				HashMap<String, Double> hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
 
-				String status = modelObj.getProject().getProjectTier() == 1 ? modelObj.getApprover2Status()
-						: modelObj.getApprover1Status();
+				String status = modelObj.getTimetrackStatus();
 
 				int idx = 1;
 				while (weekStartDay.getTime().before(lastWeekEndDay.getTime())) {
