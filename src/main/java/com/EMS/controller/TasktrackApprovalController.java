@@ -55,7 +55,7 @@ public class TasktrackApprovalController {
 		responseData.put("code", httpstatus.getStatus());
 		return responseData;
 	}
-    @PostMapping(value = "/getTaskTrackDataWeeklyByUser")
+  /*  @PostMapping(value = "/getTaskTrackDataWeeklyByUser")
     public ObjectNode getTaskTrackDataWeeklyByUser(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
         ObjectNode responseData = objectMapper.createObjectNode();
         ObjectNode node = objectMapper.createObjectNode();
@@ -75,6 +75,6 @@ public class TasktrackApprovalController {
 
         responseData.put("code", httpstatus.getStatus());
         return responseData;
-    }
+    }*/
 
 }
