@@ -1008,7 +1008,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 		if (!workflow2Projects.isEmpty()) {
 			// Fetch data from the timetrack table and status from the submission
 			// table
-			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInDateBetween(userId,
+			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInAndDateBetween(userId,
 					workflow2Projects, monthStartCal.getTime(), monthEndCal.getTime());
 
 			List<TasktrackApprovalSemiMonthly> semiMonthlyList = taskTrackApprovalSemiMonthlyRepository
@@ -1107,7 +1107,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 		if (!workflow4Projects.isEmpty()) {
 			// Fetch data from the timetrack table and status from the submission
 			// table
-			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInDateBetween(userId,
+			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInAndDateBetween(userId,
 					workflow4Projects, monthStartCal.getTime(), monthEndCal.getTime());
 
 			Calendar firstWeekStartDay = Calendar.getInstance();
