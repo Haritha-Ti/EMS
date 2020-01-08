@@ -22,6 +22,10 @@ import javax.mail.internet.MimeMessage;
 
 import com.EMS.model.*;
 import com.EMS.repository.*;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import org.joda.time.DateTimeConstants;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +60,9 @@ import freemarker.template.Template;
 
 @Service
 public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
+
+	@Autowired
+	TaskTrackWeeklyApprovalRepository taskTrackWeeklyApprovalRepository;
 
 	@Autowired
 	TasktrackRepository tasktrackRepository;
@@ -8973,4 +8980,124 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		return details;
 	}
+
+	//Nisha
+	@Override
+    public ObjectNode getTaskTrackDataForApprover1(ObjectNode requestdata) throws Exception {
+		ObjectNode node = objectMapper.createObjectNode();
+		ArrayNode weeksDataArray = objectMapper.createArrayNode();
+
+		ArrayNode userDataArray = objectMapper.createArrayNode();
+
+		JSONArray weeksArray = new JSONArray();
+		int year = requestdata.get("year").asInt();
+		Long projectId = requestdata.get("projectId").asLong();
+		int month = requestdata.get("month").asInt();
+		//get weeks of the month
+		weeksArray = findWeeks(month,year);
+		//get startDate and endDate of the month
+		Date startDate;
+		Date endDate;
+		String start = year + "-" + month + "-01";
+		startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		int total = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+		String end = year + "-" + month + "-" + total;
+		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+		//get usersList in the project for the corresponding month
+		List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId, startDate, endDate);
+		if(allocatedUserData.size()>=1) {
+			for (AllocationModel userData : allocatedUserData) {
+				ObjectNode userDataResponse = objectMapper.createObjectNode();
+				ArrayNode weeklyHourData = objectMapper.createArrayNode();
+				Long userId = userData.getuser().getUserId();
+				int projectWorkFlow = userData.getproject().getWorkflowType();
+				userDataResponse.put("userId", userData.getuser().getUserId());
+				userDataResponse.put("userName", userData.getuser().getLastName() + " " + userData.getuser().getFirstName());
+				if(projectWorkFlow==3 || projectWorkFlow==4)
+				{
+					for (int i = 0; i < weeksArray.size(); i++) {
+						ObjectNode weeklyDataResponse = objectMapper.createObjectNode();
+						JSONObject objects = (JSONObject) weeksArray.get(i);
+						Date weekStart = (Date) objects.get("startDate");
+						Date weekEnd = (Date) objects.get("endDate");
+						TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository.getWeeklyUserData(projectId, weekStart, weekEnd, userId);
+						double totalhours = 0.0;
+						if (weeklyUserData != null) {
+							totalhours = (weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3() + weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6() + weeklyUserData.getDay7());
+						}
+						weeklyDataResponse.put("totalHour", totalhours);
+						weeklyDataResponse.put("weekStart", String.valueOf(weekStart));
+						weeklyDataResponse.put("weekEnd", String.valueOf(weekEnd));
+						weeklyHourData.add(weeklyDataResponse);
+					}
+					userDataResponse.set("weekData", weeklyHourData);
+				}
+				else{
+
+				}
+				userDataArray.add(userDataResponse);
+			}
+		}
+
+		node.set("userData",userDataArray );
+		for(int j =0;j< weeksArray.size();j++) {
+			JSONObject objects = (JSONObject) weeksArray.get(j);
+			Date weekStart =  (Date)objects.get("startDate");
+			Date weekEnd  =  (Date) objects.get("endDate");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
+			String weekRange = sdf.format(weekStart)+" - "+ sdf.format(weekEnd) ;
+			weeksDataArray.add(weekRange);
+		}
+		node.set("weeks",weeksDataArray );
+		return node;
+
+	}
+
+	//Nisha
+	public JSONArray findWeeks(int curMonth,int curYear){
+		int month = curMonth;
+		int year = curYear;
+		int dayOfWeek = DateTimeConstants.SUNDAY;
+		String weekRange;
+		JSONArray weeksArray = new JSONArray();
+		org.joda.time.LocalDate firstOfMonth = new org.joda.time.LocalDate( year, month, 1 );
+		org.joda.time.LocalDate firstOfNextMonth = firstOfMonth.plusMonths( 1 );
+		org.joda.time.LocalDate firstDateInGrid = firstOfMonth.withDayOfWeek( dayOfWeek );
+		if ( firstDateInGrid.isAfter( firstOfMonth ) ) { // If getting the next start of week instead of desired week's start, adjust backwards.
+			firstDateInGrid = firstDateInGrid.minusWeeks( 1 );
+		}
+
+		org.joda.time.LocalDate weekStart = firstDateInGrid;
+		org.joda.time.LocalDate weekStop = null;
+		int weekNumber = 0;
+
+		do {
+			JSONObject weekDataResponse = new JSONObject();
+
+			weekNumber = weekNumber + 1;
+			weekStop = weekStart.plusDays( 6 );
+			//System.out.println( weekNumber + " week: " + weekStart + " --- " + weekStop );  // 1 week: 03-30-2014 --- 04-05-2014
+			weekRange = weekStart + " - " + weekStop;
+
+			weekDataResponse.put("startDate",weekStart.toDateTimeAtStartOfDay().toDate() );
+			weekDataResponse.put("endDate",weekStop.toDateTimeAtStartOfDay().toDate());
+			weeksArray.add(weekDataResponse);
+			weekStart = weekStop.plusDays( 1 );
+		} while ( weekStop.isBefore( firstOfNextMonth ) );
+		return weeksArray;
+	}
+
+	//Nisha
+	/*@Override
+	public ObjectNode getTaskTrackDataWeeklyByUser(ObjectNode requestdata) throws Exception {
+		ObjectNode node = objectMapper.createObjectNode();
+		Long projectId = requestdata.get("projectId").asLong();
+		Long userId = requestdata.get("userId").asLong();
+		Date weekStart = requestdata.get("weekStart").toString();
+		Date weekEnd = requestdata.get("weekEnd").toString();
+		TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository.getWeeklyUserData(projectId, weekStart, weekEnd, userId);
+		return node;
+	}*/
 }

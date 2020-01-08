@@ -144,4 +144,8 @@ public interface TasktrackApprovalService {
 	ArrayList<JSONObject> getUserWiseSubmissionDetails(int month, int year, long projectId, long userId, long regionId);
 
 	List<Object[]> getUserWiseSubmissionDetailsExport(int month, int year, long projectId, long userId, long regionId);
+
+    ObjectNode getTaskTrackDataForApprover1(ObjectNode requestdata) throws Exception;
+
+    ObjectNode getTaskTrackDataWeeklyByUser(ObjectNode requestdata) throws Exception;
 }

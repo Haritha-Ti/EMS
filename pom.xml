@@ -11,8 +11,8 @@
 	</parent>
 	
 	<groupId>com.timetrack.ti</groupId>
-	<artifactId>TimetrackerStaging-versionDemo01</artifactId>
-	<version>0.0.20</version>
+	<artifactId>Timetracker-version</artifactId>
+	<version>0.2.0</version>
 	<name>Timetracker</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -109,6 +109,12 @@
     <groupId>org.hibernate</groupId>
         <artifactId>hibernate-envers</artifactId>
     </dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.10.5</version>
+		</dependency>
 
 	</dependencies>
 
