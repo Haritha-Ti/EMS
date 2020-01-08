@@ -3553,8 +3553,8 @@ public class TasktrackController {
 			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			jsonDataRes.put("status", "Success");
-			jsonDataRes.put("code", HttpServletResponse.SC_OK);
+			jsonDataRes.put("status", "Error");
+			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			jsonDataRes.put("message", e.getMessage());
 			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
