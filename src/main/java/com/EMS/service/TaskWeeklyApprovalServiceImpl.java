@@ -1,8 +1,12 @@
 package com.EMS.service;
 
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.repository.TaskWeeklyApprovalRepository;
 import com.EMS.utility.Constants;
+import com.EMS.utility.DateUtil;
 
 @Service
 public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService {
@@ -73,16 +78,18 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			else {
 				response.put("enabled", true);
 			}
-			
-			response.put("day1", weeklyTasktrack.getDay1());
-			response.put("day2", weeklyTasktrack.getDay2());
-			response.put("day3", weeklyTasktrack.getDay3());
-			response.put("day4", weeklyTasktrack.getDay4());
-			response.put("day5", weeklyTasktrack.getDay5());
-			response.put("day6", weeklyTasktrack.getDay6());
-			response.put("day7", weeklyTasktrack.getDay7());
-			
-			
+		
+			List<Date> datesInRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
+		    datesInRange.add(endDate);
+		   			
+			response.put(sdf.format(datesInRange.get(0)), weeklyTasktrack.getDay1());
+			response.put(sdf.format(datesInRange.get(1)), weeklyTasktrack.getDay2());
+			response.put(sdf.format(datesInRange.get(2)), weeklyTasktrack.getDay3());
+			response.put(sdf.format(datesInRange.get(3)), weeklyTasktrack.getDay4());
+			response.put(sdf.format(datesInRange.get(4)), weeklyTasktrack.getDay5());
+			response.put(sdf.format(datesInRange.get(5)), weeklyTasktrack.getDay6());
+			response.put(sdf.format(datesInRange.get(6)), weeklyTasktrack.getDay7());
+		
 		} catch (Exception e) {			
 			e.printStackTrace();
 		}
