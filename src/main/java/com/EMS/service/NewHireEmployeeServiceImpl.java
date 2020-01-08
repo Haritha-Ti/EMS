@@ -43,13 +43,13 @@ public class NewHireEmployeeServiceImpl implements NewHireEmployeeService{
 	
 	
 	@Override
-	public String sendMail(String uId, String mailId,String name) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
+	public String sendMail(String uId, String mailId,String name,String lastName) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
 		
 		MailDomainDto mailDomainDto = new MailDomainDto();
 		//String CONTEXT_PATH ="http://192.168.11.22:4201";
 		String url = CONTEXT_PATH+"/welcome/" + uId;
 		String subject = "New Employee Registration";
-		StringBuilder mailBody = new StringBuilder("Hi "+name+" ,");
+		StringBuilder mailBody = new StringBuilder("Hello "+name+" "+lastName+" ,");
 		mailBody.append("<br/><br/>Please click below link for registration:");
 		mailBody.append("<br/><br/> <a href='"+url+"'>New Employee Registration</a>");
 		mailBody.append("<br/><br/><br/>Regards,");

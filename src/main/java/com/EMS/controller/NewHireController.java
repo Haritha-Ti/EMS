@@ -2,6 +2,7 @@ package com.EMS.controller;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
@@ -10,8 +11,11 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.EMS.security.jwt.CryptoUtil;
 import com.EMS.service.NewHireEmployeeService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,6 +76,9 @@ public class NewHireController {
 
 		}
 		RestTemplate restTemplate = new RestTemplate();
+		MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+		mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM));
+		restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
 		JSONObject apiRequestbody = new JSONObject();
 		apiRequestbody.put("name", name);
 		apiRequestbody.put("lastName", lastName);
@@ -84,8 +92,17 @@ public class NewHireController {
 			 * "http://192.168.11.72:8081/hrt/saveNewHireUniqueId",
 			 * apiRequestbody, JSONObject.class);
 			 */
-			apiResponse = restTemplate.postForObject(url+"/hrt/saveNewHireUniqueId", apiRequestbody,
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("USER", CryptoUtil.encrypt("root1"));
+			headers.set("PWD", CryptoUtil.encrypt("root1"));
+			HttpEntity<JSONObject> request = new HttpEntity<>(apiRequestbody, headers);
+			apiResponse = restTemplate.postForObject(url+"/hrt/saveNewHireUniqueId", request,
 					JSONObject.class);
+			/*Object  o = restTemplate.postForObject(url+"/hrt/saveNewHireUniqueId", request,
+					JSONObject.class);*/
+			/*apiResponse = restTemplate.postForObject(url+"/hrt/saveNewHireUniqueId", apiRequestbody,
+					JSONObject.class);*/
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.put("Status", "failure");
@@ -102,7 +119,7 @@ public class NewHireController {
 			return response;
 		}
 		try {
-			msg = newHireEmployeeService.sendMail(uniqueId, email,name);
+			msg = newHireEmployeeService.sendMail(uniqueId, email,name,lastName);
 			if (msg == "Success") {
 				response.put("Status", "Sucess");
 				response.put("Code", 201);
