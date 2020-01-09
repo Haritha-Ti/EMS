@@ -2,14 +2,11 @@ package com.EMS.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -291,18 +288,69 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		
 			List<Date> datesInRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
 		    datesInRange.add(endDate);
-		   			
-			response.put(sdf.format(datesInRange.get(0)), weeklyTasktrack.getDay1());
+		    		    
+		    JSONObject hour1 = new JSONObject();
+		    hour1.put("hour", weeklyTasktrack.getDay1());		    		    
+		    JSONObject day1 = new JSONObject();
+		    day1.put(sdf.format(datesInRange.get(0)), hour1);
+		    
+		    JSONObject hour2 = new JSONObject();
+		    hour2.put("hour", weeklyTasktrack.getDay2());		    		    
+		    JSONObject day2 = new JSONObject();
+		    day2.put(sdf.format(datesInRange.get(1)), hour2);
+		    
+		    JSONObject hour3 = new JSONObject();
+		    hour3.put("hour", weeklyTasktrack.getDay3());		    		    
+		    JSONObject day3 = new JSONObject();
+		    day3.put(sdf.format(datesInRange.get(2)), hour3);
+		    
+		    JSONObject hour4 = new JSONObject();
+		    hour4.put("hour", weeklyTasktrack.getDay4());		    		    
+		    JSONObject day4 = new JSONObject();
+		    day4.put(sdf.format(datesInRange.get(3)), hour4);
+		    
+		    JSONObject hour5 = new JSONObject();
+		    hour5.put("hour", weeklyTasktrack.getDay5());		    		    
+		    JSONObject day5 = new JSONObject();
+		    day5.put(sdf.format(datesInRange.get(4)), hour5);
+		    
+		    JSONObject hour6 = new JSONObject();
+		    hour5.put("hour", weeklyTasktrack.getDay6());		    		    
+		    JSONObject day6 = new JSONObject();
+		    day6.put(sdf.format(datesInRange.get(5)), hour6);
+		    
+		    JSONObject hour7 = new JSONObject();
+		    hour7.put("hour", weeklyTasktrack.getDay7());		    		    
+		    JSONObject day7 = new JSONObject();
+		    day7.put(sdf.format(datesInRange.get(6)), hour7);
+		    
+		    JSONArray array = new JSONArray();
+		    array.add(day1);
+		    array.add(day2);
+		    array.add(day3);
+		    array.add(day4);
+		    array.add(day5);
+		    array.add(day6);
+		    array.add(day7);
+		    
+		    /*response.put(sdf.format(datesInRange.get(0)), weeklyTasktrack.getDay1());
 			response.put(sdf.format(datesInRange.get(1)), weeklyTasktrack.getDay2());
 			response.put(sdf.format(datesInRange.get(2)), weeklyTasktrack.getDay3());
 			response.put(sdf.format(datesInRange.get(3)), weeklyTasktrack.getDay4());
 			response.put(sdf.format(datesInRange.get(4)), weeklyTasktrack.getDay5());
 			response.put(sdf.format(datesInRange.get(5)), weeklyTasktrack.getDay6());
-			response.put(sdf.format(datesInRange.get(6)), weeklyTasktrack.getDay7());
+			response.put(sdf.format(datesInRange.get(6)), weeklyTasktrack.getDay7()); */
 		
+		    response.put("taskList", array);
 		} catch (Exception e) {			
 			e.printStackTrace();
 		}
 		return response;
+	}
+
+	@Override
+	public JSONObject getWeeklyTasktrackWithTask(JSONObject requestData) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

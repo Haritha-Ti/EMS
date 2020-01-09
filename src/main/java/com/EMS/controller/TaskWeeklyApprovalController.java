@@ -67,7 +67,7 @@ public class TaskWeeklyApprovalController {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@GetMapping(value = "/get/weekly_tasktrack")
+	@PostMapping(value = "/get/weekly_tasktrack")
 	public ResponseEntity<Object> getWeeklyTasktrack(@RequestBody JSONObject requestData) {
 		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		JSONObject jsonResp = new JSONObject();
@@ -76,6 +76,28 @@ public class TaskWeeklyApprovalController {
 			jsonResp.put("status", "Success");
 			jsonResp.put("code", HttpServletResponse.SC_OK);
 			jsonResp.put("data", weeklyTasktrack);
+			response = new ResponseEntity<Object>(jsonResp, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonResp.put("status", "Error");
+			jsonResp.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonResp.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return response;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@PostMapping(value = "/get/tasktrack_with_task/weekly")
+	public ResponseEntity<Object> getWeeklyTasktrackWithTask(@RequestBody JSONObject requestData) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		JSONObject jsonResp = new JSONObject();
+		try {
+			JSONObject weeklyTasktrackWithTask = weeklyApprovalService.getWeeklyTasktrackWithTask(requestData);
+			jsonResp.put("status", "Success");
+			jsonResp.put("code", HttpServletResponse.SC_OK);
+			jsonResp.put("data", weeklyTasktrackWithTask);
 			response = new ResponseEntity<Object>(jsonResp, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

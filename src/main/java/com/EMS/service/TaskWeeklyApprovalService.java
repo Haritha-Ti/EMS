@@ -9,4 +9,6 @@ public interface TaskWeeklyApprovalService {
 	int saveWeeklyApproval(JSONObject requestData);
 	
 	JSONObject getWeeklyTasktrack(JSONObject requestData);
+
+	JSONObject getWeeklyTasktrackWithTask(JSONObject requestData);
 }
