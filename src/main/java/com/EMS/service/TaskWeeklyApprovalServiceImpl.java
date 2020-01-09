@@ -104,7 +104,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
 			if (!approver1Info.equals(null))
-				weeklyApproval.setUser(approver1Info);
+				weeklyApproval.setApprover1Id(approver1Info);
 //			else
 //				requeststatus = 1;
 
@@ -112,7 +112,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
 			if (!approver2Info.equals(null))
-				weeklyApproval.setUser(approver2Info);
+				weeklyApproval.setApprover2Id(approver2Info);
 //			else
 //				requeststatus = 1;
 
@@ -120,7 +120,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			UserModel financeUser = userservice.getUserdetailsbyId(financeUserId);
 
 			if (!financeUser.equals(null))
-				weeklyApproval.setUser(financeUser);
+				weeklyApproval.setFinanceUser(financeUser);
 //			else
 //				requeststatus = 1;
 
