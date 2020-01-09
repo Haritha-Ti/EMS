@@ -101,7 +101,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
 			if (!approver1Info.equals(null))
-				weeklyApproval.setUser(approver1Info);
+				weeklyApproval.setApprover1Id(approver1Info);
 //			else
 //				requeststatus = 1;
 
@@ -109,7 +109,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
 			if (!approver2Info.equals(null))
-				weeklyApproval.setUser(approver2Info);
+				weeklyApproval.setApprover2Id(approver2Info);
 //			else
 //				requeststatus = 1;
 
@@ -117,7 +117,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			UserModel financeUser = userservice.getUserdetailsbyId(financeUserId);
 
 			if (!financeUser.equals(null))
-				weeklyApproval.setUser(financeUser);
+				weeklyApproval.setFinanceUser(financeUser);
 //			else
 //				requeststatus = 1;
 
@@ -331,16 +331,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		    array.add(day4);
 		    array.add(day5);
 		    array.add(day6);
-		    array.add(day7);
-		    
-		    /*response.put(sdf.format(datesInRange.get(0)), weeklyTasktrack.getDay1());
-			response.put(sdf.format(datesInRange.get(1)), weeklyTasktrack.getDay2());
-			response.put(sdf.format(datesInRange.get(2)), weeklyTasktrack.getDay3());
-			response.put(sdf.format(datesInRange.get(3)), weeklyTasktrack.getDay4());
-			response.put(sdf.format(datesInRange.get(4)), weeklyTasktrack.getDay5());
-			response.put(sdf.format(datesInRange.get(5)), weeklyTasktrack.getDay6());
-			response.put(sdf.format(datesInRange.get(6)), weeklyTasktrack.getDay7()); */
-		
+		    array.add(day7);	
 		    response.put("taskList", array);
 		} catch (Exception e) {			
 			e.printStackTrace();
