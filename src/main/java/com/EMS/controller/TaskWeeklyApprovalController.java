@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,9 +66,26 @@ public class TaskWeeklyApprovalController {
 		return responseData;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@GetMapping(value = "/get/weekly_tasktrack")
-	public JSONObject getWeeklyTasktrack(@RequestBody JSONObject requestData) {
-		return weeklyApprovalService.getWeeklyTasktrack(requestData);
+	public ResponseEntity<Object> getWeeklyTasktrack(@RequestBody JSONObject requestData) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		JSONObject jsonResp = new JSONObject();
+		try {
+			JSONObject weeklyTasktrack = weeklyApprovalService.getWeeklyTasktrack(requestData);
+			jsonResp.put("status", "Success");
+			jsonResp.put("code", HttpServletResponse.SC_OK);
+			jsonResp.put("data", weeklyTasktrack);
+			response = new ResponseEntity<Object>(jsonResp, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonResp.put("status", "Error");
+			jsonResp.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonResp.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return response;
 	}
 	
 }

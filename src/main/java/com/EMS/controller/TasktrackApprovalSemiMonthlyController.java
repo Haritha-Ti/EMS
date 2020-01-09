@@ -1,7 +1,11 @@
 package com.EMS.controller;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +20,26 @@ public class TasktrackApprovalSemiMonthlyController {
 	@Autowired
 	private TasktrackApprovalSemiMonthlyService approvalSemiMonthlyService;
 	
+	@SuppressWarnings("unchecked")
 	@GetMapping(value = "/get/semi_monthly_tasktrack")
-	public JSONObject getWeeklyTasktrack(@RequestBody JSONObject requestData) {
-		return approvalSemiMonthlyService.getSemiMonthlyTasktrack(requestData);
+	public ResponseEntity<Object> getWeeklyTasktrack(@RequestBody JSONObject requestData) {
+		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
+		JSONObject jsonResp = new JSONObject();
+		try {
+			JSONObject semiMonthlyTasktrack = approvalSemiMonthlyService.getSemiMonthlyTasktrack(requestData);
+			jsonResp.put("status", "Success");
+			jsonResp.put("code", HttpServletResponse.SC_OK);
+			jsonResp.put("data", semiMonthlyTasktrack);
+			response = new ResponseEntity<Object>(jsonResp, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			jsonResp.put("status", "Error");
+			jsonResp.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			jsonResp.put("message", e.getMessage());
+			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return response;
 	}
 	
 }

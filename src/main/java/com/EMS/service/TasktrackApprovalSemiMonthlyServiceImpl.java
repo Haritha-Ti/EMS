@@ -1,4 +1,5 @@
 package com.EMS.service;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -15,58 +16,59 @@ import com.EMS.utility.Constants;
 import com.EMS.utility.DateUtil;
 
 @Service
-public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprovalSemiMonthlyService{
+public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprovalSemiMonthlyService {
 
 	@Autowired
 	private TaskTrackApprovalSemiMonthlyRepository semiMonthlyRepository;
-	@SuppressWarnings({ "unchecked", "deprecation" })
+
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public JSONObject getSemiMonthlyTasktrack(JSONObject requestData) {
-		
-			JSONObject response = new JSONObject();
-			try {
-				
-				Long userId = null;
-				Long projectId = null;
-				Date startDate = null;
-				Date endDate = null;
-			
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				if (requestData.get("uId") != null && requestData.get("uId").toString() != "") {
-					userId = Long.parseLong(requestData.get("uId").toString());
-				}
-				if (requestData.get("projectId") !=null && requestData.get("projectId").toString() != "") {
-					projectId = Long.parseLong(requestData.get("projectId").toString());
-				}
-				if (requestData.get("startDate") != null && requestData.get("startDate").toString() != null) {
-					startDate = sdf.parse(requestData.get("startDate").toString());
-				}
-				
-				if (requestData.get("endDate") != null && requestData.get("endDate").toString() != null) {
-					endDate = sdf.parse(requestData.get("endDate").toString());
-				}
-				
-				String[] taskStatusArray = {Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED};
-				List<String> taskStatusList = Arrays.asList(taskStatusArray);
-				
-				TasktrackApprovalSemiMonthly approvalSemiMonthly = (TasktrackApprovalSemiMonthly) semiMonthlyRepository
-						.getSemiMonthlyTasktrack(startDate, userId, projectId);
-												
-				String approverOneFirstHalfStatus = approvalSemiMonthly.getApproverOneFirstHalfStatus();
-				String approverTwoFirstHalfStatus = approvalSemiMonthly.getApproverTwoFirstHalfStatus();
-				String financeFirstHalfStatus = approvalSemiMonthly.getFinanceFirstHalfStatus();
-				
-				String approverOneSecondHalfStatus = approvalSemiMonthly.getApproverOneSecondHalfStatus();				
-				String approverTwoSecondHalfStatus = approvalSemiMonthly.getApproverTwoSecondHalfStatus();
-				String financeSecondHalfStatus = approvalSemiMonthly.getFinanceSecondHalfStatus();
-				
-				List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
-				dateRanges.add(endDate);
-				Calendar c = Calendar.getInstance();
-				c.setTime(startDate);
-				
-				int date = c.get(Calendar.DATE);
-				if (date == 1) {				
+
+		JSONObject response = new JSONObject();
+		try {
+
+			Long userId = null;
+			Long projectId = null;
+			Date startDate = null;
+			Date endDate = null;
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			if (requestData.get("uId") != null && requestData.get("uId").toString() != "") {
+				userId = Long.parseLong(requestData.get("uId").toString());
+			}
+			if (requestData.get("projectId") != null && requestData.get("projectId").toString() != "") {
+				projectId = Long.parseLong(requestData.get("projectId").toString());
+			}
+			if (requestData.get("startDate") != null && requestData.get("startDate").toString() != null) {
+				startDate = sdf.parse(requestData.get("startDate").toString());
+			}
+
+			if (requestData.get("endDate") != null && requestData.get("endDate").toString() != null) {
+				endDate = sdf.parse(requestData.get("endDate").toString());
+			}
+
+			String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
+			List<String> taskStatusList = Arrays.asList(taskStatusArray);
+
+			TasktrackApprovalSemiMonthly approvalSemiMonthly = (TasktrackApprovalSemiMonthly) semiMonthlyRepository
+					.getSemiMonthlyTasktrack(startDate, userId, projectId);
+
+			String approverOneFirstHalfStatus = approvalSemiMonthly.getApproverOneFirstHalfStatus();
+			String approverTwoFirstHalfStatus = approvalSemiMonthly.getApproverTwoFirstHalfStatus();
+			String financeFirstHalfStatus = approvalSemiMonthly.getFinanceFirstHalfStatus();
+
+			String approverOneSecondHalfStatus = approvalSemiMonthly.getApproverOneSecondHalfStatus();
+			String approverTwoSecondHalfStatus = approvalSemiMonthly.getApproverTwoSecondHalfStatus();
+			String financeSecondHalfStatus = approvalSemiMonthly.getFinanceSecondHalfStatus();
+
+			List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
+			dateRanges.add(endDate);
+			Calendar c = Calendar.getInstance();
+			c.setTime(startDate);
+
+			int date = c.get(Calendar.DATE);
+			if (date == 1) {
 				response.put(sdf.format(dateRanges.get(0)), approvalSemiMonthly.getDay1());
 				response.put(sdf.format(dateRanges.get(1)), approvalSemiMonthly.getDay2());
 				response.put(sdf.format(dateRanges.get(2)), approvalSemiMonthly.getDay3());
@@ -82,19 +84,18 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				response.put(sdf.format(dateRanges.get(12)), approvalSemiMonthly.getDay13());
 				response.put(sdf.format(dateRanges.get(13)), approvalSemiMonthly.getDay14());
 				response.put(sdf.format(dateRanges.get(14)), approvalSemiMonthly.getDay15());
-				
-				if (taskStatusList.contains(approverOneFirstHalfStatus) || taskStatusList.contains(approverTwoFirstHalfStatus)
+
+				if (taskStatusList.contains(approverOneFirstHalfStatus)
+						|| taskStatusList.contains(approverTwoFirstHalfStatus)
 						|| taskStatusList.contains(financeFirstHalfStatus)) {
 					response.put("enabled", false);
-				}
-				else {
+				} else {
 					response.put("enabled", true);
 				}
-				
-				}
-				
-				
-				if (date == 16) {	
+
+			}
+
+			if (date == 16) {
 				response.put(sdf.format(dateRanges.get(0)), approvalSemiMonthly.getDay16());
 				response.put(sdf.format(dateRanges.get(1)), approvalSemiMonthly.getDay17());
 				response.put(sdf.format(dateRanges.get(2)), approvalSemiMonthly.getDay18());
@@ -111,22 +112,22 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				response.put(sdf.format(dateRanges.get(13)), approvalSemiMonthly.getDay29());
 				response.put(sdf.format(dateRanges.get(14)), approvalSemiMonthly.getDay30());
 				response.put(sdf.format(dateRanges.get(15)), approvalSemiMonthly.getDay31());
-				
-				if (taskStatusList.contains(approverOneSecondHalfStatus) || taskStatusList.contains(approverTwoSecondHalfStatus)
+
+				if (taskStatusList.contains(approverOneSecondHalfStatus)
+						|| taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
 					response.put("enabled", false);
-				}
-				else {
+				} else {
 					response.put("enabled", true);
 				}
-				}
-			
-			} catch ( Exception e) {			
-				e.printStackTrace();
 			}
-			
-			return response;
-	
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return response;
+
 	}
 
 }
