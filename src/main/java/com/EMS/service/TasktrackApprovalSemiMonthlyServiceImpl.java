@@ -2,10 +2,16 @@ package com.EMS.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,11 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.model.ProjectModel;
+import com.EMS.model.Tasktrack;
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.model.UserModel;
 import com.EMS.repository.TaskTrackApprovalSemiMonthlyRepository;
+import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
 import com.EMS.utility.DateUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprovalSemiMonthlyService {
@@ -29,8 +38,11 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 	UserService userservice;
 	
 	@Autowired
+	private TasktrackRepository tasktrackRepository;
+
+	@Autowired
 	ProjectService projectservice;
-	
+
 	@SuppressWarnings({ "unchecked" })
 	@Override
 	public JSONObject getSemiMonthlyTasktrack(JSONObject requestData) {
@@ -65,7 +77,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					.getSemiMonthlyTasktrack(startDate, userId, projectId);
 
 			if (null == approvalSemiMonthly) {
-				
+
 			}
 			String approverOneFirstHalfStatus = approvalSemiMonthly.getApproverOneFirstHalfStatus();
 			String approverTwoFirstHalfStatus = approvalSemiMonthly.getApproverTwoFirstHalfStatus();
@@ -82,101 +94,101 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 			int date = c.get(Calendar.DATE);
 			if (date == 1) {
-				
+
 				JSONObject hour1 = new JSONObject();
 				hour1.put("hour", approvalSemiMonthly.getDay1());
 				JSONObject day1 = new JSONObject();
 				day1.put(sdf.format(dateRanges.get(0)), hour1);
-				
+
 				JSONObject hour2 = new JSONObject();
 				hour2.put("hour", approvalSemiMonthly.getDay2());
 				JSONObject day2 = new JSONObject();
 				day2.put(sdf.format(dateRanges.get(1)), hour2);
-				   
+
 				JSONObject hour3 = new JSONObject();
 				hour3.put("hour", approvalSemiMonthly.getDay3());
 				JSONObject day3 = new JSONObject();
 				day3.put(sdf.format(dateRanges.get(2)), hour3);
-				
+
 				JSONObject hour4 = new JSONObject();
 				hour4.put("hour", approvalSemiMonthly.getDay4());
 				JSONObject day4 = new JSONObject();
 				day4.put(sdf.format(dateRanges.get(3)), hour4);
-				
+
 				JSONObject hour5 = new JSONObject();
 				hour5.put("hour", approvalSemiMonthly.getDay5());
 				JSONObject day5 = new JSONObject();
 				day5.put(sdf.format(dateRanges.get(4)), hour5);
-				
+
 				JSONObject hour6 = new JSONObject();
 				hour6.put("hour", approvalSemiMonthly.getDay6());
 				JSONObject day6 = new JSONObject();
 				day6.put(sdf.format(dateRanges.get(5)), hour6);
-				
+
 				JSONObject hour7 = new JSONObject();
 				hour7.put("hour", approvalSemiMonthly.getDay7());
 				JSONObject day7 = new JSONObject();
 				day7.put(sdf.format(dateRanges.get(6)), hour7);
-				
+
 				JSONObject hour8 = new JSONObject();
 				hour8.put("hour", approvalSemiMonthly.getDay8());
 				JSONObject day8 = new JSONObject();
 				day8.put(sdf.format(dateRanges.get(7)), hour8);
-				
+
 				JSONObject hour9 = new JSONObject();
 				hour9.put("hour", approvalSemiMonthly.getDay9());
 				JSONObject day9 = new JSONObject();
 				day9.put(sdf.format(dateRanges.get(8)), hour9);
-				
+
 				JSONObject hour10 = new JSONObject();
 				hour10.put("hour", approvalSemiMonthly.getDay10());
 				JSONObject day10 = new JSONObject();
 				day10.put(sdf.format(dateRanges.get(9)), hour10);
-				
+
 				JSONObject hour11 = new JSONObject();
 				hour11.put("hour", approvalSemiMonthly.getDay11());
 				JSONObject day11 = new JSONObject();
 				day11.put(sdf.format(dateRanges.get(10)), hour11);
-				
+
 				JSONObject hour12 = new JSONObject();
 				hour12.put("hour", approvalSemiMonthly.getDay12());
 				JSONObject day12 = new JSONObject();
 				day12.put(sdf.format(dateRanges.get(11)), hour12);
-				
+
 				JSONObject hour13 = new JSONObject();
 				hour13.put("hour", approvalSemiMonthly.getDay13());
 				JSONObject day13 = new JSONObject();
 				day13.put(sdf.format(dateRanges.get(12)), hour13);
-				
+
 				JSONObject hour14 = new JSONObject();
 				hour14.put("hour", approvalSemiMonthly.getDay14());
 				JSONObject day14 = new JSONObject();
 				day14.put(sdf.format(dateRanges.get(13)), hour14);
-				
+
 				JSONObject hour15 = new JSONObject();
 				hour15.put("hour", approvalSemiMonthly.getDay15());
 				JSONObject day15 = new JSONObject();
 				day15.put(sdf.format(dateRanges.get(14)), hour15);
-				
+
 				JSONArray array = new JSONArray();
-								
-			    array.add(day1);
-			    array.add(day2);
-			    array.add(day3);
-			    array.add(day4);
-			    array.add(day5);
-			    array.add(day6);
-			    array.add(day7);
-			    array.add(day8);
-			    array.add(day9);
-			    array.add(day10);
-			    array.add(day11);
-			    array.add(day12);
-			    array.add(day13);
-			    array.add(day14);
-			    array.add(day15);
-			    response.put("taskList", array);
-		
+
+				array.add(day1);
+				array.add(day2);
+				array.add(day3);
+				array.add(day4);
+				array.add(day5);
+				array.add(day6);
+				array.add(day7);
+				array.add(day8);
+				array.add(day9);
+				array.add(day10);
+				array.add(day11);
+				array.add(day12);
+				array.add(day13);
+				array.add(day14);
+				array.add(day15);
+				response.put("taskList", array);
+
 				if (taskStatusList.contains(approverOneFirstHalfStatus)
 						|| taskStatusList.contains(approverTwoFirstHalfStatus)
 						|| taskStatusList.contains(financeFirstHalfStatus)) {
@@ -192,17 +204,17 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				hour16.put("hour", approvalSemiMonthly.getDay16());
 				JSONObject day16 = new JSONObject();
 				day16.put(sdf.format(dateRanges.get(0)), hour16);
-				
+
 				JSONObject hour17 = new JSONObject();
 				hour17.put("hour", approvalSemiMonthly.getDay17());
 				JSONObject day17 = new JSONObject();
 				day17.put(sdf.format(dateRanges.get(1)), hour17);
-				
+
 				JSONObject hour18 = new JSONObject();
 				hour18.put("hour", approvalSemiMonthly.getDay18());
 				JSONObject day18 = new JSONObject();
 				day18.put(sdf.format(dateRanges.get(2)), hour18);
-				
+
 				JSONObject hour19 = new JSONObject();
 				hour19.put("hour", approvalSemiMonthly.getDay19());
 				JSONObject day19 = new JSONObject();
@@ -212,83 +224,82 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				hour20.put("hour", approvalSemiMonthly.getDay20());
 				JSONObject day20 = new JSONObject();
 				day20.put(sdf.format(dateRanges.get(4)), hour20);
-				
+
 				JSONObject hour21 = new JSONObject();
 				hour21.put("hour", approvalSemiMonthly.getDay21());
 				JSONObject day21 = new JSONObject();
 				day21.put(sdf.format(dateRanges.get(5)), hour21);
-				
+
 				JSONObject hour22 = new JSONObject();
 				hour22.put("hour", approvalSemiMonthly.getDay22());
 				JSONObject day22 = new JSONObject();
 				day22.put(sdf.format(dateRanges.get(6)), hour22);
-				
+
 				JSONObject hour23 = new JSONObject();
 				hour23.put("hour", approvalSemiMonthly.getDay23());
 				JSONObject day23 = new JSONObject();
 				day23.put(sdf.format(dateRanges.get(7)), hour23);
-				
+
 				JSONObject hour24 = new JSONObject();
 				hour24.put("hour", approvalSemiMonthly.getDay24());
 				JSONObject day24 = new JSONObject();
 				day24.put(sdf.format(dateRanges.get(8)), hour24);
-				
+
 				JSONObject hour25 = new JSONObject();
 				hour25.put("hour", approvalSemiMonthly.getDay25());
 				JSONObject day25 = new JSONObject();
 				day25.put(sdf.format(dateRanges.get(9)), hour25);
-				
+
 				JSONObject hour26 = new JSONObject();
 				hour26.put("hour", approvalSemiMonthly.getDay26());
 				JSONObject day26 = new JSONObject();
 				day26.put(sdf.format(dateRanges.get(10)), hour26);
-				
+
 				JSONObject hour27 = new JSONObject();
 				hour27.put("hour", approvalSemiMonthly.getDay27());
 				JSONObject day27 = new JSONObject();
 				day27.put(sdf.format(dateRanges.get(11)), hour27);
-				
+
 				JSONObject hour28 = new JSONObject();
 				hour28.put("hour", approvalSemiMonthly.getDay28());
 				JSONObject day28 = new JSONObject();
 				day28.put(sdf.format(dateRanges.get(12)), hour28);
-				
+
 				JSONObject hour29 = new JSONObject();
 				hour29.put("hour", approvalSemiMonthly.getDay29());
 				JSONObject day29 = new JSONObject();
 				day29.put(sdf.format(dateRanges.get(13)), hour29);
-				
+
 				JSONObject hour30 = new JSONObject();
 				hour30.put("hour", approvalSemiMonthly.getDay30());
 				JSONObject day30 = new JSONObject();
 				day30.put(sdf.format(dateRanges.get(14)), hour30);
-				
+
 				JSONObject hour31 = new JSONObject();
 				hour31.put("hour", approvalSemiMonthly.getDay31());
 				JSONObject day31 = new JSONObject();
 				day31.put(sdf.format(dateRanges.get(15)), hour31);
-				
+
 				JSONArray array = new JSONArray();
-				
-			    array.add(day16);
-			    array.add(day17);
-			    array.add(day18);
-			    array.add(day19);
-			    array.add(day20);
-			    array.add(day21);
-			    array.add(day22);
-			    array.add(day23);
-			    array.add(day24);
-			    array.add(day25);
-			    array.add(day26);
-			    array.add(day27);
-			    array.add(day28);
-			    array.add(day29);
-			    array.add(day30);
-			    array.add(day31);
-			    response.put("taskList", array);
-		
-			
+
+				array.add(day16);
+				array.add(day17);
+				array.add(day18);
+				array.add(day19);
+				array.add(day20);
+				array.add(day21);
+				array.add(day22);
+				array.add(day23);
+				array.add(day24);
+				array.add(day25);
+				array.add(day26);
+				array.add(day27);
+				array.add(day28);
+				array.add(day29);
+				array.add(day30);
+				array.add(day31);
+				response.put("taskList", array);
+
 				if (taskStatusList.contains(approverOneSecondHalfStatus)
 						|| taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
@@ -305,7 +316,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		return response;
 
 	}
-	
+
 	@Override
 	public int submitForSemiMonthlyApproval(JSONObject requestData) {
 		TasktrackApprovalSemiMonthly semiMonthlyApproval = new TasktrackApprovalSemiMonthly();
@@ -776,6 +787,158 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			return 0;
 		} else
 			return 1;
+	}
+
+	@Override
+	public void getSemiMonthlyTasksForSubmission(JsonNode requestData) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String start = requestData.get("startDate").asText();
+		String end = requestData.get("endDate").asText();
+		Long userId = requestData.get("userId").asLong();
+
+		Date endDate = null, startDate = null;
+		try {
+			startDate = sdf.parse(start);
+			endDate = sdf.parse(end);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		ArrayList<Tasktrack> tasklist = tasktrackRepository.getsavedTaskslist(startDate, endDate, userId);
+		Map<Date, Double> dailyhours = new HashMap<Date, Double>();
+		Long projectId = null;
+
+		if (!tasklist.isEmpty()) {
+
+			for (Tasktrack task : tasklist) {
+				Date datevalue = task.getDate();
+				projectId = task.getProject().getProjectId();
+				if (dailyhours.containsKey(datevalue)) {
+					Double hours = dailyhours.get(datevalue);
+					hours = hours + task.getHours();
+					dailyhours.put(datevalue, hours);
+				} else {
+					dailyhours.put(datevalue, task.getHours());
+				}
+			}
+		}
+
+		TasktrackApprovalSemiMonthly semiMonthlytasksubmission = new TasktrackApprovalSemiMonthly();
+		UserModel userDetails = userservice.getUserdetailsbyId(userId);
+		ProjectModel project = projectservice.findById(projectId);
+
+		semiMonthlytasksubmission.setUser(userDetails);
+		semiMonthlytasksubmission.setProject(project);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		semiMonthlytasksubmission.setYear(calendar.get(Calendar.YEAR));
+		semiMonthlytasksubmission.setMonth(calendar.get(Calendar.MONTH) + 1);
+		if (calendar.get(Calendar.DAY_OF_MONTH) < 5) {
+
+			semiMonthlytasksubmission.setUserFirstHalfSubmittedDate(new Date());
+			semiMonthlytasksubmission.setUserFirstHalfStatus("SUBMITTED");
+		} else {
+
+			semiMonthlytasksubmission.setUserSecondHalfSubmittedDate(new Date());
+			semiMonthlytasksubmission.setUserSecondHalfStatus("SUBMITTED");
+		}
+
+		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+						LinkedHashMap::new));
+
+		LocalDate localstartdate = LocalDate.parse(start);
+		LocalDate localenddate = LocalDate.parse(end);
+
+		while (!localstartdate.isAfter(localenddate)) {
+			String stgdate = String.valueOf(localstartdate);
+			Date date1 = null;
+
+			try {
+				date1 = sdf.parse(stgdate);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date1);
+
+			Double hours = 0.0;
+			if (result.get(date1) != null)
+				hours = Double.parseDouble(result.get(date1).toString());
+
+			if (cal.get(Calendar.DAY_OF_MONTH) == 1)
+				semiMonthlytasksubmission.setDay1(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 2)
+				semiMonthlytasksubmission.setDay2(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 3)
+				semiMonthlytasksubmission.setDay3(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 4)
+				semiMonthlytasksubmission.setDay4(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 5)
+				semiMonthlytasksubmission.setDay5(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 6)
+				semiMonthlytasksubmission.setDay6(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 7)
+				semiMonthlytasksubmission.setDay7(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 8)
+				semiMonthlytasksubmission.setDay8(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 9)
+				semiMonthlytasksubmission.setDay9(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 10)
+				semiMonthlytasksubmission.setDay10(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 11)
+				semiMonthlytasksubmission.setDay11(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 12)
+				semiMonthlytasksubmission.setDay12(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 13)
+				semiMonthlytasksubmission.setDay13(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 14)
+				semiMonthlytasksubmission.setDay14(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 15)
+				semiMonthlytasksubmission.setDay15(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 16)
+				semiMonthlytasksubmission.setDay16(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 17)
+				semiMonthlytasksubmission.setDay17(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 18)
+				semiMonthlytasksubmission.setDay18(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 19)
+				semiMonthlytasksubmission.setDay19(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 20)
+				semiMonthlytasksubmission.setDay20(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 21)
+				semiMonthlytasksubmission.setDay21(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 22)
+				semiMonthlytasksubmission.setDay22(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 23)
+				semiMonthlytasksubmission.setDay23(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 24)
+				semiMonthlytasksubmission.setDay24(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 25)
+				semiMonthlytasksubmission.setDay25(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 26)
+				semiMonthlytasksubmission.setDay26(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 27)
+				semiMonthlytasksubmission.setDay27(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 28)
+				semiMonthlytasksubmission.setDay28(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 29)
+				semiMonthlytasksubmission.setDay29(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 30)
+				semiMonthlytasksubmission.setDay30(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 31)
+				semiMonthlytasksubmission.setDay31(hours);
+
+			localstartdate = localstartdate.plusDays(1);
+
+		}
+
+		semiMonthlyRepository.save(semiMonthlytasksubmission);
+
 	}
 
 }

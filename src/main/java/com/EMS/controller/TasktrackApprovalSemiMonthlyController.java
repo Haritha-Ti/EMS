@@ -23,10 +23,10 @@ public class TasktrackApprovalSemiMonthlyController {
 
 	@Autowired
 	private TasktrackApprovalSemiMonthlyService approvalSemiMonthlyService;
-	
+
 	@Autowired
 	ObjectMapper objectmapper;
-	
+
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "/get/semi_monthly_tasktrack")
 	public ResponseEntity<Object> getWeeklyTasktrack(@RequestBody JSONObject requestData) {
@@ -45,47 +45,67 @@ public class TasktrackApprovalSemiMonthlyController {
 			jsonResp.put("message", e.getMessage());
 			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 		return response;
 	}
-	
+
 	@PostMapping(value = "/submitSemiMonthlyTaskTrack")
-	public JsonNode submitSemiMonthlyTaskTrack(@RequestBody JSONObject requestData,HttpServletResponse httpstatus) {
-		
-		int status=approvalSemiMonthlyService.submitForSemiMonthlyApproval(requestData);
-		
-		ObjectNode responseData=objectmapper.createObjectNode();
-		if(status==0) {
+	public JsonNode submitSemiMonthlyTaskTrack(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
+
+		int status = approvalSemiMonthlyService.submitForSemiMonthlyApproval(requestData);
+
+		ObjectNode responseData = objectmapper.createObjectNode();
+		if (status == 0) {
 			responseData.put("status", "success");
 			responseData.put("message", "success. ");
 			responseData.put("code", httpstatus.getStatus());
-		}else {
+		} else {
 			responseData.put("status", "success");
 			responseData.put("message", "Failed due to invalid credentials ");
 			responseData.put("code", httpstatus.getStatus());
 		}
-		
+
 		return responseData;
 	}
-	
+
 	@PostMapping(value = "/saveSemiMonthlyTaskTrackApproval")
-	public JsonNode saveSemiMonthlyTaskTrackApproval(@RequestBody JSONObject requestData,HttpServletResponse httpstatus) {
-		
-		int status=approvalSemiMonthlyService.saveSemiMonthlyTaskTrackApproval(requestData);
-		
-		
-		ObjectNode responseData=objectmapper.createObjectNode();
-		if(status==0) {
+	public JsonNode saveSemiMonthlyTaskTrackApproval(@RequestBody JSONObject requestData,
+			HttpServletResponse httpstatus) {
+
+		int status = approvalSemiMonthlyService.saveSemiMonthlyTaskTrackApproval(requestData);
+
+		ObjectNode responseData = objectmapper.createObjectNode();
+		if (status == 0) {
 			responseData.put("status", "success");
 			responseData.put("message", "success. ");
 			responseData.put("code", httpstatus.getStatus());
-		}else {
+		} else {
 			responseData.put("status", "success");
 			responseData.put("message", "Failed due to invalid credentials ");
 			responseData.put("code", httpstatus.getStatus());
 		}
-		
+
 		return responseData;
 	}
-	
+
+	@PostMapping(value = "/submitTasktrackSemimonthly")
+	public JsonNode submitTasktrackSemimonthly(@RequestBody JsonNode requestData, HttpServletResponse httpstatus) {
+
+		ObjectNode responseData = objectmapper.createObjectNode();
+		try {
+
+			approvalSemiMonthlyService.getSemiMonthlyTasksForSubmission(requestData);
+			responseData.put("status", "success");
+			responseData.put("code", httpstatus.getStatus());
+			responseData.put("data", " ");
+
+		} catch (Exception e) {
+			responseData.put("status", "Failed");
+			responseData.put("code", httpstatus.getStatus());
+			responseData.put("message", "Exception " + e);
+		}
+
+		return responseData;
+	}
+
 }

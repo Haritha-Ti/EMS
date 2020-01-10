@@ -1,6 +1,7 @@
 package com.EMS.repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -339,4 +340,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	List<Tasktrack> findByUserUserIdAndProjectProjectIdInAndDateBetween(Long userId, List<Long> projectIds, Date startDate,
 			Date endDate);
 
+	@Query(value = "SELECT * FROM tasktrack WHERE date BETWEEN :startDate AND :endDate and user_user_id = :userId",nativeQuery=true)
+	public ArrayList<Tasktrack> getsavedTaskslist(Date startDate, Date endDate, Long userId);
+	
 }
