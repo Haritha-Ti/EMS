@@ -68,4 +68,11 @@ public class Constants {
 		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED = "REJECTED";
 		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED = "APPROVED";
 	}
+
+	public static final int WARN_CODE = 501;
+	public static final int ERROR_CODE = 500;
+	public static final int SUCCESS_CODE = 200;
+	public static final String SUCCESS = "Success";
+	public static final String OK = "OK";
+	public static final String ERROR = "Error";
 }

@@ -34,7 +34,7 @@ public class TasktrackApprovalController {
 	@Autowired
 	private  TasktrackApprovalService tasktrackApprovalService;
 
-	@PostMapping(value = "/getTaskTrackDataForApprover1")
+	@PostMapping(value = "/taskTrackDataForApprover1")
 	public ObjectNode getTaskTrackDataForApprover1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode responseData = objectMapper.createObjectNode();
 		ObjectNode node = objectMapper.createObjectNode();
@@ -56,4 +56,46 @@ public class TasktrackApprovalController {
 		return responseData;
 	}
 
+	@PostMapping(value = "/taskTrackDataByUserId")
+	public ObjectNode getTaskTrackDataByUserId(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responseData = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		try {
+			node = tasktrackApprovalService.getTaskTrackDataByUserId(requestdata);
+			responseData.set("data",node);
+			responseData.put("status", "Sucess");
+			responseData.put("message", "Sucess ");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			responseData.set("data",node);
+			responseData.put("status", "failure");
+			responseData.put("message", "failed. " + e);
+		}
+
+		responseData.put("code", httpstatus.getStatus());
+		return responseData;
+	}
+	@PutMapping(value = "/approveHoursLevel1")
+	public ObjectNode approveHoursLevel1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responseData = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		try {
+			node = tasktrackApprovalService.approveHoursLevel1(requestdata);
+			responseData.set("data",node);
+			responseData.put("status", "Sucess");
+			responseData.put("message", "Sucess ");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			responseData.set("data",node);
+			responseData.put("status", "failure");
+			responseData.put("message", "failed. " + e);
+		}
+
+		responseData.put("code", httpstatus.getStatus());
+		return responseData;
+	}
 }

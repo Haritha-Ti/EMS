@@ -470,8 +470,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver1Id = Long.parseLong(requestData.get("approverOneId").toString());
 				UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
-				if (!approver1Info.equals(null))
-					semiMonthlyApproval.setApproverOneId(approver1Info);
+				//if (!approver1Info.equals(null))
+					//semiMonthlyApproval.set(approver1Info);
 			}
 
 			if ((requestData.get("approverOneFirstHalfSubmittedDate") != null)) {
@@ -491,8 +491,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver2Id = Long.parseLong(requestData.get("approverTwoId").toString());
 				UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
-				if (!approver2Info.equals(null))
-					semiMonthlyApproval.setApproverTwoId(approver2Info);
+				//if (!approver2Info.equals(null))
+					//semiMonthlyApproval.setApproverTwoId(approver2Info);
 			}
 
 			if ((requestData.get("approverTwoFirstHalfSubmittedDate") != null)) {
@@ -710,8 +710,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver1Id = Long.parseLong(requestData.get("approverOneId").toString());
 				UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
-				if (!approver1Info.equals(null))
-					semiMonthlyApproval.setApproverOneId(approver1Info);
+				//if (!approver1Info.equals(null))
+					//semiMonthlyApproval.setApproverOneId(approver1Info);
 			}
 
 			if ((requestData.get("approverOneFirstHalfSubmittedDate") != null)) {
@@ -730,8 +730,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver2Id = Long.parseLong(requestData.get("approverTwoId").toString());
 				UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
-				if (!approver2Info.equals(null))
-					semiMonthlyApproval.setApproverTwoId(approver2Info);
+				//if (!approver2Info.equals(null))
+					//semiMonthlyApproval.setApproverTwoId(approver2Info);
 			}
 
 			if ((requestData.get("approverTwoFirstHalfSubmittedDate") != null)) {
