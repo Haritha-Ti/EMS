@@ -36,7 +36,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 	@Autowired
 	UserService userservice;
-	
+
 	@Autowired
 	private TasktrackRepository tasktrackRepository;
 
@@ -481,8 +481,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver1Id = Long.parseLong(requestData.get("approverOneId").toString());
 				UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
-				//if (!approver1Info.equals(null))
-					//semiMonthlyApproval.set(approver1Info);
+				// if (!approver1Info.equals(null))
+				// semiMonthlyApproval.set(approver1Info);
 			}
 
 			if ((requestData.get("approverOneFirstHalfSubmittedDate") != null)) {
@@ -502,8 +502,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver2Id = Long.parseLong(requestData.get("approverTwoId").toString());
 				UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
-				//if (!approver2Info.equals(null))
-					//semiMonthlyApproval.setApproverTwoId(approver2Info);
+				// if (!approver2Info.equals(null))
+				// semiMonthlyApproval.setApproverTwoId(approver2Info);
 			}
 
 			if ((requestData.get("approverTwoFirstHalfSubmittedDate") != null)) {
@@ -545,8 +545,14 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		}
 
 		if (requeststatus == 0) {
-			semiMonthlyRepository.save(semiMonthlyApproval);
-			return 0;
+
+			int count = semiMonthlyRepository.getsemiMonthlyRecord(semiMonthlyApproval.getUser().getUserId(),
+					semiMonthlyApproval.getMonth(), semiMonthlyApproval.getYear());
+			if (count == 0) {
+				semiMonthlyRepository.save(semiMonthlyApproval);
+				return 0;
+			} else
+				return 1;
 		} else
 			return 1;
 	}
@@ -721,8 +727,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver1Id = Long.parseLong(requestData.get("approverOneId").toString());
 				UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
-				//if (!approver1Info.equals(null))
-					//semiMonthlyApproval.setApproverOneId(approver1Info);
+				// if (!approver1Info.equals(null))
+				// semiMonthlyApproval.setApproverOneId(approver1Info);
 			}
 
 			if ((requestData.get("approverOneFirstHalfSubmittedDate") != null)) {
@@ -741,8 +747,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver2Id = Long.parseLong(requestData.get("approverTwoId").toString());
 				UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
-				//if (!approver2Info.equals(null))
-					//semiMonthlyApproval.setApproverTwoId(approver2Info);
+				// if (!approver2Info.equals(null))
+				// semiMonthlyApproval.setApproverTwoId(approver2Info);
 			}
 
 			if ((requestData.get("approverTwoFirstHalfSubmittedDate") != null)) {
@@ -783,8 +789,14 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		}
 
 		if (requeststatus == 0) {
-			semiMonthlyRepository.save(semiMonthlyApproval);
-			return 0;
+			int count = semiMonthlyRepository.checkduplicationForsemiMonthlyTaskTrack(
+					semiMonthlyApproval.getUser().getUserId(), semiMonthlyApproval.getMonth(),
+					semiMonthlyApproval.getYear());
+			if (count == 0) {
+				semiMonthlyRepository.save(semiMonthlyApproval);
+				return 0;
+			} else
+				return 1;
 		} else
 			return 1;
 	}
@@ -834,7 +846,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		semiMonthlytasksubmission.setYear(calendar.get(Calendar.YEAR));
-		
+
 		semiMonthlytasksubmission.setMonth(calendar.get(Calendar.MONTH) + 1);
 		if (calendar.get(Calendar.DAY_OF_MONTH) < 5) {
 
@@ -938,12 +950,13 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		}
 
-		int count=semiMonthlyRepository.getsemiMonthlyRecord(userId,semiMonthlytasksubmission.getYear(),semiMonthlytasksubmission.getMonth());
-		
-		if(count >0) {
+		int count = semiMonthlyRepository.getsemiMonthlyRecord(userId, semiMonthlytasksubmission.getYear(),
+				semiMonthlytasksubmission.getMonth());
+
+		if (count > 0) {
 			return 0;
-		}else {
-		
+		} else {
+
 			semiMonthlyRepository.save(semiMonthlytasksubmission);
 			return 1;
 		}

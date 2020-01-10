@@ -13,6 +13,7 @@ public interface TaskWeeklyApprovalService {
 	JSONObject getWeeklyTasktrack(JSONObject requestData);
 
 	JSONObject getWeeklyTasktrackWithTask(JSONObject requestData);
-	void getWeeklyTasksForSubmission(JsonNode requestData);
+	
+	int getWeeklyTasksForSubmission(JsonNode requestData);
 }
 

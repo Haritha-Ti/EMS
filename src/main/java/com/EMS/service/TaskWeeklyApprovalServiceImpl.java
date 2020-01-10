@@ -33,11 +33,10 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 	@Autowired
 	private TaskWeeklyApprovalRepository taskWeeklyApprovalRepository;
-	
-	
+
 	@Autowired
 	private UserService userservice;
-	
+
 	@Autowired
 	private TasktrackRepository tasktrackRepository;
 
@@ -152,14 +151,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			}
 
-	
 			if (requestData.get("approver1SubmittedDate") != null)
-				weeklyApproval.setApprover1SubmittedDate(sdf.parse(requestData.get("approver1SubmittedDate").toString()));
-			
-			
+				weeklyApproval
+						.setApprover1SubmittedDate(sdf.parse(requestData.get("approver1SubmittedDate").toString()));
+
 			if (requestData.get("approver2SubmittedDate") != null)
-				weeklyApproval.setApprover2SubmittedDate(sdf.parse(requestData.get("approver2SubmittedDate").toString()));
-			
+				weeklyApproval
+						.setApprover2SubmittedDate(sdf.parse(requestData.get("approver2SubmittedDate").toString()));
+
 			if (requestData.get("financeSubmittedDate") != null)
 				weeklyApproval.setFinanceSubmittedDate(sdf.parse(requestData.get("financeSubmittedDate").toString()));
 
@@ -172,8 +171,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		}
 
 		if (requeststatus == 0) {
-			taskWeeklyApprovalRepository.save(weeklyApproval);
-			return 0;
+
+			int count = taskWeeklyApprovalRepository.getduplicateentrycount(weeklyApproval.getStartDate(),
+					weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
+			if (count == 0) {
+				taskWeeklyApprovalRepository.save(weeklyApproval);
+				return 0;
+			} else
+				return 1;
 		} else
 			return 1;
 
@@ -181,7 +186,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 	@Override
 	public int saveWeeklyApproval(JSONObject requestData) {
-		
+
 		TaskTrackWeeklyApproval weeklyApproval = new TaskTrackWeeklyApproval();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		int requeststatus = 0;
@@ -238,7 +243,8 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			else
 				requeststatus = 1;
 
-			if (requestData.get("timetrackStatus").toString().equals(null)|| requestData.get("timetrackStatus").toString().equals(" ")){
+			if (requestData.get("timetrackStatus").toString().equals(null)
+					|| requestData.get("timetrackStatus").toString().equals(" ")) {
 				requeststatus = 1;
 			} else {
 
@@ -250,8 +256,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		}
 
 		if (requeststatus == 0) {
-			taskWeeklyApprovalRepository.save(weeklyApproval);
-			return 0;
+
+			int count = taskWeeklyApprovalRepository.getduplicateentrycount(weeklyApproval.getStartDate(),
+					weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
+			if (count == 0) {
+				taskWeeklyApprovalRepository.save(weeklyApproval);
+				return 0;
+			} else
+				return 1;
 		} else
 			return 1;
 
@@ -262,7 +274,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	public JSONObject getWeeklyTasktrack(JSONObject requestData) {
 		JSONObject response = new JSONObject();
 		try {
-			
+
 			Long userId = null;
 			Long projectId = null;
 			Date startDate = null;
@@ -272,7 +284,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			if (requestData.get("uId") != null && requestData.get("uId").toString() != "") {
 				userId = Long.parseLong(requestData.get("uId").toString());
 			}
-			if (requestData.get("projectId") !=null && requestData.get("projectId").toString() != "") {
+			if (requestData.get("projectId") != null && requestData.get("projectId").toString() != "") {
 				projectId = Long.parseLong(requestData.get("projectId").toString());
 			}
 			if (requestData.get("startDate") != null && requestData.get("startDate").toString() != null) {
@@ -281,72 +293,71 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			if (requestData.get("endDate") != null && requestData.get("endDate").toString() != null) {
 				endDate = sdf.parse(requestData.get("endDate").toString());
 			}
-			
-			String[] taskStatusArray = {Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED};
+
+			String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
 			List<String> taskStatusList = Arrays.asList(taskStatusArray);
-			TaskTrackWeeklyApproval weeklyTasktrack = taskWeeklyApprovalRepository.getWeeklyTasktrack(startDate, endDate, userId, projectId);
-			
-			
+			TaskTrackWeeklyApproval weeklyTasktrack = taskWeeklyApprovalRepository.getWeeklyTasktrack(startDate,
+					endDate, userId, projectId);
+
 			String approver1Status = weeklyTasktrack.getApprover1Status();
 			String approver2Status = weeklyTasktrack.getApprover2Status();
 			String financeStatus = weeklyTasktrack.getFinanceStatus();
-		
+
 			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
 					|| taskStatusList.contains(financeStatus)) {
 				response.put("enabled", false);
-			}
-			else {
+			} else {
 				response.put("enabled", true);
 			}
-		
+
 			List<Date> datesInRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
-		    datesInRange.add(endDate);
-		    		    
-		    JSONObject hour1 = new JSONObject();
-		    hour1.put("hour", weeklyTasktrack.getDay1());		    		    
-		    JSONObject day1 = new JSONObject();
-		    day1.put(sdf.format(datesInRange.get(0)), hour1);
-		    
-		    JSONObject hour2 = new JSONObject();
-		    hour2.put("hour", weeklyTasktrack.getDay2());		    		    
-		    JSONObject day2 = new JSONObject();
-		    day2.put(sdf.format(datesInRange.get(1)), hour2);
-		    
-		    JSONObject hour3 = new JSONObject();
-		    hour3.put("hour", weeklyTasktrack.getDay3());		    		    
-		    JSONObject day3 = new JSONObject();
-		    day3.put(sdf.format(datesInRange.get(2)), hour3);
-		    
-		    JSONObject hour4 = new JSONObject();
-		    hour4.put("hour", weeklyTasktrack.getDay4());		    		    
-		    JSONObject day4 = new JSONObject();
-		    day4.put(sdf.format(datesInRange.get(3)), hour4);
-		    
-		    JSONObject hour5 = new JSONObject();
-		    hour5.put("hour", weeklyTasktrack.getDay5());		    		    
-		    JSONObject day5 = new JSONObject();
-		    day5.put(sdf.format(datesInRange.get(4)), hour5);
-		    
-		    JSONObject hour6 = new JSONObject();
-		    hour5.put("hour", weeklyTasktrack.getDay6());		    		    
-		    JSONObject day6 = new JSONObject();
-		    day6.put(sdf.format(datesInRange.get(5)), hour6);
-		    
-		    JSONObject hour7 = new JSONObject();
-		    hour7.put("hour", weeklyTasktrack.getDay7());		    		    
-		    JSONObject day7 = new JSONObject();
-		    day7.put(sdf.format(datesInRange.get(6)), hour7);
-		    
-		    JSONArray array = new JSONArray();
-		    array.add(day1);
-		    array.add(day2);
-		    array.add(day3);
-		    array.add(day4);
-		    array.add(day5);
-		    array.add(day6);
-		    array.add(day7);	
-		    response.put("taskList", array);
-		} catch (Exception e) {			
+			datesInRange.add(endDate);
+
+			JSONObject hour1 = new JSONObject();
+			hour1.put("hour", weeklyTasktrack.getDay1());
+			JSONObject day1 = new JSONObject();
+			day1.put(sdf.format(datesInRange.get(0)), hour1);
+
+			JSONObject hour2 = new JSONObject();
+			hour2.put("hour", weeklyTasktrack.getDay2());
+			JSONObject day2 = new JSONObject();
+			day2.put(sdf.format(datesInRange.get(1)), hour2);
+
+			JSONObject hour3 = new JSONObject();
+			hour3.put("hour", weeklyTasktrack.getDay3());
+			JSONObject day3 = new JSONObject();
+			day3.put(sdf.format(datesInRange.get(2)), hour3);
+
+			JSONObject hour4 = new JSONObject();
+			hour4.put("hour", weeklyTasktrack.getDay4());
+			JSONObject day4 = new JSONObject();
+			day4.put(sdf.format(datesInRange.get(3)), hour4);
+
+			JSONObject hour5 = new JSONObject();
+			hour5.put("hour", weeklyTasktrack.getDay5());
+			JSONObject day5 = new JSONObject();
+			day5.put(sdf.format(datesInRange.get(4)), hour5);
+
+			JSONObject hour6 = new JSONObject();
+			hour5.put("hour", weeklyTasktrack.getDay6());
+			JSONObject day6 = new JSONObject();
+			day6.put(sdf.format(datesInRange.get(5)), hour6);
+
+			JSONObject hour7 = new JSONObject();
+			hour7.put("hour", weeklyTasktrack.getDay7());
+			JSONObject day7 = new JSONObject();
+			day7.put(sdf.format(datesInRange.get(6)), hour7);
+
+			JSONArray array = new JSONArray();
+			array.add(day1);
+			array.add(day2);
+			array.add(day3);
+			array.add(day4);
+			array.add(day5);
+			array.add(day6);
+			array.add(day7);
+			response.put("taskList", array);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;
@@ -357,14 +368,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
-	public void getWeeklyTasksForSubmission(JsonNode requestData) {
+	public int getWeeklyTasksForSubmission(JsonNode requestData) {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String start = requestData.get("startDate").asText();
 		String end = requestData.get("endDate").asText();
-		Long userId = requestData.get("userId").asLong();		
+		Long userId = requestData.get("userId").asLong();
 
 		Date endDate = null, startDate = null;
 		try {
@@ -374,7 +385,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		ArrayList<Tasktrack> tasklist = tasktrackRepository.getsavedTaskslist(startDate, endDate, userId);
 		Map<Date, Double> dailyhours = new HashMap<Date, Double>();
 		Long projectId = null;
@@ -383,7 +394,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			for (Tasktrack task : tasklist) {
 				Date datevalue = task.getDate();
-				projectId =task.getProject().getProjectId();
+				projectId = task.getProject().getProjectId();
 				if (dailyhours.containsKey(datevalue)) {
 					Double hours = dailyhours.get(datevalue);
 					hours = hours + task.getHours();
@@ -402,7 +413,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		weeklytasksubmission.setProject(project);
 		weeklytasksubmission.setStartDate(startDate);
 		weeklytasksubmission.setEndDate(endDate);
-		
+
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		weeklytasksubmission.setYear(calendar.get(Calendar.YEAR));
@@ -412,47 +423,52 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
 						LinkedHashMap::new));
-		
+
 		LocalDate localstartdate = LocalDate.parse(start);
 		LocalDate localenddate = LocalDate.parse(end);
-		int count=0;
+		int count = 0;
 		while (!localstartdate.isAfter(localenddate)) {
 			String stgdate = String.valueOf(localstartdate);
-			Date date1=null;
+			Date date1 = null;
 			try {
 				date1 = sdf.parse(stgdate);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			Double hours=0.0;
-			if(result.get(date1)!=null)
-				hours=Double.parseDouble(result.get(date1).toString());
-			
-			
-			if(count==0)
-				weeklytasksubmission.setDay1(hours);	
-			if(count==1)
-				weeklytasksubmission.setDay2(hours);	
-			if(count==2)
-				weeklytasksubmission.setDay3(hours);	
-			if(count==3)
-				weeklytasksubmission.setDay4(hours);	
-			if(count==4)
-				weeklytasksubmission.setDay5(hours);	
-			if(count==5)
-				weeklytasksubmission.setDay6(hours);	
-			if(count==6)
-				weeklytasksubmission.setDay7(hours);	
-			
+
+			Double hours = 0.0;
+			if (result.get(date1) != null)
+				hours = Double.parseDouble(result.get(date1).toString());
+
+			if (count == 0)
+				weeklytasksubmission.setDay1(hours);
+			if (count == 1)
+				weeklytasksubmission.setDay2(hours);
+			if (count == 2)
+				weeklytasksubmission.setDay3(hours);
+			if (count == 3)
+				weeklytasksubmission.setDay4(hours);
+			if (count == 4)
+				weeklytasksubmission.setDay5(hours);
+			if (count == 5)
+				weeklytasksubmission.setDay6(hours);
+			if (count == 6)
+				weeklytasksubmission.setDay7(hours);
+
 			localstartdate = localstartdate.plusDays(1);
 			count++;
 		}
-		
-		taskWeeklyApprovalRepository.save(weeklytasksubmission);
 
 		
+		
+		int countt= taskWeeklyApprovalRepository.getduplicateentrycount(weeklytasksubmission.getStartDate(),
+				weeklytasksubmission.getEndDate(), weeklytasksubmission.getUser().getUserId());
+		if (countt == 0) {
+			taskWeeklyApprovalRepository.save(weeklytasksubmission);
+			return 0;
+		} else
+			return 1;
 	}
 
 }

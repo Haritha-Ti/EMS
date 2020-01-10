@@ -115,10 +115,17 @@ public class TaskWeeklyApprovalController {
 		ObjectNode responseData = objectmapper.createObjectNode();
 		try {
 			
-			weeklyApprovalService.getWeeklyTasksForSubmission(requestData);
-			responseData.put("status", "success");
-			responseData.put("code", httpstatus.getStatus());
-			responseData.put("data", "");
+			int count=weeklyApprovalService.getWeeklyTasksForSubmission(requestData);
+			if(count==0) {
+				responseData.put("status", "success");
+				responseData.put("code", httpstatus.getStatus());
+				responseData.put("data", "");
+			}else {
+				responseData.put("status", "success");
+				responseData.put("message", "Failed due to duplicate entry");
+				responseData.put("code", httpstatus.getStatus());
+				responseData.put("data", "");
+			}
 			
 		} catch (Exception e) {
 			responseData.put("status", "Failed");
