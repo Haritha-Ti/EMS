@@ -11,5 +11,5 @@ public interface TasktrackApprovalSemiMonthlyService {
 
 	int saveSemiMonthlyTaskTrackApproval(JSONObject requestData);
 
-	void getSemiMonthlyTasksForSubmission(JsonNode requestData);
+	int getSemiMonthlyTasksForSubmission(JsonNode requestData);
 }

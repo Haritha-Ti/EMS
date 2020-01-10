@@ -407,7 +407,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		calendar.setTime(startDate);
 		weeklytasksubmission.setYear(calendar.get(Calendar.YEAR));
 		weeklytasksubmission.setUserSubmittedDate(new Date());
-		weeklytasksubmission.setTimetrackStatus("SUBMITTED");
+		weeklytasksubmission.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
 
 		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,

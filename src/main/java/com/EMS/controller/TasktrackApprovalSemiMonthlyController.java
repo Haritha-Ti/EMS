@@ -94,10 +94,18 @@ public class TasktrackApprovalSemiMonthlyController {
 		ObjectNode responseData = objectmapper.createObjectNode();
 		try {
 
-			approvalSemiMonthlyService.getSemiMonthlyTasksForSubmission(requestData);
-			responseData.put("status", "success");
-			responseData.put("code", httpstatus.getStatus());
-			responseData.put("data", " ");
+			int status=approvalSemiMonthlyService.getSemiMonthlyTasksForSubmission(requestData);
+			if(status==0) {
+				responseData.put("status", "success");
+				responseData.put("message", "Failed due to duplicate entry ");
+				responseData.put("code", httpstatus.getStatus());
+				responseData.put("data", " ");
+			}else {
+				responseData.put("status", "success");
+				responseData.put("code", httpstatus.getStatus());
+				responseData.put("data", " ");
+			}
+			
 
 		} catch (Exception e) {
 			responseData.put("status", "Failed");

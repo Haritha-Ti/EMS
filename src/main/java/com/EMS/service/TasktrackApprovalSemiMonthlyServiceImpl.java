@@ -790,7 +790,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 	}
 
 	@Override
-	public void getSemiMonthlyTasksForSubmission(JsonNode requestData) {
+	public int getSemiMonthlyTasksForSubmission(JsonNode requestData) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String start = requestData.get("startDate").asText();
 		String end = requestData.get("endDate").asText();
@@ -834,15 +834,16 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		semiMonthlytasksubmission.setYear(calendar.get(Calendar.YEAR));
+		
 		semiMonthlytasksubmission.setMonth(calendar.get(Calendar.MONTH) + 1);
 		if (calendar.get(Calendar.DAY_OF_MONTH) < 5) {
 
 			semiMonthlytasksubmission.setUserFirstHalfSubmittedDate(new Date());
-			semiMonthlytasksubmission.setUserFirstHalfStatus("SUBMITTED");
+			semiMonthlytasksubmission.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
 		} else {
 
 			semiMonthlytasksubmission.setUserSecondHalfSubmittedDate(new Date());
-			semiMonthlytasksubmission.setUserSecondHalfStatus("SUBMITTED");
+			semiMonthlytasksubmission.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
 		}
 
 		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())
@@ -937,7 +938,15 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		}
 
-		semiMonthlyRepository.save(semiMonthlytasksubmission);
+		int count=semiMonthlyRepository.getsemiMonthlyRecord(userId,semiMonthlytasksubmission.getYear(),semiMonthlytasksubmission.getMonth());
+		
+		if(count >0) {
+			return 0;
+		}else {
+		
+			semiMonthlyRepository.save(semiMonthlytasksubmission);
+			return 1;
+		}
 
 	}
 
