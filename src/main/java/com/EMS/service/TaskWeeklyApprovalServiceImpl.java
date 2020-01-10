@@ -2,9 +2,16 @@ package com.EMS.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,10 +20,13 @@ import org.springframework.stereotype.Service;
 
 import com.EMS.model.ProjectModel;
 import com.EMS.model.TaskTrackWeeklyApproval;
+import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
 import com.EMS.repository.TaskWeeklyApprovalRepository;
+import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
 import com.EMS.utility.DateUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService {
@@ -27,6 +37,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	
 	@Autowired
 	private UserService userservice;
+	
+	@Autowired
+	private TasktrackRepository tasktrackRepository;
 
 	@Autowired
 	private ProjectService projectservice;
@@ -344,4 +357,102 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public void getWeeklyTasksForSubmission(JsonNode requestData) {
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String start = requestData.get("startDate").asText();
+		String end = requestData.get("endDate").asText();
+		Long userId = requestData.get("userId").asLong();		
+
+		Date endDate = null, startDate = null;
+		try {
+			startDate = sdf.parse(start);
+			endDate = sdf.parse(end);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ArrayList<Tasktrack> tasklist = tasktrackRepository.getsavedTaskslist(startDate, endDate, userId);
+		Map<Date, Double> dailyhours = new HashMap<Date, Double>();
+		Long projectId = null;
+
+		if (!tasklist.isEmpty()) {
+
+			for (Tasktrack task : tasklist) {
+				Date datevalue = task.getDate();
+				projectId =task.getProject().getProjectId();
+				if (dailyhours.containsKey(datevalue)) {
+					Double hours = dailyhours.get(datevalue);
+					hours = hours + task.getHours();
+					dailyhours.put(datevalue, hours);
+				} else {
+					dailyhours.put(datevalue, task.getHours());
+				}
+			}
+		}
+
+		TaskTrackWeeklyApproval weeklytasksubmission = new TaskTrackWeeklyApproval();
+		UserModel userDetails = userservice.getUserdetailsbyId(userId);
+		ProjectModel project = projectservice.findById(projectId);
+
+		weeklytasksubmission.setUser(userDetails);
+		weeklytasksubmission.setProject(project);
+		weeklytasksubmission.setStartDate(startDate);
+		weeklytasksubmission.setEndDate(endDate);
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		weeklytasksubmission.setYear(calendar.get(Calendar.YEAR));
+		weeklytasksubmission.setUserSubmittedDate(new Date());
+		weeklytasksubmission.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+
+		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+						LinkedHashMap::new));
+		
+		LocalDate localstartdate = LocalDate.parse(start);
+		LocalDate localenddate = LocalDate.parse(end);
+		int count=0;
+		while (!localstartdate.isAfter(localenddate)) {
+			String stgdate = String.valueOf(localstartdate);
+			Date date1=null;
+			try {
+				date1 = sdf.parse(stgdate);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Double hours=0.0;
+			if(result.get(date1)!=null)
+				hours=Double.parseDouble(result.get(date1).toString());
+			
+			
+			if(count==0)
+				weeklytasksubmission.setDay1(hours);	
+			if(count==1)
+				weeklytasksubmission.setDay2(hours);	
+			if(count==2)
+				weeklytasksubmission.setDay3(hours);	
+			if(count==3)
+				weeklytasksubmission.setDay4(hours);	
+			if(count==4)
+				weeklytasksubmission.setDay5(hours);	
+			if(count==5)
+				weeklytasksubmission.setDay6(hours);	
+			if(count==6)
+				weeklytasksubmission.setDay7(hours);	
+			
+			localstartdate = localstartdate.plusDays(1);
+			count++;
+		}
+		
+		taskWeeklyApprovalRepository.save(weeklytasksubmission);
+
+		
+	}
+
 }

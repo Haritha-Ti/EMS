@@ -52,6 +52,9 @@ public class Constants {
 
 	// Sunday-1, Monday-2, Tuesday-3, Wednesday-4, Thursday-5, Friday-6, Saturday-7
 	public static final Integer WEEK_START_DAY = 1;
+	
+	public static final String TASKTRACK_USER_STATUS_SUBMIT = "SUBMITTED";
+	
 
 	public static final Double roundToDefaultPrecision(Double value) {
 

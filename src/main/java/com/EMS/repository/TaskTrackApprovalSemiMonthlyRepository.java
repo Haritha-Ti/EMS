@@ -21,4 +21,7 @@ public interface TaskTrackApprovalSemiMonthlyRepository extends JpaRepository<Ta
 
 	TasktrackApprovalSemiMonthly findByUserUserIdAndProjectProjectIdAndMonthAndYear(Long userId,Long projectId,int month,int year);
 
+	@Query(value="SELECT count(*) FROM tasktrack_approval_semimonthly where year=?2 AND month=?3 AND user_user_id=?1 AND user_first_half_status is NOT NUll AND user_second_half_status is NOT NULL",nativeQuery=true)
+	public int getsemiMonthlyRecord(Long userId, Integer year, Integer month);
+
 }
