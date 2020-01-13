@@ -9147,6 +9147,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		if(projectData != null){
 			ArrayNode hourDataNode = objectMapper.createArrayNode();
+			//weekly
 			if(projectData.getWorkflowType()==3 || projectData.getWorkflowType()==4){
 				TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate, userId);
 				if(userData!=null) {
@@ -9208,21 +9209,27 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			else{
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(startDate);
-				int month = cal.get(Calendar.MONTH);
+				int month = cal.get(Calendar.MONTH+1);
 				int year = cal.get(Calendar.YEAR);
 				Calendar cale = Calendar.getInstance();
 				cale.setTime(endDate);
 				int day = cale.get(Calendar.DAY_OF_MONTH);
+				System.out.println("----------------");
+				System.out.println("month--"+month);
+				System.out.println("year--"+year);
+				System.out.println("userId--"+userId);
+				System.out.println("projectId--"+projectId);
+
 				TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId,projectId, month, year);
 				if(userData != null) {
+					System.out.println("iiiiiiiiiiiiiiiiiiiii");
 					node.put("userName", userData.getUser().getLastName() + " " + userData.getUser().getFirstName());
 					node.put("userId", userData.getUser().getUserId());
-					node.put("approverStatus", userData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-							: userData.getApproverOneFirstHalfStatus());
 					node.put("loggedId",userData.getId());
-					node.put("userStatus",userData.getUserFirstHalfStatus());
+
 					ObjectNode hourDataResponse = objectMapper.createObjectNode();
 					if(day==15){
+
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay1());
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay2());
@@ -9252,10 +9259,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay14());
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay15());
+						node.put("approverStatus", userData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: userData.getApproverOneFirstHalfStatus());
 						node.put("userStatus",userData.getUserFirstHalfStatus());
 
 					}
 					else {
+
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay16());
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay17());
@@ -9293,12 +9303,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							cal.add(Calendar.DATE, 1);
 							hourDataResponse.put(df.format(cal.getTime()), userData.getDay31());
 						}
+						node.put("approverStatus", userData.getApproverOneSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: userData.getApproverOneFirstHalfStatus());
 						node.put("userStatus",userData.getUserSecondHalfStatus());
 					}
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
 				}
 				else{
+					System.out.println("nnnnnnn");
 					UserModel user = userRepository.findOneByUserId(userId);
 					if(user !=null){
 
