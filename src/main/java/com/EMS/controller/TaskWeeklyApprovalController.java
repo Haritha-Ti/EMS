@@ -1,5 +1,7 @@
 package com.EMS.controller;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
+import com.EMS.model.ExceptionResponse;
+import com.EMS.model.StatusResponse;
 import com.EMS.service.TaskWeeklyApprovalService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,23 +70,15 @@ public class TaskWeeklyApprovalController {
 		return responseData;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@PostMapping(value = "/get/weekly_tasktrack")
-	public ResponseEntity<Object> getWeeklyTasktrack(@RequestBody JSONObject requestData) {
-		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
-		JSONObject jsonResp = new JSONObject();
+	public StatusResponse getWeeklyTasktrack(@RequestBody WeeklyTaskTrackWithoutTaskRequestDTO requestData) {
+		StatusResponse response = new StatusResponse();
 		try {
-			JSONObject weeklyTasktrack = weeklyApprovalService.getWeeklyTasktrack(requestData);
-			jsonResp.put("status", "Success");
-			jsonResp.put("code", HttpServletResponse.SC_OK);
-			jsonResp.put("data", weeklyTasktrack);
-			response = new ResponseEntity<Object>(jsonResp, HttpStatus.OK);
+			response = weeklyApprovalService.getWeeklyTasktrack(requestData);
 		} catch (Exception e) {
-			e.printStackTrace();
-			jsonResp.put("status", "Error");
-			jsonResp.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			jsonResp.put("message", e.getMessage());
-			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			response = new StatusResponse("failure", 500, exceptionResponse);
 		}
 
 		return response;

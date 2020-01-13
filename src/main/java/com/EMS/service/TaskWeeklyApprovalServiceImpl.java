@@ -18,7 +18,9 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.StatusResponse;
 import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
@@ -271,25 +273,26 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getWeeklyTasktrack(JSONObject requestData) throws Exception, ParseException {
+	public StatusResponse getWeeklyTasktrack(WeeklyTaskTrackWithoutTaskRequestDTO requestData) throws Exception, ParseException {
 		JSONObject response = new JSONObject();
+		StatusResponse responseFinal;
 		Long userId = null;
 		Long projectId = null;
 		Date startDate = null;
 		Date endDate = null;
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		if (requestData.get("uId") != null && requestData.get("uId").toString() != "") {
-			userId = Long.parseLong(requestData.get("uId").toString());
+		if (requestData.getuId() != null) {
+			userId = requestData.getuId();
 		}
-		if (requestData.get("projectId") != null && requestData.get("projectId").toString() != "") {
-			projectId = Long.parseLong(requestData.get("projectId").toString());
+		if (requestData.getProjectId() != null) {
+			projectId = requestData.getProjectId();
 		}
-		if (requestData.get("startDate") != null && requestData.get("startDate").toString() != null) {
-			startDate = sdf.parse(requestData.get("startDate").toString());
+		if (requestData.getStartDate() != null && !requestData.getStartDate().isEmpty()) {
+			startDate = sdf.parse(requestData.getStartDate());
 		}
-		if (requestData.get("endDate") != null && requestData.get("endDate").toString() != null) {
-			endDate = sdf.parse(requestData.get("endDate").toString());
+		if (requestData.getEndDate() != null && !requestData.getEndDate().isEmpty()) {
+			endDate = sdf.parse(requestData.getEndDate());
 		}
 
 		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
@@ -319,10 +322,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			array = addHoursandDaytoArray(array, weeklyTasktrack.getDay6(), datesInRange.get(5));
 			array = addHoursandDaytoArray(array, weeklyTasktrack.getDay7(), datesInRange.get(6));
 			response.put("taskList", array);
+		    responseFinal = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,response);
 		}else {
+		    responseFinal = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"No Data Available");
+
 			
 		}
-		return response;
+		return responseFinal;
 	}
 
 	public JSONArray addHoursandDaytoArray(JSONArray array, Double day, Date date) {
