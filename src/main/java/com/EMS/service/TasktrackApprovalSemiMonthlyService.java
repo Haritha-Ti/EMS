@@ -1,15 +1,18 @@
 package com.EMS.service;
 
+import java.text.ParseException;
+
 import org.json.simple.JSONObject;
 
+import com.EMS.model.StatusResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface TasktrackApprovalSemiMonthlyService {
 	JSONObject getSemiMonthlyTasktrack(JSONObject requestData) throws Exception;
 
-	int submitForSemiMonthlyApproval(JSONObject requestData);
+	StatusResponse submitForSemiMonthlyApproval(JSONObject requestData) throws ParseException;
 
-	int saveSemiMonthlyTaskTrackApproval(JSONObject requestData);
+	StatusResponse saveSemiMonthlyTaskTrackApproval(JSONObject requestData) throws ParseException;
 
-	int getSemiMonthlyTasksForSubmission(JsonNode requestData);
+	StatusResponse getSemiMonthlyTasksForSubmission(JsonNode requestData) throws ParseException;
 }

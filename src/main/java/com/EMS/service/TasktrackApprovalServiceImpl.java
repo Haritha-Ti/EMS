@@ -9147,6 +9147,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		if(projectData != null){
 			ArrayNode hourDataNode = objectMapper.createArrayNode();
+			//weekly
 			if(projectData.getWorkflowType()==3 || projectData.getWorkflowType()==4){
 				TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate, userId);
 				if(userData!=null) {
@@ -9208,7 +9209,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			else{
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(startDate);
-				int month = cal.get(Calendar.MONTH);
+				int month = cal.get(Calendar.MONTH+1);
 				int year = cal.get(Calendar.YEAR);
 				Calendar cale = Calendar.getInstance();
 				cale.setTime(endDate);
@@ -9217,12 +9218,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				if(userData != null) {
 					node.put("userName", userData.getUser().getLastName() + " " + userData.getUser().getFirstName());
 					node.put("userId", userData.getUser().getUserId());
-					node.put("approverStatus", userData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-							: userData.getApproverOneFirstHalfStatus());
 					node.put("loggedId",userData.getId());
-					node.put("userStatus",userData.getUserFirstHalfStatus());
+
 					ObjectNode hourDataResponse = objectMapper.createObjectNode();
 					if(day==15){
+
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay1());
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay2());
@@ -9252,10 +9252,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay14());
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay15());
+						node.put("approverStatus", userData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: userData.getApproverOneFirstHalfStatus());
 						node.put("userStatus",userData.getUserFirstHalfStatus());
 
 					}
 					else {
+
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay16());
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), userData.getDay17());
@@ -9293,6 +9296,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							cal.add(Calendar.DATE, 1);
 							hourDataResponse.put(df.format(cal.getTime()), userData.getDay31());
 						}
+						node.put("approverStatus", userData.getApproverOneSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: userData.getApproverOneFirstHalfStatus());
 						node.put("userStatus",userData.getUserSecondHalfStatus());
 					}
 					hourDataNode.add(hourDataResponse);
@@ -9392,10 +9397,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public ObjectNode approveHoursLevel1(ObjectNode requestdata) throws Exception{
 		ObjectNode node = objectMapper.createObjectNode();
 		Long projectId = requestdata.get("projectId").asLong();
+		Long userId = requestdata.get("userId").asLong();
 		Long loggedId = requestdata.get("loggedId").asLong();
 		Long approverId = requestdata.get("approverId").asLong();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date endDate = df.parse(requestdata.get("endDate").asText());
+		Date startDate = df.parse(requestdata.get("endDate").asText());
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		Date curDate = formatter.parse(formatter.format(date));
@@ -9404,12 +9411,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			//weekly approval
 			if(projectData.getWorkflowType()==3 || projectData.getWorkflowType()==4){
 				if(loggedId!=null) {
-					TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository.getOne(loggedId);
-					userData.setApprover1Status(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
-					UserModel approver = userRepository.getOne(approverId);
-					userData.setApprover1Id(approver);
-					userData.setApprover1SubmittedDate(curDate);
-					taskTrackWeeklyApprovalRepository.save(userData);
+					TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId,startDate,endDate,userId);
+					if(userData !=null) {
+						userData.setApprover1Status(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+						UserModel approver = userRepository.getOne(approverId);
+						userData.setApprover1Id(approver);
+						userData.setApprover1SubmittedDate(curDate);
+						taskTrackWeeklyApprovalRepository.save(userData);
+					}
 				}
 
 
@@ -9418,18 +9427,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					Calendar cale = Calendar.getInstance();
 					cale.setTime(endDate);
 					int day = cale.get(Calendar.DAY_OF_MONTH);
-					TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository.getOne(loggedId);
-					UserModel approver = userRepository.getOne(approverId);
-					if(day>15){
-						userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
-						userData.setSecondHalfApproverOneId(approver);
-						userData.setApproverOneSecondHalfSubmittedDate(curDate);
-						taskTrackApprovalSemiMonthlyRepository.save(userData);
-					}else{
-						userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
-						userData.setFirstHalfApproverOneId(approver);
-						userData.setApproverOneFirstHalfSubmittedDate(curDate);
-						taskTrackApprovalSemiMonthlyRepository.save(userData);
+					int month = cale.get(Calendar.MONTH);
+					int year =cale.get(Calendar.YEAR);
+					TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId,projectId,month,year);
+					if(userData!=null){
+						UserModel approver = userRepository.getOne(approverId);
+						if (day > 15) {
+							userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							userData.setSecondHalfApproverOneId(approver);
+							userData.setApproverOneSecondHalfSubmittedDate(curDate);
+							taskTrackApprovalSemiMonthlyRepository.save(userData);
+						} else {
+							userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							userData.setFirstHalfApproverOneId(approver);
+							userData.setApproverOneFirstHalfSubmittedDate(curDate);
+							taskTrackApprovalSemiMonthlyRepository.save(userData);
+						}
 					}
 				}
 			}

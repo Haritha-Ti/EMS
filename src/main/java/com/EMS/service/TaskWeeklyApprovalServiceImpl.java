@@ -46,13 +46,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	private ProjectService projectservice;
 
 	@Override
-	public int submitWeeklyApproval(JSONObject requestData) {
+	public StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException,Exception {
 
 		TaskTrackWeeklyApproval weeklyApproval = new TaskTrackWeeklyApproval();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		int requeststatus = 0;
-
-		try {
+		StatusResponse response=new StatusResponse();
+		
 			if (((!requestData.get("startDate").toString().equals(null))
 					|| (!requestData.get("startDate").toString().equals(" ")))
 					&& ((!requestData.get("endDate").toString().equals(null))
@@ -167,10 +167,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			if (requestData.get("rejectionTime") != null)
 				weeklyApproval.setRejectionTime(sdf.parse(requestData.get("rejectionTime").toString()));
 
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
 
 		if (requeststatus == 0) {
 
@@ -178,22 +175,27 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 					weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
 			if (count == 0) {
 				taskWeeklyApprovalRepository.save(weeklyApproval);
-				return 0;
-			} else
-				return 1;
-		} else
-			return 1;
+				response=new StatusResponse("Success",200,"Insertion completed");
+			} else {
+				response=new StatusResponse("Success",200,"Insertion failed due to duplicate entry");
+			}
+				
+		} else {
+			response=new StatusResponse("Success",200,"Insertion failed due to invalid credientials");
+		}
+			return response;
 
 	}
 
 	@Override
-	public int saveWeeklyApproval(JSONObject requestData) {
+	public StatusResponse saveWeeklyApproval(JSONObject requestData) throws ParseException {
 
+		StatusResponse response=new StatusResponse();
 		TaskTrackWeeklyApproval weeklyApproval = new TaskTrackWeeklyApproval();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		int requeststatus = 0;
 
-		try {
+		
 			if (((!requestData.get("startDate").toString().equals(null))
 					|| (!requestData.get("startDate").toString().equals(" ")))
 					&& ((!requestData.get("endDate").toString().equals(null))
@@ -253,9 +255,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				weeklyApproval.setTimetrackStatus(requestData.get("timetrackStatus").toString());
 			}
 
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		
 
 		if (requeststatus == 0) {
 
@@ -263,11 +263,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 					weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
 			if (count == 0) {
 				taskWeeklyApprovalRepository.save(weeklyApproval);
-				return 0;
+				response=new StatusResponse("Success",200,"Insertion completed");
 			} else
-				return 1;
+				response=new StatusResponse("Success",200,"Insertion failed due to duplicate entry");
 		} else
-			return 1;
+			response=new StatusResponse("Success",200,"Insertion failed due to invalid credientials");
+		
+		return response;
 
 	}
 
@@ -349,22 +351,19 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	}
 
 	@Override
-	public int getWeeklyTasksForSubmission(JsonNode requestData) {
+	public StatusResponse getWeeklyTasksForSubmission(JsonNode requestData) throws ParseException {
 
+		StatusResponse response=new StatusResponse();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String start = requestData.get("startDate").asText();
 		String end = requestData.get("endDate").asText();
 		Long userId = requestData.get("userId").asLong();
 
 		Date endDate = null, startDate = null;
-		try {
+		
 			startDate = sdf.parse(start);
 			endDate = sdf.parse(end);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		
 		ArrayList<Tasktrack> tasklist = tasktrackRepository.getsavedTaskslist(startDate, endDate, userId);
 		Map<Date, Double> dailyhours = new HashMap<Date, Double>();
 		Long projectId = null;
@@ -409,13 +408,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		while (!localstartdate.isAfter(localenddate)) {
 			String stgdate = String.valueOf(localstartdate);
 			Date date1 = null;
-			try {
+			
 				date1 = sdf.parse(stgdate);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+		
 			Double hours = 0.0;
 			if (result.get(date1) != null)
 				hours = Double.parseDouble(result.get(date1).toString());
@@ -445,9 +440,10 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				weeklytasksubmission.getEndDate(), weeklytasksubmission.getUser().getUserId());
 		if (countt == 0) {
 			taskWeeklyApprovalRepository.save(weeklytasksubmission);
-			return 0;
+			response=new StatusResponse("Success",200,"Weekly data submission completed");
 		} else
-			return 1;
+			response=new StatusResponse("Success",200,"Weekly data submission failed");
+		return response;
 	}
 
 }
