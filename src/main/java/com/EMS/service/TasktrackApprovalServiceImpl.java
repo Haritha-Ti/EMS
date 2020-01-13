@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.EMS.dto.MailDomainDto;
+import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
 import com.EMS.exceptions.DuplicateEntryException;
 import com.EMS.repository.ActivityLogRepository;
 import com.EMS.repository.ProjectAllocationRepository;
@@ -9015,7 +9016,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			for (AllocationModel userData : allocatedUserData) {
 				ObjectNode userDataResponse = objectMapper.createObjectNode();
 				ArrayNode weeklyHourData = objectMapper.createArrayNode();
-				ArrayNode semiMonthlyHourData = objectMapper.createArrayNode();
+			//	ArrayNode semiMonthlyHourData = objectMapper.createArrayNode();
 				Long userId = userData.getuser().getUserId();
 				String projectWorkFlowType = null;
 				projectWorkFlow = userData.getproject().getWorkflowType();
@@ -9076,8 +9077,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					semiMonthlyDataResponse.put("secondHalfHour", secondHalfHour);
 					semiMonthlyDataResponse.put("firstHalfStatus", firstHalfStatus);
 					semiMonthlyDataResponse.put("secondHalfStatus", secondHalfStatus);
-					semiMonthlyHourData.add(semiMonthlyDataResponse);
-					userDataResponse.set("semiMonthlyData", semiMonthlyHourData);
+					//semiMonthlyHourData.add(semiMonthlyDataResponse);
+					userDataResponse.set("semiMonthlyData", semiMonthlyDataResponse);
 
 				}
 				userDataArray.add(userDataResponse);
@@ -9443,5 +9444,122 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 		}
 		return node;
+	}
+
+	@Override
+	public ObjectNode getTaskTrackDataForApprover2(GetTaskTrackData requestdata) throws Exception {
+		// TODO Auto-generated method stub
+		ObjectNode node = objectMapper.createObjectNode();
+		ArrayNode weeksDataArray = objectMapper.createArrayNode();
+
+		ArrayNode userDataArray = objectMapper.createArrayNode();
+
+		JSONArray weeksArray = new JSONArray();
+		int year = requestdata.getYear();
+		Long projectId = requestdata.getProjectId();
+		int month = requestdata.getMonth();
+		//get weeks of the month
+		weeksArray = findWeeks(month,year);
+		//get startDate and endDate of the month
+		Date startDate;
+		Date endDate;
+		String start = year + "-" + month + "-01";
+		startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		int total = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+		String end = year + "-" + month + "-" + total;
+		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+		//get usersList in the project for the corresponding month
+		int projectWorkFlow =0;
+		List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId, startDate, endDate);
+		if(allocatedUserData.size()>=1) {
+			for (AllocationModel userData : allocatedUserData) {
+				ObjectNode userDataResponse = objectMapper.createObjectNode();
+				ArrayNode weeklyHourData = objectMapper.createArrayNode();
+				ArrayNode semiMonthlyHourData = objectMapper.createArrayNode();
+				Long userId = userData.getuser().getUserId();
+				String projectWorkFlowType = null;
+				projectWorkFlow = userData.getproject().getWorkflowType();
+				userDataResponse.put("userId", userData.getuser().getUserId());
+				userDataResponse.put("userName", userData.getuser().getLastName() + " " + userData.getuser().getFirstName());
+				//WeeklyData
+				if(projectWorkFlow==3 || projectWorkFlow==4)
+				{
+					for (int i = 0; i < weeksArray.size(); i++) {
+						ObjectNode weeklyDataResponse = objectMapper.createObjectNode();
+						JSONObject objects = (JSONObject) weeksArray.get(i);
+						SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
+						Date weekStart = (Date) objects.get("startDate");
+						Date weekEnd = (Date) objects.get("endDate");
+						TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, weekStart, weekEnd, userId);
+						double totalhours = 0.0;
+						String approverSatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+						if (weeklyUserData != null) {
+							totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3() + weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6() + weeklyUserData.getDay7();
+							 approverSatus = weeklyUserData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: weeklyUserData.getApprover1Status();
+						}
+
+						weeklyDataResponse.put("totalHour", totalhours);
+						weeklyDataResponse.put("weekStart", sdff.format(weekStart));
+						weeklyDataResponse.put("weekEnd",sdff.format(weekEnd));
+						weeklyDataResponse.put("approverSatus",approverSatus);
+						weeklyHourData.add(weeklyDataResponse);
+					}
+					userDataResponse.set("weekData", weeklyHourData);
+				}
+				else{ //SemiMonthlyData
+					ObjectNode semiMonthlyDataResponse = objectMapper.createObjectNode();
+					TasktrackApprovalSemiMonthly semiMonthlyUserData = taskTrackApprovalSemiMonthlyRepository.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId,projectId, month, year);
+					double firstHalfHour =0.0;
+					double secondHalfHour =0.0;
+					 String firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+                    String secondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+					if(semiMonthlyUserData != null){
+						if(semiMonthlyUserData.getUserFirstHalfStatus().equalsIgnoreCase("SUBMITTED")) {
+							firstHalfHour = semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2() + semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4() + semiMonthlyUserData.getDay5() +
+									semiMonthlyUserData.getDay6() + semiMonthlyUserData.getDay7() + semiMonthlyUserData.getDay8() + semiMonthlyUserData.getDay9() + semiMonthlyUserData.getDay10() +
+									semiMonthlyUserData.getDay11() + semiMonthlyUserData.getDay12() + semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14() + semiMonthlyUserData.getDay15();
+							 firstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: semiMonthlyUserData.getApproverOneFirstHalfStatus();
+
+						}
+						if(semiMonthlyUserData.getUserSecondHalfStatus().equalsIgnoreCase("SUBMITTED")) {
+							secondHalfHour = semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17() + semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19() + semiMonthlyUserData.getDay20() +
+									semiMonthlyUserData.getDay21() + semiMonthlyUserData.getDay22() + semiMonthlyUserData.getDay23() + semiMonthlyUserData.getDay24() + semiMonthlyUserData.getDay25() +
+									semiMonthlyUserData.getDay26() + semiMonthlyUserData.getDay27() + semiMonthlyUserData.getDay28() + semiMonthlyUserData.getDay29() + semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31();
+							 secondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: semiMonthlyUserData.getApproverOneSecondHalfStatus();
+						}
+
+						}
+					semiMonthlyDataResponse.put("firstHalfHour", firstHalfHour);
+					semiMonthlyDataResponse.put("secondHalfHour", secondHalfHour);
+					semiMonthlyDataResponse.put("firstHalfStatus", firstHalfStatus);
+					semiMonthlyDataResponse.put("secondHalfStatus", secondHalfStatus);
+					semiMonthlyHourData.add(semiMonthlyDataResponse);
+					userDataResponse.set("semiMonthlyData", semiMonthlyHourData);
+
+				}
+				userDataArray.add(userDataResponse);
+			}
+			if(projectWorkFlow==3 || projectWorkFlow==4) {
+				for (int j = 0; j < weeksArray.size(); j++) {
+					JSONObject objects = (JSONObject) weeksArray.get(j);
+					Date weekStart = (Date) objects.get("startDate");
+					Date weekEnd = (Date) objects.get("endDate");
+					SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
+					String weekRange = sdf.format(weekStart) + " - " + sdf.format(weekEnd);
+					weeksDataArray.add(weekRange);
+				}
+				node.set("weeks",weeksDataArray );
+				node.put("projectWorkFlowType","weekly");
+
+			}
+			else{ node.put("projectWorkFlowType","semiMonthly"); }
+			node.set("userData",userDataArray );
+		}
+	return node;
 	}
 }
