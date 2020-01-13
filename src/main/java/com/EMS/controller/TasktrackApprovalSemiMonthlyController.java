@@ -1,5 +1,7 @@
 package com.EMS.controller;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.model.ExceptionResponse;
+import com.EMS.model.StatusResponse;
 import com.EMS.service.TasktrackApprovalSemiMonthlyService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,71 +53,73 @@ public class TasktrackApprovalSemiMonthlyController {
 		return response;
 	}
 
+	/*
+	 * To submit timetrack semimonthly for approval
+	 * 
+	 * @Author Haritha version 1.0
+	 * 
+	 * @Since 09-01-2020
+	 */
+
 	@PostMapping(value = "/submitSemiMonthlyTaskTrack")
-	public JsonNode submitSemiMonthlyTaskTrack(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
+	public StatusResponse submitSemiMonthlyTaskTrack(@RequestBody JSONObject requestData) {
 
-		int status = approvalSemiMonthlyService.submitForSemiMonthlyApproval(requestData);
-
-		ObjectNode responseData = objectmapper.createObjectNode();
-		if (status == 0) {
-			responseData.put("status", "success");
-			responseData.put("message", "success. ");
-			responseData.put("code", httpstatus.getStatus());
-		} else {
-			responseData.put("status", "success");
-			responseData.put("message", "Failed due to invalid credentials ");
-			responseData.put("code", httpstatus.getStatus());
+		StatusResponse response = new StatusResponse();
+		try {
+			response = approvalSemiMonthlyService.submitForSemiMonthlyApproval(requestData);
+		} catch (Exception e) {
+			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			response = new StatusResponse("Failure", 500, exceptionresponse);
 		}
 
-		return responseData;
+		return response;
 	}
+
+	/*
+	 * To save timetrack semimonthly
+	 * 
+	 * @Author Haritha version 1.0
+	 * 
+	 * @Since 09-01-2020
+	 */
 
 	@PostMapping(value = "/saveSemiMonthlyTaskTrackApproval")
-	public JsonNode saveSemiMonthlyTaskTrackApproval(@RequestBody JSONObject requestData,
-			HttpServletResponse httpstatus) {
+	public StatusResponse saveSemiMonthlyTaskTrackApproval(@RequestBody JSONObject requestData) {
+		StatusResponse response = new StatusResponse();
+		try {
+		response = approvalSemiMonthlyService.saveSemiMonthlyTaskTrackApproval(requestData);
 
-		int status = approvalSemiMonthlyService.saveSemiMonthlyTaskTrackApproval(requestData);
-
-		ObjectNode responseData = objectmapper.createObjectNode();
-		if (status == 0) {
-			responseData.put("status", "success");
-			responseData.put("message", "success. ");
-			responseData.put("code", httpstatus.getStatus());
-		} else {
-			responseData.put("status", "success");
-			responseData.put("message", "Failed due to invalid credentials ");
-			responseData.put("code", httpstatus.getStatus());
+		}catch (Exception e) {
+			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			response = new StatusResponse("Failure", 500, exceptionresponse);
 		}
 
-		return responseData;
+		return response;
 	}
 
-	@PostMapping(value = "/submitTasktrackSemimonthly")
-	public JsonNode submitTasktrackSemimonthly(@RequestBody JsonNode requestData, HttpServletResponse httpstatus) {
+	/*
+	 * To submit timetrack semimonthly with daily tasks
+	 * 
+	 * @Author Haritha version 1.0
+	 * 
+	 * @Since 10-01-2020
+	 */
 
-		ObjectNode responseData = objectmapper.createObjectNode();
+	@PostMapping(value = "/submitTasktrackSemimonthly")
+	public StatusResponse submitTasktrackSemimonthly(@RequestBody JsonNode requestData, HttpServletResponse httpstatus) {
+
+		StatusResponse response = new StatusResponse();
 		try {
 
-			int status=approvalSemiMonthlyService.getSemiMonthlyTasksForSubmission(requestData);
-			if(status==0) {
-				responseData.put("status", "success");
-				responseData.put("message", "Failed due to duplicate entry ");
-				responseData.put("code", httpstatus.getStatus());
-				responseData.put("data", " ");
-			}else {
-				responseData.put("status", "success");
-				responseData.put("code", httpstatus.getStatus());
-				responseData.put("data", " ");
-			}
+			response = approvalSemiMonthlyService.getSemiMonthlyTasksForSubmission(requestData);
 			
-
 		} catch (Exception e) {
-			responseData.put("status", "Failed");
-			responseData.put("code", httpstatus.getStatus());
-			responseData.put("message", "Exception " + e);
+			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			response = new StatusResponse("Failure", 500, exceptionresponse);
 		}
 
-		return responseData;
+
+		return response;
 	}
 
 }
