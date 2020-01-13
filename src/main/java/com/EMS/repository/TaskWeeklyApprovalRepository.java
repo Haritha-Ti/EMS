@@ -16,5 +16,8 @@ public interface TaskWeeklyApprovalRepository extends JpaRepository<TaskTrackWee
 	
 	@Query(value = "select ta.task_name, tt.date, tt.hours, tt.description from task_master ta left join tasktrack tt on ta.id = tt.task_id", nativeQuery = true)
 	public List<Object[]> getWeeklyTasktrackWithTask();
+
+	@Query(value="SELECT count(*) FROM tasktrack_weekly_approval where start_date=?1 AND end_date=?2 AND user_user_id=?3",nativeQuery=true)
+	public int getduplicateentrycount(Date startDate, Date endDate, long userId);
 	
 }

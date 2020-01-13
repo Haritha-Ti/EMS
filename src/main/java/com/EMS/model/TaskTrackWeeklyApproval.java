@@ -10,7 +10,7 @@ import java.util.Date;
 @Table(name = "TASKTRACK_WEEKLY_APPROVAL")
 public class TaskTrackWeeklyApproval extends Auditable<Long> {
     @Id
-    @Column(name = "id")
+    @Column(name = "weekly_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private Date startDate;

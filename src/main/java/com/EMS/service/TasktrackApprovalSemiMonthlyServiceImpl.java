@@ -2,10 +2,16 @@ package com.EMS.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,11 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.model.ProjectModel;
+import com.EMS.model.Tasktrack;
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.model.UserModel;
 import com.EMS.repository.TaskTrackApprovalSemiMonthlyRepository;
+import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
 import com.EMS.utility.DateUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprovalSemiMonthlyService {
@@ -27,10 +36,13 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 	@Autowired
 	UserService userservice;
-	
+
+	@Autowired
+	private TasktrackRepository tasktrackRepository;
+
 	@Autowired
 	ProjectService projectservice;
-	
+
 	@SuppressWarnings({ "unchecked" })
 	@Override
 	public JSONObject getSemiMonthlyTasktrack(JSONObject requestData) throws Exception {
@@ -94,6 +106,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay14(), dateRanges.get(13));
 				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay15(), dateRanges.get(14));
 				response.put("taskList", array);
+
 				if (taskStatusList.contains(approverOneFirstHalfStatus)
 						|| taskStatusList.contains(approverTwoFirstHalfStatus)
 						|| taskStatusList.contains(financeFirstHalfStatus)) {
@@ -121,6 +134,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay30(), dateRanges.get(14));
 				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay31(), dateRanges.get(15));
 				response.put("taskList", array);
+
 				if (taskStatusList.contains(approverOneSecondHalfStatus)
 						|| taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
@@ -148,6 +162,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 	}
 	
 	
+
 	@Override
 	public int submitForSemiMonthlyApproval(JSONObject requestData) {
 		TasktrackApprovalSemiMonthly semiMonthlyApproval = new TasktrackApprovalSemiMonthly();
@@ -312,8 +327,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver1Id = Long.parseLong(requestData.get("approverOneId").toString());
 				UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
-				if (!approver1Info.equals(null))
-					semiMonthlyApproval.setApproverOneId(approver1Info);
+				// if (!approver1Info.equals(null))
+				// semiMonthlyApproval.set(approver1Info);
 			}
 
 			if ((requestData.get("approverOneFirstHalfSubmittedDate") != null)) {
@@ -333,8 +348,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver2Id = Long.parseLong(requestData.get("approverTwoId").toString());
 				UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
-				if (!approver2Info.equals(null))
-					semiMonthlyApproval.setApproverTwoId(approver2Info);
+				// if (!approver2Info.equals(null))
+				// semiMonthlyApproval.setApproverTwoId(approver2Info);
 			}
 
 			if ((requestData.get("approverTwoFirstHalfSubmittedDate") != null)) {
@@ -376,8 +391,14 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		}
 
 		if (requeststatus == 0) {
-			semiMonthlyRepository.save(semiMonthlyApproval);
-			return 0;
+
+			int count = semiMonthlyRepository.getsemiMonthlyRecord(semiMonthlyApproval.getUser().getUserId(),
+					semiMonthlyApproval.getMonth(), semiMonthlyApproval.getYear());
+			if (count == 0) {
+				semiMonthlyRepository.save(semiMonthlyApproval);
+				return 0;
+			} else
+				return 1;
 		} else
 			return 1;
 	}
@@ -552,8 +573,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver1Id = Long.parseLong(requestData.get("approverOneId").toString());
 				UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
-				if (!approver1Info.equals(null))
-					semiMonthlyApproval.setApproverOneId(approver1Info);
+				// if (!approver1Info.equals(null))
+				// semiMonthlyApproval.setApproverOneId(approver1Info);
 			}
 
 			if ((requestData.get("approverOneFirstHalfSubmittedDate") != null)) {
@@ -572,8 +593,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				Long approver2Id = Long.parseLong(requestData.get("approverTwoId").toString());
 				UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
-				if (!approver2Info.equals(null))
-					semiMonthlyApproval.setApproverTwoId(approver2Info);
+				// if (!approver2Info.equals(null))
+				// semiMonthlyApproval.setApproverTwoId(approver2Info);
 			}
 
 			if ((requestData.get("approverTwoFirstHalfSubmittedDate") != null)) {
@@ -614,10 +635,178 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		}
 
 		if (requeststatus == 0) {
-			semiMonthlyRepository.save(semiMonthlyApproval);
-			return 0;
+			int count = semiMonthlyRepository.checkduplicationForsemiMonthlyTaskTrack(
+					semiMonthlyApproval.getUser().getUserId(), semiMonthlyApproval.getMonth(),
+					semiMonthlyApproval.getYear());
+			if (count == 0) {
+				semiMonthlyRepository.save(semiMonthlyApproval);
+				return 0;
+			} else
+				return 1;
 		} else
 			return 1;
+	}
+
+	@Override
+	public int getSemiMonthlyTasksForSubmission(JsonNode requestData) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String start = requestData.get("startDate").asText();
+		String end = requestData.get("endDate").asText();
+		Long userId = requestData.get("userId").asLong();
+
+		Date endDate = null, startDate = null;
+		try {
+			startDate = sdf.parse(start);
+			endDate = sdf.parse(end);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		ArrayList<Tasktrack> tasklist = tasktrackRepository.getsavedTaskslist(startDate, endDate, userId);
+		Map<Date, Double> dailyhours = new HashMap<Date, Double>();
+		Long projectId = null;
+
+		if (!tasklist.isEmpty()) {
+
+			for (Tasktrack task : tasklist) {
+				Date datevalue = task.getDate();
+				projectId = task.getProject().getProjectId();
+				if (dailyhours.containsKey(datevalue)) {
+					Double hours = dailyhours.get(datevalue);
+					hours = hours + task.getHours();
+					dailyhours.put(datevalue, hours);
+				} else {
+					dailyhours.put(datevalue, task.getHours());
+				}
+			}
+		}
+
+		TasktrackApprovalSemiMonthly semiMonthlytasksubmission = new TasktrackApprovalSemiMonthly();
+		UserModel userDetails = userservice.getUserdetailsbyId(userId);
+		ProjectModel project = projectservice.findById(projectId);
+
+		semiMonthlytasksubmission.setUser(userDetails);
+		semiMonthlytasksubmission.setProject(project);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		semiMonthlytasksubmission.setYear(calendar.get(Calendar.YEAR));
+
+		semiMonthlytasksubmission.setMonth(calendar.get(Calendar.MONTH) + 1);
+		if (calendar.get(Calendar.DAY_OF_MONTH) < 5) {
+
+			semiMonthlytasksubmission.setUserFirstHalfSubmittedDate(new Date());
+			semiMonthlytasksubmission.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+		} else {
+
+			semiMonthlytasksubmission.setUserSecondHalfSubmittedDate(new Date());
+			semiMonthlytasksubmission.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+		}
+
+		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+						LinkedHashMap::new));
+
+		LocalDate localstartdate = LocalDate.parse(start);
+		LocalDate localenddate = LocalDate.parse(end);
+
+		while (!localstartdate.isAfter(localenddate)) {
+			String stgdate = String.valueOf(localstartdate);
+			Date date1 = null;
+
+			try {
+				date1 = sdf.parse(stgdate);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date1);
+
+			Double hours = 0.0;
+			if (result.get(date1) != null)
+				hours = Double.parseDouble(result.get(date1).toString());
+
+			if (cal.get(Calendar.DAY_OF_MONTH) == 1)
+				semiMonthlytasksubmission.setDay1(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 2)
+				semiMonthlytasksubmission.setDay2(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 3)
+				semiMonthlytasksubmission.setDay3(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 4)
+				semiMonthlytasksubmission.setDay4(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 5)
+				semiMonthlytasksubmission.setDay5(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 6)
+				semiMonthlytasksubmission.setDay6(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 7)
+				semiMonthlytasksubmission.setDay7(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 8)
+				semiMonthlytasksubmission.setDay8(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 9)
+				semiMonthlytasksubmission.setDay9(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 10)
+				semiMonthlytasksubmission.setDay10(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 11)
+				semiMonthlytasksubmission.setDay11(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 12)
+				semiMonthlytasksubmission.setDay12(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 13)
+				semiMonthlytasksubmission.setDay13(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 14)
+				semiMonthlytasksubmission.setDay14(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 15)
+				semiMonthlytasksubmission.setDay15(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 16)
+				semiMonthlytasksubmission.setDay16(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 17)
+				semiMonthlytasksubmission.setDay17(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 18)
+				semiMonthlytasksubmission.setDay18(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 19)
+				semiMonthlytasksubmission.setDay19(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 20)
+				semiMonthlytasksubmission.setDay20(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 21)
+				semiMonthlytasksubmission.setDay21(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 22)
+				semiMonthlytasksubmission.setDay22(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 23)
+				semiMonthlytasksubmission.setDay23(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 24)
+				semiMonthlytasksubmission.setDay24(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 25)
+				semiMonthlytasksubmission.setDay25(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 26)
+				semiMonthlytasksubmission.setDay26(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 27)
+				semiMonthlytasksubmission.setDay27(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 28)
+				semiMonthlytasksubmission.setDay28(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 29)
+				semiMonthlytasksubmission.setDay29(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 30)
+				semiMonthlytasksubmission.setDay30(hours);
+			if (cal.get(Calendar.DAY_OF_MONTH) == 31)
+				semiMonthlytasksubmission.setDay31(hours);
+
+			localstartdate = localstartdate.plusDays(1);
+
+		}
+
+		int count = semiMonthlyRepository.getsemiMonthlyRecord(userId, semiMonthlytasksubmission.getYear(),
+				semiMonthlytasksubmission.getMonth());
+
+		if (count > 0) {
+			return 0;
+		} else {
+
+			semiMonthlyRepository.save(semiMonthlytasksubmission);
+			return 1;
+		}
+
 	}
 
 }

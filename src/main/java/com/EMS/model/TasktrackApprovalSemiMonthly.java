@@ -22,7 +22,7 @@ import com.EMS.listener.ModelListener;
 public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 
 	@Id
-	@Column(name = "id")
+	@Column(name = "monthly_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
@@ -49,7 +49,10 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	private Date userSecondHalfSubmittedDate;
 
 	@ManyToOne
-	private UserModel approverOneId;
+	private UserModel firstHalfApproverOneId;
+
+	@ManyToOne
+	private UserModel secondHalfApproverOneId;
 
 	private String approverOneFirstHalfStatus;
 
@@ -60,7 +63,10 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	private Date approverOneSecondHalfSubmittedDate;
 
 	@ManyToOne
-	private UserModel approverTwoId;
+	private UserModel firstHalfAapproverTwoId;
+
+	@ManyToOne
+	private UserModel secondHalfAapproverTwoId;
 
 	private String approverTwoFirstHalfStatus;
 
@@ -401,12 +407,20 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 		this.userSecondHalfSubmittedDate = userSecondHalfSubmittedDate;
 	}
 
-	public UserModel getApproverOneId() {
-		return approverOneId;
+	public UserModel getFirstHalfApproverOneId() {
+		return firstHalfApproverOneId;
 	}
 
-	public void setApproverOneId(UserModel approverOneId) {
-		this.approverOneId = approverOneId;
+	public void setFirstHalfApproverOneId(UserModel firstHalfApproverOneId) {
+		this.firstHalfApproverOneId = firstHalfApproverOneId;
+	}
+
+	public UserModel getSecondHalfApproverOneId() {
+		return secondHalfApproverOneId;
+	}
+
+	public void setSecondHalfApproverOneId(UserModel secondHalfApproverOneId) {
+		this.secondHalfApproverOneId = secondHalfApproverOneId;
 	}
 
 	public String getApproverOneFirstHalfStatus() {
@@ -441,12 +455,20 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 		this.approverOneSecondHalfSubmittedDate = approverOneSecondHalfSubmittedDate;
 	}
 
-	public UserModel getApproverTwoId() {
-		return approverTwoId;
+	public UserModel getFirstHalfApproverTwoId() {
+		return firstHalfAapproverTwoId;
 	}
 
-	public void setApproverTwoId(UserModel approverTwoId) {
-		this.approverTwoId = approverTwoId;
+	public void setFirstHalfApproverTwoId(UserModel firstHalfAapproverTwoId) {
+		this.firstHalfAapproverTwoId = firstHalfAapproverTwoId;
+	}
+
+	public UserModel getSecondHalfApproverTwoId() {
+		return secondHalfAapproverTwoId;
+	}
+
+	public void setSecondHalfApproverTwoId(UserModel secondHalfAapproverTwoId) {
+		this.secondHalfAapproverTwoId = secondHalfAapproverTwoId;
 	}
 
 	public String getApproverTwoFirstHalfStatus() {

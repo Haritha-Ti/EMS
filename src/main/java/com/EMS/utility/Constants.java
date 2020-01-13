@@ -52,6 +52,9 @@ public class Constants {
 
 	// Sunday-1, Monday-2, Tuesday-3, Wednesday-4, Thursday-5, Friday-6, Saturday-7
 	public static final Integer WEEK_START_DAY = 1;
+	
+	public static final String TASKTRACK_USER_STATUS_SUBMIT = "SUBMITTED";
+	
 
 	public static final Double roundToDefaultPrecision(Double value) {
 
@@ -68,4 +71,11 @@ public class Constants {
 		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED = "REJECTED";
 		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED = "APPROVED";
 	}
+
+	public static final int WARN_CODE = 501;
+	public static final int ERROR_CODE = 500;
+	public static final int SUCCESS_CODE = 200;
+	public static final String SUCCESS = "Success";
+	public static final String OK = "OK";
+	public static final String ERROR = "Error";
 }

@@ -913,9 +913,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 	public List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 
-		SimpleDateFormat dateFrmt = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar monthStartCal = Calendar.getInstance();
-		monthStartCal.setTime(dateFrmt.parse("01-" + month + "-" + year));
+		monthStartCal.setTime(dateFrmt.parse(year+"-" + month + "-" + "01"));
 
 		Map<Long, HashMap<String, Object>> projectsMap = new HashMap<Long, HashMap<String, Object>>();
 
@@ -932,7 +932,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 		List<Long> workflow4Projects = new ArrayList<Long>();
 
 		Calendar monthEndCal = Calendar.getInstance();
-		monthEndCal.setTime(dateFrmt.parse(monthStartCal.getMaximum(Calendar.DATE) + "-" + month + "-" + year));
+		monthEndCal.setTime(dateFrmt.parse( year+ "-" + month + "-" + monthStartCal.getMaximum(Calendar.DATE)));
 
 		// List all the projects for the user based on the month
 		List<AllocationModel> allocationModelList = allocationRepository
@@ -997,10 +997,10 @@ public class TasktrackServiceImpl implements TasktrackService {
 				firstHalfObj.put("hours", firstHalfHours);
 				firstHalfObj.put("status", firstHalfStatus);
 				firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
-				firstHalfObj.put("endDay", "15-" + month + "-" + year);
+				firstHalfObj.put("endDay", year +"-" + month + "-" +"15" );
 				secondHalfObj.put("hours", secondHalfHours);
 				secondHalfObj.put("status", secondHalfStatus);
-				secondHalfObj.put("startDay", "16-" + month + "-" + year);
+				secondHalfObj.put("startDay",  year+"-" + month + "-" +"16");
 				secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 				periodsArray.add(firstHalfObj);
 				periodsArray.add(secondHalfObj);
@@ -1027,7 +1027,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 					hoursObj.put("secondHalfHours", 0d);
 					hoursProjectObj.put(modelObj.getProject().getProjectId(), hoursObj);
 				}
-				if (modelObj.getDate().before(dateFrmt.parse("16-" + month + "-" + year))) {
+				if (modelObj.getDate().before(dateFrmt.parse(year+"-" + month + "-" + "16"))) {
 					hoursObj.put("firstHalfHours", hoursObj.get("firstHalfHours") + modelObj.getHours());
 				} else {
 					hoursObj.put("secondHalfHours", hoursObj.get("secondHalfHours") + modelObj.getHours());
@@ -1047,10 +1047,10 @@ public class TasktrackServiceImpl implements TasktrackService {
 				firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
 				firstHalfObj.put("status", modelObj.getUserFirstHalfStatus());
 				firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
-				firstHalfObj.put("endDay", "15-" + month + "-" + year);
+				firstHalfObj.put("endDay", year+"-" + month + "-" + "15");
 				secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
 				secondHalfObj.put("status", modelObj.getUserSecondHalfStatus());
-				secondHalfObj.put("startDay", "16-" + month + "-" + year);
+				secondHalfObj.put("startDay", year+"-" + month + "-" + "16");
 				secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 				periodsArray.add(firstHalfObj);
 				periodsArray.add(secondHalfObj);
@@ -1071,10 +1071,10 @@ public class TasktrackServiceImpl implements TasktrackService {
 				firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
 				firstHalfObj.put("status", "OPEN");
 				firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
-				firstHalfObj.put("endDay", "15-" + month + "-" + year);
+				firstHalfObj.put("endDay", year+"-" + month + "-" + "15");
 				secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
 				secondHalfObj.put("status", "OPEN");
-				secondHalfObj.put("startDay", "16-" + month + "-" + year);
+				secondHalfObj.put("startDay", year+"-" + month + "-" + "16");
 				secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 				periodsArray.add(firstHalfObj);
 				periodsArray.add(secondHalfObj);
