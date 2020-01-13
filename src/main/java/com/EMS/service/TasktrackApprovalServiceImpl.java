@@ -9214,15 +9214,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				Calendar cale = Calendar.getInstance();
 				cale.setTime(endDate);
 				int day = cale.get(Calendar.DAY_OF_MONTH);
-				System.out.println("----------------");
-				System.out.println("month--"+month);
-				System.out.println("year--"+year);
-				System.out.println("userId--"+userId);
-				System.out.println("projectId--"+projectId);
-
 				TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId,projectId, month, year);
 				if(userData != null) {
-					System.out.println("iiiiiiiiiiiiiiiiiiiii");
 					node.put("userName", userData.getUser().getLastName() + " " + userData.getUser().getFirstName());
 					node.put("userId", userData.getUser().getUserId());
 					node.put("loggedId",userData.getId());
@@ -9311,7 +9304,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					node.set("hourData", hourDataNode);
 				}
 				else{
-					System.out.println("nnnnnnn");
 					UserModel user = userRepository.findOneByUserId(userId);
 					if(user !=null){
 
