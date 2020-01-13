@@ -29,7 +29,7 @@ public class TasktrackApprovalSemiMonthlyController {
 	
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "/get/semi_monthly_tasktrack")
-	public ResponseEntity<Object> getWeeklyTasktrack(@RequestBody JSONObject requestData) {
+	public ResponseEntity<Object> getSemiMonthlyTasktrack(@RequestBody JSONObject requestData) {
 		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
 		JSONObject jsonResp = new JSONObject();
 		try {
