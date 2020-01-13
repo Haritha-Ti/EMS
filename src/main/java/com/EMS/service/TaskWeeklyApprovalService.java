@@ -4,18 +4,19 @@ import java.text.ParseException;
 
 import org.json.simple.JSONObject;
 
+import com.EMS.model.StatusResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface TaskWeeklyApprovalService {
 	
-	int submitWeeklyApproval(JSONObject requestData);
+	StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException,Exception;
 
-	int saveWeeklyApproval(JSONObject requestData);
+	StatusResponse saveWeeklyApproval(JSONObject requestData) throws ParseException;
 	
 	JSONObject getWeeklyTasktrack(JSONObject requestData) throws ParseException, Exception;
 
 	JSONObject getWeeklyTasktrackWithTask(JSONObject requestData);
 	
-	int getWeeklyTasksForSubmission(JsonNode requestData);
+	StatusResponse getWeeklyTasksForSubmission(JsonNode requestData) throws ParseException;
 }
 
