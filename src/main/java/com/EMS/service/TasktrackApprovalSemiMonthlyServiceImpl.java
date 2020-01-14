@@ -126,6 +126,22 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				} else {
 					response.put("enabled", true);
 				}
+				
+				String firstHalfApprover = null;
+				Date firstHalfSubmittedDate = null;
+				if (null != approvalSemiMonthly.getFirstHalfApproverOneId()) {
+					 firstHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName() + " "
+								+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
+					 
+						 firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
+				}
+
+				JSONObject approval = new JSONObject();
+				approval.put("approver", firstHalfApprover);
+				approval.put("date",(firstHalfSubmittedDate != null)? sdf.format(firstHalfSubmittedDate) : "");
+				approval.put("status", approverOneFirstHalfStatus);
+
+				response.put("approval", approval);
 			}
 			if (date == 16) {
 				JSONArray array = new JSONArray();
@@ -162,40 +178,23 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				} else {
 					response.put("enabled", true);
 				}
-			}
-		
-			String firstHalfApprover = null;
-			Date firstHalfSubmittedDate = null;
-			if (null != approvalSemiMonthly.getFirstHalfApproverOneId()) {
-				 firstHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName() + " "
+				
+				String secondHalfApprover = null;
+				Date secondHalfSubmittedDate  = null;
+				if (null != approvalSemiMonthly.getSecondHalfApproverOneId()) {
+					 secondHalfApprover = approvalSemiMonthly.getSecondHalfApproverOneId().getFirstName() + " "
 							+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
-				 
-					 firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
+
+					 secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
+				}
+				JSONObject approval = new JSONObject();
+				approval.put("approver", secondHalfApprover);
+				approval.put("date", (secondHalfSubmittedDate !=null)?sdf.format(secondHalfSubmittedDate) :"");
+				approval.put("status", approverOneSecondHalfStatus);
+
+				response.put("approval", approval);
+				
 			}
-
-		
-
-			String secondHalfApprover = null;
-			Date secondHalfSubmittedDate  = null;
-			if (null != approvalSemiMonthly.getSecondHalfApproverOneId()) {
-				 secondHalfApprover = approvalSemiMonthly.getSecondHalfApproverOneId().getFirstName() + " "
-						+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
-
-				 secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
-			}
-			
-
-			JSONObject approval = new JSONObject();
-			approval.put("first_half_approver", firstHalfApprover);
-			approval.put("first_half_submitted_date",(firstHalfSubmittedDate != null)? sdf.format(firstHalfSubmittedDate) : "");
-			approval.put("first_half_status", approverOneFirstHalfStatus);
-
-			approval.put("second_half_approver", secondHalfApprover);
-			approval.put("second_half_submitted_date", (secondHalfSubmittedDate !=null)?sdf.format(secondHalfSubmittedDate) :"");
-			approval.put("second_half_submitted_status", approverOneSecondHalfStatus);
-
-			response.put("approval", approval);
-			 
 			
 		} else {
 
