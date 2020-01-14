@@ -22,11 +22,13 @@ import org.springframework.stereotype.Service;
 
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
+import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
 import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
+import com.EMS.repository.AllocationRepository;
 import com.EMS.repository.TaskWeeklyApprovalRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
@@ -48,6 +50,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	@Autowired
 	private ProjectService projectservice;
 
+	@Autowired
+	private AllocationRepository allocationRepository;
+	
 	@Override
 	public StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException, Exception {
 
@@ -243,6 +248,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	@Override
 	public StatusResponse getWeeklyTasktrack(WeeklyTaskTrackWithoutTaskRequestDTO requestData)
 			throws Exception, ParseException {
+
 		JSONObject response = new JSONObject();
 		StatusResponse responseFinal;
 		Long userId = null;
@@ -269,6 +275,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		TaskTrackWeeklyApproval weeklyTasktrack = taskWeeklyApprovalRepository.getWeeklyTasktrack(startDate, endDate,
 				userId, projectId);
 
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId, projectId);
+		
+		
 		if (weeklyTasktrack != null) {
 			String approver1Status = weeklyTasktrack.getApprover1Status();
 			String approver2Status = weeklyTasktrack.getApprover2Status();
@@ -277,7 +286,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
 					|| taskStatusList.contains(financeStatus)) {
 
-				response.put("enabled", false);
+				for (AllocationModel al : userProjAllocations) {
+					List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+					if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
+						response.put("enabled", false);
+					}
+				}
+			
+				
 			} else {
 				response.put("enabled", true);
 			}
@@ -380,6 +396,8 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("taskList", taskList);
 
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId, projectId);
+		
 		if (tasktrackStatus != null) {
 
 			String approver1Status = tasktrackStatus.getApprover1Status();
@@ -391,7 +409,12 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
 					|| taskStatusList.contains(financeStatus)) {
-				jsonObject.put("enabled", false);
+				for (AllocationModel al : userProjAllocations) {
+					List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+					if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
+						jsonObject.put("enabled", false);
+					}
+				}
 			} else {
 				jsonObject.put("enabled", true);
 			}
