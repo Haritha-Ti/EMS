@@ -148,22 +148,38 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				}
 			}
 		
-			String firstHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName()+" "+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();		
-			Date firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
+			String firstHalfApprover = null;
+			Date firstHalfSubmittedDate = null;
+			if (null != approvalSemiMonthly.getFirstHalfApproverOneId()) {
+				 firstHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName() + " "
+							+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
+				 
+					 firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
+			}
+
+		
+
+			String secondHalfApprover = null;
+			Date secondHalfSubmittedDate  = null;
+			if (null != approvalSemiMonthly.getSecondHalfApproverOneId()) {
+				 secondHalfApprover = approvalSemiMonthly.getSecondHalfApproverOneId().getFirstName() + " "
+						+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
+
+				 secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
+			}
 			
-			String secondHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName()+" "+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
-			Date secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
-			
+
 			JSONObject approval = new JSONObject();
 			approval.put("first_half_approver", firstHalfApprover);
-			approval.put("date", sdf.format(firstHalfSubmittedDate));
-			approval.put("status", approverOneFirstHalfStatus);
-			
+			approval.put("first_half_submitted_date",(firstHalfSubmittedDate != null)? sdf.format(firstHalfSubmittedDate) : "");
+			approval.put("first_half_status", approverOneFirstHalfStatus);
+
 			approval.put("second_half_approver", secondHalfApprover);
-			approval.put("date", sdf.format(secondHalfSubmittedDate));
-			approval.put("status", approverOneSecondHalfStatus);
-			
+			approval.put("second_half_submitted_date", (secondHalfSubmittedDate !=null)?sdf.format(secondHalfSubmittedDate) :"");
+			approval.put("second_half_submitted_status", approverOneSecondHalfStatus);
+
 			response.put("approval", approval);
+			 
 			
 		} else {
 
