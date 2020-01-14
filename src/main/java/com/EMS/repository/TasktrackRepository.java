@@ -343,7 +343,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	@Query(value = "SELECT * FROM tasktrack WHERE date BETWEEN :startDate AND :endDate and user_user_id = :userId",nativeQuery=true)
 	public ArrayList<Tasktrack> getsavedTaskslist(Date startDate, Date endDate, Long userId);
 	
-	List<Tasktrack> findByUserUserIdAndProjectProjectIdAndDateBetween(Long userId, Long projectId, Date startDate,
+	List<Tasktrack> findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(Long userId, Long projectId, Date startDate,
 			Date endDate);
 
 

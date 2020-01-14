@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,13 +66,43 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		} else
 			requeststatus = 1;
 
-		weeklyApproval.setDay1(Double.parseDouble(requestData.get("day1").toString()));
-		weeklyApproval.setDay2(Double.parseDouble(requestData.get("day2").toString()));
-		weeklyApproval.setDay3(Double.parseDouble(requestData.get("day3").toString()));
-		weeklyApproval.setDay4(Double.parseDouble(requestData.get("day4").toString()));
-		weeklyApproval.setDay5(Double.parseDouble(requestData.get("day5").toString()));
-		weeklyApproval.setDay6(Double.parseDouble(requestData.get("day6").toString()));
-		weeklyApproval.setDay7(Double.parseDouble(requestData.get("day7").toString()));
+		Long userId = Long.parseLong(requestData.get("userId").toString());
+		UserModel userInfo = userservice.getUserdetailsbyId(userId);
+
+		if (!userInfo.equals(null))
+			weeklyApproval.setUser(userInfo);
+		else
+			requeststatus = 1;
+
+		weeklyApproval = taskWeeklyApprovalRepository.getduplicateentrycount(weeklyApproval.getStartDate(),
+				weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
+
+		Map<Date, Integer> timetrack = (Map<Date, Integer>) requestData.get("timetrack");
+
+		Map<Object, Object> result = timetrack.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors
+				.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+		Iterator iter = result.entrySet().iterator();
+		int counting = 0;
+		while (iter.hasNext()) {
+			Map.Entry entry = (Map.Entry) iter.next();
+			Double hours = Double.parseDouble(entry.getValue().toString());
+			if (counting == 0)
+				weeklyApproval.setDay1(hours);
+			if (counting == 1)
+				weeklyApproval.setDay2(hours);
+			if (counting == 2)
+				weeklyApproval.setDay3(hours);
+			if (counting == 3)
+				weeklyApproval.setDay4(hours);
+			if (counting == 4)
+				weeklyApproval.setDay5(hours);
+			if (counting == 5)
+				weeklyApproval.setDay6(hours);
+			if (counting == 6)
+				weeklyApproval.setDay7(hours);
+			counting++;
+		}
+
 		weeklyApproval.setYear(Integer.parseInt(requestData.get("year").toString()));
 
 		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
@@ -90,20 +121,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		} else
 			requeststatus = 1;
 
-		if (((!requestData.get("userSubmittedDate").toString().equals(null))
-				|| (!requestData.get("userSubmittedDate").toString().equals(" ")))) {
-			weeklyApproval.setUserSubmittedDate(sdf.parse(requestData.get("userSubmittedDate").toString()));
-
-		} else
-			requeststatus = 1;
-
-		Long userId = Long.parseLong(requestData.get("userId").toString());
-		UserModel userInfo = userservice.getUserdetailsbyId(userId);
-
-		if (!userInfo.equals(null))
-			weeklyApproval.setUser(userInfo);
-		else
-			requeststatus = 1;
+		weeklyApproval.setUserSubmittedDate(new Date());
 
 		Long projectId = Long.parseLong(requestData.get("projectId").toString());
 		ProjectModel projectInfo = projectservice.findById(projectId);
@@ -113,70 +131,12 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		else
 			requeststatus = 1;
 
-		Long approver1Id = Long.parseLong(requestData.get("approver1Id").toString());
-		UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
-
-		if (!approver1Info.equals(null))
-			weeklyApproval.setApprover1Id(approver1Info);
-//			else
-//				requeststatus = 1;
-
-		Long approver2Id = Long.parseLong(requestData.get("approver2Id").toString());
-		UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
-
-		if (!approver2Info.equals(null))
-			weeklyApproval.setApprover2Id(approver2Info);
-//			else
-//				requeststatus = 1;
-
-		Long financeUserId = Long.parseLong(requestData.get("financeUser").toString());
-		UserModel financeUser = userservice.getUserdetailsbyId(financeUserId);
-
-		if (!financeUser.equals(null))
-			weeklyApproval.setFinanceUser(financeUser);
-//			else
-//				requeststatus = 1;
-
-		if (requestData.get("timetrackStatus").toString().equals(null)
-				|| requestData.get("timetrackStatus").toString().equals(" ")
-				|| requestData.get("approver1_status").toString().equals(null)
-				|| requestData.get("approver1_status").toString().equals(" ")
-				|| requestData.get("approver2_status").toString().equals(null)
-				|| requestData.get("approver2_status").toString().equals(" ")
-				|| requestData.get("financeStatus").toString().equals(null)
-				|| requestData.get("financeStatus").toString().equals(" ")) {
-			requeststatus = 1;
-		} else {
-
-			weeklyApproval.setTimetrackStatus(requestData.get("timetrackStatus").toString());
-			weeklyApproval.setApprover1Status(requestData.get("approver1_status").toString());
-			weeklyApproval.setApprover2Status(requestData.get("approver2_status").toString());
-			weeklyApproval.setFinanceStatus(requestData.get("financeStatus").toString());
-
-		}
-
-		if (requestData.get("approver1SubmittedDate") != null)
-			weeklyApproval.setApprover1SubmittedDate(sdf.parse(requestData.get("approver1SubmittedDate").toString()));
-
-		if (requestData.get("approver2SubmittedDate") != null)
-			weeklyApproval.setApprover2SubmittedDate(sdf.parse(requestData.get("approver2SubmittedDate").toString()));
-
-		if (requestData.get("financeSubmittedDate") != null)
-			weeklyApproval.setFinanceSubmittedDate(sdf.parse(requestData.get("financeSubmittedDate").toString()));
-
-		if (requestData.get("rejectionTime") != null)
-			weeklyApproval.setRejectionTime(sdf.parse(requestData.get("rejectionTime").toString()));
+		weeklyApproval.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
 
 		if (requeststatus == 0) {
 
-			int count = taskWeeklyApprovalRepository.getduplicateentrycount(weeklyApproval.getStartDate(),
-					weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
-			if (count == 0) {
-				taskWeeklyApprovalRepository.save(weeklyApproval);
-				response = new StatusResponse("Success", 200, "Insertion completed");
-			} else {
-				response = new StatusResponse("Success", 200, "Insertion failed due to duplicate entry");
-			}
+			taskWeeklyApprovalRepository.save(weeklyApproval);
+			response = new StatusResponse("Success", 200, "Insertion completed");
 
 		} else {
 			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
@@ -202,14 +162,43 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		} else
 			requeststatus = 1;
+		
+		Long userId = Long.parseLong(requestData.get("userId").toString());
+		UserModel userInfo = userservice.getUserdetailsbyId(userId);
 
-		weeklyApproval.setDay1(Double.parseDouble(requestData.get("day1").toString()));
-		weeklyApproval.setDay2(Double.parseDouble(requestData.get("day2").toString()));
-		weeklyApproval.setDay3(Double.parseDouble(requestData.get("day3").toString()));
-		weeklyApproval.setDay4(Double.parseDouble(requestData.get("day4").toString()));
-		weeklyApproval.setDay5(Double.parseDouble(requestData.get("day5").toString()));
-		weeklyApproval.setDay6(Double.parseDouble(requestData.get("day6").toString()));
-		weeklyApproval.setDay7(Double.parseDouble(requestData.get("day7").toString()));
+		if (!userInfo.equals(null))
+			weeklyApproval.setUser(userInfo);
+		else
+			requeststatus = 1;
+		
+		weeklyApproval = taskWeeklyApprovalRepository.getduplicateentrycount(weeklyApproval.getStartDate(),
+				weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
+		
+		Map<Date, Integer> timetrack = (Map<Date, Integer>) requestData.get("timetrack");
+
+		Map<Object, Object> result = timetrack.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors
+				.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+		Iterator iter = result.entrySet().iterator();
+		int counting = 0;
+		while (iter.hasNext()) {
+			Map.Entry entry = (Map.Entry) iter.next();
+			Double hours = Double.parseDouble(entry.getValue().toString());
+			if (counting == 0)
+				weeklyApproval.setDay1(hours);
+			if (counting == 1)
+				weeklyApproval.setDay2(hours);
+			if (counting == 2)
+				weeklyApproval.setDay3(hours);
+			if (counting == 3)
+				weeklyApproval.setDay4(hours);
+			if (counting == 4)
+				weeklyApproval.setDay5(hours);
+			if (counting == 5)
+				weeklyApproval.setDay6(hours);
+			if (counting == 6)
+				weeklyApproval.setDay7(hours);
+			counting++;
+		}
 		weeklyApproval.setYear(Integer.parseInt(requestData.get("year").toString()));
 
 		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
@@ -228,13 +217,6 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		} else
 			requeststatus = 1;
 
-		Long userId = Long.parseLong(requestData.get("userId").toString());
-		UserModel userInfo = userservice.getUserdetailsbyId(userId);
-
-		if (!userInfo.equals(null))
-			weeklyApproval.setUser(userInfo);
-		else
-			requeststatus = 1;
 
 		Long projectId = Long.parseLong(requestData.get("projectId").toString());
 		ProjectModel projectInfo = projectservice.findById(projectId);
@@ -243,24 +225,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			weeklyApproval.setProject(projectInfo);
 		else
 			requeststatus = 1;
-
-		if (requestData.get("timetrackStatus").toString().equals(null)
-				|| requestData.get("timetrackStatus").toString().equals(" ")) {
-			requeststatus = 1;
-		} else {
-
-			weeklyApproval.setTimetrackStatus(requestData.get("timetrackStatus").toString());
-		}
+		weeklyApproval.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
 
 		if (requeststatus == 0) {
 
-			int count = taskWeeklyApprovalRepository.getduplicateentrycount(weeklyApproval.getStartDate(),
-					weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
-			if (count == 0) {
 				taskWeeklyApprovalRepository.save(weeklyApproval);
 				response = new StatusResponse("Success", 200, "Insertion completed");
-			} else
-				response = new StatusResponse("Success", 200, "Insertion failed due to duplicate entry");
+		
 		} else
 			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
 
@@ -316,7 +287,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			
 			JSONObject approvalObj = new JSONObject();
 			approvalObj.put("approver", approver);
-			approvalObj.put("Date", sdf.format(approver1SubmittedDate));
+			approvalObj.put("date", sdf.format(approver1SubmittedDate));
 			approvalObj.put("status", approver1Status);
 			
 			response.put("approval", approvalObj);
@@ -379,8 +350,10 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				.findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(userId, projectId, startDate, endDate);
 
 		TaskTrackWeeklyApproval tasktrackStatus = taskWeeklyApprovalRepository
-				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId, projectId, startDate,
-						endDate);
+
+				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId,
+						projectId, startDate, endDate);
+
 
 		JSONArray taskList = new JSONArray();
 		HashSet<Date> trackdate = new HashSet<Date>();
@@ -439,7 +412,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		String start = requestData.get("startDate").asText();
 		String end = requestData.get("endDate").asText();
 		Long userId = requestData.get("userId").asLong();
-
+		TaskTrackWeeklyApproval weeklytasksubmission = new TaskTrackWeeklyApproval();
 		Date endDate = null, startDate = null;
 
 		startDate = sdf.parse(start);
@@ -448,6 +421,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		ArrayList<Tasktrack> tasklist = tasktrackRepository.getsavedTaskslist(startDate, endDate, userId);
 		Map<Date, Double> dailyhours = new HashMap<Date, Double>();
 		Long projectId = null;
+		
+		UserModel userDetails = userservice.getUserdetailsbyId(userId);
+		weeklytasksubmission.setUser(userDetails);
+		
+		weeklytasksubmission = taskWeeklyApprovalRepository.getduplicateentrycount(weeklytasksubmission.getStartDate(),
+				weeklytasksubmission.getEndDate(), weeklytasksubmission.getUser().getUserId());
+		
 
 		if (!tasklist.isEmpty()) {
 
@@ -464,11 +444,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			}
 		}
 
-		TaskTrackWeeklyApproval weeklytasksubmission = new TaskTrackWeeklyApproval();
-		UserModel userDetails = userservice.getUserdetailsbyId(userId);
+		
+		
 		ProjectModel project = projectservice.findById(projectId);
-
-		weeklytasksubmission.setUser(userDetails);
 		weeklytasksubmission.setProject(project);
 		weeklytasksubmission.setStartDate(startDate);
 		weeklytasksubmission.setEndDate(endDate);
@@ -515,13 +493,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			count++;
 		}
 
-		int countt = taskWeeklyApprovalRepository.getduplicateentrycount(weeklytasksubmission.getStartDate(),
-				weeklytasksubmission.getEndDate(), weeklytasksubmission.getUser().getUserId());
-		if (countt == 0) {
 			taskWeeklyApprovalRepository.save(weeklytasksubmission);
 			response = new StatusResponse("Success", 200, "Weekly data submission completed");
-		} else
-			response = new StatusResponse("Success", 200, "Weekly data submission failed");
+		
 		return response;
 	}
 
