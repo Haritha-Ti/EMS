@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
@@ -344,10 +345,75 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getWeeklyTasktrackWithTask(JSONObject requestData) {
+	public StatusResponse getWeeklyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception {
+		StatusResponse response = new StatusResponse();
+		Long userId = null;
+		Long projectId = null;
+		Date startDate = null;
+		Date endDate = null;
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if (requestData.getuId() != null) {
+			userId = requestData.getuId();
+		}
+		if (requestData.getProjectId() != null) {
+			projectId = requestData.getProjectId();
+		}
+		if (requestData.getStartDate() != null && !requestData.getStartDate().isEmpty()) {
+			startDate = sdf.parse(requestData.getStartDate());
+		}
+		if (requestData.getEndDate() != null && !requestData.getEndDate().isEmpty()) {
+			endDate = sdf.parse(requestData.getEndDate());
+		}
 		
-		return null;
+		List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdAndDateBetween(
+				userId, projectId, startDate, endDate);
+
+		TaskTrackWeeklyApproval tasktrackStatus = taskWeeklyApprovalRepository
+				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId,
+						projectId, startDate, endDate);
+		
+		JSONArray taskList = new JSONArray();
+
+		for (Tasktrack tasktrack : tasktrackList) {
+			JSONArray dateTaskArray = new JSONArray();
+			JSONObject dateTaskObj = new JSONObject();
+			JSONObject taskObj = new JSONObject();
+			taskObj.put("hour", tasktrack.getHours());
+			taskObj.put("task_type", tasktrack.getTask().getTaskName());
+			taskObj.put("description", tasktrack.getDescription());
+			dateTaskArray.add(taskObj);
+
+			dateTaskObj.put(sdf.format(tasktrack.getDate()), dateTaskArray);
+			taskList.add(dateTaskObj);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("taskList", taskList);
+		
+		if (tasktrackStatus != null) {
+		
+		String approver1Status = tasktrackStatus.getApprover1Status();
+		String approver2Status = tasktrackStatus.getApprover2Status();
+		String financeStatus = tasktrackStatus.getFinanceStatus();
+	
+		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
+		List<String> taskStatusList = Arrays.asList(taskStatusArray);
+		
+		if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status) || taskStatusList.contains(financeStatus)) {
+			jsonObject.put("enabled", false);
+		}
+		else {
+			jsonObject.put("enabled", true);
+		}
+		
+		}
+		response.setData(jsonObject);
+		response.setStatus(Constants.SUCCESS);
+		response.setStatusCode(Constants.SUCCESS_CODE);
+		
+		return response;
 	}
 
 	@Override
