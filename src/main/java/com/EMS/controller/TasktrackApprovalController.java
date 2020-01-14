@@ -106,4 +106,49 @@ public class TasktrackApprovalController {
 
 		return node;
 	}
+
+	//Nisha
+	@PostMapping(value = "/taskTrackDataForFinance")
+	public ObjectNode getTaskTrackDataForFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responseData = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		try {
+			node = tasktrackApprovalService.getTaskTrackDataForFinance(requestdata);
+			responseData.set("data",node);
+			responseData.put("status", "Sucess");
+			responseData.put("message", "Sucess ");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			responseData.set("data",node);
+			responseData.put("status", "failure");
+			responseData.put("message", "failed. " + e);
+		}
+
+		responseData.put("code", httpstatus.getStatus());
+		return responseData;
+	}
+	//nisha
+	@PostMapping(value = "/taskTrackDataByUserIdForFinance")
+	public ObjectNode getTaskTrackDataByUserIdForFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responseData = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		try {
+			node = tasktrackApprovalService.getTaskTrackDataByUserIdForFinance(requestdata);
+			responseData.set("data",node);
+			responseData.put("status", "Sucess");
+			responseData.put("message", "Sucess ");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			responseData.set("data",node);
+			responseData.put("status", "failure");
+			responseData.put("message", "failed. " + e);
+		}
+
+		responseData.put("code", httpstatus.getStatus());
+		return responseData;
+	}
 }

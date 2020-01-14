@@ -154,4 +154,8 @@ public interface TasktrackApprovalService {
     ObjectNode approveHoursLevel1(ObjectNode requestdata) throws Exception;
 
 	StatusResponse getTaskTrackDataForApprover2(GetTaskTrackData requestdata) throws Exception;
+
+	ObjectNode getTaskTrackDataForFinance(ObjectNode requestdata) throws Exception;
+
+	ObjectNode getTaskTrackDataByUserIdForFinance(ObjectNode requestdata) throws Exception;
 }
