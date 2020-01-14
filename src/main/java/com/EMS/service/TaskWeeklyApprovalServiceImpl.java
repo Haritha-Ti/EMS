@@ -138,14 +138,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		weeklyApproval.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
 
-		if (requeststatus == 0) {
+//		if (requeststatus == 0) {
 
 			taskWeeklyApprovalRepository.save(weeklyApproval);
 			response = new StatusResponse("Success", 200, "Insertion completed");
 
-		} else {
-			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
-		}
+//		} else {
+//			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
+//		}
 		return response;
 
 	}
@@ -232,13 +232,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			requeststatus = 1;
 		weeklyApproval.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
 
-		if (requeststatus == 0) {
+//		if (requeststatus == 0) {
 
 				taskWeeklyApprovalRepository.save(weeklyApproval);
 				response = new StatusResponse("Success", 200, "Insertion completed");
 		
-		} else
-			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
+//		} else
+//			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
 
 		return response;
 
