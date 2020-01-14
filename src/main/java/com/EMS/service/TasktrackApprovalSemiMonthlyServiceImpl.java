@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -864,34 +865,26 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 						projectId, month, year);
 		
 		JSONArray taskList = new JSONArray();
-		
-		JSONArray taskArray = new JSONArray();
-		
-
-		HashMap<String, Object> dateTaskMap = null;
-		
-		for (Tasktrack tasktrack : tasktrackList) {				
-			HashMap<String, Object> taskMap = new HashMap<>();
-			
-			taskMap.put("hour", tasktrack.getHours());
-			taskMap.put("task_type", tasktrack.getTask().getTaskName());
-			taskMap.put("description", tasktrack.getDescription());			
-			taskArray.add(taskMap);		
-			
-			if (dateTaskMap != null && dateTaskMap.containsKey(sdf.format(tasktrack.getDate()))) {
-			
-				dateTaskMap.put(sdf.format(tasktrack.getDate()), taskArray);
+		HashSet<Date> trackdate = new HashSet<Date>();
+		for (Tasktrack tasktrackOuter : tasktrackList) {
+			if (!trackdate.contains(tasktrackOuter.getDate())) {
+				trackdate.add(tasktrackOuter.getDate());
+				String intialDate = sdf.format(tasktrackOuter.getDate());
+				JSONArray dateTaskArray = new JSONArray();
+				JSONObject dateTaskObj = new JSONObject();
+				for (Tasktrack tasktrack : tasktrackList) {
+					JSONObject taskObj = new JSONObject();
+					taskObj.put("hour", tasktrack.getHours());
+					taskObj.put("task_type", tasktrack.getTask().getTaskName());
+					taskObj.put("description", tasktrack.getDescription());
+					if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
+						dateTaskArray.add(taskObj);
+					}
+				}
+				dateTaskObj.put(sdf.format(tasktrackOuter.getDate()), dateTaskArray);
+				taskList.add(dateTaskObj);
 			}
-			else
-			{
-				dateTaskMap = new HashMap<>();
-				dateTaskMap.put(sdf.format(tasktrack.getDate()), taskArray);
-			}	
-				
 		}
-				
-
-		taskList.add(dateTaskMap);		
 		
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("taskList", taskList);
