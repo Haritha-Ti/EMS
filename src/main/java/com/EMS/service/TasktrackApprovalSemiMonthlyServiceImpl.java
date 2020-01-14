@@ -147,6 +147,24 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					response.put("enabled", true);
 				}
 			}
+		
+			String firstHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName()+" "+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();		
+			Date firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
+			
+			String secondHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName()+" "+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
+			Date secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
+			
+			JSONObject approval = new JSONObject();
+			approval.put("first_half_approver", firstHalfApprover);
+			approval.put("date", sdf.format(firstHalfSubmittedDate));
+			approval.put("status", approverOneFirstHalfStatus);
+			
+			approval.put("second_half_approver", secondHalfApprover);
+			approval.put("date", sdf.format(secondHalfSubmittedDate));
+			approval.put("status", approverOneSecondHalfStatus);
+			
+			response.put("approval", approval);
+			
 		} else {
 
 		}
@@ -819,24 +837,46 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdAndDateBetween(
 				userId, projectId, startDate, endDate);
 
+		Calendar c = Calendar.getInstance();
+		c.setTime(startDate);
+
+		int month = c.get(Calendar.MONTH);
+		int year = c.get(Calendar.YEAR);
+		
 		TasktrackApprovalSemiMonthly tasktrackStatus = semiMonthlyRepository
 				.findByUserUserIdAndProjectProjectIdInAndMonthEqualsAndYearEquals(userId,
-						projectId, startDate, endDate);
+						projectId, month, year);
 		
 		JSONArray taskList = new JSONArray();
-	
+		
+		JSONArray taskArray = new JSONArray();
+		
+
+		HashMap<String, Object> dateTaskMap = null;
+		
 		for (Tasktrack tasktrack : tasktrackList) {				
+			HashMap<String, Object> taskMap = new HashMap<>();
 			
-			JSONObject dateTaskObj = new JSONObject();
+			taskMap.put("hour", tasktrack.getHours());
+			taskMap.put("task_type", tasktrack.getTask().getTaskName());
+			taskMap.put("description", tasktrack.getDescription());			
+			taskArray.add(taskMap);		
 			
-			JSONObject taskObj = new JSONObject();
-			taskObj.put("hour", tasktrack.getHours());
-			taskObj.put("task_type", tasktrack.getTask().getTaskName());
-			taskObj.put("description", tasktrack.getDescription());			
-			dateTaskObj.put(sdf.format(tasktrack.getDate()), taskObj);			
-			taskList.add(dateTaskObj);						
+			if (dateTaskMap != null && dateTaskMap.containsKey(sdf.format(tasktrack.getDate()))) {
+			
+				dateTaskMap.put(sdf.format(tasktrack.getDate()), taskArray);
+			}
+			else
+			{
+				dateTaskMap = new HashMap<>();
+				dateTaskMap.put(sdf.format(tasktrack.getDate()), taskArray);
+			}	
+				
 		}
-	
+				
+
+		taskList.add(dateTaskMap);		
+		
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("taskList", taskList);
 	
@@ -855,9 +895,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		
 			List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
 			dateRanges.add(endDate);
-			Calendar c = Calendar.getInstance();
-			c.setTime(startDate);
-
+			
 			int date = c.get(Calendar.DATE);
 			if (date == 1) {
 				if (taskStatusList.contains(approverOneFirstHalfStatus) || taskStatusList.contains(approverTwoFirstHalfStatus)

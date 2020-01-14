@@ -29,5 +29,5 @@ public interface TaskTrackApprovalSemiMonthlyRepository extends JpaRepository<Ta
 	public int checkduplicationForsemiMonthlyTaskTrack(long userId, Integer month, Integer year);
 
 	public TasktrackApprovalSemiMonthly findByUserUserIdAndProjectProjectIdInAndMonthEqualsAndYearEquals(
-            Long userId, Long projectId, Date endDate, Date startDate);
+            Long userId, Long projectId, int month, int year);
 }

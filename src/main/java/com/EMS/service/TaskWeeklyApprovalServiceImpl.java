@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -319,7 +320,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			
 			JSONObject approvalObj = new JSONObject();
 			approvalObj.put("approver", approver);
-			approvalObj.put("Date", sdf.format(approver1SubmittedDate));
+			approvalObj.put("date", sdf.format(approver1SubmittedDate));
 			approvalObj.put("status", approver1Status);
 			
 			response.put("approval", approvalObj);
@@ -387,18 +388,25 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 						projectId, startDate, endDate);
 		
 		JSONArray taskList = new JSONArray();
-
-		for (Tasktrack tasktrack : tasktrackList) {
-			JSONArray dateTaskArray = new JSONArray();
-			JSONObject dateTaskObj = new JSONObject();
-			JSONObject taskObj = new JSONObject();
-			taskObj.put("hour", tasktrack.getHours());
-			taskObj.put("task_type", tasktrack.getTask().getTaskName());
-			taskObj.put("description", tasktrack.getDescription());
-			dateTaskArray.add(taskObj);
-
-			dateTaskObj.put(sdf.format(tasktrack.getDate()), dateTaskArray);
-			taskList.add(dateTaskObj);
+		HashSet<Date> trackdate = new HashSet<Date>();
+		for (Tasktrack tasktrackOuter : tasktrackList) {
+			if (!trackdate.contains(tasktrackOuter.getDate())) {
+				trackdate.add(tasktrackOuter.getDate());
+				String intialDate = sdf.format(tasktrackOuter.getDate());
+				JSONArray dateTaskArray = new JSONArray();
+				JSONObject dateTaskObj = new JSONObject();
+				for (Tasktrack tasktrack : tasktrackList) {
+					JSONObject taskObj = new JSONObject();
+					taskObj.put("hour", tasktrack.getHours());
+					taskObj.put("task_type", tasktrack.getTask().getTaskName());
+					taskObj.put("description", tasktrack.getDescription());
+					if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
+						dateTaskArray.add(taskObj);
+					}
+				}
+				dateTaskObj.put(sdf.format(tasktrackOuter.getDate()), dateTaskArray);
+				taskList.add(dateTaskObj);
+			}
 		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("taskList", taskList);
