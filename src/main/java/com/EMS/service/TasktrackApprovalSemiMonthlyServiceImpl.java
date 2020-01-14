@@ -363,12 +363,12 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		}
 
-		if (requeststatus == 0) {
+//		if (requeststatus == 0) {
 				semiMonthlyRepository.save(semiMonthlyApproval);
 				response = new StatusResponse("success", 200, "Semi monthly data submission completed");
 			
-		} else
-			response = new StatusResponse("success", 200, "Semi monthly data submission failed due to invalid data");
+//		} else
+//			response = new StatusResponse("success", 200, "Semi monthly data submission failed due to invalid data");
 		
 		return response;
 	}
@@ -505,12 +505,12 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		}
 
-		if (requeststatus == 0) {
+//		if (requeststatus == 0) {
 			semiMonthlyRepository.save(semiMonthlyApproval);
 			response = new StatusResponse("Success", 200, "Insertion of semimonthly tasktrack completed");
-		} else
-			response = new StatusResponse("Success", 200,
-					"Insertion of semimonthly tasktrack failed due to invalid entry");
+//		} else
+//			response = new StatusResponse("Success", 200,
+//					"Insertion of semimonthly tasktrack failed due to invalid entry");
 		return response;
 	}
 
