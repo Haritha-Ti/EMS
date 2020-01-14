@@ -54,6 +54,7 @@ public class Constants {
 	public static final Integer WEEK_START_DAY = 1;
 	
 	public static final String TASKTRACK_USER_STATUS_SUBMIT = "SUBMITTED";
+	public static final String TASKTRACK_USER_STATUS_SAVED = "SAVED";
 	
 
 	public static final Double roundToDefaultPrecision(Double value) {

@@ -18,5 +18,8 @@ public interface TaskTrackWeeklyApprovalRepository extends JpaRepository<TaskTra
 
     public List<TaskTrackWeeklyApproval> findByUserUserIdAndProjectProjectIdInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
             Long userId, List<Long> projectIdList, Date endDate, Date startDate);
+    
+	@Query(value="SELECT * FROM tasktrack_weekly_approval where start_date=?1 AND end_date=?2 AND user_user_id=?3",nativeQuery=true)
+	public TaskTrackWeeklyApproval getduplicateentrycount(Date startDate, Date endDate, long userId);
 }
 
