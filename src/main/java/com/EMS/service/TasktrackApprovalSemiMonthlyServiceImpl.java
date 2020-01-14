@@ -21,12 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
+import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
 import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.model.UserModel;
+import com.EMS.repository.AllocationRepository;
 import com.EMS.repository.TaskTrackApprovalSemiMonthlyRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
@@ -47,6 +49,10 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 	@Autowired
 	ProjectService projectservice;
+	
+	@Autowired
+	private AllocationRepository allocationRepository;
+	
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
@@ -141,10 +147,18 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay31(), dateRanges.get(15));
 				response.put("taskList", array);
 
+				List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId, projectId);
+				
 				if (taskStatusList.contains(approverOneSecondHalfStatus)
 						|| taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
-					response.put("enabled", false);
+					
+					for (AllocationModel al : userProjAllocations) {
+						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+						if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
+							response.put("enabled", false);
+						}
+					}
 				} else {
 					response.put("enabled", true);
 				}
@@ -733,6 +747,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		String[] taskStatusArray = { Constants.TaskTrackSemiMonthlyApproval.TASKTRACK_SEMI_MONTHLY_APPROVER_STATUS_APPROVED };
 		List<String> taskStatusList = Arrays.asList(taskStatusArray);
 		
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId, projectId);
 		
 		if (tasktrackStatus != null) {
 		
@@ -750,7 +765,13 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			if (date == 1) {
 				if (taskStatusList.contains(approverOneFirstHalfStatus) || taskStatusList.contains(approverTwoFirstHalfStatus)
 						|| taskStatusList.contains(financeFirstHalfStatus)) {
-					jsonObject.put("enabled", false);
+					for (AllocationModel al : userProjAllocations) {
+						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+						if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
+							jsonObject.put("enabled", false);
+						}
+					}
+					
 				}
 
 				else {
@@ -761,7 +782,13 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			else if (date == 16) {
 				if (taskStatusList.contains(approverOneSecondHalfStatus) || taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
-					jsonObject.put("enabled", false);
+					for (AllocationModel al : userProjAllocations) {
+						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+						if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
+							jsonObject.put("enabled", false);
+						}
+					}
+					
 				}
 
 				else {
