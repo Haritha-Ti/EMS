@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,128 +48,124 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	private ProjectService projectservice;
 
 	@Override
-	public StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException,Exception {
+	public StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException, Exception {
 
 		TaskTrackWeeklyApproval weeklyApproval = new TaskTrackWeeklyApproval();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		int requeststatus = 0;
-		StatusResponse response=new StatusResponse();
-		
-			if (((!requestData.get("startDate").toString().equals(null))
-					|| (!requestData.get("startDate").toString().equals(" ")))
-					&& ((!requestData.get("endDate").toString().equals(null))
-							|| (!requestData.get("endDate").toString().equals(" ")))) {
-				weeklyApproval.setStartDate(sdf.parse(requestData.get("startDate").toString()));
-				weeklyApproval.setEndDate(sdf.parse(requestData.get("endDate").toString()));
+		StatusResponse response = new StatusResponse();
 
-			} else
+		if (((!requestData.get("startDate").toString().equals(null))
+				|| (!requestData.get("startDate").toString().equals(" ")))
+				&& ((!requestData.get("endDate").toString().equals(null))
+						|| (!requestData.get("endDate").toString().equals(" ")))) {
+			weeklyApproval.setStartDate(sdf.parse(requestData.get("startDate").toString()));
+			weeklyApproval.setEndDate(sdf.parse(requestData.get("endDate").toString()));
+
+		} else
+			requeststatus = 1;
+
+		weeklyApproval.setDay1(Double.parseDouble(requestData.get("day1").toString()));
+		weeklyApproval.setDay2(Double.parseDouble(requestData.get("day2").toString()));
+		weeklyApproval.setDay3(Double.parseDouble(requestData.get("day3").toString()));
+		weeklyApproval.setDay4(Double.parseDouble(requestData.get("day4").toString()));
+		weeklyApproval.setDay5(Double.parseDouble(requestData.get("day5").toString()));
+		weeklyApproval.setDay6(Double.parseDouble(requestData.get("day6").toString()));
+		weeklyApproval.setDay7(Double.parseDouble(requestData.get("day7").toString()));
+		weeklyApproval.setYear(Integer.parseInt(requestData.get("year").toString()));
+
+		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
+				&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
+				&& (!weeklyApproval.getDay5().equals(null)) && (!weeklyApproval.getDay6().equals(null))
+				&& (!weeklyApproval.getDay7().equals(null)) && (!weeklyApproval.getYear().equals(null))) {
+
+			if ((weeklyApproval.getDay1() < 0) || (weeklyApproval.getDay1() > 24) || (weeklyApproval.getDay2() < 0)
+					|| (weeklyApproval.getDay2() > 24) || (weeklyApproval.getDay3() < 0)
+					|| (weeklyApproval.getDay3() > 24) || (weeklyApproval.getDay4() < 0)
+					|| (weeklyApproval.getDay4() > 24) || (weeklyApproval.getDay5() < 0)
+					|| (weeklyApproval.getDay5() > 24) || (weeklyApproval.getDay6() < 0)
+					|| (weeklyApproval.getDay6() > 24) || (weeklyApproval.getDay7() < 0)
+					|| (weeklyApproval.getDay7() > 24) || weeklyApproval.getYear() <= 0)
 				requeststatus = 1;
+		} else
+			requeststatus = 1;
 
-			weeklyApproval.setDay1(Double.parseDouble(requestData.get("day1").toString()));
-			weeklyApproval.setDay2(Double.parseDouble(requestData.get("day2").toString()));
-			weeklyApproval.setDay3(Double.parseDouble(requestData.get("day3").toString()));
-			weeklyApproval.setDay4(Double.parseDouble(requestData.get("day4").toString()));
-			weeklyApproval.setDay5(Double.parseDouble(requestData.get("day5").toString()));
-			weeklyApproval.setDay6(Double.parseDouble(requestData.get("day6").toString()));
-			weeklyApproval.setDay7(Double.parseDouble(requestData.get("day7").toString()));
-			weeklyApproval.setYear(Integer.parseInt(requestData.get("year").toString()));
+		if (((!requestData.get("userSubmittedDate").toString().equals(null))
+				|| (!requestData.get("userSubmittedDate").toString().equals(" ")))) {
+			weeklyApproval.setUserSubmittedDate(sdf.parse(requestData.get("userSubmittedDate").toString()));
 
-			if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
-					&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
-					&& (!weeklyApproval.getDay5().equals(null)) && (!weeklyApproval.getDay6().equals(null))
-					&& (!weeklyApproval.getDay7().equals(null)) && (!weeklyApproval.getYear().equals(null))) {
+		} else
+			requeststatus = 1;
 
-				if ((weeklyApproval.getDay1() < 0) || (weeklyApproval.getDay1() > 24) || (weeklyApproval.getDay2() < 0)
-						|| (weeklyApproval.getDay2() > 24) || (weeklyApproval.getDay3() < 0)
-						|| (weeklyApproval.getDay3() > 24) || (weeklyApproval.getDay4() < 0)
-						|| (weeklyApproval.getDay4() > 24) || (weeklyApproval.getDay5() < 0)
-						|| (weeklyApproval.getDay5() > 24) || (weeklyApproval.getDay6() < 0)
-						|| (weeklyApproval.getDay6() > 24) || (weeklyApproval.getDay7() < 0)
-						|| (weeklyApproval.getDay7() > 24) || weeklyApproval.getYear() <= 0)
-					requeststatus = 1;
-			} else
-				requeststatus = 1;
+		Long userId = Long.parseLong(requestData.get("userId").toString());
+		UserModel userInfo = userservice.getUserdetailsbyId(userId);
 
-			if (((!requestData.get("userSubmittedDate").toString().equals(null))
-					|| (!requestData.get("userSubmittedDate").toString().equals(" ")))) {
-				weeklyApproval.setUserSubmittedDate(sdf.parse(requestData.get("userSubmittedDate").toString()));
+		if (!userInfo.equals(null))
+			weeklyApproval.setUser(userInfo);
+		else
+			requeststatus = 1;
 
-			} else
-				requeststatus = 1;
+		Long projectId = Long.parseLong(requestData.get("projectId").toString());
+		ProjectModel projectInfo = projectservice.findById(projectId);
 
-			Long userId = Long.parseLong(requestData.get("userId").toString());
-			UserModel userInfo = userservice.getUserdetailsbyId(userId);
+		if (!projectInfo.equals(null))
+			weeklyApproval.setProject(projectInfo);
+		else
+			requeststatus = 1;
 
-			if (!userInfo.equals(null))
-				weeklyApproval.setUser(userInfo);
-			else
-				requeststatus = 1;
+		Long approver1Id = Long.parseLong(requestData.get("approver1Id").toString());
+		UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
 
-			Long projectId = Long.parseLong(requestData.get("projectId").toString());
-			ProjectModel projectInfo = projectservice.findById(projectId);
-
-			if (!projectInfo.equals(null))
-				weeklyApproval.setProject(projectInfo);
-			else
-				requeststatus = 1;
-
-			Long approver1Id = Long.parseLong(requestData.get("approver1Id").toString());
-			UserModel approver1Info = userservice.getUserdetailsbyId(approver1Id);
-
-			if (!approver1Info.equals(null))
-				weeklyApproval.setApprover1Id(approver1Info);
+		if (!approver1Info.equals(null))
+			weeklyApproval.setApprover1Id(approver1Info);
 //			else
 //				requeststatus = 1;
 
-			Long approver2Id = Long.parseLong(requestData.get("approver2Id").toString());
-			UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
+		Long approver2Id = Long.parseLong(requestData.get("approver2Id").toString());
+		UserModel approver2Info = userservice.getUserdetailsbyId(approver2Id);
 
-			if (!approver2Info.equals(null))
-				weeklyApproval.setApprover2Id(approver2Info);
+		if (!approver2Info.equals(null))
+			weeklyApproval.setApprover2Id(approver2Info);
 //			else
 //				requeststatus = 1;
 
-			Long financeUserId = Long.parseLong(requestData.get("financeUser").toString());
-			UserModel financeUser = userservice.getUserdetailsbyId(financeUserId);
+		Long financeUserId = Long.parseLong(requestData.get("financeUser").toString());
+		UserModel financeUser = userservice.getUserdetailsbyId(financeUserId);
 
-			if (!financeUser.equals(null))
-				weeklyApproval.setFinanceUser(financeUser);
+		if (!financeUser.equals(null))
+			weeklyApproval.setFinanceUser(financeUser);
 //			else
 //				requeststatus = 1;
 
-			if (requestData.get("timetrackStatus").toString().equals(null)
-					|| requestData.get("timetrackStatus").toString().equals(" ")
-					|| requestData.get("approver1_status").toString().equals(null)
-					|| requestData.get("approver1_status").toString().equals(" ")
-					|| requestData.get("approver2_status").toString().equals(null)
-					|| requestData.get("approver2_status").toString().equals(" ")
-					|| requestData.get("financeStatus").toString().equals(null)
-					|| requestData.get("financeStatus").toString().equals(" ")) {
-				requeststatus = 1;
-			} else {
+		if (requestData.get("timetrackStatus").toString().equals(null)
+				|| requestData.get("timetrackStatus").toString().equals(" ")
+				|| requestData.get("approver1_status").toString().equals(null)
+				|| requestData.get("approver1_status").toString().equals(" ")
+				|| requestData.get("approver2_status").toString().equals(null)
+				|| requestData.get("approver2_status").toString().equals(" ")
+				|| requestData.get("financeStatus").toString().equals(null)
+				|| requestData.get("financeStatus").toString().equals(" ")) {
+			requeststatus = 1;
+		} else {
 
-				weeklyApproval.setTimetrackStatus(requestData.get("timetrackStatus").toString());
-				weeklyApproval.setApprover1Status(requestData.get("approver1_status").toString());
-				weeklyApproval.setApprover2Status(requestData.get("approver2_status").toString());
-				weeklyApproval.setFinanceStatus(requestData.get("financeStatus").toString());
+			weeklyApproval.setTimetrackStatus(requestData.get("timetrackStatus").toString());
+			weeklyApproval.setApprover1Status(requestData.get("approver1_status").toString());
+			weeklyApproval.setApprover2Status(requestData.get("approver2_status").toString());
+			weeklyApproval.setFinanceStatus(requestData.get("financeStatus").toString());
 
-			}
+		}
 
-			if (requestData.get("approver1SubmittedDate") != null)
-				weeklyApproval
-						.setApprover1SubmittedDate(sdf.parse(requestData.get("approver1SubmittedDate").toString()));
+		if (requestData.get("approver1SubmittedDate") != null)
+			weeklyApproval.setApprover1SubmittedDate(sdf.parse(requestData.get("approver1SubmittedDate").toString()));
 
-			if (requestData.get("approver2SubmittedDate") != null)
-				weeklyApproval
-						.setApprover2SubmittedDate(sdf.parse(requestData.get("approver2SubmittedDate").toString()));
+		if (requestData.get("approver2SubmittedDate") != null)
+			weeklyApproval.setApprover2SubmittedDate(sdf.parse(requestData.get("approver2SubmittedDate").toString()));
 
-			if (requestData.get("financeSubmittedDate") != null)
-				weeklyApproval.setFinanceSubmittedDate(sdf.parse(requestData.get("financeSubmittedDate").toString()));
+		if (requestData.get("financeSubmittedDate") != null)
+			weeklyApproval.setFinanceSubmittedDate(sdf.parse(requestData.get("financeSubmittedDate").toString()));
 
-			if (requestData.get("rejectionTime") != null)
-				weeklyApproval.setRejectionTime(sdf.parse(requestData.get("rejectionTime").toString()));
-
-	
+		if (requestData.get("rejectionTime") != null)
+			weeklyApproval.setRejectionTime(sdf.parse(requestData.get("rejectionTime").toString()));
 
 		if (requeststatus == 0) {
 
@@ -176,87 +173,84 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 					weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
 			if (count == 0) {
 				taskWeeklyApprovalRepository.save(weeklyApproval);
-				response=new StatusResponse("Success",200,"Insertion completed");
+				response = new StatusResponse("Success", 200, "Insertion completed");
 			} else {
-				response=new StatusResponse("Success",200,"Insertion failed due to duplicate entry");
+				response = new StatusResponse("Success", 200, "Insertion failed due to duplicate entry");
 			}
-				
+
 		} else {
-			response=new StatusResponse("Success",200,"Insertion failed due to invalid credientials");
+			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
 		}
-			return response;
+		return response;
 
 	}
 
 	@Override
 	public StatusResponse saveWeeklyApproval(JSONObject requestData) throws ParseException {
 
-		StatusResponse response=new StatusResponse();
+		StatusResponse response = new StatusResponse();
 		TaskTrackWeeklyApproval weeklyApproval = new TaskTrackWeeklyApproval();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		int requeststatus = 0;
 
-		
-			if (((!requestData.get("startDate").toString().equals(null))
-					|| (!requestData.get("startDate").toString().equals(" ")))
-					&& ((!requestData.get("endDate").toString().equals(null))
-							|| (!requestData.get("endDate").toString().equals(" ")))) {
-				weeklyApproval.setStartDate(sdf.parse(requestData.get("startDate").toString()));
-				weeklyApproval.setEndDate(sdf.parse(requestData.get("endDate").toString()));
+		if (((!requestData.get("startDate").toString().equals(null))
+				|| (!requestData.get("startDate").toString().equals(" ")))
+				&& ((!requestData.get("endDate").toString().equals(null))
+						|| (!requestData.get("endDate").toString().equals(" ")))) {
+			weeklyApproval.setStartDate(sdf.parse(requestData.get("startDate").toString()));
+			weeklyApproval.setEndDate(sdf.parse(requestData.get("endDate").toString()));
 
-			} else
+		} else
+			requeststatus = 1;
+
+		weeklyApproval.setDay1(Double.parseDouble(requestData.get("day1").toString()));
+		weeklyApproval.setDay2(Double.parseDouble(requestData.get("day2").toString()));
+		weeklyApproval.setDay3(Double.parseDouble(requestData.get("day3").toString()));
+		weeklyApproval.setDay4(Double.parseDouble(requestData.get("day4").toString()));
+		weeklyApproval.setDay5(Double.parseDouble(requestData.get("day5").toString()));
+		weeklyApproval.setDay6(Double.parseDouble(requestData.get("day6").toString()));
+		weeklyApproval.setDay7(Double.parseDouble(requestData.get("day7").toString()));
+		weeklyApproval.setYear(Integer.parseInt(requestData.get("year").toString()));
+
+		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
+				&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
+				&& (!weeklyApproval.getDay5().equals(null)) && (!weeklyApproval.getDay6().equals(null))
+				&& (!weeklyApproval.getDay7().equals(null)) && (!weeklyApproval.getYear().equals(null))) {
+
+			if ((weeklyApproval.getDay1() < 0) || (weeklyApproval.getDay1() > 24) || (weeklyApproval.getDay2() < 0)
+					|| (weeklyApproval.getDay2() > 24) || (weeklyApproval.getDay3() < 0)
+					|| (weeklyApproval.getDay3() > 24) || (weeklyApproval.getDay4() < 0)
+					|| (weeklyApproval.getDay4() > 24) || (weeklyApproval.getDay5() < 0)
+					|| (weeklyApproval.getDay5() > 24) || (weeklyApproval.getDay6() < 0)
+					|| (weeklyApproval.getDay6() > 24) || (weeklyApproval.getDay7() < 0)
+					|| (weeklyApproval.getDay7() > 24) || weeklyApproval.getYear() <= 0)
 				requeststatus = 1;
+		} else
+			requeststatus = 1;
 
-			weeklyApproval.setDay1(Double.parseDouble(requestData.get("day1").toString()));
-			weeklyApproval.setDay2(Double.parseDouble(requestData.get("day2").toString()));
-			weeklyApproval.setDay3(Double.parseDouble(requestData.get("day3").toString()));
-			weeklyApproval.setDay4(Double.parseDouble(requestData.get("day4").toString()));
-			weeklyApproval.setDay5(Double.parseDouble(requestData.get("day5").toString()));
-			weeklyApproval.setDay6(Double.parseDouble(requestData.get("day6").toString()));
-			weeklyApproval.setDay7(Double.parseDouble(requestData.get("day7").toString()));
-			weeklyApproval.setYear(Integer.parseInt(requestData.get("year").toString()));
+		Long userId = Long.parseLong(requestData.get("userId").toString());
+		UserModel userInfo = userservice.getUserdetailsbyId(userId);
 
-			if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
-					&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
-					&& (!weeklyApproval.getDay5().equals(null)) && (!weeklyApproval.getDay6().equals(null))
-					&& (!weeklyApproval.getDay7().equals(null)) && (!weeklyApproval.getYear().equals(null))) {
+		if (!userInfo.equals(null))
+			weeklyApproval.setUser(userInfo);
+		else
+			requeststatus = 1;
 
-				if ((weeklyApproval.getDay1() < 0) || (weeklyApproval.getDay1() > 24) || (weeklyApproval.getDay2() < 0)
-						|| (weeklyApproval.getDay2() > 24) || (weeklyApproval.getDay3() < 0)
-						|| (weeklyApproval.getDay3() > 24) || (weeklyApproval.getDay4() < 0)
-						|| (weeklyApproval.getDay4() > 24) || (weeklyApproval.getDay5() < 0)
-						|| (weeklyApproval.getDay5() > 24) || (weeklyApproval.getDay6() < 0)
-						|| (weeklyApproval.getDay6() > 24) || (weeklyApproval.getDay7() < 0)
-						|| (weeklyApproval.getDay7() > 24) || weeklyApproval.getYear() <= 0)
-					requeststatus = 1;
-			} else
-				requeststatus = 1;
+		Long projectId = Long.parseLong(requestData.get("projectId").toString());
+		ProjectModel projectInfo = projectservice.findById(projectId);
 
-			Long userId = Long.parseLong(requestData.get("userId").toString());
-			UserModel userInfo = userservice.getUserdetailsbyId(userId);
+		if (!projectInfo.equals(null))
+			weeklyApproval.setProject(projectInfo);
+		else
+			requeststatus = 1;
 
-			if (!userInfo.equals(null))
-				weeklyApproval.setUser(userInfo);
-			else
-				requeststatus = 1;
+		if (requestData.get("timetrackStatus").toString().equals(null)
+				|| requestData.get("timetrackStatus").toString().equals(" ")) {
+			requeststatus = 1;
+		} else {
 
-			Long projectId = Long.parseLong(requestData.get("projectId").toString());
-			ProjectModel projectInfo = projectservice.findById(projectId);
-
-			if (!projectInfo.equals(null))
-				weeklyApproval.setProject(projectInfo);
-			else
-				requeststatus = 1;
-
-			if (requestData.get("timetrackStatus").toString().equals(null)
-					|| requestData.get("timetrackStatus").toString().equals(" ")) {
-				requeststatus = 1;
-			} else {
-
-				weeklyApproval.setTimetrackStatus(requestData.get("timetrackStatus").toString());
-			}
-
-		
+			weeklyApproval.setTimetrackStatus(requestData.get("timetrackStatus").toString());
+		}
 
 		if (requeststatus == 0) {
 
@@ -264,19 +258,20 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 					weeklyApproval.getEndDate(), weeklyApproval.getUser().getUserId());
 			if (count == 0) {
 				taskWeeklyApprovalRepository.save(weeklyApproval);
-				response=new StatusResponse("Success",200,"Insertion completed");
+				response = new StatusResponse("Success", 200, "Insertion completed");
 			} else
-				response=new StatusResponse("Success",200,"Insertion failed due to duplicate entry");
+				response = new StatusResponse("Success", 200, "Insertion failed due to duplicate entry");
 		} else
-			response=new StatusResponse("Success",200,"Insertion failed due to invalid credientials");
-		
+			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
+
 		return response;
 
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public StatusResponse getWeeklyTasktrack(WeeklyTaskTrackWithoutTaskRequestDTO requestData) throws Exception, ParseException {
+	public StatusResponse getWeeklyTasktrack(WeeklyTaskTrackWithoutTaskRequestDTO requestData)
+			throws Exception, ParseException {
 		JSONObject response = new JSONObject();
 		StatusResponse responseFinal;
 		Long userId = null;
@@ -300,14 +295,16 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
 		List<String> taskStatusList = Arrays.asList(taskStatusArray);
-		TaskTrackWeeklyApproval weeklyTasktrack = taskWeeklyApprovalRepository.getWeeklyTasktrack(startDate, endDate,userId, projectId);
+		TaskTrackWeeklyApproval weeklyTasktrack = taskWeeklyApprovalRepository.getWeeklyTasktrack(startDate, endDate,
+				userId, projectId);
 
 		if (weeklyTasktrack != null) {
 			String approver1Status = weeklyTasktrack.getApprover1Status();
 			String approver2Status = weeklyTasktrack.getApprover2Status();
 			String financeStatus = weeklyTasktrack.getFinanceStatus();
 
-			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)|| taskStatusList.contains(financeStatus)) {
+			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
+					|| taskStatusList.contains(financeStatus)) {
 
 				response.put("enabled", false);
 			} else {
@@ -325,11 +322,10 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			array = addHoursandDaytoArray(array, weeklyTasktrack.getDay6(), datesInRange.get(5));
 			array = addHoursandDaytoArray(array, weeklyTasktrack.getDay7(), datesInRange.get(6));
 			response.put("taskList", array);
-		    responseFinal = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,response);
-		}else {
-		    responseFinal = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"No Data Available");
+			responseFinal = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
+		} else {
+			responseFinal = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, "No Data Available");
 
-			
 		}
 		return responseFinal;
 	}
@@ -344,7 +340,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		return array;
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public StatusResponse getWeeklyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception {
@@ -367,69 +363,77 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		if (requestData.getEndDate() != null && !requestData.getEndDate().isEmpty()) {
 			endDate = sdf.parse(requestData.getEndDate());
 		}
-		
-		List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdAndDateBetween(
-				userId, projectId, startDate, endDate);
+
+		List<Tasktrack> tasktrackList = tasktrackRepository
+				.findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(userId, projectId, startDate, endDate);
 
 		TaskTrackWeeklyApproval tasktrackStatus = taskWeeklyApprovalRepository
-				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId,
-						projectId, startDate, endDate);
-		
+				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId, projectId, startDate,
+						endDate);
+
 		JSONArray taskList = new JSONArray();
-
-		for (Tasktrack tasktrack : tasktrackList) {
-			JSONArray dateTaskArray = new JSONArray();
-			JSONObject dateTaskObj = new JSONObject();
-			JSONObject taskObj = new JSONObject();
-			taskObj.put("hour", tasktrack.getHours());
-			taskObj.put("task_type", tasktrack.getTask().getTaskName());
-			taskObj.put("description", tasktrack.getDescription());
-			dateTaskArray.add(taskObj);
-
-			dateTaskObj.put(sdf.format(tasktrack.getDate()), dateTaskArray);
-			taskList.add(dateTaskObj);
+		HashSet<Date> trackdate = new HashSet<Date>();
+		for (Tasktrack tasktrackOuter : tasktrackList) {
+			if (!trackdate.contains(tasktrackOuter.getDate())) {
+				trackdate.add(tasktrackOuter.getDate());
+				String intialDate = sdf.format(tasktrackOuter.getDate());
+				JSONArray dateTaskArray = new JSONArray();
+				JSONObject dateTaskObj = new JSONObject();
+				for (Tasktrack tasktrack : tasktrackList) {
+					JSONObject taskObj = new JSONObject();
+					taskObj.put("hour", tasktrack.getHours());
+					taskObj.put("task_type", tasktrack.getTask().getTaskName());
+					taskObj.put("description", tasktrack.getDescription());
+					if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
+						dateTaskArray.add(taskObj);
+					}
+				}
+				dateTaskObj.put(sdf.format(tasktrackOuter.getDate()), dateTaskArray);
+				taskList.add(dateTaskObj);
+			}
 		}
+
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("taskList", taskList);
-		
+
 		if (tasktrackStatus != null) {
-		
-		String approver1Status = tasktrackStatus.getApprover1Status();
-		String approver2Status = tasktrackStatus.getApprover2Status();
-		String financeStatus = tasktrackStatus.getFinanceStatus();
-	
-		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
-		List<String> taskStatusList = Arrays.asList(taskStatusArray);
-		
-		if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status) || taskStatusList.contains(financeStatus)) {
-			jsonObject.put("enabled", false);
-		}
-		else {
-			jsonObject.put("enabled", true);
-		}
-		
+
+			String approver1Status = tasktrackStatus.getApprover1Status();
+			String approver2Status = tasktrackStatus.getApprover2Status();
+			String financeStatus = tasktrackStatus.getFinanceStatus();
+
+			String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
+			List<String> taskStatusList = Arrays.asList(taskStatusArray);
+
+			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
+					|| taskStatusList.contains(financeStatus)) {
+				jsonObject.put("enabled", false);
+			} else {
+				jsonObject.put("enabled", true);
+			}
+
 		}
 		response.setData(jsonObject);
 		response.setStatus(Constants.SUCCESS);
 		response.setStatusCode(Constants.SUCCESS_CODE);
-		
+
 		return response;
 	}
 
 	@Override
 	public StatusResponse getWeeklyTasksForSubmission(JsonNode requestData) throws ParseException {
 
-		StatusResponse response=new StatusResponse();
+		StatusResponse response = new StatusResponse();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String start = requestData.get("startDate").asText();
 		String end = requestData.get("endDate").asText();
 		Long userId = requestData.get("userId").asLong();
 
 		Date endDate = null, startDate = null;
-		
-			startDate = sdf.parse(start);
-			endDate = sdf.parse(end);
-		
+
+		startDate = sdf.parse(start);
+		endDate = sdf.parse(end);
+
 		ArrayList<Tasktrack> tasklist = tasktrackRepository.getsavedTaskslist(startDate, endDate, userId);
 		Map<Date, Double> dailyhours = new HashMap<Date, Double>();
 		Long projectId = null;
@@ -474,9 +478,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		while (!localstartdate.isAfter(localenddate)) {
 			String stgdate = String.valueOf(localstartdate);
 			Date date1 = null;
-			
-				date1 = sdf.parse(stgdate);
-		
+
+			date1 = sdf.parse(stgdate);
+
 			Double hours = 0.0;
 			if (result.get(date1) != null)
 				hours = Double.parseDouble(result.get(date1).toString());
@@ -500,15 +504,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			count++;
 		}
 
-		
-		
-		int countt= taskWeeklyApprovalRepository.getduplicateentrycount(weeklytasksubmission.getStartDate(),
+		int countt = taskWeeklyApprovalRepository.getduplicateentrycount(weeklytasksubmission.getStartDate(),
 				weeklytasksubmission.getEndDate(), weeklytasksubmission.getUser().getUserId());
 		if (countt == 0) {
 			taskWeeklyApprovalRepository.save(weeklytasksubmission);
-			response=new StatusResponse("Success",200,"Weekly data submission completed");
+			response = new StatusResponse("Success", 200, "Weekly data submission completed");
 		} else
-			response=new StatusResponse("Success",200,"Weekly data submission failed");
+			response = new StatusResponse("Success", 200, "Weekly data submission failed");
 		return response;
 	}
 
