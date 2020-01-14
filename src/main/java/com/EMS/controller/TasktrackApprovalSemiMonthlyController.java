@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
 import com.EMS.model.StatusResponse;
 import com.EMS.service.TasktrackApprovalSemiMonthlyService;
+import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -118,6 +120,21 @@ public class TasktrackApprovalSemiMonthlyController {
 			response = new StatusResponse("Failure", 500, exceptionresponse);
 		}
 
+
+		return response;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@PostMapping(value = "/get/tasktrack_with_task/semi_monthly")
+	public StatusResponse getSemiMonthlyTasktrackWithTask(@RequestBody WeeklyTaskTrackWithTaskRequestDTO requestData) {
+		StatusResponse response = new StatusResponse();
+		try {
+			response = approvalSemiMonthlyService.getSemiMonthlyTasktrackWithTask(requestData);
+			System.out.println(response);
+		} catch (Exception e) {
+			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionResponse);
+		}
 
 		return response;
 	}

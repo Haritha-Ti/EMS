@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 
 public interface TaskTrackApprovalSemiMonthlyRepository extends JpaRepository<TasktrackApprovalSemiMonthly, Long> {
@@ -27,4 +28,6 @@ public interface TaskTrackApprovalSemiMonthlyRepository extends JpaRepository<Ta
 	@Query(value="SELECT count(*) FROM tasktrack_approval_semimonthly where year=?3 AND month=?2 AND user_user_id=?1",nativeQuery=true)
 	public int checkduplicationForsemiMonthlyTaskTrack(long userId, Integer month, Integer year);
 
+	public TasktrackApprovalSemiMonthly findByUserUserIdAndProjectProjectIdInAndMonthEqualsAndYearEquals(
+            Long userId, Long projectId, Date endDate, Date startDate);
 }

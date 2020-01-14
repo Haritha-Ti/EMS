@@ -18,8 +18,10 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
+import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.model.UserModel;
@@ -787,6 +789,104 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			semiMonthlyRepository.save(semiMonthlytasksubmission);
 			response = new StatusResponse("success", 200, "Semi monthly data submission completed");
 		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public StatusResponse getSemiMonthlyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData)
+			throws Exception {
+		StatusResponse response = new StatusResponse();
+		Long userId = null;
+		Long projectId = null;
+		Date startDate = null;
+		Date endDate = null;
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if (requestData.getuId() != null) {
+			userId = requestData.getuId();
+		}
+		if (requestData.getProjectId() != null) {
+			projectId = requestData.getProjectId();
+		}
+		if (requestData.getStartDate() != null && !requestData.getStartDate().isEmpty()) {
+			startDate = sdf.parse(requestData.getStartDate());
+		}
+		if (requestData.getEndDate() != null && !requestData.getEndDate().isEmpty()) {
+			endDate = sdf.parse(requestData.getEndDate());
+		}
+		
+		List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdAndDateBetween(
+				userId, projectId, startDate, endDate);
+
+		TasktrackApprovalSemiMonthly tasktrackStatus = semiMonthlyRepository
+				.findByUserUserIdAndProjectProjectIdInAndMonthEqualsAndYearEquals(userId,
+						projectId, startDate, endDate);
+		
+		JSONArray taskList = new JSONArray();
+	
+		for (Tasktrack tasktrack : tasktrackList) {				
+			
+			JSONObject dateTaskObj = new JSONObject();
+			
+			JSONObject taskObj = new JSONObject();
+			taskObj.put("hour", tasktrack.getHours());
+			taskObj.put("task_type", tasktrack.getTask().getTaskName());
+			taskObj.put("description", tasktrack.getDescription());			
+			dateTaskObj.put(sdf.format(tasktrack.getDate()), taskObj);			
+			taskList.add(dateTaskObj);						
+		}
+	
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("taskList", taskList);
+	
+		String[] taskStatusArray = { Constants.TaskTrackSemiMonthlyApproval.TASKTRACK_SEMI_MONTHLY_APPROVER_STATUS_APPROVED };
+		List<String> taskStatusList = Arrays.asList(taskStatusArray);
+		
+		
+		if (tasktrackStatus != null) {
+		
+			String approverOneFirstHalfStatus = tasktrackStatus.getApproverOneFirstHalfStatus();
+			String approverOneSecondHalfStatus = tasktrackStatus.getApproverOneSecondHalfStatus();
+			String approverTwoFirstHalfStatus = tasktrackStatus.getApproverTwoFirstHalfStatus();
+			String approverTwoSecondHalfStatus = tasktrackStatus.getApproverTwoSecondHalfStatus();
+			String financeFirstHalfStatus = tasktrackStatus.getFinanceFirstHalfStatus();
+			String financeSecondHalfStatus = tasktrackStatus.getFinanceSecondHalfStatus();
+		
+			List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
+			dateRanges.add(endDate);
+			Calendar c = Calendar.getInstance();
+			c.setTime(startDate);
+
+			int date = c.get(Calendar.DATE);
+			if (date == 1) {
+				if (taskStatusList.contains(approverOneFirstHalfStatus) || taskStatusList.contains(approverTwoFirstHalfStatus)
+						|| taskStatusList.contains(financeFirstHalfStatus)) {
+					jsonObject.put("enabled", false);
+				}
+
+				else {
+					jsonObject.put("enabled", true);
+				}
+			
+			}
+			else if (date == 16) {
+				if (taskStatusList.contains(approverOneSecondHalfStatus) || taskStatusList.contains(approverTwoSecondHalfStatus)
+						|| taskStatusList.contains(financeSecondHalfStatus)) {
+					jsonObject.put("enabled", false);
+				}
+
+				else {
+					jsonObject.put("enabled", true);
+				}
+			}
+		
+		}
+		
+		response.setData(jsonObject);
+		response.setStatus(Constants.SUCCESS);
+		response.setStatusCode(Constants.SUCCESS_CODE);
+		
 		return response;
 	}
 

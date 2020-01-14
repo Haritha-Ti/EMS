@@ -18,6 +18,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
+import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
 import com.EMS.model.TaskTrackWeeklyApproval;
@@ -274,25 +276,26 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getWeeklyTasktrack(JSONObject requestData) throws Exception, ParseException {
+	public StatusResponse getWeeklyTasktrack(WeeklyTaskTrackWithoutTaskRequestDTO requestData) throws Exception, ParseException {
 		JSONObject response = new JSONObject();
+		StatusResponse responseFinal;
 		Long userId = null;
 		Long projectId = null;
 		Date startDate = null;
 		Date endDate = null;
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		if (requestData.get("uId") != null && requestData.get("uId").toString() != "") {
-			userId = Long.parseLong(requestData.get("uId").toString());
+		if (requestData.getuId() != null) {
+			userId = requestData.getuId();
 		}
-		if (requestData.get("projectId") != null && requestData.get("projectId").toString() != "") {
-			projectId = Long.parseLong(requestData.get("projectId").toString());
+		if (requestData.getProjectId() != null) {
+			projectId = requestData.getProjectId();
 		}
-		if (requestData.get("startDate") != null && requestData.get("startDate").toString() != null) {
-			startDate = sdf.parse(requestData.get("startDate").toString());
+		if (requestData.getStartDate() != null && !requestData.getStartDate().isEmpty()) {
+			startDate = sdf.parse(requestData.getStartDate());
 		}
-		if (requestData.get("endDate") != null && requestData.get("endDate").toString() != null) {
-			endDate = sdf.parse(requestData.get("endDate").toString());
+		if (requestData.getEndDate() != null && !requestData.getEndDate().isEmpty()) {
+			endDate = sdf.parse(requestData.getEndDate());
 		}
 
 		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
@@ -310,6 +313,17 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			} else {
 				response.put("enabled", true);
 			}
+			
+			String approver = weeklyTasktrack.getApprover1Id().getFirstName()+" "+ weeklyTasktrack.getApprover1Id().getLastName();
+			Date approver1SubmittedDate = weeklyTasktrack.getApprover1SubmittedDate();
+			
+			JSONObject approvalObj = new JSONObject();
+			approvalObj.put("approver", approver);
+			approvalObj.put("Date", sdf.format(approver1SubmittedDate));
+			approvalObj.put("status", approver1Status);
+			
+			response.put("approval", approvalObj);
+			
 			List<Date> datesInRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
 			datesInRange.add(endDate);
 
@@ -322,10 +336,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			array = addHoursandDaytoArray(array, weeklyTasktrack.getDay6(), datesInRange.get(5));
 			array = addHoursandDaytoArray(array, weeklyTasktrack.getDay7(), datesInRange.get(6));
 			response.put("taskList", array);
+		    responseFinal = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,response);
 		}else {
+		    responseFinal = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"No Data Available");
+
 			
 		}
-		return response;
+		return responseFinal;
 	}
 
 	public JSONArray addHoursandDaytoArray(JSONArray array, Double day, Date date) {
@@ -339,10 +356,75 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getWeeklyTasktrackWithTask(JSONObject requestData) {
+	public StatusResponse getWeeklyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception {
+		StatusResponse response = new StatusResponse();
+		Long userId = null;
+		Long projectId = null;
+		Date startDate = null;
+		Date endDate = null;
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if (requestData.getuId() != null) {
+			userId = requestData.getuId();
+		}
+		if (requestData.getProjectId() != null) {
+			projectId = requestData.getProjectId();
+		}
+		if (requestData.getStartDate() != null && !requestData.getStartDate().isEmpty()) {
+			startDate = sdf.parse(requestData.getStartDate());
+		}
+		if (requestData.getEndDate() != null && !requestData.getEndDate().isEmpty()) {
+			endDate = sdf.parse(requestData.getEndDate());
+		}
 		
-		return null;
+		List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdAndDateBetween(
+				userId, projectId, startDate, endDate);
+
+		TaskTrackWeeklyApproval tasktrackStatus = taskWeeklyApprovalRepository
+				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId,
+						projectId, startDate, endDate);
+		
+		JSONArray taskList = new JSONArray();
+
+		for (Tasktrack tasktrack : tasktrackList) {
+			JSONArray dateTaskArray = new JSONArray();
+			JSONObject dateTaskObj = new JSONObject();
+			JSONObject taskObj = new JSONObject();
+			taskObj.put("hour", tasktrack.getHours());
+			taskObj.put("task_type", tasktrack.getTask().getTaskName());
+			taskObj.put("description", tasktrack.getDescription());
+			dateTaskArray.add(taskObj);
+
+			dateTaskObj.put(sdf.format(tasktrack.getDate()), dateTaskArray);
+			taskList.add(dateTaskObj);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("taskList", taskList);
+		
+		if (tasktrackStatus != null) {
+		
+		String approver1Status = tasktrackStatus.getApprover1Status();
+		String approver2Status = tasktrackStatus.getApprover2Status();
+		String financeStatus = tasktrackStatus.getFinanceStatus();
+	
+		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
+		List<String> taskStatusList = Arrays.asList(taskStatusArray);
+		
+		if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status) || taskStatusList.contains(financeStatus)) {
+			jsonObject.put("enabled", false);
+		}
+		else {
+			jsonObject.put("enabled", true);
+		}
+		
+		}
+		response.setData(jsonObject);
+		response.setStatus(Constants.SUCCESS);
+		response.setStatusCode(Constants.SUCCESS_CODE);
+		
+		return response;
 	}
 
 	@Override

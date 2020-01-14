@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import org.json.simple.JSONObject;
 
+import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.StatusResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -15,4 +16,6 @@ public interface TasktrackApprovalSemiMonthlyService {
 	StatusResponse saveSemiMonthlyTaskTrackApproval(JSONObject requestData) throws ParseException;
 
 	StatusResponse getSemiMonthlyTasksForSubmission(JsonNode requestData) throws ParseException;
+
+	StatusResponse getSemiMonthlyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception;
 }

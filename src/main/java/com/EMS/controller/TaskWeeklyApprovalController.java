@@ -6,20 +6,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
+import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
 import com.EMS.model.StatusResponse;
 import com.EMS.service.TaskWeeklyApprovalService;
+import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
 @RequestMapping(value = { "/tasktrack" })
@@ -77,23 +76,15 @@ public class TaskWeeklyApprovalController {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@PostMapping(value = "/get/weekly_tasktrack")
-	public ResponseEntity<Object> getWeeklyTasktrack(@RequestBody JSONObject requestData) {
-		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
-		JSONObject jsonResp = new JSONObject();
+	public StatusResponse getWeeklyTasktrack(@RequestBody WeeklyTaskTrackWithoutTaskRequestDTO requestData) {
+		StatusResponse response = new StatusResponse();
 		try {
-			JSONObject weeklyTasktrack = weeklyApprovalService.getWeeklyTasktrack(requestData);
-			jsonResp.put("status", "Success");
-			jsonResp.put("code", HttpServletResponse.SC_OK);
-			jsonResp.put("data", weeklyTasktrack);
-			response = new ResponseEntity<Object>(jsonResp, HttpStatus.OK);
+			response = weeklyApprovalService.getWeeklyTasktrack(requestData);
 		} catch (Exception e) {
-			e.printStackTrace();
-			jsonResp.put("status", "Error");
-			jsonResp.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			jsonResp.put("message", e.getMessage());
-			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionResponse);
 		}
 
 		return response;
@@ -101,21 +92,14 @@ public class TaskWeeklyApprovalController {
 
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "/get/tasktrack_with_task/weekly")
-	public ResponseEntity<Object> getWeeklyTasktrackWithTask(@RequestBody JSONObject requestData) {
-		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
-		JSONObject jsonResp = new JSONObject();
+	public StatusResponse getWeeklyTasktrackWithTask(@RequestBody WeeklyTaskTrackWithTaskRequestDTO requestData) {
+		StatusResponse response = new StatusResponse();
 		try {
-			JSONObject weeklyTasktrackWithTask = weeklyApprovalService.getWeeklyTasktrackWithTask(requestData);
-			jsonResp.put("status", "Success");
-			jsonResp.put("code", HttpServletResponse.SC_OK);
-			jsonResp.put("data", weeklyTasktrackWithTask);
-			response = new ResponseEntity<Object>(jsonResp, HttpStatus.OK);
+			response = weeklyApprovalService.getWeeklyTasktrackWithTask(requestData);
+			System.out.println(response);
 		} catch (Exception e) {
-			e.printStackTrace();
-			jsonResp.put("status", "Error");
-			jsonResp.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			jsonResp.put("message", e.getMessage());
-			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionResponse);
 		}
 
 		return response;
@@ -144,5 +128,7 @@ public class TaskWeeklyApprovalController {
 		}
 		return response;
 	}
+	
+
 
 }
