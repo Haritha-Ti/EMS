@@ -834,7 +834,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			endDate = sdf.parse(requestData.getEndDate());
 		}
 		
-		List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdAndDateBetween(
+		List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(
 				userId, projectId, startDate, endDate);
 
 		Calendar c = Calendar.getInstance();
