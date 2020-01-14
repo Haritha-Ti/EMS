@@ -932,7 +932,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 		List<Long> workflow4Projects = new ArrayList<Long>();
 
 		Calendar monthEndCal = Calendar.getInstance();
-		monthEndCal.setTime(dateFrmt.parse( year+ "-" + month + "-" + monthStartCal.getMaximum(Calendar.DATE)));
+		monthEndCal.setTime(dateFrmt.parse( year+ "-" + month + "-" + monthStartCal.getActualMaximum(Calendar.DAY_OF_MONTH)));
 
 		// List all the projects for the user based on the month
 		List<AllocationModel> allocationModelList = allocationRepository
