@@ -19,4 +19,5 @@ public interface TaskWeeklyApprovalRepository extends JpaRepository<TaskTrackWee
 	public TaskTrackWeeklyApproval findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(
             Long userId, Long projectId, Date endDate, Date startDate);
 	
+	
 }
