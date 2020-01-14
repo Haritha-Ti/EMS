@@ -1,28 +1,20 @@
 package com.EMS.controller;
 
-import com.EMS.model.*;
-import com.EMS.service.*;
-import com.EMS.utility.Constants;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.json.JSONException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletResponse;
-import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.YearMonth;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
+import com.EMS.model.StatusResponse;
+import com.EMS.service.TasktrackApprovalService;
+import com.EMS.utility.Constants;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
 @RequestMapping(value = { "/approval" })
@@ -97,5 +89,21 @@ public class TasktrackApprovalController {
 
 		responseData.put("code", httpstatus.getStatus());
 		return responseData;
+	}
+	
+	@PostMapping(value = "/taskTrackDataForApprover2")
+	public StatusResponse getTaskTrackDataForApprover2(@RequestBody GetTaskTrackData requestdata, HttpServletResponse httpstatus) {
+		
+		StatusResponse node = null;
+		try {
+			node = tasktrackApprovalService.getTaskTrackDataForApprover2(requestdata);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			node = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+		}
+
+		return node;
 	}
 }

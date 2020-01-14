@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.json.simple.JSONObject;
 
+import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
+import com.EMS.model.StatusResponse;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.TaskTrackApprovalFinance;
 import com.EMS.model.TaskTrackApprovalLevel2;
@@ -150,4 +152,6 @@ public interface TasktrackApprovalService {
     ObjectNode getTaskTrackDataByUserId(ObjectNode requestdata) throws Exception;
 
     ObjectNode approveHoursLevel1(ObjectNode requestdata) throws Exception;
+
+	StatusResponse getTaskTrackDataForApprover2(GetTaskTrackData requestdata) throws Exception;
 }
