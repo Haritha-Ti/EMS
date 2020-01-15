@@ -1,5 +1,6 @@
 package com.EMS.service;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9040,10 +9041,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
 		// get usersList in the project for the corresponding month
 		int projectWorkFlow = 0;
-		//List<AllocationModel> allocatedUserData = projectAllocationRepository.findByProjectProjectIdAndStartDateAndEndDateAndIsBillable(projectId,
-			//	startDate, endDate,true);
-		List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId,
-				startDate, endDate);
+		List<AllocationModel> allocatedUserData = allocationRepository.findByProjectProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsBillable(projectId,
+				endDate,startDate,true);
+		//List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId,
+			//	startDate, endDate);
 		if (allocatedUserData.size() >= 1) {
 			for (AllocationModel userData : allocatedUserData) {
 				ObjectNode userDataResponse = objectMapper.createObjectNode();
@@ -9825,7 +9826,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
 		//get usersList in the project for the corresponding month
 		int projectWorkFlow = 0;
-		List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId, startDate, endDate);
+		//List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId, startDate, endDate);
+		List<AllocationModel> allocatedUserData = allocationRepository.findByProjectProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsBillable(projectId,
+				endDate,startDate,true);
 		if (allocatedUserData.size() >= 1) {
 			for (AllocationModel userData : allocatedUserData) {
 				ObjectNode userDataResponse = objectMapper.createObjectNode();
@@ -9847,12 +9850,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						Date weekEnd = (Date) objects.get("endDate");
 						TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, weekStart, weekEnd, userId);
 						double totalhours = 0.0;
-						String userStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-						String approver1Status = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-						String approver2Status = " ";
+						//String userStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+						String approverStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+						/*String approver2Status = " ";
 						if (projectTier == 2) {
 							approver2Status = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-						}
+						}*/
 						String financeStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 
 
@@ -9860,12 +9863,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							if (weeklyUserData.getTimetrackStatus().equalsIgnoreCase("SUBMITTED")) {
 								totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3() + weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6() + weeklyUserData.getDay7();
 							}
-							userStatus = weeklyUserData.getTimetrackStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: weeklyUserData.getTimetrackStatus();
-							approver1Status = weeklyUserData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+							//userStatus = weeklyUserData.getTimetrackStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+							//		: weeklyUserData.getTimetrackStatus();
+							approverStatus = weeklyUserData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: weeklyUserData.getApprover1Status();
 							if (projectTier == 2) {
-								approver2Status = weeklyUserData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								approverStatus = weeklyUserData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 										: weeklyUserData.getApprover2Status();
 							}
 							financeStatus = weeklyUserData.getFinanceStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
@@ -9876,28 +9879,29 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						weeklyDataResponse.put("totalHour", totalhours);
 						weeklyDataResponse.put("weekStart", sdff.format(weekStart));
 						weeklyDataResponse.put("weekEnd", sdff.format(weekEnd));
-						weeklyDataResponse.put("userStatus", userStatus);
-						weeklyDataResponse.put("approver1Status", approver1Status);
-						weeklyDataResponse.put("approver2Status", approver2Status);
+						//weeklyDataResponse.put("userStatus", userStatus);
+						weeklyDataResponse.put("approverStatus", approverStatus);
+						//weeklyDataResponse.put("approver2Status", approver2Status);
 						weeklyDataResponse.put("financeStatus", financeStatus);
 						weeklyHourData.add(weeklyDataResponse);
 					}
 					userDataResponse.set("weekData", weeklyHourData);
 				} else { //SemiMonthlyData
-					ObjectNode semiMonthlyDataResponse = objectMapper.createObjectNode();
+					ObjectNode semiMonthlyFirstHalfDataResponse = objectMapper.createObjectNode();
+					ObjectNode semiMonthlySecondHalfDataResponse = objectMapper.createObjectNode();
 					TasktrackApprovalSemiMonthly semiMonthlyUserData = taskTrackApprovalSemiMonthlyRepository.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
 					double firstHalfHour = 0.0;
 					double secondHalfHour = 0.0;
-					String userFirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-					String userSecondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-					String approver1FirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-					String approver1SecondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-					String approver2FirstHalfStatus = "";
-					String approver2SecondHalfStatus = "";
-					if (projectTier == 2) {
+					//String userFirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+					//String userSecondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+					String approverFirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+					String approverSecondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+					//String approver2FirstHalfStatus = "";
+					//String approver2SecondHalfStatus = "";
+					/*if (projectTier == 2) {
 						approver2FirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 						approver2SecondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
-					}
+					}*/
 					String financeFirstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 					String financeSecondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 					if (semiMonthlyUserData != null) {
@@ -9905,12 +9909,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							firstHalfHour = semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2() + semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4() + semiMonthlyUserData.getDay5() +
 									semiMonthlyUserData.getDay6() + semiMonthlyUserData.getDay7() + semiMonthlyUserData.getDay8() + semiMonthlyUserData.getDay9() + semiMonthlyUserData.getDay10() +
 									semiMonthlyUserData.getDay11() + semiMonthlyUserData.getDay12() + semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14() + semiMonthlyUserData.getDay15();
-							userFirstHalfStatus = semiMonthlyUserData.getUserFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: semiMonthlyUserData.getUserFirstHalfStatus();
-							approver1FirstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+							/*userFirstHalfStatus = semiMonthlyUserData.getUserFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: semiMonthlyUserData.getUserFirstHalfStatus();*/
+							approverFirstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: semiMonthlyUserData.getApproverOneFirstHalfStatus();
 							if (projectTier == 2) {
-								approver2FirstHalfStatus = semiMonthlyUserData.getApproverTwoFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								approverFirstHalfStatus = semiMonthlyUserData.getApproverTwoFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 										: semiMonthlyUserData.getApproverTwoFirstHalfStatus();
 							}
 							financeFirstHalfStatus = semiMonthlyUserData.getFinanceFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
@@ -9921,12 +9925,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							secondHalfHour = semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17() + semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19() + semiMonthlyUserData.getDay20() +
 									semiMonthlyUserData.getDay21() + semiMonthlyUserData.getDay22() + semiMonthlyUserData.getDay23() + semiMonthlyUserData.getDay24() + semiMonthlyUserData.getDay25() +
 									semiMonthlyUserData.getDay26() + semiMonthlyUserData.getDay27() + semiMonthlyUserData.getDay28() + semiMonthlyUserData.getDay29() + semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31();
-							userSecondHalfStatus = semiMonthlyUserData.getUserSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: semiMonthlyUserData.getUserSecondHalfStatus();
-							approver1SecondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+							/*userSecondHalfStatus = semiMonthlyUserData.getUserSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: semiMonthlyUserData.getUserSecondHalfStatus();*/
+							approverSecondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: semiMonthlyUserData.getApproverOneSecondHalfStatus();
 							if (projectTier == 2) {
-								approver2SecondHalfStatus = semiMonthlyUserData.getApproverTwoSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								approverSecondHalfStatus = semiMonthlyUserData.getApproverTwoSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 										: semiMonthlyUserData.getApproverTwoSecondHalfStatus();
 							}
 							financeSecondHalfStatus = semiMonthlyUserData.getFinanceSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
@@ -9934,15 +9938,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 
 					}
-					semiMonthlyDataResponse.put("firstHalfHour", firstHalfHour);
-					semiMonthlyDataResponse.put("secondHalfHour", secondHalfHour);
-					semiMonthlyDataResponse.put("userFirstHalfStatus", userFirstHalfStatus);
-					semiMonthlyDataResponse.put("userSecondHalfStatus", userSecondHalfStatus);
-					semiMonthlyDataResponse.put("approver1FirstHalfStatus", approver1FirstHalfStatus);
-					semiMonthlyDataResponse.put("approver1SecondHalfStatus", approver1SecondHalfStatus);
-					semiMonthlyDataResponse.put("approver2FirstHalfStatus", approver2FirstHalfStatus);
-					semiMonthlyDataResponse.put("approver2SecondHalfStatus", approver2SecondHalfStatus);
-					semiMonthlyHourData.add(semiMonthlyDataResponse);
+					semiMonthlyFirstHalfDataResponse.put("firstHalfHour", firstHalfHour);
+					semiMonthlyFirstHalfDataResponse.put("approverStatus", approverFirstHalfStatus);
+					semiMonthlyFirstHalfDataResponse.put("financeStatus", financeFirstHalfStatus);
+					semiMonthlyFirstHalfDataResponse.put("startDate",year + "-" + month + "-01");
+					semiMonthlyFirstHalfDataResponse.put("endDate",year + "-" + month + "-15");
+					//semiMonthlyDataResponse.put("userFirstHalfStatus", userFirstHalfStatus);
+					//semiMonthlyDataResponse.put("userSecondHalfStatus", userSecondHalfStatus);
+					semiMonthlySecondHalfDataResponse.put("secondHalfHour", secondHalfHour);
+					semiMonthlySecondHalfDataResponse.put("approverStatus", approverSecondHalfStatus);
+					semiMonthlySecondHalfDataResponse.put("financeStatus", financeSecondHalfStatus);
+					semiMonthlySecondHalfDataResponse.put("startDate",year + "-" + month + "-16");
+					semiMonthlySecondHalfDataResponse.put("endDate",end);
+					//semiMonthlyDataResponse.put("approver2FirstHalfStatus", approver2FirstHalfStatus);
+					//semiMonthlyDataResponse.put("approver2SecondHalfStatus", approver2SecondHalfStatus);
+					semiMonthlyHourData.add(semiMonthlyFirstHalfDataResponse);
+					semiMonthlyHourData.add(semiMonthlySecondHalfDataResponse);
 					userDataResponse.set("semiMonthlyData", semiMonthlyHourData);
 
 				}
@@ -10027,6 +10038,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					hourDataResponse.put(df.format(cal.getTime()), userData.getDay7());
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
+					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
 					if (user != null) {
@@ -10064,6 +10076,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						hourDataResponse.put(df.format(cal.getTime()), 0);
 						hourDataNode.add(hourDataResponse);
 						node.set("hourData", hourDataNode);
+						//node.put("submissionHistory","");
 					}
 				}
 
@@ -10197,6 +10210,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
+					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
 					if (user != null) {
@@ -10292,6 +10306,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 						hourDataNode.add(hourDataResponse);
 						node.set("hourData", hourDataNode);
+						//node.set("submissionHistory","");
 					}
 				}
 			}
