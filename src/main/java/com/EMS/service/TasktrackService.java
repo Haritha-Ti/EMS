@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
+import com.EMS.model.StatusResponse;
 import com.EMS.model.Task;
 import com.EMS.model.TaskTrackApproval;
 import com.EMS.model.TaskTrackDaySubmissionModel;
@@ -75,5 +76,5 @@ public interface TasktrackService {
 	 * @param userId 
 	 * @return
 	 */
-	List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception;
+	StatusResponse getTimeTrackData(Long userId, Integer month, Integer year) throws Exception;
 }

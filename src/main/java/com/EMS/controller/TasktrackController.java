@@ -3541,22 +3541,14 @@ public class TasktrackController {
 	 * @return
 	 */
 	@GetMapping(value = "getTimeTrackDataByMonth")
-	public ResponseEntity<Object> getTimeTrackDataByMonth(@RequestParam("month") Integer month,
+	public StatusResponse getTimeTrackDataByMonth(@RequestParam("month") Integer month,
 			@RequestParam("year") Integer year, @RequestParam("uid") Long userId) {
-		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
-		JSONObject jsonDataRes = new JSONObject();
+		StatusResponse response = new StatusResponse();
 		try {
-			List<Map<String, Object>> timetrackDataList = tasktrackService.getTimeTrackData(userId, month, year);
-			jsonDataRes.put("status", "Success");
-			jsonDataRes.put("code", HttpServletResponse.SC_OK);
-			jsonDataRes.put("data", timetrackDataList);
-			response = new ResponseEntity<Object>(jsonDataRes, HttpStatus.OK);
+			response = tasktrackService.getTimeTrackData(userId, month, year);
 		} catch (Exception e) {
-			e.printStackTrace();
-			jsonDataRes.put("status", "Error");
-			jsonDataRes.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			jsonDataRes.put("message", e.getMessage());
-			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
+			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionresponse);
 		}
 		return response;
 	}

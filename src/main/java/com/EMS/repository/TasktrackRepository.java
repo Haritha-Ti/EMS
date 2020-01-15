@@ -344,4 +344,5 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	public ArrayList<Tasktrack> getsavedTaskslist(Date startDate, Date endDate, Long userId);
 
 	List<Tasktrack> findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(Long userId, Long projectId, Date startDate, Date endDate);
+
 }

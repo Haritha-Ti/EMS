@@ -1,7 +1,10 @@
 package com.EMS.controller;
 
+import java.text.ParseException;
+
 import javax.servlet.http.HttpServletResponse;
 
+import com.EMS.dto.ApproverOneDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.tasktrackapproval2.request.ApproveHoursRequest;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
 import com.EMS.model.StatusResponse;
 import com.EMS.service.TasktrackApprovalService;
@@ -154,45 +158,123 @@ public class TasktrackApprovalController {
 	
 	/**
 	 * @author Hashir
-	 * @param request
-	 * @return
+	 * @param ObjectNode
 	 */
 	@PostMapping("/rejection/Approver1")
 	public ObjectNode rejectionFromApprover1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode responseData = objectMapper.createObjectNode();
+		ObjectNode response = objectMapper.createObjectNode();
 		try {
 			tasktrackApprovalService.rejectionFromApprover(requestdata, 1);
-			responseData.put("status", Constants.SUCCESS);
-			responseData.put("message", "Rejection success.");
+			response.put("status", Constants.SUCCESS);
+			response.put("message", "Rejection success.");
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-			responseData.put("status", "failure");
-			responseData.put("message", e.getMessage());
+			response.put("status", "failure");
+			response.put("message", e.getMessage());
 		}
-		responseData.put("code", httpstatus.getStatus());
-		return responseData;
+		response.put("code", httpstatus.getStatus());
+		return response;
 	}
 	
 	/**
 	 * @author Hashir
-	 * @param request
-	 * @return
+	 * @param ObjectNode
 	 */
 	@PostMapping("/rejection/Approver2")
 	public ObjectNode rejectionFromApprover2(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode responseData = objectMapper.createObjectNode();
+		ObjectNode response = objectMapper.createObjectNode();
 		try {
 			tasktrackApprovalService.rejectionFromApprover(requestdata, 2);
-			responseData.put("status", Constants.SUCCESS);
-			responseData.put("message", "Rejection success.");
+			response.put("status", Constants.SUCCESS);
+			response.put("message", "Rejection success.");
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-			responseData.put("status", "failure");
-			responseData.put("message", e.getMessage());
+			response.put("status", "failure");
+			response.put("message", e.getMessage());
 		}
+		response.put("code", httpstatus.getStatus());
+		return response;
+	}
+	
+	//Nisha
+	@PutMapping(value = "/approveHoursFinance")
+	public ObjectNode approveHoursFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responseData = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		try {
+			node = tasktrackApprovalService.approveHoursFinance(requestdata);
+			responseData.set("data",node);
+			responseData.put("status", "Sucess");
+			responseData.put("message", "Sucess ");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			responseData.set("data",node);
+			responseData.put("status", "failure");
+			responseData.put("message", "failed. " + e);
+		}
+
 		responseData.put("code", httpstatus.getStatus());
 		return responseData;
+	}
+
+	@PutMapping(value = "/approveHoursLevel2")
+	public StatusResponse approveHoursLevel2(@RequestBody ApproveHoursRequest requestdata, HttpServletResponse httpstatus) {
+		StatusResponse node = null;
+		try {
+			node = tasktrackApprovalService.approveHoursLevel2(requestdata);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			node = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+		}
+		return node;
+	}
+	/**
+	 * Bulk approval for approver 1
+	 * @author  Jinu Shaji
+	 * @version 1.0
+	 * @since   2020-01-15
+	 **/
+	@SuppressWarnings("rawtypes")
+	@PutMapping(value = ("/approverone-bulk-approval"))
+	public StatusResponse bulkApprovalForApproverOne(@RequestBody ApproverOneDto approverOneDto){
+		StatusResponse response = new StatusResponse();
+		try {		
+			response = tasktrackApprovalService.bulkApprovalForApproverOne(approverOneDto);
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return response;
+	}
+	/**
+	 * Bulk approval for approver 2
+	 * @author  Jinu Shaji
+	 * @version 1.0
+	 * @since   2020-01-15
+	 **/
+	@SuppressWarnings("rawtypes")
+	@PutMapping(value = ("/approvertwo-bulk-approval"))
+	public StatusResponse bulkApprovalForApproverTwo(@RequestBody ApproverOneDto approverOneDto){
+		StatusResponse response = new StatusResponse();
+		try {		
+			response = tasktrackApprovalService.bulkApprovalForApproverOne(approverOneDto);
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return response;
 	}
 }

@@ -77,7 +77,10 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	private Date approverTwoSecondHalfSubmittedDate;
 
 	@ManyToOne
-	private UserModel financeId;
+	private UserModel firstHalfFinanceId;
+
+	@ManyToOne
+	private UserModel secondHalfFinanceId;
 
 	private String financeFirstHalfStatus;
 
@@ -503,12 +506,20 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 		this.approverTwoSecondHalfSubmittedDate = approverTwoSecondHalfSubmittedDate;
 	}
 
-	public UserModel getFinanceId() {
-		return financeId;
+	public UserModel getFirstHalfFinanceId() {
+		return firstHalfFinanceId;
 	}
 
-	public void setFinanceId(UserModel financeId) {
-		this.financeId = financeId;
+	public void setFirstHalfFinanceId(UserModel firstHalfFinanceId) {
+		this.firstHalfFinanceId = firstHalfFinanceId;
+	}
+
+	public UserModel getSecondHalfFinanceId() {
+		return secondHalfFinanceId;
+	}
+
+	public void setSecondHalfFinanceId(UserModel secondHalfFinanceId) {
+		this.secondHalfFinanceId = secondHalfFinanceId;
 	}
 
 	public String getFinanceFirstHalfStatus() {
