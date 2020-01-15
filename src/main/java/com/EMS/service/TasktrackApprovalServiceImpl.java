@@ -28,6 +28,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.EMS.dto.ApproverOneDto;
@@ -42,7 +43,7 @@ import com.EMS.dto.tasktrackapproval2.response.Data;
 import com.EMS.dto.tasktrackapproval2.response.SemiMonthlyData;
 import com.EMS.dto.tasktrackapproval2.response.UserData;
 import com.EMS.dto.tasktrackapproval2.response.WeekData;
-import com.EMS.exceptions.DuplicateEntryException;
+import com.EMS.exception.DuplicateEntryException;
 import com.EMS.model.ActivityLog;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
@@ -9644,16 +9645,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public StatusResponse getTaskTrackDataForApprover2(GetTaskTrackData requestdata) throws Exception {
 		// TODO Auto-generated method stub
 		Data data = null;
+		int projectWorkFlow  = 0;
 		UserData userResponse = null;
-		ArrayList<WeekData> weeksDataArray = new ArrayList<>();
 		ArrayList<UserData> userDataArray = new ArrayList<>();
-		HashMap<String, Date> weeks = new HashMap<>();
+		//HashMap<String, Date> weeks = new HashMap<>();
 		ArrayList<String> week = new ArrayList<>();
+		JSONArray weeksArray = new JSONArray();
 		int year = requestdata.getYear();
 		Long projectId = requestdata.getProjectId();
 		int month = requestdata.getMonth();
-		weeks = findWeeksTest(month, year);
-		// get startDate and endDate of the month
+		weeksArray = findWeeks(month, year);
+		String projectWorkFlowType = null;
+		// get startDate and endDate of the months
 		Date startDate;
 		Date endDate;
 		String start = year + "-" + month + "-01";
@@ -9664,7 +9667,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		String end = year + "-" + month + "-" + total;
 		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
 		// get usersList in the project for the corresponding month
-		int projectWorkFlow = 0;
+		
 		List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId,
 				startDate, endDate);
 		if (allocatedUserData.size() >= 1) {
@@ -9674,30 +9677,25 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				ArrayNode semiMonthlyHourData = objectMapper.createArrayNode();
 				Long userId = userData.getuser().getUserId();
 				String userName = userData.getuser().getLastName() + " " + userData.getuser().getFirstName();
-				String projectWorkFlowType = null;
-				projectWorkFlow = userData.getproject().getWorkflowType();
-				if (projectWorkFlow == 3 || projectWorkFlow == 4) {
-					for (int j = 0; j < weeks.size(); j++) {
-						Date weekStart = weeks.get("startDate");
-						Date weekEnd =  weeks.get("endDate");
-						SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
-						String weekRange = sdf.format(weekStart) + " - " + sdf.format(weekEnd);
-						week.add(weekRange);
-					}
+				 projectWorkFlow = userData.getproject().getWorkflowType();
 				// WeeklyData
 				if (projectWorkFlow == 3 || projectWorkFlow == 4) {
-
-					for (int i = 0; i < weeks.size(); i++) {
-
+					ArrayList<WeekData> weeksDataArray = new ArrayList<>();
+					for (int i = 0; i < weeksArray.size(); i++) {
+						
+						JSONObject objects = (JSONObject) weeksArray.get(i);
 						SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
-						Date weekStart = weeks.get("startDate");
-						Date weekEnd =  weeks.get("endDate");
+						Date weekStart = (Date) objects.get("startDate");
+						Date weekEnd = (Date) objects.get("endDate");
 						TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository
 								.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, weekStart,
 										weekEnd, userId);
 						double totalhours = 0.0;
 						String approverSatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 						if (weeklyUserData != null) {
+							if(weeklyUserData.getTimetrackStatus().
+									equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT) && weeklyUserData.getApprover1Status().
+									equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT))
 							totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
 									+ weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6()
 									+ weeklyUserData.getDay7();
@@ -9705,16 +9703,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: weeklyUserData.getApprover1Status();
 						}
-						WeekData weekData = new WeekData(totalhours, weekStart, weekEnd, approverSatus);
-
+						WeekData weekData = new WeekData(totalhours, sdff.format(weekStart), sdff.format(weekEnd), approverSatus);
 						weeksDataArray.add(weekData);
+						
 					}
 					userResponse = new UserData(userId, userName, weeksDataArray);
-					userResponse.setWeekData(weeksDataArray);
 					userDataArray.add(userResponse);
 					data = new Data(projectWorkFlowType,userDataArray,week);
 					
 				} else { // SemiMonthlyData
+					ArrayList<WeekData> weeksDataArray = new ArrayList<>();
 					ObjectNode semiMonthlyDataResponse = objectMapper.createObjectNode();
 					TasktrackApprovalSemiMonthly semiMonthlyUserData = taskTrackApprovalSemiMonthlyRepository
 							.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
@@ -9723,7 +9721,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					String firstHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 					String secondHalfStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 					if (semiMonthlyUserData != null) {
-						if (semiMonthlyUserData.getUserFirstHalfStatus().equalsIgnoreCase("SUBMITTED")) {
+						if (semiMonthlyUserData.getUserFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_USER_STATUS_SUBMIT)) {
+							if(semiMonthlyUserData.getApproverOneFirstHalfStatus()!= null)
+								if(semiMonthlyUserData.getApproverOneFirstHalfStatus()
+										.equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
 							firstHalfHour = semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2()
 									+ semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4()
 									+ semiMonthlyUserData.getDay5() + semiMonthlyUserData.getDay6()
@@ -9735,9 +9736,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							firstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: semiMonthlyUserData.getApproverOneFirstHalfStatus();
+						}
 
 						}
-						if (semiMonthlyUserData.getUserSecondHalfStatus().equalsIgnoreCase("SUBMITTED")) {
+						if (semiMonthlyUserData.getUserSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_USER_STATUS_SUBMIT)) {
 							secondHalfHour = semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17()
 									+ semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19()
 									+ semiMonthlyUserData.getDay20() + semiMonthlyUserData.getDay21()
@@ -9760,47 +9762,28 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					userDataArray.add(userResponse);
 					data = new Data(projectWorkFlowType,userDataArray,week);
 				}
-			}
+			
 
 		}
+			if (projectWorkFlow == 3 || projectWorkFlow == 4) {
+				for (int j = 0; j < weeksArray.size(); j++) {
+					JSONObject objects = (JSONObject) weeksArray.get(j);
+					Date weekStart = (Date) objects.get("startDate");
+					Date weekEnd = (Date) objects.get("endDate");
+					SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
+					String weekRange = sdf.format(weekStart) + " - " + sdf.format(weekEnd);
+					week.add(weekRange);
+				}
+				data.setProjectWorkFlowType("weekly");
+			}
+			else {
+				data.setProjectWorkFlowType("semiMonthly");
+			}
 		}
 		StatusResponse statusResponse = new StatusResponse( Constants.SUCCESS,Constants.SUCCESS_CODE,data);
 		return statusResponse;// node;
 	}
 
-	// Nisha
-	public HashMap<String, Date> findWeeksTest(int curMonth, int curYear) throws ParseException {
-		int month = curMonth;
-		int year = curYear;
-		int dayOfWeek = DateTimeConstants.SUNDAY;
-		String weekRange;
-		HashMap<String, Date> weeks = new HashMap<>();
-		// JSONArray weeksArray = new JSONArray();
-		org.joda.time.LocalDate firstOfMonth = new org.joda.time.LocalDate(year, month, 1);
-		org.joda.time.LocalDate firstOfNextMonth = firstOfMonth.plusMonths(1);
-		org.joda.time.LocalDate firstDateInGrid = firstOfMonth.withDayOfWeek(dayOfWeek);
-		if (firstDateInGrid.isAfter(firstOfMonth)) { // If getting the next start of week instead of desired week's
-														// start, adjust backwards.
-			firstDateInGrid = firstDateInGrid.minusWeeks(1);
-		}
-
-		org.joda.time.LocalDate weekStart = firstDateInGrid;
-		org.joda.time.LocalDate weekStop = null;
-		int weekNumber = 0;
-		SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
-		do {
-			JSONObject weekDataResponse = new JSONObject();
-
-			weekNumber = weekNumber + 1;
-			weekStop = weekStart.plusDays(6);
-			weekRange = weekStart + " - " + weekStop;
-			weeks.put("startDate", sdff.parse(weekStart.toDateTimeAtStartOfDay().toString()));
-			System.out.println("---------------------------->"+sdff.parse(weekStart.toDateTimeAtStartOfDay().toString()));
-			weeks.put("endDate", sdff.parse(weekStop.toDateTimeAtStartOfDay().toString()));
-			weekStart = weekStop.plusDays(1);
-		} while (weekStop.isBefore(firstOfNextMonth));
-		return weeks;
-	}
 	@Override
 	public ObjectNode getTaskTrackDataForFinance(ObjectNode requestdata) throws Exception {
 		ObjectNode node = objectMapper.createObjectNode();
@@ -10683,9 +10666,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = approverOneDto.getProjectId();
 		List<Long> userIds = approverOneDto.getUserId();
 		Long approverId = approverOneDto.getApproverId();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = df.parse(df.format(approverOneDto.getEndDate()));
-		Date startDate = df.parse(df.format(approverOneDto.getStartDate()));
+		Date endDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverOneDto.getEndDate()));
+		Date startDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverOneDto.getStartDate()));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		Date curDate = formatter.parse(formatter.format(date));
@@ -10791,4 +10773,598 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		StatusResponse statusResponse = new StatusResponse( Constants.SUCCESS,Constants.SUCCESS_CODE,"");
 		return node;
 	}
+	
+	@Override
+	@Transactional
+	public void rejectionFromApprover(ObjectNode requestdata, Integer approverLevel) throws Exception {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate = df.parse(requestdata.get("endDate").asText());
+		Date startDate = df.parse(requestdata.get("startDate").asText());
+		Long projectId = requestdata.get("projectId").asLong();
+		Long userId = requestdata.get("userId").asLong();
+		Long loggedId = requestdata.get("loggedId").asLong();
+		Long approverId = requestdata.get("approverId").asLong();
+		String remark = requestdata.get("remark").asText();
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		Date curDate = formatter.parse(formatter.format(date));
+		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+		if (projectData == null)
+			throw new Exception("Invalid project.");
+		
+		TaskTrackRejection rejection = new TaskTrackRejection();
+		rejection.setProject(projectData);
+		rejection.setWorkflowType(projectData.getWorkflowType());
+		rejection.setRemark(remark);
+		rejection.setStatus(Constants.TASKTRACK_REJECTION_STATUS_OPEN);
+		
+		// weekly approval
+		if (projectData.getWorkflowType() == Constants.ProjectWorkflow.WEEKLY_WITHOUT_DAILY_TASK 
+				|| projectData.getWorkflowType() == Constants.ProjectWorkflow.WEEKLY_WITH_DAILY_TASK) {
+			if (loggedId != null) {
+				TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository
+						.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,userId);
+				if (userData == null)
+					throw new Exception("No record found.");
+				
+				String approverStatus = approverLevel == 1 ? userData.getApprover1Status() : userData.getApprover2Status();
+				if(approverStatus == Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED 
+						|| userData.getTimetrackStatus() == Constants.TASKTRACK_USER_STATUS_REJECTION) {
+					throw new Exception("This record was already rejected.");
+				}
+				if(approverLevel == 1) {
+					userData.setApprover1Status(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED);
+				}
+				else {
+					userData.setApprover2Status(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED);
+				}
+				userData.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
+				userData.setRejectionTime(curDate);
+				taskTrackWeeklyApprovalRepository.save(userData);
+				
+				rejection.setUser(userData.getUser());
+				
+				rejection.setYear(userData.getYear());
+				rejection.setStartDate(userData.getStartDate());
+				rejection.setEndDate(userData.getEndDate());
+			}
+		} 
+		else { 
+			// semimonthly approval
+			if (loggedId != null) {
+				Calendar cale = Calendar.getInstance();
+				cale.setTime(endDate);
+				int day = cale.get(Calendar.DAY_OF_MONTH);
+				int month = cale.get(Calendar.MONTH)+1;
+				int year = cale.get(Calendar.YEAR);
+				TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository
+						.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
+				if (userData == null)
+					throw new Exception("No record found.");
+				
+				if (day > 15) {
+					String approverStatus = approverLevel == 1 ? userData.getApproverOneSecondHalfStatus() : userData.getApproverTwoSecondHalfStatus();
+					if(approverStatus == Constants.TASKTRACK_APPROVER_STATUS_REJECTION 
+							|| userData.getUserSecondHalfStatus() == Constants.TASKTRACK_USER_STATUS_REJECTION) {
+						throw new Exception("This record was already rejected.");
+					}
+					if(approverLevel == 1) {
+						userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
+					}
+					else {
+						userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
+					}
+					userData.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
+				} 
+				else {
+					String approverStatus = approverLevel == 1 ? userData.getApproverOneFirstHalfStatus() : userData.getApproverTwoFirstHalfStatus();
+					if(approverStatus == Constants.TASKTRACK_APPROVER_STATUS_REJECTION 
+							|| userData.getUserFirstHalfStatus() == Constants.TASKTRACK_USER_STATUS_REJECTION) {
+						throw new Exception("This record was already rejected.");
+					}
+					if(approverLevel == 1) {
+						userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
+					}
+					else {
+						userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
+					}
+					userData.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
+				}
+				taskTrackApprovalSemiMonthlyRepository.save(userData);
+				
+				rejection.setUser(userData.getUser());
+				rejection.setMonth(userData.getMonth());
+				rejection.setYear(userData.getYear());
+			}
+		}
+		taskTrackRejectionRepository.save(rejection);
+		try {
+			String sendTo = "", sendCC = "", subject = "", emailReceiver = "", resource = "", approverTwo = "";
+			subject = "RCG Time Sheet- Second half time sheet Rejected";
+			resource = rejection.getUser().getLastName().concat(" " + rejection.getUser().getFirstName());
+			approverTwo = rejection.getProject().getOnsite_lead().getLastName()
+					.concat(" " + rejection.getProject().getOnsite_lead().getFirstName());
+			sendCC = rejection.getProject().getOnsite_lead().getEmail();
+			sendTo = rejection.getProject().getProjectOwner().getEmail();
+			emailReceiver = rejection.getProject().getProjectOwner().getLastName()
+					.concat(" " + rejection.getProject().getProjectOwner().getFirstName()) + ",";
+
+			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
+			mailBody.append("<br/><br/>Project Name : " + rejection.getProject().getProjectName());
+			mailBody.append("<br/>Resource Name : " + resource);
+			mailBody.append("<br/><br/>Timesheet from "+requestdata.get("startDate").asText()+" to "+requestdata.get("endDate").asText()+" has been Rejected.");
+			mailBody.append("<br/>Comments : " + rejection.getRemark());
+			mailBody.append("<br/><a href=" + CONTEXT_PATH + "/approve-log>Click here to Re-Submit timesheet</a>");
+			mailBody.append("<br/><br/>Rejected by : " + approverTwo);
+
+			sendMail(sendTo, sendCC, subject, mailBody);
+		} 
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * @author @Renjith
+	 * @throws ParseException 
+	 */
+	@Override
+	public StatusResponse reopenSubmission(Long Id,Long projectId,Long userId, Date startDate, Date endDate) throws ParseException{
+		StatusResponse  response = null;
+		if(Id==null || Id == 0L)
+			return new StatusResponse<String>("failure", 400, "Invalid Submission");
+		if(projectId==null || projectId==0L)
+			return new StatusResponse<String>("failure", 400, "Invalid Project for Submission");
+		if(userId==null || userId == 0L)
+			return new StatusResponse<String>("failure", 400, "Invalid User for Submission");
+		if(startDate==null )
+			return new StatusResponse<String>("failure", 400, "Invalid Start date for Submission");
+		if(endDate==null )
+			return new StatusResponse<String>("failure", 400, "Invalid End date for Submission");
+		ProjectModel p = projectService.getProjectDetails(projectId);
+		int wfType = p.getWorkflowType();
+		if (wfType == 3 || wfType == 4){
+			Calendar cal = Calendar.getInstance();
+			Optional<TaskTrackWeeklyApproval>  weeklySubOpt=taskTrackWeeklyApprovalRepository.findById(Id);
+			TaskTrackWeeklyApproval  weeklySub=weeklySubOpt.get();
+			weeklySub.setFinanceStatus(Constants.TASKTRACK_APPROVER_STATUS_REOPEN);
+			weeklySub.setFinanceUser(userRepository.findById(userId).get());
+			weeklySub.setFinanceSubmittedDate(cal.getTime());
+			taskTrackWeeklyApprovalRepository.save(weeklySub);
+			return new StatusResponse<String>("Success", 200, null);
+		}
+		
+		if (wfType == 1 || wfType == 2){
+			SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+			//startDate=simpleDateFormat.parse(startDate.toString());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(startDate);
+			Optional<TasktrackApprovalSemiMonthly>  monthlySubOpt=taskTrackApprovalSemiMonthlyRepository.findById(Id);
+			TasktrackApprovalSemiMonthly  monthlySub=monthlySubOpt.get();
+			cal.setTime(startDate);
+			int day = cal.get(Calendar.DAY_OF_MONTH);
+			if(day<=15)
+			monthlySub.setFinanceFirstHalfStatus("Reopen");
+			if(day>15)
+				monthlySub.setFinanceSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REOPEN);
+			taskTrackApprovalSemiMonthlyRepository.save(monthlySub);
+			return new StatusResponse<String>("Success", 200, null);
+		}
+			
+		
+		return response;
+	}
+
+	@Override
+	public ObjectNode getTaskTrackDataByUserIdForApprover2(ApproveHoursRequest requestdata) {
+		// TODO Auto-generated method stub
+		ObjectNode node = objectMapper.createObjectNode();
+		Long projectId = requestdata.getProjectId();
+		Long userId = requestdata.getUserId();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDate = requestdata.getStartDate();
+		Date endDate = requestdata.getEndDate();
+		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+		boolean submitButtonStatus = false;
+		if (projectData != null) {
+			ArrayNode hourDataNode = objectMapper.createArrayNode();
+			// weekly
+			if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {
+				TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository
+						.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
+								userId);
+				if (userData != null) {
+					node.put("userName", userData.getUser().getLastName() + " " + userData.getUser().getFirstName());
+					node.put("userId", userData.getUser().getUserId());
+					node.put("approver1Status",
+							userData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+									: userData.getApprover1Status());
+					node.put("approver1SubmittedDate", userData.getApprover1SubmittedDate().toString());
+					node.put("userSubmittedDate", userData.getUserSubmittedDate().toString());
+					if (projectData.getProjectTier() == 2) {
+
+						node.put("approver2Status",
+								userData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+										: userData.getApprover2Status());
+						node.put("approver2SubmittedDate", userData.getApprover2SubmittedDate().toString());
+					} else {
+						node.put("approver2Status", "");
+						node.put("approver2SubmittedDate", "");
+					}
+					node.put("loggedId", userData.getId());
+					node.put("userStatus", userData.getTimetrackStatus());
+					
+					if((userData.getApprover1Status() == Constants.TASKTRACK_APPROVER_STATUS_SUBMIT 
+							&& userData.getApprover2Status() != Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)){
+						submitButtonStatus = true;
+					}
+					
+					node.put("submitButtonStatus", submitButtonStatus);
+					ObjectNode hourDataResponse = objectMapper.createObjectNode();
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(startDate);
+					hourDataResponse.put(df.format(cal.getTime()), userData.getDay1());
+					cal.add(Calendar.DATE, 1);
+					hourDataResponse.put(df.format(cal.getTime()), userData.getDay2());
+					cal.add(Calendar.DATE, 1);
+					hourDataResponse.put(df.format(cal.getTime()), userData.getDay3());
+					cal.add(Calendar.DATE, 1);
+					hourDataResponse.put(df.format(cal.getTime()), userData.getDay4());
+					cal.add(Calendar.DATE, 1);
+					hourDataResponse.put(df.format(cal.getTime()), userData.getDay5());
+					cal.add(Calendar.DATE, 1);
+					hourDataResponse.put(df.format(cal.getTime()), userData.getDay6());
+					cal.add(Calendar.DATE, 1);
+					hourDataResponse.put(df.format(cal.getTime()), userData.getDay7());
+					hourDataNode.add(hourDataResponse);
+					node.set("hourData", hourDataNode);
+				} else {
+					UserModel user = userRepository.findOneByUserId(userId);
+					if (user != null) {
+						node.put("userName", user.getLastName() + " " + user.getFirstName());
+						node.put("userId", user.getUserId());
+						node.put("approver1Status", Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+						node.put("loggedId", "");
+						node.put("userStatus", Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+						node.put("approver1SubmittedDate", "");
+						node.put("userSubmittedDate", "");
+						if (projectData.getProjectTier() == 2) {
+
+							node.put("approver2Status", Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+							node.put("approver2SubmittedDate", "");
+						} else {
+							node.put("approver2Status", "");
+							node.put("approver2SubmittedDate", "");
+						}
+						ObjectNode hourDataResponse = objectMapper.createObjectNode();
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(startDate);
+						hourDataResponse.put(df.format(cal.getTime()), 0);
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), 0);
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), 0);
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), 0);
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), 0);
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), 0);
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataNode.add(hourDataResponse);
+						node.set("hourData", hourDataNode);
+						node.put("submitButtonStatus", false);
+					}
+				}
+
+			} else {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(startDate);
+				int month = cal.get(Calendar.MONTH + 1);
+				int year = cal.get(Calendar.YEAR);
+				Calendar cale = Calendar.getInstance();
+				cale.setTime(endDate);
+				int day = cale.get(Calendar.DAY_OF_MONTH);
+				TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository
+						.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
+				if (userData != null) {
+					node.put("userName", userData.getUser().getLastName() + " " + userData.getUser().getFirstName());
+					node.put("userId", userData.getUser().getUserId());
+					node.put("loggedId", userData.getId());
+
+					ObjectNode hourDataResponse = objectMapper.createObjectNode();
+					if (day == 15) {
+
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay1());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay2());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay3());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay4());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay5());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay6());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay7());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay8());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay9());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay10());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay11());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay12());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay13());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay14());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay15());
+						node.put("approver1Status",
+								userData.getApproverOneFirstHalfStatus() == null
+										? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+										: userData.getApproverOneFirstHalfStatus());
+						node.put("userStatus", userData.getUserFirstHalfStatus());
+						if(userData.getApproverOneFirstHalfSubmittedDate() != null)
+						node.put("approver1SubmittedDate",
+								userData.getApproverOneFirstHalfSubmittedDate().toString());
+						else
+							node.put("approver1SubmittedDate",
+									"");
+						if(userData.getUserFirstHalfSubmittedDate()!= null)
+						node.put("userSubmittedDate", userData.getUserFirstHalfSubmittedDate().toString());
+						else
+							node.put("userSubmittedDate", "");	
+						if (projectData.getProjectTier() == 2) {
+
+							node.put("approver2Status",
+									userData.getApproverTwoFirstHalfStatus() == null
+											? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+											: userData.getApproverTwoFirstHalfStatus());
+							node.put("approver2SubmittedDate",
+									userData.getApproverTwoFirstHalfSubmittedDate().toString());
+						} else {
+							node.put("approver2Status", "");
+							node.put("approver2SubmittedDate", "");
+						}
+						if((userData.getApproverOneFirstHalfStatus() == Constants.TASKTRACK_APPROVER_STATUS_SUBMIT 
+								&& userData.getApproverTwoFirstHalfStatus() != Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)){
+							submitButtonStatus = true;
+						}
+						node.put("submitButtonStatus", submitButtonStatus);
+
+					} else {
+
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay16());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay17());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay18());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay19());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay20());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay21());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay22());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay23());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay24());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay25());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay26());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay27());
+						cal.add(Calendar.DATE, 1);
+						hourDataResponse.put(df.format(cal.getTime()), userData.getDay28());
+						if (day > 28) {
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), userData.getDay29());
+						}
+						if (day > 29) {
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), userData.getDay30());
+						}
+						if (day > 30) {
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), userData.getDay31());
+						}
+						node.put("approver1Status",
+								userData.getApproverOneSecondHalfStatus() == null
+										? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+										: userData.getApproverOneFirstHalfStatus());
+						node.put("userStatus", userData.getUserSecondHalfStatus());
+						node.put("approver1SubmittedDate",
+								userData.getApproverOneSecondHalfStatus().toString());
+						node.put("userSubmittedDate", userData.getUserSecondHalfSubmittedDate().toString());
+						if (projectData.getProjectTier() == 2) {
+
+							node.put("approver2Status",
+									userData.getApproverTwoSecondHalfStatus() == null
+											? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+											: userData.getApproverTwoSecondHalfStatus());
+							node.put("approver2SubmittedDate",
+									userData.getApproverTwoSecondHalfSubmittedDate().toString());
+						} else {
+							node.put("approver2Status", "");
+							node.put("approver2SubmittedDate", "");
+						}
+					}
+					if((userData.getApproverOneSecondHalfStatus() == Constants.TASKTRACK_APPROVER_STATUS_SUBMIT 
+							&& userData.getApproverTwoSecondHalfStatus() != Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)){
+						submitButtonStatus = true;
+					}
+					node.put("submitButtonStatus", submitButtonStatus);
+					hourDataNode.add(hourDataResponse);
+					node.set("hourData", hourDataNode);
+				} else {
+					UserModel user = userRepository.findOneByUserId(userId);
+					if (user != null) {
+
+						node.put("userName", user.getLastName() + " " + user.getFirstName());
+						node.put("userId", user.getUserId());
+						node.put("approver1Status", Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+						node.put("loggedId", "");
+						node.put("userStatus", Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+						node.put("approver1SubmittedDate", "");
+						node.put("userSubmittedDate", "");
+						if (projectData.getProjectTier() == 2) {
+
+							node.put("approver2Status", Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+							node.put("approver2SubmittedDate", "");
+						} else {
+							node.put("approver2Status", "");
+							node.put("approver2SubmittedDate", "");
+						}
+						ObjectNode hourDataResponse = objectMapper.createObjectNode();
+						if (day == 15) {
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+
+						} else {
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							cal.add(Calendar.DATE, 1);
+							hourDataResponse.put(df.format(cal.getTime()), 0);
+							if (day > 28) {
+								cal.add(Calendar.DATE, 1);
+								hourDataResponse.put(df.format(cal.getTime()), 0);
+							}
+							if (day > 29) {
+								cal.add(Calendar.DATE, 1);
+								hourDataResponse.put(df.format(cal.getTime()), 0);
+							}
+							if (day > 30) {
+								cal.add(Calendar.DATE, 1);
+								hourDataResponse.put(df.format(cal.getTime()), 0);
+							}
+						}
+						hourDataNode.add(hourDataResponse);
+						node.set("hourData", hourDataNode);
+						node.put("submitButtonStatus", false);
+					}
+				}
+			}
+
+		}
+		return node;
+	}
+
+
+	public StatusResponse bulkApprovalForApproverTwo(ApproverTwoDto approverTwoDto) throws ParseException,Exception{
+		// TODO Auto-generated method stub
+		Long projectId = approverTwoDto.getProjectId();
+		List<Long> userIds = approverTwoDto.getUserId();
+		Long approverId = approverTwoDto.getApproverId();
+		Date endDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverTwoDto.getEndDate()));
+		Date startDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverTwoDto.getStartDate()));
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		Date curDate = formatter.parse(formatter.format(date));
+		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+		if (projectData != null) {
+			for(Long userId : userIds) {
+				if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {// weekly approval
+					TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository
+							.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
+									userId);
+					if (userData != null) {
+						if(userData.getApprover1Status().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+							userData.setApprover2Status(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							UserModel approver = userRepository.getOne(approverId);
+							userData.setApprover2Id(approver);
+							userData.setApprover2SubmittedDate(curDate);
+							taskTrackWeeklyApprovalRepository.save(userData);
+						}
+					}
+				} else { // semimonthly approval
+					Calendar cale = Calendar.getInstance();
+					cale.setTime(endDate);
+					int day = cale.get(Calendar.DAY_OF_MONTH);
+					int month = cale.get(Calendar.MONTH);
+					int year = cale.get(Calendar.YEAR);
+					TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository
+							.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
+					if (userData != null) {
+						UserModel approver = userRepository.getOne(approverId);
+						if (day > 15) {
+							if(userData.getApproverOneSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+								userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+								userData.setSecondHalfApproverTwoId(approver);
+								userData.setApproverTwoSecondHalfSubmittedDate(curDate);
+								taskTrackApprovalSemiMonthlyRepository.save(userData);
+							}
+						} else {
+							if(userData.getApproverOneFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+								userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+								userData.setFirstHalfApproverTwoId(approver);
+								userData.setApproverTwoFirstHalfSubmittedDate(curDate);
+								taskTrackApprovalSemiMonthlyRepository.save(userData);
+							}
+						}
+					}
+				}
+			}
+		}
+		StatusResponse statusResponse = new StatusResponse( Constants.SUCCESS,Constants.SUCCESS_CODE,"");
+		return statusResponse;
+	}
+
 }

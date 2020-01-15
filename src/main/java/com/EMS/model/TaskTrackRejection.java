@@ -1,5 +1,7 @@
 package com.EMS.model;
 
+import java.util.Date;
+
 import javax.persistence.*;
 
 @Entity
@@ -21,11 +23,17 @@ public class TaskTrackRejection {
     private Integer month;
 
     private Integer year;
+    
+    private Date startDate;
+    
+    private Date endDate;
 
+    private Integer workflowType;
+    
     private String remark;
 
     private String status;
-
+    
     private String cycle;
 
     public String getStatus() {
@@ -35,7 +43,7 @@ public class TaskTrackRejection {
     public void setStatus(String status) {
         this.status = status;
     }
-
+    
     public String getCycle() {
         return cycle;
     }
@@ -91,4 +99,29 @@ public class TaskTrackRejection {
     public void setYear(Integer year) {
         this.year = year;
     }
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public Integer getWorkflowType() {
+		return workflowType;
+	}
+
+	public void setWorkflowType(Integer workflowType) {
+		this.workflowType = workflowType;
+	}
+    
 }

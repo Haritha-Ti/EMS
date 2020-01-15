@@ -6,9 +6,9 @@ public class WeekData {
 
 	private double totalHour;
 	
-	private Date weekStart;
+	private String weekStart;
 	
-	private Date weekEnd;
+	private String weekEnd;
 	
 	private String approverSatus;
 
@@ -20,19 +20,19 @@ public class WeekData {
 		this.totalHour = totalHour;
 	}
 
-	public Date getWeekStart() {
+	public String getWeekStart() {
 		return weekStart;
 	}
 
-	public void setWeekStart(Date weekStart) {
+	public void setWeekStart(String weekStart) {
 		this.weekStart = weekStart;
 	}
 
-	public Date getWeekEnd() {
+	public String getWeekEnd() {
 		return weekEnd;
 	}
 
-	public void setWeekEnd(Date weekEnd) {
+	public void setWeekEnd(String weekEnd) {
 		this.weekEnd = weekEnd;
 	}
 
@@ -44,7 +44,7 @@ public class WeekData {
 		this.approverSatus = approverSatus;
 	}
 	
-	public WeekData(double totalhours,Date weekStart,Date weekEnd,String approverSatus) {
+	public WeekData(double totalhours,String weekStart,String weekEnd,String approverSatus) {
 		this.totalHour = totalHour;
 		this.weekStart = weekStart;
 		this.weekEnd = weekEnd;

@@ -1,5 +1,7 @@
 package com.EMS.utility;
 
+import java.text.SimpleDateFormat;
+
 public class Constants {
 
 	public static int EMAIL_TOKEN_EXP_DUR = 10;
@@ -8,7 +10,7 @@ public class Constants {
 //	public static String CONTEXT_PATH = "https://pms.titechdev.com"; // Production
 	// public static String CONTEXT_PATH =
 	// "https://stagingpms.titechdev.com";//Staging
-
+	public static final String TASKTRACK_APPROVER_STATUS_REOPEN="REOPEN";
 	public static final String TASKTRACK_APPROVER_STATUS_OPEN = "OPEN";
 	public static final String TASKTRACK_APPROVER_STATUS_SUBMIT = "SUBMITTED";
 	public static final String TASKTRACK_APPROVER_STATUS_LOCK = "LOCKED";
@@ -55,6 +57,7 @@ public class Constants {
 	
 	public static final String TASKTRACK_USER_STATUS_SUBMIT = "SUBMITTED";
 	public static final String TASKTRACK_USER_STATUS_SAVED = "SAVED";
+	public static final String TASKTRACK_USER_STATUS_REJECTION = "REJECTED";
 	
 
 	public static final Double roundToDefaultPrecision(Double value) {
@@ -65,6 +68,13 @@ public class Constants {
 		return value;
 	}
 
+	public class ProjectWorkflow {
+		public static final int SEMI_MONTHLY_WITHOUT_DAILY_TASK = 1;
+		public static final int SEMI_MONTHLY_WITH_DAILY_TASK = 2;
+		public static final int WEEKLY_WITHOUT_DAILY_TASK = 3;
+		public static final int WEEKLY_WITH_DAILY_TASK = 4;
+	}
+	
 	public class TaskTrackWeeklyApproval {
 		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_SUBMIT = "SUBMITTED";
 		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_SAVED = "SAVED";
@@ -82,5 +92,9 @@ public class Constants {
 	public static final int SUCCESS_CODE = 200;
 	public static final String SUCCESS = "Success";
 	public static final String OK = "OK";
-	public static final String ERROR = "Error";
+
+	public static final String FAILURE = "Failure";
+
+	public static final String NO_DATA_FOUND_MESSAGE = "No Data Available";	
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 }

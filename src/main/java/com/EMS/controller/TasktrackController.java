@@ -46,8 +46,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.Taskdetails;
-import com.EMS.exceptions.BadInputException;
-import com.EMS.exceptions.DuplicateEntryException;
+import com.EMS.exception.BadInputException;
+import com.EMS.exception.DuplicateEntryException;
 import com.EMS.repository.TaskRepository;
 import com.EMS.repository.TaskTrackApprovalLevel2Repository;
 import com.EMS.service.ProjectAllocationService;
@@ -3548,7 +3548,7 @@ public class TasktrackController {
 			response = tasktrackService.getTimeTrackData(userId, month, year);
 		} catch (Exception e) {
 			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
-			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionresponse);
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionresponse);
 		}
 		return response;
 	}

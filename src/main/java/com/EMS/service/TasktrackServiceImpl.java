@@ -1282,7 +1282,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 		if(!result.isEmpty()) {
 		 response =new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,result);
 		}else {
-			 response =new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"No data available");	
+			 response =new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"No data available");	
 		}
 		return response;
 	}

@@ -8,7 +8,6 @@ package com.EMS.model;
 * @since   2020-01-10 
 */
 
-
 public class StatusResponse<T> {
 	
 	public String status;
