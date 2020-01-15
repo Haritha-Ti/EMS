@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.EMS.exceptions.BadInputException;
+import com.EMS.exception.BadInputException;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;

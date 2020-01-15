@@ -42,7 +42,7 @@ import com.EMS.dto.tasktrackapproval2.response.Data;
 import com.EMS.dto.tasktrackapproval2.response.SemiMonthlyData;
 import com.EMS.dto.tasktrackapproval2.response.UserData;
 import com.EMS.dto.tasktrackapproval2.response.WeekData;
-import com.EMS.exceptions.DuplicateEntryException;
+import com.EMS.exception.DuplicateEntryException;
 import com.EMS.model.ActivityLog;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
