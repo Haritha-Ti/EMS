@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.SemiMonthlyTaskTrackRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
 import com.EMS.model.StatusResponse;
@@ -35,21 +36,13 @@ public class TasktrackApprovalSemiMonthlyController {
 
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "/get/semi_monthly_tasktrack")
-	public ResponseEntity<Object> getSemiMonthlyTasktrack(@RequestBody JSONObject requestData) {
-		ResponseEntity<Object> response = new ResponseEntity<Object>(HttpStatus.OK);
-		JSONObject jsonResp = new JSONObject();
+	public StatusResponse getSemiMonthlyTasktrack(@RequestBody SemiMonthlyTaskTrackRequestDTO requestData) {
+		StatusResponse response = new StatusResponse();
 		try {
-			JSONObject semiMonthlyTasktrack = approvalSemiMonthlyService.getSemiMonthlyTasktrack(requestData);
-			jsonResp.put("status", "Success");
-			jsonResp.put("code", HttpServletResponse.SC_OK);
-			jsonResp.put("data", semiMonthlyTasktrack);
-			response = new ResponseEntity<Object>(jsonResp, HttpStatus.OK);
+			response = approvalSemiMonthlyService.getSemiMonthlyTasktrack(requestData);
 		} catch (Exception e) {
-			e.printStackTrace();
-			jsonResp.put("status", "Error");
-			jsonResp.put("code", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			jsonResp.put("message", e.getMessage());
-			response = new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			ExceptionResponse exceptionResponse = new ExceptionResponse(501, e.getMessage(), new Date());
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
 		}
 
 		return response;
@@ -70,7 +63,7 @@ public class TasktrackApprovalSemiMonthlyController {
 		try {
 			response = approvalSemiMonthlyService.submitForSemiMonthlyApproval(requestData);
 		} catch (Exception e) {
-			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
 			response = new StatusResponse("Failure", 500, exceptionresponse);
 		}
 
@@ -92,7 +85,7 @@ public class TasktrackApprovalSemiMonthlyController {
 		response = approvalSemiMonthlyService.saveSemiMonthlyTaskTrackApproval(requestData);
 
 		}catch (Exception e) {
-			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
 			response = new StatusResponse("Failure", 500, exceptionresponse);
 		}
 
@@ -116,7 +109,7 @@ public class TasktrackApprovalSemiMonthlyController {
 			response = approvalSemiMonthlyService.getSemiMonthlyTasksForSubmission(requestData);
 			
 		} catch (Exception e) {
-			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
 			response = new StatusResponse("Failure", 500, exceptionresponse);
 		}
 
@@ -126,14 +119,16 @@ public class TasktrackApprovalSemiMonthlyController {
 	
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "/get/tasktrack_with_task/semi_monthly")
-	public StatusResponse getSemiMonthlyTasktrackWithTask(@RequestBody WeeklyTaskTrackWithTaskRequestDTO requestData) {
+	public StatusResponse getSemiMonthlyTasktrackWithTask(@RequestBody SemiMonthlyTaskTrackRequestDTO requestData) {
 		StatusResponse response = new StatusResponse();
 		try {
 			response = approvalSemiMonthlyService.getSemiMonthlyTasktrackWithTask(requestData);
 			System.out.println(response);
 		} catch (Exception e) {
+
 			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
 			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
+
 		}
 
 		return response;

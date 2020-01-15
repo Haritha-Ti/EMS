@@ -4,12 +4,15 @@ import java.text.ParseException;
 
 import org.json.simple.JSONObject;
 
+import com.EMS.dto.SemiMonthlyTaskTrackRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.StatusResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface TasktrackApprovalSemiMonthlyService {
-	JSONObject getSemiMonthlyTasktrack(JSONObject requestData) throws Exception;
+	
+	
+	StatusResponse getSemiMonthlyTasktrack(SemiMonthlyTaskTrackRequestDTO requestData) throws Exception;
 
 	StatusResponse submitForSemiMonthlyApproval(JSONObject requestData) throws ParseException;
 
@@ -17,5 +20,5 @@ public interface TasktrackApprovalSemiMonthlyService {
 
 	StatusResponse getSemiMonthlyTasksForSubmission(JsonNode requestData) throws ParseException;
 
-	StatusResponse getSemiMonthlyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception;
+	StatusResponse getSemiMonthlyTasktrackWithTask(SemiMonthlyTaskTrackRequestDTO requestData) throws Exception;
 }

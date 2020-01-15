@@ -9,7 +9,10 @@ import java.util.Set;
 
 import org.json.simple.JSONObject;
 
+import com.EMS.dto.ApproverOneDto;
+import com.EMS.dto.ApproverTwoDto;
 import com.EMS.dto.Submission;
+import com.EMS.dto.tasktrackapproval2.request.ApproveHoursRequest;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
 import com.EMS.model.StatusResponse;
 import com.EMS.model.TaskTrackApproval;
@@ -160,5 +163,20 @@ public interface TasktrackApprovalService {
 
 	ObjectNode getTaskTrackDataByUserIdForFinance(ObjectNode requestdata) throws Exception;
 	
-	public List<Submission>   getSubmissionHistory(Long Id,Long projectId);
+	void rejectionFromApprover(ObjectNode requestdata,Integer approverLevel) throws Exception;
+
+    ObjectNode approveHoursFinance(ObjectNode requestdata) throws Exception;
+
+    public List<Submission>   getSubmissionHistory(Long Id,Long projectId);
+
+    StatusResponse approveHoursLevel2(ApproveHoursRequest requestdata) throws Exception;
+    
+    StatusResponse bulkApprovalForApproverOne(ApproverOneDto approverOneDto)throws ParseException, Exception;
+    
+    public StatusResponse reopenSubmission(Long Id, Long projectId,Long userId, Date startDate, Date endDate) throws ParseException;
+    
+    StatusResponse bulkApprovalForApproverTwo(ApproverTwoDto approverTwoDto)throws ParseException, Exception;
+
+	ObjectNode getTaskTrackDataByUserIdForApprover2(ApproveHoursRequest requestdata);
+
 }

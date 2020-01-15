@@ -115,4 +115,5 @@ public interface ProjectAllocationRepository extends JpaRepository<AllocationMod
 
 	Optional<AllocationModel> findOneByAllocIdAndActive(Long allocId, Boolean active);
 
+	List<AllocationModel> findByProjectProjectIdAndStartDateAndEndDateAndIsBillable(Long projectId, Date startDate, Date endDate, Boolean i);
 }

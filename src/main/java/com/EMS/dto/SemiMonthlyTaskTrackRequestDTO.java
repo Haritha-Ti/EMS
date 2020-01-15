@@ -1,12 +1,13 @@
 package com.EMS.dto;
 
-public class SemiMonthlyTaskTrackWithTaskRequestDTO {
+public class SemiMonthlyTaskTrackRequestDTO {
 	
 	private Long uId;
 	private Long projectId;
 	private String startDate;
 	private String endDate;
 	private Long sessionId;
+	
 	public Long getuId() {
 		return uId;
 	}
