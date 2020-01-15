@@ -82,5 +82,5 @@ public class Constants {
 	public static final int SUCCESS_CODE = 200;
 	public static final String SUCCESS = "Success";
 	public static final String OK = "OK";
-	public static final String ERROR = "Error";
+	public static final String FAILURE = "Failure";
 }

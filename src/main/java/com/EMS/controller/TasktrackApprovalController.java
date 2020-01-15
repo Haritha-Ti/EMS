@@ -101,7 +101,7 @@ public class TasktrackApprovalController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			node = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+			node = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
 
 		return node;
