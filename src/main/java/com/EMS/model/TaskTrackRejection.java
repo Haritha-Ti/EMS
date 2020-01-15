@@ -27,8 +27,6 @@ public class TaskTrackRejection {
     private Date startDate;
     
     private Date endDate;
-
-    private Integer workflowType;
     
     private String remark;
 
@@ -114,14 +112,5 @@ public class TaskTrackRejection {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}
-
-	public Integer getWorkflowType() {
-		return workflowType;
-	}
-
-	public void setWorkflowType(Integer workflowType) {
-		this.workflowType = workflowType;
-	}
-    
+	}  
 }
