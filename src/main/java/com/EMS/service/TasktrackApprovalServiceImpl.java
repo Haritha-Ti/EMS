@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
+import com.EMS.dto.ApproverOneDto;
 import com.EMS.dto.MailDomainDto;
 import com.EMS.dto.MonthlySubmissionDto;
 import com.EMS.dto.Submission;
@@ -10662,5 +10663,57 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return node;
 	}
 	
+	public StatusResponse bulkApprovalForApproverOne(ApproverOneDto approverOneDto) throws ParseException,Exception{
+		Long projectId = approverOneDto.getProjectId();
+		List<Long> userIds = approverOneDto.getUserId();
+		Long approverId = approverOneDto.getApproverId();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate = df.parse(df.format(approverOneDto.getEndDate()));
+		Date startDate = df.parse(df.format(approverOneDto.getStartDate()));
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		Date curDate = formatter.parse(formatter.format(date));
+		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+		if (projectData != null) {
+			for(Long userId : userIds) {
+				if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {// weekly approval
+					TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository
+							.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
+									userId);
+					if (userData != null) {
+						userData.setApprover1Status(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+						UserModel approver = userRepository.getOne(approverId);
+						userData.setApprover1Id(approver);
+						userData.setApprover1SubmittedDate(curDate);
+						taskTrackWeeklyApprovalRepository.save(userData);
+					}
+				} else { // semimonthly approval
+					Calendar cale = Calendar.getInstance();
+					cale.setTime(endDate);
+					int day = cale.get(Calendar.DAY_OF_MONTH);
+					int month = cale.get(Calendar.MONTH)+1;
+					int year = cale.get(Calendar.YEAR);
+					TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository
+							.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
+					if (userData != null) {
+						UserModel approver = userRepository.getOne(approverId);
+						if (day > 15) {
+							userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							userData.setSecondHalfApproverOneId(approver);
+							userData.setApproverOneSecondHalfSubmittedDate(curDate);
+							taskTrackApprovalSemiMonthlyRepository.save(userData);
+						} else {
+							userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							userData.setFirstHalfApproverOneId(approver);
+							userData.setApproverOneFirstHalfSubmittedDate(curDate);
+							taskTrackApprovalSemiMonthlyRepository.save(userData);
+						}
+					}
+				}
+			}
+		}
+		StatusResponse statusResponse = new StatusResponse( Constants.SUCCESS,Constants.SUCCESS_CODE,"");
+		return statusResponse;
+	}
 
 }
