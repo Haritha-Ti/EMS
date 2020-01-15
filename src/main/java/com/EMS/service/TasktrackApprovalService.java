@@ -10,6 +10,7 @@ import java.util.Set;
 import com.EMS.dto.approveHoursLevel2.request.ApproveHoursRequest;
 import org.json.simple.JSONObject;
 
+import com.EMS.dto.ApproverOneDto;
 import com.EMS.dto.Submission;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
 import com.EMS.model.StatusResponse;
@@ -166,4 +167,6 @@ public interface TasktrackApprovalService {
     public List<Submission>   getSubmissionHistory(Long Id,Long projectId);
 
     StatusResponse approveHoursLevel2(ApproveHoursRequest requestdata) throws Exception;
+    
+    StatusResponse bulkApprovalForApproverOne(ApproverOneDto approverOneDto)throws ParseException, Exception;
 }
