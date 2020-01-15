@@ -10959,5 +10959,63 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		
 		return response;
 	}
-
+	public StatusResponse bulkApprovalForApproverTwo(ApproverTwoDto approverTwoDto) throws ParseException,Exception{
+		// TODO Auto-generated method stub
+		Long projectId = approverTwoDto.getProjectId();
+		List<Long> userIds = approverTwoDto.getUserId();
+		Long approverId = approverTwoDto.getApproverId();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate = df.parse(df.format(approverTwoDto.getEndDate()));
+		Date startDate = df.parse(df.format(approverTwoDto.getStartDate()));
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		Date curDate = formatter.parse(formatter.format(date));
+		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+		if (projectData != null) {
+			for(Long userId : userIds) {
+				if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {// weekly approval
+					TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository
+							.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
+									userId);
+					if (userData != null) {
+						if(userData.getApprover1Status().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+							userData.setApprover2Status(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							UserModel approver = userRepository.getOne(approverId);
+							userData.setApprover2Id(approver);
+							userData.setApprover2SubmittedDate(curDate);
+							taskTrackWeeklyApprovalRepository.save(userData);
+						}
+					}
+				} else { // semimonthly approval
+					Calendar cale = Calendar.getInstance();
+					cale.setTime(endDate);
+					int day = cale.get(Calendar.DAY_OF_MONTH);
+					int month = cale.get(Calendar.MONTH);
+					int year = cale.get(Calendar.YEAR);
+					TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository
+							.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
+					if (userData != null) {
+						UserModel approver = userRepository.getOne(approverId);
+						if (day > 15) {
+							if(userData.getApproverOneSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+								userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+								userData.setSecondHalfApproverTwoId(approver);
+								userData.setApproverTwoSecondHalfSubmittedDate(curDate);
+								taskTrackApprovalSemiMonthlyRepository.save(userData);
+							}
+						} else {
+							if(userData.getApproverOneFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+								userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+								userData.setFirstHalfApproverTwoId(approver);
+								userData.setApproverTwoFirstHalfSubmittedDate(curDate);
+								taskTrackApprovalSemiMonthlyRepository.save(userData);
+							}
+						}
+					}
+				}
+			}
+		}
+		StatusResponse statusResponse = new StatusResponse( Constants.SUCCESS,Constants.SUCCESS_CODE,"");
+		return statusResponse;
+	}
 }
