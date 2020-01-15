@@ -58,6 +58,7 @@ public class Constants {
 	public static final String TASKTRACK_USER_STATUS_SUBMIT = "SUBMITTED";
 	public static final String TASKTRACK_USER_STATUS_SAVED = "SAVED";
 	public static final String TASKTRACK_USER_STATUS_REJECTION = "REJECTED";
+	public static final String TASKTRACK_USER_STATUS_OPEN = "OPEN";
 	
 
 	public static final Double roundToDefaultPrecision(Double value) {
