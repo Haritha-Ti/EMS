@@ -3548,7 +3548,7 @@ public class TasktrackController {
 			response = tasktrackService.getTimeTrackData(userId, month, year);
 		} catch (Exception e) {
 			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
-			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionresponse);
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionresponse);
 		}
 		return response;
 	}

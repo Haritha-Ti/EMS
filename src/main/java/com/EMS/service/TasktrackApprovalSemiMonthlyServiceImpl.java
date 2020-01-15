@@ -84,6 +84,10 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		List<String> taskStatusList = Arrays.asList(taskStatusArray);
 		TasktrackApprovalSemiMonthly approvalSemiMonthly = (TasktrackApprovalSemiMonthly) semiMonthlyRepository.getSemiMonthlyTasktrack(startDate, userId, projectId);
 
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
+				projectId);
+		List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
+		dateRanges.add(endDate);
 		if (approvalSemiMonthly != null) {
 
 			String approverOneFirstHalfStatus = approvalSemiMonthly.getApproverOneFirstHalfStatus();
@@ -94,31 +98,64 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			String approverTwoSecondHalfStatus = approvalSemiMonthly.getApproverTwoSecondHalfStatus();
 			String financeSecondHalfStatus = approvalSemiMonthly.getFinanceSecondHalfStatus();
 
-			List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
-			dateRanges.add(endDate);
+			
 			Calendar c = Calendar.getInstance();
 			c.setTime(startDate);
 
 			int date = c.get(Calendar.DATE);
 			if (date == 1) {
 				JSONArray array = new JSONArray();
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay1(), dateRanges.get(0));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay2(), dateRanges.get(1));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay3(), dateRanges.get(2));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay4(), dateRanges.get(3));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay5(), dateRanges.get(4));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay6(), dateRanges.get(5));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay7(), dateRanges.get(6));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay8(), dateRanges.get(7));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay9(), dateRanges.get(8));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay10(), dateRanges.get(9));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay11(), dateRanges.get(10));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay12(), dateRanges.get(11));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay13(), dateRanges.get(12));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay14(), dateRanges.get(13));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay15(), dateRanges.get(14));
+				for (AllocationModel al : userProjAllocations) {
+					List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());	
+					
+					if (allocatedDates.contains(dateRanges.get(0))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay1(), dateRanges.get(0));
+					}
+					if (allocatedDates.contains(dateRanges.get(1))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay2(), dateRanges.get(1));
+					}
+					if (allocatedDates.contains(dateRanges.get(2))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay3(), dateRanges.get(2));
+					}
+					if (allocatedDates.contains(dateRanges.get(3))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay4(), dateRanges.get(3));
+					}
+					if (allocatedDates.contains(dateRanges.get(4))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay5(), dateRanges.get(4));
+					}
+					if (allocatedDates.contains(dateRanges.get(5))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay6(), dateRanges.get(5));
+					}
+					if (allocatedDates.contains(dateRanges.get(6))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay7(), dateRanges.get(6));
+					}
+					if (allocatedDates.contains(dateRanges.get(7))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay8(), dateRanges.get(7));
+					}
+					if (allocatedDates.contains(dateRanges.get(8))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay9(), dateRanges.get(8));
+					}
+					if (allocatedDates.contains(dateRanges.get(9))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay10(), dateRanges.get(9));
+					}
+					if (allocatedDates.contains(dateRanges.get(10))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay11(), dateRanges.get(10));
+					}
+					if (allocatedDates.contains(dateRanges.get(11))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay12(), dateRanges.get(11));
+					}
+					if (allocatedDates.contains(dateRanges.get(12))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay13(), dateRanges.get(12));
+					}
+					if (allocatedDates.contains(dateRanges.get(13))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay14(), dateRanges.get(13));
+					}
+					if (allocatedDates.contains(dateRanges.get(14))) {
+						array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay15(), dateRanges.get(14));
+					}
+				
 				response.put("taskList", array);
-
+				}
 				if (taskStatusList.contains(approverOneFirstHalfStatus)
 						|| taskStatusList.contains(approverTwoFirstHalfStatus)
 						|| taskStatusList.contains(financeFirstHalfStatus)) {
@@ -144,37 +181,68 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				response.put("approval", approval);
 			}
 			if (date == 16) {
-				JSONArray array = new JSONArray();
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay16(), dateRanges.get(0));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay17(), dateRanges.get(1));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay18(), dateRanges.get(2));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay19(), dateRanges.get(3));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay20(), dateRanges.get(4));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay21(), dateRanges.get(5));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay22(), dateRanges.get(6));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay23(), dateRanges.get(7));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay24(), dateRanges.get(8));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay25(), dateRanges.get(9));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay26(), dateRanges.get(10));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay27(), dateRanges.get(11));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay28(), dateRanges.get(12));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay29(), dateRanges.get(13));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay30(), dateRanges.get(14));
-				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay31(), dateRanges.get(15));
-				response.put("taskList", array);
-
-				List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId, projectId);
 				
+				for (AllocationModel al : userProjAllocations) {
+				
+					List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());	
+					
+				JSONArray array = new JSONArray();
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay16(), dateRanges.get(0));
+				}
+				if (allocatedDates.contains(dateRanges.get(1))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay17(), dateRanges.get(1));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay18(), dateRanges.get(2));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay19(), dateRanges.get(3));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay20(), dateRanges.get(4));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay21(), dateRanges.get(5));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay22(), dateRanges.get(6));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay23(), dateRanges.get(7));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay24(), dateRanges.get(8));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay25(), dateRanges.get(9));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay26(), dateRanges.get(10));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay27(), dateRanges.get(11));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay28(), dateRanges.get(12));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay29(), dateRanges.get(13));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay30(), dateRanges.get(14));
+				}
+				if (allocatedDates.contains(dateRanges.get(0))) {
+				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay31(), dateRanges.get(15));
+				}
+				
+				response.put("taskList", array);
+	
 				if (taskStatusList.contains(approverOneSecondHalfStatus)
 						|| taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
 					
-					for (AllocationModel al : userProjAllocations) {
-						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
-						if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
-							response.put("enabled", false);
-						}
-					}
+					response.put("enabled", false);
 				} else {
 					response.put("enabled", true);
 				}
@@ -195,11 +263,23 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				response.put("approval", approval);
 				
 			}
+			}
 			result = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,response);
-			
-		} else {
-			result = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,Constants.NO_DATA_FOUND_MESSAGE);
+
+		}else {
+			JSONArray array = new JSONArray();
+			for (AllocationModel al : userProjAllocations) {
+				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+				for (Date date : dateRanges) {
+					if (allocatedDates.contains(date)) {
+						array = addHoursandDaytoArray(array, null, date);
+					}
+				}
+			}
+			response.put("taskList", array);
+			result = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 		}
+
 		return result;
 
 	}

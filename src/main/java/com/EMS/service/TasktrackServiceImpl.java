@@ -909,10 +909,9 @@ public class TasktrackServiceImpl implements TasktrackService {
 	/**
 	 * @author sreejith.j
 	 */
-	
 	@Override
 	public StatusResponse getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
-		
+
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 
 		SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy-MM-dd");
@@ -936,6 +935,15 @@ public class TasktrackServiceImpl implements TasktrackService {
 		Calendar monthEndCal = Calendar.getInstance();
 		monthEndCal.setTime(
 				dateFrmt.parse(year + "-" + month + "-" + monthStartCal.getActualMaximum(Calendar.DAY_OF_MONTH)));
+
+		Calendar firstWeekStartDay = Calendar.getInstance();
+		Calendar lastWeekEndDay = Calendar.getInstance();
+		firstWeekStartDay = (Calendar) monthStartCal.clone();
+		lastWeekEndDay = (Calendar) monthEndCal.clone();
+		firstWeekStartDay.add(Calendar.DAY_OF_WEEK,
+				-(monthStartCal.get(Calendar.DAY_OF_WEEK) - Constants.WEEK_START_DAY));
+		lastWeekEndDay.add(Calendar.DAY_OF_WEEK,
+				+(6 - monthEndCal.get(Calendar.DAY_OF_WEEK) + Constants.WEEK_START_DAY));
 
 		// List all the projects for the user based on the month
 		List<AllocationModel> allocationModelList = allocationRepository
@@ -983,7 +991,41 @@ public class TasktrackServiceImpl implements TasktrackService {
 			List<TasktrackApprovalSemiMonthly> semiMonthlyList = taskTrackApprovalSemiMonthlyRepository
 					.findByUserUserIdAndProjectProjectIdInAndMonthAndYear(userId, workflow1Projects, month, year);
 
+			Map<String, HashMap<String, Object>> projHalfs = new HashMap<String, HashMap<String, Object>>();
+			for (Long projectId : workflow1Projects) {
+				HashMap<String, Object> firstHalfObj = new HashMap<String, Object>();
+				HashMap<String, Object> secondHalfObj = new HashMap<String, Object>();
+
+				HashMap<String, Object> projObj = projectsMap.get(projectId);
+
+				Date allocStartDate = (Date) projObj.get("allocStartDate");
+				Date allocEndDate = (Date) projObj.get("allocEndDate");
+
+				if (!allocStartDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))
+						|| !allocEndDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+					firstHalfObj.put("hours", 0);
+					firstHalfObj.put("status", "OPEN");
+					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
+					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
+					projHalfs.put(String.valueOf(projectId) + "F", firstHalfObj);
+				}
+				if (!allocStartDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))
+						|| !allocEndDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+					secondHalfObj.put("hours", 0);
+					secondHalfObj.put("status", "OPEN");
+					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
+					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
+					projHalfs.put(String.valueOf(projectId) + "S", secondHalfObj);
+				}
+				projObj.remove("allocStartDate");
+				projObj.remove("allocEndDate");
+			}
+
 			for (TasktrackApprovalSemiMonthly modelObj : semiMonthlyList) {
+
+				Map<String, Object> firstHalfObj = new HashMap<String, Object>();
+				Map<String, Object> secondHalfObj = new HashMap<String, Object>();
+
 				HashMap<String, Object> projObj = projectsMap.get(modelObj.getProject().getProjectId());
 				Double firstHalfHours = modelObj.getDay1() + modelObj.getDay2() + modelObj.getDay3()
 						+ modelObj.getDay4() + modelObj.getDay5() + modelObj.getDay6() + modelObj.getDay7()
@@ -998,29 +1040,31 @@ public class TasktrackServiceImpl implements TasktrackService {
 				String secondHalfStatus = modelObj.getUserSecondHalfStatus();
 				List<Map<String, Object>> periodsArray = new ArrayList<Map<String, Object>>();
 
-				Map<String, Object> firstHalfObj = new HashMap<String, Object>();
-				Map<String, Object> secondHalfObj = new HashMap<String, Object>();
-				Date allocStartDate = (Date) projObj.get("allocStartDate");
-				Date allocEndDate = (Date) projObj.get("allocEndDate");
-
-				if (!allocStartDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))
-						|| !allocEndDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+				if (projHalfs.containsKey(String.valueOf(modelObj.getProject().getProjectId()) + "F")) {
 					firstHalfObj.put("hours", firstHalfHours);
 					firstHalfObj.put("status", firstHalfStatus);
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
 					periodsArray.add(firstHalfObj);
+					projHalfs.remove(String.valueOf(modelObj.getProject().getProjectId()) + "F");
 				}
-				if (!allocStartDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))
-						|| !allocEndDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+				if (projHalfs.containsKey(String.valueOf(modelObj.getProject().getProjectId()) + "S")) {
 					secondHalfObj.put("hours", secondHalfHours);
 					secondHalfObj.put("status", secondHalfStatus);
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
+					projHalfs.remove(String.valueOf(modelObj.getProject().getProjectId()) + "S");
 				}
-				projObj.remove("allocStartDate");
-				projObj.remove("allocEndDate");
+				projObj.put("periods", periodsArray);
+			}
+			for (String projectIdStr : projHalfs.keySet()) {
+				Long projectId = Long.parseLong(projectIdStr.substring(0, projectIdStr.length() - 1));
+				HashMap<String, Object> projObj = projectsMap.get(projectId);
+				List<Map<String, Object>> periodsArray = (List<Map<String, Object>>) projObj.get("periods");
+				// if hoursProjectObj doesnt contain the project id- Error: submission table
+				// contain data not in timetrack
+				periodsArray.add(projHalfs.get(projectIdStr));
 				projObj.put("periods", periodsArray);
 			}
 		}
@@ -1035,18 +1079,47 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 			Map<Long, HashMap<String, Double>> hoursProjectObj = new HashMap<Long, HashMap<String, Double>>();
 
+			for (Long projectId : workflow2Projects) {
+				HashMap<String, Double> hoursObj = new HashMap<String, Double>();
+				hoursProjectObj.put(projectId, hoursObj);
+
+				HashMap<String, Object> firstHalfObj = new HashMap<String, Object>();
+				HashMap<String, Object> secondHalfObj = new HashMap<String, Object>();
+
+				HashMap<String, Object> projObj = projectsMap.get(projectId);
+
+				Date allocStartDate = (Date) projObj.get("allocStartDate");
+				Date allocEndDate = (Date) projObj.get("allocEndDate");
+
+				if (!allocStartDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))
+						|| !allocEndDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+					firstHalfObj.put("hours", 0);
+					firstHalfObj.put("status", "OPEN");
+					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
+					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
+					hoursObj.put("firstHalfHours", 0d);
+				}
+				if (!allocStartDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))
+						|| !allocEndDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+					secondHalfObj.put("hours", 0);
+					secondHalfObj.put("status", "OPEN");
+					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
+					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
+					hoursObj.put("secondHalfHours", 0d);
+				}
+				projObj.remove("allocStartDate");
+				projObj.remove("allocEndDate");
+			}
+
 			for (Tasktrack modelObj : tasktrackList) {
 				HashMap<String, Double> hoursObj = new HashMap<String, Double>();
 				if (hoursProjectObj.containsKey(modelObj.getProject().getProjectId())) {
 					hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
-				} else {
-					hoursObj.put("firstHalfHours", 0d);
-					hoursObj.put("secondHalfHours", 0d);
-					hoursProjectObj.put(modelObj.getProject().getProjectId(), hoursObj);
 				}
-				if (modelObj.getDate().before(dateFrmt.parse(year + "-" + month + "-" + "16"))) {
+				if (modelObj.getDate().before(dateFrmt.parse(year + "-" + month + "-" + "16"))
+						&& hoursObj.containsKey("firstHalfHours")) {
 					hoursObj.put("firstHalfHours", hoursObj.get("firstHalfHours") + modelObj.getHours());
-				} else {
+				} else if (hoursObj.containsKey("secondHalfHours")) {
 					hoursObj.put("secondHalfHours", hoursObj.get("secondHalfHours") + modelObj.getHours());
 				}
 			}
@@ -1062,27 +1135,20 @@ public class TasktrackServiceImpl implements TasktrackService {
 				Map<String, Object> firstHalfObj = new HashMap<String, Object>();
 				Map<String, Object> secondHalfObj = new HashMap<String, Object>();
 
-				Date allocStartDate = (Date) projObj.get("allocStartDate");
-				Date allocEndDate = (Date) projObj.get("allocEndDate");
-
-				if (!allocStartDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))
-						|| !allocEndDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+				if (hoursObj.containsKey("firstHalfHours")) {
 					firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
 					firstHalfObj.put("status", modelObj.getUserFirstHalfStatus());
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
 					periodsArray.add(firstHalfObj);
 				}
-				if (!allocStartDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))
-						|| !allocEndDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+				if (hoursObj.containsKey("secondHalfHours")) {
 					secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
 					secondHalfObj.put("status", modelObj.getUserSecondHalfStatus());
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
 				}
-				projObj.remove("allocStartDate");
-				projObj.remove("allocEndDate");
 				projObj.put("periods", periodsArray);
 				hoursProjectObj.remove(modelObj.getProject().getProjectId());
 			}
@@ -1098,27 +1164,20 @@ public class TasktrackServiceImpl implements TasktrackService {
 				Map<String, Object> firstHalfObj = new HashMap<String, Object>();
 				Map<String, Object> secondHalfObj = new HashMap<String, Object>();
 
-				Date allocStartDate = (Date) projObj.get("allocStartDate");
-				Date allocEndDate = (Date) projObj.get("allocEndDate");
-
-				if (!allocStartDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))
-						|| !allocEndDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+				if (hoursObj.containsKey("firstHalfHours")) {
 					firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
 					firstHalfObj.put("status", "OPEN");
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
 					periodsArray.add(firstHalfObj);
 				}
-				if (!allocStartDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))
-						|| !allocEndDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
+				if (hoursObj.containsKey("secondHalfHours")) {
 					secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
 					secondHalfObj.put("status", "OPEN");
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
 				}
-				projObj.remove("allocStartDate");
-				projObj.remove("allocEndDate");
 				projObj.put("periods", periodsArray);
 			}
 
@@ -1128,6 +1187,36 @@ public class TasktrackServiceImpl implements TasktrackService {
 			List<TaskTrackWeeklyApproval> weeklyList = taskTrackWeeklyApprovalRepository
 					.findByUserUserIdAndProjectProjectIdInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(userId,
 							workflow3Projects, monthEndCal.getTime(), monthStartCal.getTime());
+
+			HashMap<Long, HashMap<String, Object>> projWeeksMap = new HashMap<Long, HashMap<String, Object>>();
+			HashMap<String, Object> weeksMap = new HashMap<String, Object>();
+
+			for (Long projectId : workflow3Projects) {
+				Calendar weekStartDay = (Calendar) firstWeekStartDay.clone();
+				Calendar weekEndDay = (Calendar) weekStartDay.clone();
+				weekEndDay.add(Calendar.DATE, 6);
+				HashMap<String, Object> projObj = projectsMap.get(projectId);
+				Date allocStartDate = (Date) projObj.get("allocStartDate");
+				Date allocEndDate = (Date) projObj.get("allocEndDate");
+
+				// Looping through the projects and adding the actual weeks according to the
+				// allocation
+				while (weekStartDay.getTime().before(lastWeekEndDay.getTime())) {
+					if (!allocStartDate.after(weekEndDay.getTime()) && !allocEndDate.before(weekStartDay.getTime())) {
+						if (!projWeeksMap.containsKey(projectId)) {
+							weeksMap = new HashMap<String, Object>();
+							projWeeksMap.put(projectId, weeksMap);
+						} else {
+							weeksMap = projWeeksMap.get(projectId);
+						}
+						weeksMap.put(dateFrmt.format(weekStartDay.getTime()), dateFrmt.format(weekEndDay.getTime()));
+					}
+					weekStartDay.add(Calendar.DATE, 7);
+					weekEndDay.add(Calendar.DATE, 7);
+				}
+				projObj.remove("allocStartDate");
+				projObj.remove("allocEndDate");
+			}
 
 			for (TaskTrackWeeklyApproval modelObj : weeklyList) {
 				HashMap<String, Object> projObj = projectsMap.get(modelObj.getProject().getProjectId());
@@ -1139,32 +1228,40 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 //				Date allocStartDate = (Date) projObj.get("allocStartDate");
 //				Date allocEndDate = (Date) projObj.get("allocEndDate");
-
+				weeksMap = projWeeksMap.get(modelObj.getProject().getProjectId());
+				if (weeksMap.containsKey(dateFrmt.format(modelObj.getStartDate()))) {
 					Map<String, Object> weekObj = new HashMap<String, Object>();
 					weekObj.put("hours", hours);
 					weekObj.put("status", status == null ? "OPEN" : status.toUpperCase());
 					weekObj.put("startDay", dateFrmt.format(modelObj.getStartDate()));
 					weekObj.put("endDay", dateFrmt.format(modelObj.getEndDate()));
 					periodsArray.add(weekObj);
-					
-					
-					projObj.remove("allocStartDate");
-					projObj.remove("allocEndDate");
 					projObj.put("periods", periodsArray);
+					weeksMap.remove(dateFrmt.format(modelObj.getStartDate()));
+				}
+				if (weeksMap.isEmpty()) {
+					projWeeksMap.remove(modelObj.getProject().getProjectId());
+				}
 			}
+			for (Long projectId : projWeeksMap.keySet()) {
+				HashMap<String, Object> projObj = projectsMap.get(projectId);
+				List<Map<String, Object>> periodsArray = (List<Map<String, Object>>) projObj.get("periods");
+				weeksMap = projWeeksMap.get(projectId);
+				for (String startDay : weeksMap.keySet()) {
+					Map<String, Object> weekObj = new HashMap<String, Object>();
+					weekObj.put("hours", 0);
+					weekObj.put("status", "OPEN");
+					weekObj.put("startDay", startDay);
+					weekObj.put("endDay", weeksMap.get(startDay));
+					periodsArray.add(weekObj);
+					projObj.put("periods", periodsArray);
+				}
+			}
+
 		}
 		if (!workflow4Projects.isEmpty()) {
 			// Fetch data from the timetrack table and status from the submission
 			// table
-
-			Calendar firstWeekStartDay = Calendar.getInstance();
-			Calendar lastWeekEndDay = Calendar.getInstance();
-			firstWeekStartDay = (Calendar) monthStartCal.clone();
-			lastWeekEndDay = (Calendar) monthEndCal.clone();
-			firstWeekStartDay.add(Calendar.DAY_OF_WEEK,
-					-(monthStartCal.get(Calendar.DAY_OF_WEEK) - Constants.WEEK_START_DAY));
-			lastWeekEndDay.add(Calendar.DAY_OF_WEEK,
-					+(6 - monthEndCal.get(Calendar.DAY_OF_WEEK) + Constants.WEEK_START_DAY));
 
 			List<Tasktrack> tasktrackList = tasktrackRepository.findByUserUserIdAndProjectProjectIdInAndDateBetween(
 					userId, workflow4Projects, firstWeekStartDay.getTime(), lastWeekEndDay.getTime());
@@ -1175,23 +1272,40 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 			Map<Long, HashMap<String, Double>> hoursProjectObj = new HashMap<Long, HashMap<String, Double>>();
 
-			for (Tasktrack modelObj : tasktrackList) {
+			for (Long projectId : workflow4Projects) {
 				Calendar weekStartDay = (Calendar) firstWeekStartDay.clone();
 				Calendar weekEndDay = (Calendar) weekStartDay.clone();
 				weekEndDay.add(Calendar.DATE, 6);
+
+				HashMap<String, Object> projObj = projectsMap.get(projectId);
+
+				Date allocStartDate = (Date) projObj.get("allocStartDate");
+				Date allocEndDate = (Date) projObj.get("allocEndDate");
+				HashMap<String, Double> hoursObj = new HashMap<String, Double>();
+				for (int idx = 0; idx < 7; idx++) {
+					if (!allocStartDate.after(weekEndDay.getTime()) && !allocEndDate.before(weekStartDay.getTime())) {
+						hoursObj.put("week" + idx + "hours", 0d);
+					}
+					weekStartDay.add(Calendar.DATE, 7);
+					weekEndDay.add(Calendar.DATE, 7);
+				}
+				hoursProjectObj.put(projectId, hoursObj);
+				projObj.remove("allocStartDate");
+				projObj.remove("allocEndDate");
+			}
+
+			for (Tasktrack modelObj : tasktrackList) {
+
 				HashMap<String, Double> hoursObj = new HashMap<String, Double>();
 				if (hoursProjectObj.containsKey(modelObj.getProject().getProjectId())) {
 					hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
 				} else {
-					hoursObj.put("week1hours", 0d);
-					hoursObj.put("week2hours", 0d);
-					hoursObj.put("week3hours", 0d);
-					hoursObj.put("week4hours", 0d);
-					hoursObj.put("week5hours", 0d);
-					hoursObj.put("week6hours", 0d);
-					hoursProjectObj.put(modelObj.getProject().getProjectId(), hoursObj);
+					throw new Exception("Internal error occurred.");
 				}
 				int idx = 1;
+				Calendar weekStartDay = (Calendar) firstWeekStartDay.clone();
+				Calendar weekEndDay = (Calendar) weekStartDay.clone();
+				weekEndDay.add(Calendar.DATE, 6);
 				while (weekStartDay.getTime().before(lastWeekEndDay.getTime())) {
 					if (!modelObj.getDate().before(weekStartDay.getTime())
 							&& !modelObj.getDate().after(weekEndDay.getTime())) {
@@ -1224,16 +1338,16 @@ public class TasktrackServiceImpl implements TasktrackService {
 				int idx = 1;
 				while (weekStartDay.getTime().before(lastWeekEndDay.getTime())) {
 					if (modelObj.getStartDate().equals(weekStartDay.getTime())) {
-						Map<String, Object> weekObj = new HashMap<String, Object>();
-						weekObj.put("hours", hoursObj.get("week" + idx + "hours"));
-						weekObj.put("status", status == null ? "OPEN" : status.toUpperCase());
-						weekObj.put("startDay", dateFrmt.format(weekStartDay.getTime()));
-						weekObj.put("endDay", dateFrmt.format(weekEndDay.getTime()));
-						periodsArray.add(weekObj);
-						projObj.remove("allocStartDate");
-						projObj.remove("allocEndDate");
-						projObj.put("periods", periodsArray);
-						hoursObj.remove("week" + (idx) + "hours");
+						if (hoursObj.containsKey(("week" + idx + "hours"))) {
+							Map<String, Object> weekObj = new HashMap<String, Object>();
+							weekObj.put("hours", hoursObj.get("week" + idx + "hours"));
+							weekObj.put("status", status == null ? "OPEN" : status.toUpperCase());
+							weekObj.put("startDay", dateFrmt.format(weekStartDay.getTime()));
+							weekObj.put("endDay", dateFrmt.format(weekEndDay.getTime()));
+							periodsArray.add(weekObj);
+							projObj.put("periods", periodsArray);
+							hoursObj.remove("week" + (idx) + "hours");
+						}
 					}
 					weekStartDay.add(Calendar.DATE, 7);
 					weekEndDay.add(Calendar.DATE, 7);
@@ -1242,6 +1356,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 					}
 					idx++;
 				}
+
 			}
 
 			// non submitted projects
@@ -1279,10 +1394,10 @@ public class TasktrackServiceImpl implements TasktrackService {
 		Collection<HashMap<String, Object>> resultCollection = projectsMap.values();
 		result = new ArrayList<>(resultCollection);
 		StatusResponse response;
-		if(!result.isEmpty()) {
-		 response =new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,result);
-		}else {
-			 response =new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"No data available");	
+		if (!result.isEmpty()) {
+			response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, result);
+		} else {
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "No data available");
 		}
 		return response;
 	}

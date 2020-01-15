@@ -42,7 +42,7 @@ public class TasktrackApprovalSemiMonthlyController {
 			response = approvalSemiMonthlyService.getSemiMonthlyTasktrack(requestData);
 		} catch (Exception e) {
 			ExceptionResponse exceptionResponse = new ExceptionResponse(501, e.getMessage(), new Date());
-			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionResponse);
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
 		}
 
 		return response;
@@ -125,8 +125,10 @@ public class TasktrackApprovalSemiMonthlyController {
 			response = approvalSemiMonthlyService.getSemiMonthlyTasktrackWithTask(requestData);
 			System.out.println(response);
 		} catch (Exception e) {
-			ExceptionResponse exceptionResponse = new ExceptionResponse(501, e.getMessage(), new Date());
-			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionResponse);
+
+			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
+
 		}
 
 		return response;

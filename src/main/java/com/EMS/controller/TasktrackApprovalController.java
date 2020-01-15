@@ -110,7 +110,7 @@ public class TasktrackApprovalController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			node = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+			node = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
 
 		return node;
@@ -165,13 +165,13 @@ public class TasktrackApprovalController {
 	 * @author Hashir
 	 * @param ObjectNode
 	 */
-	@PostMapping("/rejection/Approver1")
+	@PostMapping("/rejection/approver1")
 	public ObjectNode rejectionFromApprover1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode response = objectMapper.createObjectNode();
 		try {
 			tasktrackApprovalService.rejectionFromApprover(requestdata, 1);
 			response.put("status", Constants.SUCCESS);
-			response.put("message", "Rejection success.");
+			response.put("message", "Successfully Rejected.");
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -186,13 +186,13 @@ public class TasktrackApprovalController {
 	 * @author Hashir
 	 * @param ObjectNode
 	 */
-	@PostMapping("/rejection/Approver2")
+	@PostMapping("/rejection/approver2")
 	public ObjectNode rejectionFromApprover2(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode response = objectMapper.createObjectNode();
 		try {
 			tasktrackApprovalService.rejectionFromApprover(requestdata, 2);
 			response.put("status", Constants.SUCCESS);
-			response.put("message", "Rejection success.");
+			response.put("message", "Successfully Rejected.");
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -234,7 +234,7 @@ public class TasktrackApprovalController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			node = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+			node = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
 		return node;
 	}
@@ -311,7 +311,7 @@ public class TasktrackApprovalController {
 				// TODO: handle exception
 				e.printStackTrace();
 				e.printStackTrace();
-				response = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+				response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 			}
 
 			return response;
