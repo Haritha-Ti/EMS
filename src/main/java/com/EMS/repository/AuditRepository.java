@@ -118,4 +118,48 @@ public List<JSONObject> getProjectAuditDataByProjectId(Long projectId);
 
 public List<JSONObject> getProjectAuditDataByProjectIdAndDateRange(Long projectId,Date startDate,Date endDate);
 
+
+/**
+ * @author Renjith K R
+ * Submission Report
+ * 
+ */
+@Query(value="  select sm.monthly_id ,sm.trx_date  ,sm.approver_one_first_half_status, sm.approver_one_first_half_submitted_date ,sm.approver_one_second_half_status, sm.approver_one_second_half_submitted_date ,"
+	+ " sm.day1 ,sm.day10 ,sm.day11 ,sm.day12 ,sm.day13 ,sm.day14 ,sm.day15 ,sm.day16 ,sm.day17 ,sm.day18 ,sm.day19 ,sm.day2 ,sm.day20 ,sm.day21 ,sm.day22 ,sm.day23 ,sm.day24 ,sm.day25 ,sm.day26 ,sm.day27 ,"
+	+ " sm.day28 ,sm.day29 ,sm.day3 ,sm.day30 ,sm.day31 ,sm.day4 ,sm.day5 ,sm.day6 ,sm.day7 ,sm.day8 ,sm.day9 ,sm.month ,sm.user_first_half_status  , sm.user_first_half_submitted_date  , sm.user_second_half_status  , "
+	+ " sm.user_second_half_submitted_date  , sm.year ,sm.approver_one_id_user_id  ,sm.project_project_id  ,sm.user_user_id  ,sm.approver_two_first_half_status  , sm.approver_two_first_half_submitted_date  , "
+	+ " sm.approver_two_second_half_status  , sm.approver_two_second_half_submitted_date  , sm.finance_first_half_status  , sm.finance_first_half_submitted_date  , sm.finance_second_half_status  , sm.finance_second_half_submitted_date  , "
+	+ " sm.approver_two_id_user_id  ,sm.finance_id_user_id ,case when sm.revtype=0  then 'Created' when sm.revtype=1  then 'Updated'  when sm.revtype=2  then 'Deleted' end as trxn,u.first_name as user,ap1.first_name as approver1,"
+	+ " ap2.first_name as approver2,f.first_name as finance ,"
+	+ " ua.first_name as user_in_action,p.project_name , p.workflow_type "
+	+ " from  tasktrack_approval_semimonthly_aud sm"
+	+ " join user u on  sm.user_user_id=u.user_id"
+	+ " join user ap1 on  sm.approver_one_id_user_id=ap1.user_id"
+	+ " join user ap2 on  sm.approver_two_id_user_id=ap2.user_id"
+	+ " join user f on  sm.finance_id_user_id=f.user_id"
+	+ " left JOIN user ua ON sm.user_in_action=ua.user_id "
+	+ " left JOIN project p ON sm.project_project_id=p.project_id"
+	+ " where sm.monthly_id=?1 "
+	+ " order by sm.trx_date ",nativeQuery=true)
+public List<JSONObject>   getmonthlySubmission(Long Id)     ;
+
+
+
+@Query(value=" SELECT wk.weekly_id,wk.rev,wk.revtype,wk.trx_date,wk.approver1_status,wk.approver2_status,wk.day1,wk.day2,wk.day3,wk.day4,wk.day5,wk.day6,wk.day7,wk.timetrack_status,"
+	+ " wk.year,wk.approver1id_user_id,wk.approver2id_user_id,wk.project_project_id,wk.user_user_id,wk.approver1submitted_date,wk.approver2submitted_date,wk.end_date,wk.start_date,"
+	+ " wk.user_submitted_date,wk.finance_status,wk.finance_submitted_date,wk.rejection_time,wk.finance_user_user_id,"
+	+ " case when wk.revtype=0  then 'Created' when wk.revtype=1  then 'Updated' when wk.revtype=2  then 'Deleted' end as trxn  ,"
+	+ " u.first_name as user,ap1.first_name as approver1,ap2.first_name as approver2,f.first_name as finance ,"
+	+ " ua.first_name as user_in_action,p.project_name,p.workflow_type "
+	+ " FROM tasktrack_weekly_approval_aud wk "
+	+ " left JOIN user u ON wk.user_user_id = u.user_id"
+	+ " left JOIN user ap1 ON wk.approver1id_user_id = ap1.user_id"
+	+ " left JOIN user ap2 ON wk.approver2id_user_id = ap2.user_id"
+	+ " left JOIN user f ON wk.finance_user_user_id = f.user_id"
+	+ " left JOIN user ua ON wk.user_in_action=ua.user_id "
+	+ " left JOIN project p ON wk.project_project_id=p.project_id"
+	+ " where wk.weekly_id=?1 "
+	+ "ORDER BY wk.trx_date",nativeQuery=true)
+public List<JSONObject>   getWeeklySubmission(Long Id);
+
 }
