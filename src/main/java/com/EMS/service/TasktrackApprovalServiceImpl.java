@@ -9,16 +9,8 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ValueRange;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -9196,6 +9188,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		boolean submitButtonStatus = false;
 		if (projectData != null) {
+			node.put("clientName",projectData.getClientName().getClientName());
 			ArrayNode hourDataNode = objectMapper.createArrayNode();
 			// weekly
 			if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {
@@ -10290,6 +10283,174 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 			}
 
+		}
+		return node;
+	}
+
+	public ObjectNode approveHoursFinance(ObjectNode requestdata) throws Exception{
+		ObjectNode node = objectMapper.createObjectNode();
+		Long projectId = requestdata.get("projectId").asLong();
+		Long userId = requestdata.get("userId").asLong();
+		Long loggedId = requestdata.get("loggedId").asLong();
+		Long approverId = requestdata.get("approverId").asLong();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate = df.parse(requestdata.get("endDate").asText());
+		Date startDate = df.parse(requestdata.get("startDate").asText());
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		Date curDate = formatter.parse(formatter.format(date));
+
+		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+		TaskTrackWeeklyApproval userDataWeekly = null;
+		TasktrackApprovalSemiMonthly userDataSemiMonthly = null;
+		Map<Date, Integer> hourData = (Map<Date, Integer>) requestdata.get("hourData");
+
+		Map<Object, Object> result = hourData.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors
+				.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+		Iterator iter = result.entrySet().iterator();
+		int counting = 0;
+		if (projectData != null) {
+			// weekly approval
+			if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {
+				//if (loggedId != null) {
+				userDataWeekly = taskTrackWeeklyApprovalRepository
+							.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
+									userId);
+					if (userDataWeekly == null) {
+						userDataWeekly = new TaskTrackWeeklyApproval();
+						userDataWeekly.setUser(userRepository.getOne(userId));
+						userDataWeekly.setProject(projectData);
+						userDataWeekly.setStartDate(startDate);
+						userDataWeekly.setEndDate(endDate);
+					}
+				userDataWeekly.setFinanceStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+				UserModel approver = userRepository.getOne(approverId);
+				userDataWeekly.setFinanceUser(approver);
+				userDataWeekly.setFinanceSubmittedDate(curDate);
+				while (iter.hasNext()) {
+					Map.Entry entry = (Map.Entry) iter.next();
+					Double hours = Double.parseDouble(entry.getValue().toString());
+					if (counting == 0)
+						userDataWeekly.setDay1(hours);
+					if (counting == 1)
+						userDataWeekly.setDay2(hours);
+					if (counting == 2)
+						userDataWeekly.setDay3(hours);
+					if (counting == 3)
+						userDataWeekly.setDay4(hours);
+					if (counting == 4)
+						userDataWeekly.setDay5(hours);
+					if (counting == 5)
+						userDataWeekly.setDay6(hours);
+					if (counting == 6)
+						userDataWeekly.setDay7(hours);
+					counting++;
+				}
+				taskTrackWeeklyApprovalRepository.save(userDataWeekly);
+				//}
+
+			} else { // semimonthly approval
+				//if (loggedId != null) {
+					Calendar cale = Calendar.getInstance();
+					cale.setTime(endDate);
+					int day = cale.get(Calendar.DAY_OF_MONTH);
+					int month = cale.get(Calendar.MONTH)+1;
+					int year = cale.get(Calendar.YEAR);
+					 userDataSemiMonthly = taskTrackApprovalSemiMonthlyRepository
+							.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
+					if (userDataSemiMonthly == null) {
+						userDataSemiMonthly = new TasktrackApprovalSemiMonthly();
+						userDataSemiMonthly.setUser(userRepository.getOne(userId));
+						userDataSemiMonthly.setProject(projectData);
+						userDataSemiMonthly.setMonth(month);
+						userDataSemiMonthly.setYear(year);
+					}
+				UserModel approver = userRepository.getOne(approverId);
+				if (day > 15) {
+					userDataSemiMonthly.setFinanceSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+					userDataSemiMonthly.setSecondHalfFinanceId(approver);
+					userDataSemiMonthly.setFinanceSecondHalfSubmittedDate(curDate);
+					while (iter.hasNext()) {
+						Map.Entry entry = (Map.Entry) iter.next();
+						Double hours = Double.parseDouble(entry.getValue().toString());
+						if (counting == 0)
+							userDataSemiMonthly.setDay16(hours);
+						if (counting == 1)
+							userDataSemiMonthly.setDay17(hours);
+						if (counting == 2)
+							userDataSemiMonthly.setDay18(hours);
+						if (counting == 3)
+							userDataSemiMonthly.setDay19(hours);
+						if (counting == 4)
+							userDataSemiMonthly.setDay20(hours);
+						if (counting == 5)
+							userDataSemiMonthly.setDay21(hours);
+						if (counting == 6)
+							userDataSemiMonthly.setDay22(hours);
+						if (counting == 7)
+							userDataSemiMonthly.setDay23(hours);
+						if (counting == 8)
+							userDataSemiMonthly.setDay24(hours);
+						if (counting == 9)
+							userDataSemiMonthly.setDay25(hours);
+						if (counting == 10)
+							userDataSemiMonthly.setDay26(hours);
+						if (counting == 11)
+							userDataSemiMonthly.setDay27(hours);
+						if (counting == 12)
+							userDataSemiMonthly.setDay28(hours);
+						if (counting == 13)
+							userDataSemiMonthly.setDay29(hours);
+						if (counting == 14)
+							userDataSemiMonthly.setDay30(hours);
+						if (counting == 15)
+							userDataSemiMonthly.setDay31(hours);
+						counting++;
+					}
+				} else {
+					userDataSemiMonthly.setFinanceFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+					userDataSemiMonthly.setFirstHalfFinanceId(approver);
+					userDataSemiMonthly.setFinanceFirstHalfSubmittedDate(curDate);
+					while (iter.hasNext()) {
+						Map.Entry entry = (Map.Entry) iter.next();
+						Double hours = Double.parseDouble(entry.getValue().toString());
+						if (counting == 0)
+							userDataSemiMonthly.setDay1(hours);
+						if (counting == 1)
+							userDataSemiMonthly.setDay2(hours);
+						if (counting == 2)
+							userDataSemiMonthly.setDay3(hours);
+						if (counting == 3)
+							userDataSemiMonthly.setDay4(hours);
+						if (counting == 4)
+							userDataSemiMonthly.setDay5(hours);
+						if (counting == 5)
+							userDataSemiMonthly.setDay6(hours);
+						if (counting == 6)
+							userDataSemiMonthly.setDay7(hours);
+						if (counting == 7)
+							userDataSemiMonthly.setDay8(hours);
+						if (counting == 8)
+							userDataSemiMonthly.setDay9(hours);
+						if (counting == 9)
+							userDataSemiMonthly.setDay10(hours);
+						if (counting == 10)
+							userDataSemiMonthly.setDay11(hours);
+						if (counting == 11)
+							userDataSemiMonthly.setDay12(hours);
+						if (counting == 12)
+							userDataSemiMonthly.setDay13(hours);
+						if (counting == 13)
+							userDataSemiMonthly.setDay14(hours);
+						if (counting == 14)
+							userDataSemiMonthly.setDay15(hours);
+						counting++;
+					}
+
+				}
+				taskTrackApprovalSemiMonthlyRepository.save(userDataSemiMonthly);
+				//}
+			}
 		}
 		return node;
 	}

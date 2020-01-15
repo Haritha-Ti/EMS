@@ -151,4 +151,26 @@ public class TasktrackApprovalController {
 		responseData.put("code", httpstatus.getStatus());
 		return responseData;
 	}
+	//Nisha
+	@PutMapping(value = "/approveHoursFinance")
+	public ObjectNode approveHoursFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responseData = objectMapper.createObjectNode();
+		ObjectNode node = objectMapper.createObjectNode();
+		try {
+			node = tasktrackApprovalService.approveHoursFinance(requestdata);
+			responseData.set("data",node);
+			responseData.put("status", "Sucess");
+			responseData.put("message", "Sucess ");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			responseData.set("data",node);
+			responseData.put("status", "failure");
+			responseData.put("message", "failed. " + e);
+		}
+
+		responseData.put("code", httpstatus.getStatus());
+		return responseData;
+	}
 }
