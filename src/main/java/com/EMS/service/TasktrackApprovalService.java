@@ -174,4 +174,6 @@ public interface TasktrackApprovalService {
     
     public StatusResponse reopenSubmission(Long Id, Long projectId,Long userId, Date startDate, Date endDate) throws ParseException;
 
+	ObjectNode getTaskTrackDataByUserIdForApprover2(ApproveHoursRequest requestdata);
+
 }
