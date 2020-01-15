@@ -287,6 +287,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
 				projectId);
 
+		List<Date> datesInRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
+		datesInRange.add(endDate);
+		
 		if (weeklyTasktrack != null) {
 			String approver1Status = weeklyTasktrack.getApprover1Status();
 			String approver2Status = weeklyTasktrack.getApprover2Status();
@@ -310,15 +313,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			response.put("approval", approvalObj);
 
-			List<Date> datesInRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
-			datesInRange.add(endDate);
+			
 
 			JSONArray array = new JSONArray();
 			for (AllocationModel al : userProjAllocations) {
 				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
 				if (allocatedDates.contains(datesInRange.get(0))) {
 					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay1(), datesInRange.get(0));
-				}
+				}			
 				if (allocatedDates.contains(datesInRange.get(1))) {
 					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay2(), datesInRange.get(1));
 				}
@@ -342,7 +344,17 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			response.put("taskList", array);
 			responseFinal = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 		} else {
-			responseFinal = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "No Data Available");
+			JSONArray array = new JSONArray();
+			for (AllocationModel al : userProjAllocations) {
+				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+				for (Date date : datesInRange) {
+					if (allocatedDates.contains(date)) {
+						array = addHoursandDaytoArray(array, null, date);
+					}
+				}
+			}
+			response.put("taskList", array);
+			responseFinal = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE,  response);
 
 		}
 		return responseFinal;
