@@ -10669,9 +10669,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = approverOneDto.getProjectId();
 		List<Long> userIds = approverOneDto.getUserId();
 		Long approverId = approverOneDto.getApproverId();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = df.parse(df.format(approverOneDto.getEndDate()));
-		Date startDate = df.parse(df.format(approverOneDto.getStartDate()));
+		Date endDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverOneDto.getEndDate()));
+		Date startDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverOneDto.getStartDate()));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		Date curDate = formatter.parse(formatter.format(date));
@@ -10964,9 +10963,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = approverTwoDto.getProjectId();
 		List<Long> userIds = approverTwoDto.getUserId();
 		Long approverId = approverTwoDto.getApproverId();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = df.parse(df.format(approverTwoDto.getEndDate()));
-		Date startDate = df.parse(df.format(approverTwoDto.getStartDate()));
+		Date endDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverTwoDto.getEndDate()));
+		Date startDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverTwoDto.getStartDate()));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		Date curDate = formatter.parse(formatter.format(date));

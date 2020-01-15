@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.tasktrackapproval2.request.ApproveHoursRequest;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
+import com.EMS.exception.PMSDateFormatException;
+import com.EMS.exception.PMSException;
 import com.EMS.model.StatusResponse;
 import com.EMS.service.TasktrackApprovalService;
 import com.EMS.utility.Constants;
@@ -250,10 +252,10 @@ public class TasktrackApprovalController {
 			response = tasktrackApprovalService.bulkApprovalForApproverOne(approverOneDto);
 		}
 		catch (ParseException e) {
-			e.printStackTrace();
+			throw new PMSDateFormatException("Invalid Date Format.");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			throw new PMSException();
 		}
 
 		return response;
@@ -272,10 +274,10 @@ public class TasktrackApprovalController {
 			response = tasktrackApprovalService.bulkApprovalForApproverTwo(approverTwoDto);
 		}
 		catch (ParseException e) {
-			e.printStackTrace();
+			throw new PMSDateFormatException("Invalid Date Format.");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			throw new PMSException();
 		}
 
 		return response;

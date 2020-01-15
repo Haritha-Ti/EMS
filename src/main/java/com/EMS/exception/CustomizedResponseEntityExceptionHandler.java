@@ -48,6 +48,20 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 		return new ResponseEntity<LinkedHashMap>(responseEntity,HttpStatus.NOT_FOUND);
 	}
 	
+	@SuppressWarnings("rawtypes")
+	@ExceptionHandler(PMSDateFormatException.class)
+	public final ResponseEntity<LinkedHashMap> handlePMSDateFormatException(PMSDateFormatException ex, WebRequest request) {
+
+		LinkedHashMap responseEntity = new LinkedHashMap();
+		StringWriter errors = new StringWriter();
+		ex.printStackTrace(new PrintWriter(errors));	
+		
+		responseEntity=getResponseEntity(request, HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+				ex.getErrorMessage(),ex.getErrorCode(), errors.toString());
+		
+		return new ResponseEntity<LinkedHashMap>(responseEntity,HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public LinkedHashMap getResponseEntity(WebRequest request,int status,String error,
 			String message,int appErrorCode,String stacktrace) {

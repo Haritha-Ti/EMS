@@ -1,5 +1,7 @@
 package com.EMS.utility;
 
+import java.text.SimpleDateFormat;
+
 public class Constants {
 
 	public static int EMAIL_TOKEN_EXP_DUR = 10;
@@ -91,4 +93,6 @@ public class Constants {
 	public static final String SUCCESS = "Success";
 	public static final String OK = "OK";
 	public static final String ERROR = "Error";
+	
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 }
