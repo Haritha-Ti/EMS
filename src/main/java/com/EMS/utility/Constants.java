@@ -8,7 +8,7 @@ public class Constants {
 //	public static String CONTEXT_PATH = "https://pms.titechdev.com"; // Production
 	// public static String CONTEXT_PATH =
 	// "https://stagingpms.titechdev.com";//Staging
-
+	public static final String TASKTRACK_APPROVER_STATUS_REOPEN="REOPEN";
 	public static final String TASKTRACK_APPROVER_STATUS_OPEN = "OPEN";
 	public static final String TASKTRACK_APPROVER_STATUS_SUBMIT = "SUBMITTED";
 	public static final String TASKTRACK_APPROVER_STATUS_LOCK = "LOCKED";

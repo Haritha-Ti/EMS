@@ -10908,4 +10908,56 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * @author @Renjith
+	 * @throws ParseException 
+	 */
+	@Override
+	public StatusResponse reopenSubmission(Long Id,Long projectId,Long userId, Date startDate, Date endDate) throws ParseException{
+		StatusResponse  response = null;
+		if(Id==null || Id == 0L)
+			return new StatusResponse<String>("failure", 400, "Invalid Submission");
+		if(projectId==null || projectId==0L)
+			return new StatusResponse<String>("failure", 400, "Invalid Project for Submission");
+		if(userId==null || userId == 0L)
+			return new StatusResponse<String>("failure", 400, "Invalid User for Submission");
+		if(startDate==null )
+			return new StatusResponse<String>("failure", 400, "Invalid Start date for Submission");
+		if(endDate==null )
+			return new StatusResponse<String>("failure", 400, "Invalid End date for Submission");
+		ProjectModel p = projectService.getProjectDetails(projectId);
+		int wfType = p.getWorkflowType();
+		if (wfType == 3 || wfType == 4){
+			Calendar cal = Calendar.getInstance();
+			Optional<TaskTrackWeeklyApproval>  weeklySubOpt=taskTrackWeeklyApprovalRepository.findById(Id);
+			TaskTrackWeeklyApproval  weeklySub=weeklySubOpt.get();
+			weeklySub.setFinanceStatus(Constants.TASKTRACK_APPROVER_STATUS_REOPEN);
+			weeklySub.setFinanceUser(userRepository.findById(userId).get());
+			weeklySub.setFinanceSubmittedDate(cal.getTime());
+			taskTrackWeeklyApprovalRepository.save(weeklySub);
+			return new StatusResponse<String>("Success", 200, null);
+		}
+		
+		if (wfType == 1 || wfType == 2){
+			SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
+			//startDate=simpleDateFormat.parse(startDate.toString());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(startDate);
+			Optional<TasktrackApprovalSemiMonthly>  monthlySubOpt=taskTrackApprovalSemiMonthlyRepository.findById(Id);
+			TasktrackApprovalSemiMonthly  monthlySub=monthlySubOpt.get();
+			cal.setTime(startDate);
+			int day = cal.get(Calendar.DAY_OF_MONTH);
+			if(day<=15)
+			monthlySub.setFinanceFirstHalfStatus("Reopen");
+			if(day>15)
+				monthlySub.setFinanceSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REOPEN);
+			taskTrackApprovalSemiMonthlyRepository.save(monthlySub);
+			return new StatusResponse<String>("Success", 200, null);
+		}
+			
+		
+		return response;
+	}
+
 }

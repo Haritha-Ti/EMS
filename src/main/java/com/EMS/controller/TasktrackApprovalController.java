@@ -5,6 +5,8 @@ import java.text.ParseException;
 import javax.servlet.http.HttpServletResponse;
 
 import com.EMS.dto.ApproverOneDto;
+import com.EMS.dto.ReopenSubmissionDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -277,4 +279,18 @@ public class TasktrackApprovalController {
 
 		return response;
 	}
+	
+	//Renjith
+		@PostMapping(value = "/reopenSubmission")
+		public StatusResponse  submissionReopen(@RequestBody ReopenSubmissionDto reopenSub){
+			StatusResponse  response=null;
+			
+			try {
+				  response= tasktrackApprovalService.reopenSubmission(reopenSub.getId(), reopenSub.getProjectId(), reopenSub.getUserId(), reopenSub.getStartDate(), reopenSub.getEndDate());
+			} catch (ParseException e) {
+				response  =new StatusResponse<String>("failure", 500, e.getMessage());
+				 e.printStackTrace();
+			}
+		        return response;	
+		}
 }

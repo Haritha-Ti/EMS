@@ -171,5 +171,7 @@ public interface TasktrackApprovalService {
     StatusResponse approveHoursLevel2(ApproveHoursRequest requestdata) throws Exception;
     
     StatusResponse bulkApprovalForApproverOne(ApproverOneDto approverOneDto)throws ParseException, Exception;
+    
+    public StatusResponse reopenSubmission(Long Id, Long projectId,Long userId, Date startDate, Date endDate) throws ParseException;
 
 }
