@@ -35,6 +35,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.EMS.dto.MailDomainDto;
@@ -10292,5 +10293,136 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 		}
 		return node;
+	}
+	
+	@Override
+	@Transactional
+	public void rejectionFromApprover(ObjectNode requestdata, Integer approverLevel) throws Exception {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate = df.parse(requestdata.get("endDate").asText());
+		Date startDate = df.parse(requestdata.get("startDate").asText());
+		Long projectId = requestdata.get("projectId").asLong();
+		Long userId = requestdata.get("userId").asLong();
+		Long loggedId = requestdata.get("loggedId").asLong();
+		Long approverId = requestdata.get("approverId").asLong();
+		String remark = requestdata.get("remark").asText();
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		Date curDate = formatter.parse(formatter.format(date));
+		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+		if (projectData == null)
+			throw new Exception("Invalid project.");
+		
+		TaskTrackRejection rejection = new TaskTrackRejection();
+		rejection.setProject(projectData);
+		rejection.setWorkflowType(projectData.getWorkflowType());
+		rejection.setRemark(remark);
+		rejection.setStatus(Constants.TASKTRACK_REJECTION_STATUS_OPEN);
+		
+		// weekly approval
+		if (projectData.getWorkflowType() == Constants.ProjectWorkflow.WEEKLY_WITHOUT_DAILY_TASK 
+				|| projectData.getWorkflowType() == Constants.ProjectWorkflow.WEEKLY_WITH_DAILY_TASK) {
+			if (loggedId != null) {
+				TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository
+						.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,userId);
+				if (userData == null)
+					throw new Exception("No record found.");
+				
+				String approverStatus = approverLevel == 1 ? userData.getApprover1Status() : userData.getApprover2Status();
+				if(approverStatus == Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED 
+						|| userData.getTimetrackStatus() == Constants.TASKTRACK_USER_STATUS_REJECTION) {
+					throw new Exception("This record was already rejected.");
+				}
+				if(approverLevel == 1) {
+					userData.setApprover1Status(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED);
+				}
+				else {
+					userData.setApprover2Status(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED);
+				}
+				userData.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
+				userData.setRejectionTime(curDate);
+				taskTrackWeeklyApprovalRepository.save(userData);
+				
+				rejection.setUser(userData.getUser());
+				
+				rejection.setYear(userData.getYear());
+				rejection.setStartDate(userData.getStartDate());
+				rejection.setEndDate(userData.getEndDate());
+			}
+		} 
+		else { 
+			// semimonthly approval
+			if (loggedId != null) {
+				Calendar cale = Calendar.getInstance();
+				cale.setTime(endDate);
+				int day = cale.get(Calendar.DAY_OF_MONTH);
+				int month = cale.get(Calendar.MONTH)+1;
+				int year = cale.get(Calendar.YEAR);
+				TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository
+						.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
+				if (userData == null)
+					throw new Exception("No record found.");
+				
+				if (day > 15) {
+					String approverStatus = approverLevel == 1 ? userData.getApproverOneSecondHalfStatus() : userData.getApproverTwoSecondHalfStatus();
+					if(approverStatus == Constants.TASKTRACK_APPROVER_STATUS_REJECTION 
+							|| userData.getUserSecondHalfStatus() == Constants.TASKTRACK_USER_STATUS_REJECTION) {
+						throw new Exception("This record was already rejected.");
+					}
+					if(approverLevel == 1) {
+						userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
+					}
+					else {
+						userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
+					}
+					userData.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
+				} 
+				else {
+					String approverStatus = approverLevel == 1 ? userData.getApproverOneFirstHalfStatus() : userData.getApproverTwoFirstHalfStatus();
+					if(approverStatus == Constants.TASKTRACK_APPROVER_STATUS_REJECTION 
+							|| userData.getUserFirstHalfStatus() == Constants.TASKTRACK_USER_STATUS_REJECTION) {
+						throw new Exception("This record was already rejected.");
+					}
+					if(approverLevel == 1) {
+						userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
+					}
+					else {
+						userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
+					}
+					userData.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
+				}
+				taskTrackApprovalSemiMonthlyRepository.save(userData);
+				
+				rejection.setUser(userData.getUser());
+				rejection.setMonth(userData.getMonth());
+				rejection.setYear(userData.getYear());
+			}
+		}
+		taskTrackRejectionRepository.save(rejection);
+		try {
+			String sendTo = "", sendCC = "", subject = "", emailReceiver = "", resource = "", approverTwo = "";
+			subject = "RCG Time Sheet- Second half time sheet Rejected";
+			resource = rejection.getUser().getLastName().concat(" " + rejection.getUser().getFirstName());
+			approverTwo = rejection.getProject().getOnsite_lead().getLastName()
+					.concat(" " + rejection.getProject().getOnsite_lead().getFirstName());
+			sendCC = rejection.getProject().getOnsite_lead().getEmail();
+			sendTo = rejection.getProject().getProjectOwner().getEmail();
+			emailReceiver = rejection.getProject().getProjectOwner().getLastName()
+					.concat(" " + rejection.getProject().getProjectOwner().getFirstName()) + ",";
+
+			StringBuilder mailBody = new StringBuilder("Hi " + emailReceiver);
+			mailBody.append("<br/><br/>Project Name : " + rejection.getProject().getProjectName());
+			mailBody.append("<br/>Resource Name : " + resource);
+			mailBody.append("<br/><br/>Timesheet from "+requestdata.get("startDate").asText()+" to "+requestdata.get("endDate").asText()+" has been Rejected.");
+			mailBody.append("<br/>Comments : " + rejection.getRemark());
+			mailBody.append("<br/><a href=" + CONTEXT_PATH + "/approve-log>Click here to Re-Submit timesheet</a>");
+			mailBody.append("<br/><br/>Rejected by : " + approverTwo);
+
+			sendMail(sendTo, sendCC, subject, mailBody);
+		} 
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

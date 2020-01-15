@@ -158,4 +158,6 @@ public interface TasktrackApprovalService {
 	ObjectNode getTaskTrackDataForFinance(ObjectNode requestdata) throws Exception;
 
 	ObjectNode getTaskTrackDataByUserIdForFinance(ObjectNode requestdata) throws Exception;
+	
+	void rejectionFromApprover(ObjectNode requestdata,Integer approverLevel) throws Exception;
 }

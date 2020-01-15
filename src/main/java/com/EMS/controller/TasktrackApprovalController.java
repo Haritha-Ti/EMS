@@ -151,4 +151,48 @@ public class TasktrackApprovalController {
 		responseData.put("code", httpstatus.getStatus());
 		return responseData;
 	}
+	
+	/**
+	 * @author Hashir
+	 * @param request
+	 * @return
+	 */
+	@PostMapping("/rejection/Approver1")
+	public ObjectNode rejectionFromApprover1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responseData = objectMapper.createObjectNode();
+		try {
+			tasktrackApprovalService.rejectionFromApprover(requestdata, 1);
+			responseData.put("status", Constants.SUCCESS);
+			responseData.put("message", "Rejection success.");
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			responseData.put("status", "failure");
+			responseData.put("message", e.getMessage());
+		}
+		responseData.put("code", httpstatus.getStatus());
+		return responseData;
+	}
+	
+	/**
+	 * @author Hashir
+	 * @param request
+	 * @return
+	 */
+	@PostMapping("/rejection/Approver2")
+	public ObjectNode rejectionFromApprover2(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		ObjectNode responseData = objectMapper.createObjectNode();
+		try {
+			tasktrackApprovalService.rejectionFromApprover(requestdata, 2);
+			responseData.put("status", Constants.SUCCESS);
+			responseData.put("message", "Rejection success.");
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			responseData.put("status", "failure");
+			responseData.put("message", e.getMessage());
+		}
+		responseData.put("code", httpstatus.getStatus());
+		return responseData;
+	}
 }

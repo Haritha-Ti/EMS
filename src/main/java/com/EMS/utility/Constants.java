@@ -55,6 +55,7 @@ public class Constants {
 	
 	public static final String TASKTRACK_USER_STATUS_SUBMIT = "SUBMITTED";
 	public static final String TASKTRACK_USER_STATUS_SAVED = "SAVED";
+	public static final String TASKTRACK_USER_STATUS_REJECTION = "REJECTED";
 	
 
 	public static final Double roundToDefaultPrecision(Double value) {
@@ -65,6 +66,13 @@ public class Constants {
 		return value;
 	}
 
+	public class ProjectWorkflow {
+		public static final int SEMI_MONTHLY_WITHOUT_DAILY_TASK = 1;
+		public static final int SEMI_MONTHLY_WITH_DAILY_TASK = 2;
+		public static final int WEEKLY_WITHOUT_DAILY_TASK = 3;
+		public static final int WEEKLY_WITH_DAILY_TASK = 4;
+	}
+	
 	public class TaskTrackWeeklyApproval {
 		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_SUBMIT = "SUBMITTED";
 		public static final String TASKTRACK_WEEKLY_APPROVER_STATUS_SAVED = "SAVED";
