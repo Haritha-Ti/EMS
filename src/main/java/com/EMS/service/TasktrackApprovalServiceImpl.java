@@ -9921,14 +9921,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 
 					}
-					semiMonthlyFirstHalfDataResponse.put("firstHalfHour", firstHalfHour);
+					semiMonthlyFirstHalfDataResponse.put("totalHour", firstHalfHour);
 					semiMonthlyFirstHalfDataResponse.put("approverStatus", approverFirstHalfStatus);
 					semiMonthlyFirstHalfDataResponse.put("financeStatus", financeFirstHalfStatus);
 					semiMonthlyFirstHalfDataResponse.put("startDate",year + "-" + month + "-01");
 					semiMonthlyFirstHalfDataResponse.put("endDate",year + "-" + month + "-15");
 					//semiMonthlyDataResponse.put("userFirstHalfStatus", userFirstHalfStatus);
 					//semiMonthlyDataResponse.put("userSecondHalfStatus", userSecondHalfStatus);
-					semiMonthlySecondHalfDataResponse.put("secondHalfHour", secondHalfHour);
+					semiMonthlySecondHalfDataResponse.put("totalHour", secondHalfHour);
 					semiMonthlySecondHalfDataResponse.put("approverStatus", approverSecondHalfStatus);
 					semiMonthlySecondHalfDataResponse.put("financeStatus", financeSecondHalfStatus);
 					semiMonthlySecondHalfDataResponse.put("startDate",year + "-" + month + "-16");
