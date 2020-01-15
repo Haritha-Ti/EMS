@@ -909,8 +909,10 @@ public class TasktrackServiceImpl implements TasktrackService {
 	/**
 	 * @author sreejith.j
 	 */
+	
 	@Override
-	public List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
+	public StatusResponse getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
+		
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 
 		SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy-MM-dd");
@@ -975,7 +977,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 			}
 		}
 		// based on the workflow call the appropriate service for fetching data
-
+//		StatusResponse response =new StatusResponse();
 		if (!workflow1Projects.isEmpty()) {
 			// Fetch data from the monthly submission table
 			List<TasktrackApprovalSemiMonthly> semiMonthlyList = taskTrackApprovalSemiMonthlyRepository
@@ -1017,7 +1019,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
 				}
-
+				projObj.remove("allocStartDate");
+				projObj.remove("allocEndDate");
 				projObj.put("periods", periodsArray);
 			}
 		}
@@ -1078,6 +1081,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
 				}
+				projObj.remove("allocStartDate");
+				projObj.remove("allocEndDate");
 				projObj.put("periods", periodsArray);
 				hoursProjectObj.remove(modelObj.getProject().getProjectId());
 			}
@@ -1112,6 +1117,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
 				}
+				projObj.remove("allocStartDate");
+				projObj.remove("allocEndDate");
 				projObj.put("periods", periodsArray);
 			}
 
@@ -1139,6 +1146,10 @@ public class TasktrackServiceImpl implements TasktrackService {
 					weekObj.put("startDay", dateFrmt.format(modelObj.getStartDate()));
 					weekObj.put("endDay", dateFrmt.format(modelObj.getEndDate()));
 					periodsArray.add(weekObj);
+					
+					
+					projObj.remove("allocStartDate");
+					projObj.remove("allocEndDate");
 					projObj.put("periods", periodsArray);
 			}
 		}
@@ -1219,6 +1230,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 						weekObj.put("startDay", dateFrmt.format(weekStartDay.getTime()));
 						weekObj.put("endDay", dateFrmt.format(weekEndDay.getTime()));
 						periodsArray.add(weekObj);
+						projObj.remove("allocStartDate");
+						projObj.remove("allocEndDate");
 						projObj.put("periods", periodsArray);
 						hoursObj.remove("week" + (idx) + "hours");
 					}
@@ -1252,6 +1265,8 @@ public class TasktrackServiceImpl implements TasktrackService {
 					weekObj.put("startDay", dateFrmt.format(weekStartDay.getTime()));
 					weekObj.put("endDay", dateFrmt.format(weekEndDay.getTime()));
 					periodsArray.add(weekObj);
+					projObj.remove("allocStartDate");
+					projObj.remove("allocEndDate");
 					projObj.put("periods", periodsArray);
 					weekStartDay.add(Calendar.DATE, 7);
 					weekEndDay.add(Calendar.DATE, 7);
@@ -1263,7 +1278,13 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 		Collection<HashMap<String, Object>> resultCollection = projectsMap.values();
 		result = new ArrayList<>(resultCollection);
-		return result;
+		StatusResponse response;
+		if(!result.isEmpty()) {
+		 response =new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,result);
+		}else {
+			 response =new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"No data available");	
+		}
+		return response;
 	}
 
 }
