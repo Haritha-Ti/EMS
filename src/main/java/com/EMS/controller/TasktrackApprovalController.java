@@ -5,6 +5,7 @@ import java.text.ParseException;
 import javax.servlet.http.HttpServletResponse;
 
 import com.EMS.dto.ApproverOneDto;
+import com.EMS.dto.ApproverTwoDto;
 import com.EMS.dto.ReopenSubmissionDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -265,10 +266,10 @@ public class TasktrackApprovalController {
 	 **/
 	@SuppressWarnings("rawtypes")
 	@PutMapping(value = ("/approvertwo-bulk-approval"))
-	public StatusResponse bulkApprovalForApproverTwo(@RequestBody ApproverOneDto approverOneDto){
+	public StatusResponse bulkApprovalForApproverTwo(@RequestBody ApproverTwoDto approverTwoDto){
 		StatusResponse response = new StatusResponse();
 		try {		
-			response = tasktrackApprovalService.bulkApprovalForApproverOne(approverOneDto);
+			response = tasktrackApprovalService.bulkApprovalForApproverTwo(approverTwoDto);
 		}
 		catch (ParseException e) {
 			e.printStackTrace();
