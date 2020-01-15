@@ -2,6 +2,7 @@ package com.EMS.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.EMS.dto.approveHoursLevel2.request.ApproveHoursRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -172,5 +173,18 @@ public class TasktrackApprovalController {
 
 		responseData.put("code", httpstatus.getStatus());
 		return responseData;
+	}
+
+	@PutMapping(value = "/approveHoursLevel2")
+	public StatusResponse approveHoursLevel2(@RequestBody ApproveHoursRequest requestdata, HttpServletResponse httpstatus) {
+		StatusResponse node = null;
+		try {
+			node = tasktrackApprovalService.approveHoursLevel2(requestdata);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			node = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+		}
+		return node;
 	}
 }

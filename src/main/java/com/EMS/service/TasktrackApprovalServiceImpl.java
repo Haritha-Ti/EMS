@@ -21,6 +21,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.EMS.dto.approveHoursLevel2.request.ApproveHoursRequest;
 import org.joda.time.DateTimeConstants;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -9037,8 +9038,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
 		// get usersList in the project for the corresponding month
 		int projectWorkFlow = 0;
-		List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId,
-				startDate, endDate);
+		List<AllocationModel> allocatedUserData = projectAllocationRepository.findByProjectProjectIdAndStartDateAndEndDateAndIsBillable(projectId,
+				startDate, endDate,true);
 		if (allocatedUserData.size() >= 1) {
 			for (AllocationModel userData : allocatedUserData) {
 				ObjectNode userDataResponse = objectMapper.createObjectNode();
@@ -10591,6 +10592,71 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 		return subList;
 
+	}
+	@Override
+	public StatusResponse approveHoursLevel2(ApproveHoursRequest requestdata) throws Exception {
+		// TODO Auto-generated method stub
+		StatusResponse node = new StatusResponse<>();
+		Long projectId = requestdata.getProjectId();
+		Long userId = requestdata.getUserId();
+		Long loggedId = requestdata.getLoggedId();
+		Long approverId = requestdata.getApproverId();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date endDate = requestdata.getEndDate();
+		Date startDate = requestdata.getStartDate();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		Date curDate = formatter.parse(formatter.format(date));
+		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
+		if (projectData != null) {
+			// weekly approval
+			if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {
+				if (loggedId != null) {
+					TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository
+							.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
+									userId);
+					if (userData != null) {
+						if(userData.getApprover1Status().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+							userData.setApprover2Status(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							UserModel approver = userRepository.getOne(approverId);
+							userData.setApprover2Id(approver);
+							userData.setApprover2SubmittedDate(curDate);
+							taskTrackWeeklyApprovalRepository.save(userData);
+						}
+					}
+				}
+			} else { // semimonthly approval
+				if (loggedId != null) {
+					Calendar cale = Calendar.getInstance();
+					cale.setTime(endDate);
+					int day = cale.get(Calendar.DAY_OF_MONTH);
+					int month = cale.get(Calendar.MONTH);
+					int year = cale.get(Calendar.YEAR);
+					TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository
+							.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
+					if (userData != null) {
+						UserModel approver = userRepository.getOne(approverId);
+						if (day > 15) {
+							if(userData.getApproverOneSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+								userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+								userData.setSecondHalfApproverTwoId(approver);
+								userData.setApproverTwoSecondHalfSubmittedDate(curDate);
+								taskTrackApprovalSemiMonthlyRepository.save(userData);
+							}
+						} else {
+							if(userData.getApproverOneFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
+								userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+								userData.setFirstHalfApproverTwoId(approver);
+								userData.setApproverTwoFirstHalfSubmittedDate(curDate);
+								taskTrackApprovalSemiMonthlyRepository.save(userData);
+							}
+						}
+					}
+				}
+			}
+		}
+		StatusResponse statusResponse = new StatusResponse( Constants.SUCCESS,Constants.SUCCESS_CODE,"");
+		return node;
 	}
 	
 
