@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.dto.SemiMonthlyTaskTrackRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
@@ -56,8 +57,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public JSONObject getSemiMonthlyTasktrack(JSONObject requestData) throws Exception {
-
+	public StatusResponse getSemiMonthlyTasktrack(SemiMonthlyTaskTrackRequestDTO requestData) throws Exception {
+		StatusResponse result = new StatusResponse();
 		JSONObject response = new JSONObject();
 		Long userId = null;
 		Long projectId = null;
@@ -65,24 +66,23 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		Date endDate = null;
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		if (requestData.get("uId") != null && requestData.get("uId").toString() != "") {
-			userId = Long.parseLong(requestData.get("uId").toString());
+		if (requestData.getuId() !=null) {
+			userId =requestData.getuId();
 		}
-		if (requestData.get("projectId") != null && requestData.get("projectId").toString() != "") {
-			projectId = Long.parseLong(requestData.get("projectId").toString());
+		if (requestData.getProjectId() !=null) {
+			projectId = requestData.getProjectId();
 		}
-		if (requestData.get("startDate") != null && requestData.get("startDate").toString() != null) {
-			startDate = sdf.parse(requestData.get("startDate").toString());
+		if (requestData.getStartDate() !=null && !requestData.getStartDate().isEmpty()) {
+			startDate = sdf.parse(requestData.getStartDate());
 		}
 
-		if (requestData.get("endDate") != null && requestData.get("endDate").toString() != null) {
-			endDate = sdf.parse(requestData.get("endDate").toString());
+		if (requestData.getEndDate() != null && !requestData.getEndDate().isEmpty()) {
+			endDate = sdf.parse(requestData.getEndDate());
 		}
 
 		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
 		List<String> taskStatusList = Arrays.asList(taskStatusArray);
-		TasktrackApprovalSemiMonthly approvalSemiMonthly = (TasktrackApprovalSemiMonthly) semiMonthlyRepository
-				.getSemiMonthlyTasktrack(startDate, userId, projectId);
+		TasktrackApprovalSemiMonthly approvalSemiMonthly = (TasktrackApprovalSemiMonthly) semiMonthlyRepository.getSemiMonthlyTasktrack(startDate, userId, projectId);
 
 		if (approvalSemiMonthly != null) {
 
@@ -129,7 +129,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				
 				String firstHalfApprover = null;
 				Date firstHalfSubmittedDate = null;
-				if (null != approvalSemiMonthly.getFirstHalfApproverOneId()) {
+				if (approvalSemiMonthly.getFirstHalfApproverOneId() != null ) {
 					 firstHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName() + " "
 								+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
 					 
@@ -195,11 +195,12 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				response.put("approval", approval);
 				
 			}
+			result = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,response);
 			
 		} else {
-
+			result = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,Constants.NO_DATA_FOUND_MESSAGE);
 		}
-		return response;
+		return result;
 
 	}
 
@@ -683,7 +684,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public StatusResponse getSemiMonthlyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData)
+	public StatusResponse getSemiMonthlyTasktrackWithTask(SemiMonthlyTaskTrackRequestDTO requestData)
 			throws Exception {
 		StatusResponse response = new StatusResponse();
 		Long userId = null;
