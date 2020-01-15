@@ -5,7 +5,6 @@ import java.text.ParseException;
 import javax.servlet.http.HttpServletResponse;
 
 import com.EMS.dto.ApproverOneDto;
-import com.EMS.dto.approveHoursLevel2.request.ApproveHoursRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.tasktrackapproval2.request.ApproveHoursRequest;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
 import com.EMS.model.StatusResponse;
 import com.EMS.service.TasktrackApprovalService;
@@ -199,6 +199,28 @@ public class TasktrackApprovalController {
 	@SuppressWarnings("rawtypes")
 	@PutMapping(value = ("/approverone-bulk-approval"))
 	public StatusResponse bulkApprovalForApproverOne(@RequestBody ApproverOneDto approverOneDto){
+		StatusResponse response = new StatusResponse();
+		try {		
+			response = tasktrackApprovalService.bulkApprovalForApproverOne(approverOneDto);
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return response;
+	}
+	/**
+	 * Bulk approval for approver 2
+	 * @author  Jinu Shaji
+	 * @version 1.0
+	 * @since   2020-01-15
+	 **/
+	@SuppressWarnings("rawtypes")
+	@PutMapping(value = ("/approvertwo-bulk-approval"))
+	public StatusResponse bulkApprovalForApproverTwo(@RequestBody ApproverOneDto approverOneDto){
 		StatusResponse response = new StatusResponse();
 		try {		
 			response = tasktrackApprovalService.bulkApprovalForApproverOne(approverOneDto);

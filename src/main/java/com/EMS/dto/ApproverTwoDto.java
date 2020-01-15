@@ -1,5 +1,5 @@
 /**
-* DTO Class for all request in approver one screen
+* DTO Class for all request in approver two screen
 * @author  Jinu Shaji
 * @version 1.0
 * @since   2020-01-15
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ApproverOneDto {
+public class ApproverTwoDto {
 
 	private Long projectId;
 	private ArrayList<Long> userId;
