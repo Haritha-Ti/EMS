@@ -9038,8 +9038,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
 		// get usersList in the project for the corresponding month
 		int projectWorkFlow = 0;
-		List<AllocationModel> allocatedUserData = projectAllocationRepository.findByProjectProjectIdAndStartDateAndEndDateAndIsBillable(projectId,
-				startDate, endDate,true);
+		//List<AllocationModel> allocatedUserData = projectAllocationRepository.findByProjectProjectIdAndStartDateAndEndDateAndIsBillable(projectId,
+			//	startDate, endDate,true);
+		List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId,
+				startDate, endDate);
 		if (allocatedUserData.size() >= 1) {
 			for (AllocationModel userData : allocatedUserData) {
 				ObjectNode userDataResponse = objectMapper.createObjectNode();
@@ -10293,6 +10295,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			}
 
 		}
+		
 		return node;
 	}
 
