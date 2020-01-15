@@ -46,8 +46,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.Taskdetails;
-import com.EMS.exceptions.BadInputException;
-import com.EMS.exceptions.DuplicateEntryException;
+import com.EMS.exception.BadInputException;
+import com.EMS.exception.DuplicateEntryException;
 import com.EMS.repository.TaskRepository;
 import com.EMS.repository.TaskTrackApprovalLevel2Repository;
 import com.EMS.service.ProjectAllocationService;

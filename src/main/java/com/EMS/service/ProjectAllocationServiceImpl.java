@@ -18,7 +18,7 @@ import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.P
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.EMS.exceptions.BadInputException;
+import com.EMS.exception.BadInputException;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.DepartmentModel;
 import com.EMS.model.ProjectModel;
