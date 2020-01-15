@@ -30,6 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.EMS.dto.MailDomainDto;
+import com.EMS.dto.MonthlySubmissionDto;
+import com.EMS.dto.Submission;
+import com.EMS.dto.WeeklySubmissionDto;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
 import com.EMS.dto.tasktrackapproval2.response.Data;
 import com.EMS.dto.tasktrackapproval2.response.SemiMonthlyData;
@@ -53,6 +56,7 @@ import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.model.UserModel;
 import com.EMS.repository.ActivityLogRepository;
 import com.EMS.repository.AllocationRepository;
+import com.EMS.repository.AuditRepository;
 import com.EMS.repository.ProjectAllocationRepository;
 import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.TaskRepository;
@@ -159,6 +163,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	@Autowired
 	private ProjectAllocationService projectAllocationService;
+	
+	@Autowired
+	private AuditRepository auditRepository;
 
 	@Value("${FINANCE_MAIL}")
 	private String financeMail;
@@ -10287,6 +10294,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return node;
 	}
 
+
 	public ObjectNode approveHoursFinance(ObjectNode requestdata) throws Exception{
 		ObjectNode node = objectMapper.createObjectNode();
 		Long projectId = requestdata.get("projectId").asLong();
@@ -10454,4 +10462,134 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		}
 		return node;
 	}
+
+	
+	/**
+	 * @author @Renjith
+	 */
+	@Override
+	public List<Submission> getSubmissionHistory(Long Id, Long projectId) {
+		ProjectModel p = projectService.getProjectDetails(projectId);
+		int wfType = p.getWorkflowType();
+		List<JSONObject> objNodeList = null;
+		List<Submission> subList = null;
+		if (wfType == 3 || wfType == 4)
+			objNodeList = auditRepository.getWeeklySubmission(Id);
+
+		if (objNodeList!=null  && !objNodeList.isEmpty() && (wfType == 3 || wfType == 4) ) {
+			subList = new ArrayList<Submission>();
+			for (JSONObject objNode : objNodeList) {
+				WeeklySubmissionDto weekly = new WeeklySubmissionDto();
+				weekly.setApproverOne((String) objNode.get("approver1"));
+				weekly.setApproverTwo((String) objNode.get("approver2"));
+				weekly.setFinance((String) objNode.get("finance"));
+				weekly.setUser((String) objNode.get("user"));
+				weekly.setTrxDate((Date) objNode.get("trx_date"));
+				weekly.setTrxn((String) objNode.get("trxn"));
+				weekly.setUsrInAction((String) objNode.get("user_in_action"));
+				weekly.setApproverOneStatus((String) objNode.get("approver1_status"));
+				weekly.setApproverTwoStatus((String) objNode.get("approver2_status"));
+				weekly.setFinanceStatus((String) objNode.get("finance_status"));
+				weekly.setUsrStatus((String) objNode.get("timetrack_status"));
+				weekly.setApproverOneSubmtdDate((Date) objNode.get("approver1submitted_date"));
+				weekly.setApproverTwoSubmtdDate((Date) objNode.get("approver2submitted_date"));
+				weekly.setFinanceSubmtdDate((Date) objNode.get("finance_submitted_date"));
+				weekly.setUsrSubmtdDate((Date) objNode.get("user_submitted_date"));
+				weekly.setRejectnDate((Date) objNode.get("rejection_time"));
+				weekly.setStartDate((Date) objNode.get("start_date"));
+				weekly.setEndDate((Date) objNode.get("end_date"));
+				weekly.setProject((String) objNode.get("project_name"));
+				weekly.setD1((Double) objNode.get("day1"));
+				weekly.setD2((Double) objNode.get("day2"));
+				weekly.setD3((Double) objNode.get("day3"));
+				weekly.setD4((Double) objNode.get("day4"));
+				weekly.setD5((Double) objNode.get("day5"));
+				weekly.setD6((Double) objNode.get("day6"));
+				weekly.setD7((Double) objNode.get("day7"));
+				subList.add(weekly);
+			}
+		}
+		if (wfType == 1 || wfType == 2)
+		objNodeList = auditRepository.getmonthlySubmission(Id);
+		if (objNodeList!=null  && !objNodeList.isEmpty() && (wfType == 1 || wfType == 2) ) {
+			subList = new ArrayList<Submission>();
+			for (JSONObject objNode : objNodeList) {
+				MonthlySubmissionDto monthly = new MonthlySubmissionDto();
+				monthly.setApproverOne((String) objNode.get("approver1"));
+				monthly.setApproverTwo((String) objNode.get("approver2"));
+				monthly.setFinance((String) objNode.get("finance"));
+				monthly.setUser((String) objNode.get("user"));
+				monthly.setTrxDate((Date) objNode.get("trx_date"));
+				monthly.setTrxn((String) objNode.get("trxn"));
+				monthly.setUsrInAction((String) objNode.get("user_in_action"));
+
+				monthly.setApproverOneFirstHalfStatus((String) objNode.get("approver_one_first_half_status"));
+				monthly.setApproverTwoFirstHalfStatus((String) objNode.get("approver_two_first_half_status"));
+				monthly.setFinanceFirstHalfStatus((String) objNode.get("finance_first_half_status"));
+				monthly.setUsrFirstHalfStatus((String) objNode.get("user_first_half_status"));
+
+				monthly.setApproverOneSecondHalfStatus((String) objNode.get("approver_one_second_half_status"));
+				monthly.setApproverTwoSecondHalfStatus((String) objNode.get("approver_two_second_half_status"));
+				monthly.setFinanceSecondHalfStatus((String) objNode.get("finance_second_half_status"));
+				monthly.setUsrSecondHalfStatus((String) objNode.get("user_second_half_status"));
+
+				monthly.setApproverOneFirstHalfSubmtdDate((Date) objNode.get("approver_one_first_half_submitted_date"));
+				monthly.setApproverTwoFirstHalfSubmtdDate((Date) objNode.get("approver_two_first_half_submitted_date"));
+				monthly.setFinanceFirstHalfSubmtdDate((Date) objNode.get("finance_first_half_submitted_date"));
+				monthly.setUsrFirstHalfSubmtdDate((Date) objNode.get("user_first_half_submitted_date"));
+
+				monthly.setApproverOneSecondHalfSubmtdDate(
+						(Date) objNode.get("approver_one_second_half_submitted_date"));
+				monthly.setApproverTwoSecondHalfSubmtdDate(
+						(Date) objNode.get("approver_two_second_half_submitted_date"));
+				monthly.setFinanceSecondHalfSubmtdDate((Date) objNode.get("finance_second_half_submitted_date"));
+				monthly.setUsrSecondHalfSubmtdDate((Date) objNode.get("user_second_half_submitted_date"));
+
+				monthly.setRejectnDate((Date) objNode.get("rejection_time"));
+				monthly.setStartDate((Date) objNode.get("start_date"));
+				monthly.setEndDate((Date) objNode.get("end_date"));
+				monthly.setProject((String) objNode.get("project_name"));
+
+				monthly.setD1((Double) objNode.get("day1"));
+				monthly.setD2((Double) objNode.get("day2"));
+				monthly.setD3((Double) objNode.get("day3"));
+				monthly.setD4((Double) objNode.get("day4"));
+				monthly.setD5((Double) objNode.get("day5"));
+				monthly.setD6((Double) objNode.get("day6"));
+				monthly.setD7((Double) objNode.get("day7"));
+				monthly.setD8((Double) objNode.get("day8"));
+				monthly.setD9((Double) objNode.get("day9"));
+				monthly.setD10((Double) objNode.get("day10"));
+				monthly.setD11((Double) objNode.get("day11"));
+				monthly.setD12((Double) objNode.get("day12"));
+				monthly.setD13((Double) objNode.get("day13"));
+				monthly.setD14((Double) objNode.get("day14"));
+				monthly.setD15((Double) objNode.get("day15"));
+				monthly.setD16((Double) objNode.get("day16"));
+				monthly.setD17((Double) objNode.get("day17"));
+				monthly.setD18((Double) objNode.get("day18"));
+				monthly.setD19((Double) objNode.get("day19"));
+				monthly.setD20((Double) objNode.get("day20"));
+				monthly.setD21((Double) objNode.get("day21"));
+				monthly.setD22((Double) objNode.get("day22"));
+				monthly.setD23((Double) objNode.get("day23"));
+				monthly.setD24((Double) objNode.get("day24"));
+				monthly.setD25((Double) objNode.get("day25"));
+				monthly.setD26((Double) objNode.get("day26"));
+				monthly.setD27((Double) objNode.get("day27"));
+				monthly.setD28((Double) objNode.get("day28"));
+				monthly.setD29((Double) objNode.get("day29"));
+				monthly.setD30((Double) objNode.get("day30"));
+				monthly.setD31((Double) objNode.get("day31"));
+				subList.add(monthly);
+			}
+
+			
+		}
+
+		return subList;
+
+	}
+	
+
 }

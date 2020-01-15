@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.json.simple.JSONObject;
 
+import com.EMS.dto.Submission;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
 import com.EMS.model.StatusResponse;
 import com.EMS.model.TaskTrackApproval;
@@ -160,4 +161,7 @@ public interface TasktrackApprovalService {
 	ObjectNode getTaskTrackDataByUserIdForFinance(ObjectNode requestdata) throws Exception;
 
     ObjectNode approveHoursFinance(ObjectNode requestdata) throws Exception;
+
+    public List<Submission>   getSubmissionHistory(Long Id,Long projectId);
+
 }

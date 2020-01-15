@@ -46,6 +46,7 @@ public class TaskWeeklyApprovalController {
 			response = weeklyApprovalService.submitWeeklyApproval(requestData);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
 			response = new StatusResponse("Failure", 500, exceptionresponse);
 		}

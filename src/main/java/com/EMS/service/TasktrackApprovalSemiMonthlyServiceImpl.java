@@ -21,12 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
+import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
 import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.model.UserModel;
+import com.EMS.repository.AllocationRepository;
 import com.EMS.repository.TaskTrackApprovalSemiMonthlyRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
@@ -47,6 +49,10 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 	@Autowired
 	ProjectService projectservice;
+	
+	@Autowired
+	private AllocationRepository allocationRepository;
+	
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
@@ -120,6 +126,22 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				} else {
 					response.put("enabled", true);
 				}
+				
+				String firstHalfApprover = null;
+				Date firstHalfSubmittedDate = null;
+				if (null != approvalSemiMonthly.getFirstHalfApproverOneId()) {
+					 firstHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName() + " "
+								+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
+					 
+						 firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
+				}
+
+				JSONObject approval = new JSONObject();
+				approval.put("approver", firstHalfApprover);
+				approval.put("date",(firstHalfSubmittedDate != null)? sdf.format(firstHalfSubmittedDate) : "");
+				approval.put("status", approverOneFirstHalfStatus);
+
+				response.put("approval", approval);
 			}
 			if (date == 16) {
 				JSONArray array = new JSONArray();
@@ -141,47 +163,38 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				array = addHoursandDaytoArray(array, approvalSemiMonthly.getDay31(), dateRanges.get(15));
 				response.put("taskList", array);
 
+				List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId, projectId);
+				
 				if (taskStatusList.contains(approverOneSecondHalfStatus)
 						|| taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
-					response.put("enabled", false);
+					
+					for (AllocationModel al : userProjAllocations) {
+						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+						if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
+							response.put("enabled", false);
+						}
+					}
 				} else {
 					response.put("enabled", true);
 				}
-			}
-		
-			String firstHalfApprover = null;
-			Date firstHalfSubmittedDate = null;
-			if (null != approvalSemiMonthly.getFirstHalfApproverOneId()) {
-				 firstHalfApprover = approvalSemiMonthly.getFirstHalfApproverOneId().getFirstName() + " "
+				
+				String secondHalfApprover = null;
+				Date secondHalfSubmittedDate  = null;
+				if (null != approvalSemiMonthly.getSecondHalfApproverOneId()) {
+					 secondHalfApprover = approvalSemiMonthly.getSecondHalfApproverOneId().getFirstName() + " "
 							+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
-				 
-					 firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
+
+					 secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
+				}
+				JSONObject approval = new JSONObject();
+				approval.put("approver", secondHalfApprover);
+				approval.put("date", (secondHalfSubmittedDate !=null)?sdf.format(secondHalfSubmittedDate) :"");
+				approval.put("status", approverOneSecondHalfStatus);
+
+				response.put("approval", approval);
+				
 			}
-
-		
-
-			String secondHalfApprover = null;
-			Date secondHalfSubmittedDate  = null;
-			if (null != approvalSemiMonthly.getSecondHalfApproverOneId()) {
-				 secondHalfApprover = approvalSemiMonthly.getSecondHalfApproverOneId().getFirstName() + " "
-						+ approvalSemiMonthly.getFirstHalfApproverOneId().getLastName();
-
-				 secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
-			}
-			
-
-			JSONObject approval = new JSONObject();
-			approval.put("first_half_approver", firstHalfApprover);
-			approval.put("first_half_submitted_date",(firstHalfSubmittedDate != null)? sdf.format(firstHalfSubmittedDate) : "");
-			approval.put("first_half_status", approverOneFirstHalfStatus);
-
-			approval.put("second_half_approver", secondHalfApprover);
-			approval.put("second_half_submitted_date", (secondHalfSubmittedDate !=null)?sdf.format(secondHalfSubmittedDate) :"");
-			approval.put("second_half_submitted_status", approverOneSecondHalfStatus);
-
-			response.put("approval", approval);
-			 
 			
 		} else {
 
@@ -363,12 +376,12 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		}
 
-		if (requeststatus == 0) {
+//		if (requeststatus == 0) {
 				semiMonthlyRepository.save(semiMonthlyApproval);
 				response = new StatusResponse("success", 200, "Semi monthly data submission completed");
 			
-		} else
-			response = new StatusResponse("success", 200, "Semi monthly data submission failed due to invalid data");
+//		} else
+//			response = new StatusResponse("success", 200, "Semi monthly data submission failed due to invalid data");
 		
 		return response;
 	}
@@ -505,12 +518,12 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		}
 
-		if (requeststatus == 0) {
+//		if (requeststatus == 0) {
 			semiMonthlyRepository.save(semiMonthlyApproval);
 			response = new StatusResponse("Success", 200, "Insertion of semimonthly tasktrack completed");
-		} else
-			response = new StatusResponse("Success", 200,
-					"Insertion of semimonthly tasktrack failed due to invalid entry");
+//		} else
+//			response = new StatusResponse("Success", 200,
+//					"Insertion of semimonthly tasktrack failed due to invalid entry");
 		return response;
 	}
 
@@ -733,6 +746,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		String[] taskStatusArray = { Constants.TaskTrackSemiMonthlyApproval.TASKTRACK_SEMI_MONTHLY_APPROVER_STATUS_APPROVED };
 		List<String> taskStatusList = Arrays.asList(taskStatusArray);
 		
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId, projectId);
 		
 		if (tasktrackStatus != null) {
 		
@@ -750,7 +764,13 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			if (date == 1) {
 				if (taskStatusList.contains(approverOneFirstHalfStatus) || taskStatusList.contains(approverTwoFirstHalfStatus)
 						|| taskStatusList.contains(financeFirstHalfStatus)) {
-					jsonObject.put("enabled", false);
+					for (AllocationModel al : userProjAllocations) {
+						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+						if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
+							jsonObject.put("enabled", false);
+						}
+					}
+					
 				}
 
 				else {
@@ -761,7 +781,13 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			else if (date == 16) {
 				if (taskStatusList.contains(approverOneSecondHalfStatus) || taskStatusList.contains(approverTwoSecondHalfStatus)
 						|| taskStatusList.contains(financeSecondHalfStatus)) {
-					jsonObject.put("enabled", false);
+					for (AllocationModel al : userProjAllocations) {
+						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+						if ( allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
+							jsonObject.put("enabled", false);
+						}
+					}
+					
 				}
 
 				else {
