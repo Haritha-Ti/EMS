@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.ProjectSubmissionDataDTO;
 import com.EMS.dto.Taskdetails;
-import com.EMS.exceptions.BadInputException;
+import com.EMS.exception.BadInputException;
 import com.EMS.service.ProjectAllocationService;
 import com.EMS.service.ProjectExportService;
 import com.EMS.service.ProjectRegionService;

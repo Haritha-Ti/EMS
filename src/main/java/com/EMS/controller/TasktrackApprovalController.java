@@ -5,6 +5,9 @@ import java.text.ParseException;
 import javax.servlet.http.HttpServletResponse;
 
 import com.EMS.dto.ApproverOneDto;
+import com.EMS.dto.ApproverTwoDto;
+import com.EMS.dto.ReopenSubmissionDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.tasktrackapproval2.request.ApproveHoursRequest;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
+import com.EMS.exception.PMSDateFormatException;
+import com.EMS.exception.PMSException;
 import com.EMS.model.StatusResponse;
 import com.EMS.service.TasktrackApprovalService;
 import com.EMS.utility.Constants;
@@ -105,7 +110,7 @@ public class TasktrackApprovalController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			node = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+			node = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
 
 		return node;
@@ -229,7 +234,7 @@ public class TasktrackApprovalController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			node = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+			node = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
 		return node;
 	}
@@ -247,10 +252,10 @@ public class TasktrackApprovalController {
 			response = tasktrackApprovalService.bulkApprovalForApproverOne(approverOneDto);
 		}
 		catch (ParseException e) {
-			e.printStackTrace();
+			throw new PMSDateFormatException("Invalid Date Format.");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			throw new PMSException();
 		}
 
 		return response;
@@ -263,18 +268,48 @@ public class TasktrackApprovalController {
 	 **/
 	@SuppressWarnings("rawtypes")
 	@PutMapping(value = ("/approvertwo-bulk-approval"))
-	public StatusResponse bulkApprovalForApproverTwo(@RequestBody ApproverOneDto approverOneDto){
+	public StatusResponse bulkApprovalForApproverTwo(@RequestBody ApproverTwoDto approverTwoDto){
 		StatusResponse response = new StatusResponse();
 		try {		
-			response = tasktrackApprovalService.bulkApprovalForApproverOne(approverOneDto);
+			response = tasktrackApprovalService.bulkApprovalForApproverTwo(approverTwoDto);
 		}
 		catch (ParseException e) {
-			e.printStackTrace();
+			throw new PMSDateFormatException("Invalid Date Format.");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			throw new PMSException();
 		}
 
 		return response;
 	}
+	
+	//Renjith
+		@PostMapping(value = "/reopenSubmission")
+		public StatusResponse  submissionReopen(@RequestBody ReopenSubmissionDto reopenSub){
+			StatusResponse  response=null;
+			
+			try {
+				  response= tasktrackApprovalService.reopenSubmission(reopenSub.getId(), reopenSub.getProjectId(), reopenSub.getUserId(), reopenSub.getStartDate(), reopenSub.getEndDate());
+			} catch (ParseException e) {
+				response  =new StatusResponse<String>("failure", 500, e.getMessage());
+				 e.printStackTrace();
+			}
+		        return response;	
+		}
+		@PostMapping(value = "/taskTrackDataByUserIdForApprover2")
+		public StatusResponse taskTrackDataByUserIdForApprover2(@RequestBody ApproveHoursRequest requestdata, HttpServletResponse httpstatus) {
+			ObjectNode node = null;
+			StatusResponse response = new StatusResponse<>();
+			try {
+				node = tasktrackApprovalService.getTaskTrackDataByUserIdForApprover2(requestdata);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+				e.printStackTrace();
+				response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
+			}
+
+			return response;
+		}
 }

@@ -18,17 +18,15 @@ import com.EMS.model.StatusResponse;
 import com.EMS.service.TaskWeeklyApprovalService;
 import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @RestController
 @RequestMapping(value = { "/tasktrack" })
 public class TaskWeeklyApprovalController {
 
 	@Autowired
 	private TaskWeeklyApprovalService weeklyApprovalService;
-
-	@Autowired
-	private ObjectMapper objectmapper;
 
 	/*
 	 * To submit timetrack weekly base for approval
@@ -38,6 +36,7 @@ public class TaskWeeklyApprovalController {
 	 * @Since 08-01-2020
 	 */
 
+	
 	@PostMapping(value = "/submit_weekly_approval")
 	public StatusResponse submitWeeklyApproval(@RequestBody JSONObject requestData, HttpServletResponse httpstatus) {
 
@@ -48,7 +47,7 @@ public class TaskWeeklyApprovalController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
-			response = new StatusResponse("Failure", 500, exceptionresponse);
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionresponse);
 		}
 		return response;
 	}
@@ -71,13 +70,12 @@ public class TaskWeeklyApprovalController {
 
 		} catch (Exception e) {
 			ExceptionResponse exceptionresponse = new ExceptionResponse(1234, e.getMessage(), new Date());
-			response = new StatusResponse("Failure", 500, exceptionresponse);
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionresponse);
 		}
 
 		return response;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@PostMapping(value = "/get/weekly_tasktrack")
 	public StatusResponse getWeeklyTasktrack(@RequestBody WeeklyTaskTrackWithoutTaskRequestDTO requestData) {
 		StatusResponse response = new StatusResponse();
@@ -85,13 +83,12 @@ public class TaskWeeklyApprovalController {
 			response = weeklyApprovalService.getWeeklyTasktrack(requestData);
 		} catch (Exception e) {
 			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
-			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionResponse);
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
 		}
 
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
 	@PostMapping(value = "/get/tasktrack_with_task/weekly")
 	public StatusResponse getWeeklyTasktrackWithTask(@RequestBody WeeklyTaskTrackWithTaskRequestDTO requestData) {
 		StatusResponse response = new StatusResponse();
@@ -100,7 +97,7 @@ public class TaskWeeklyApprovalController {
 			System.out.println(response);
 		} catch (Exception e) {
 			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
-			response = new StatusResponse(Constants.ERROR, Constants.ERROR_CODE, exceptionResponse);
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
 		}
 
 		return response;

@@ -1,5 +1,7 @@
 package com.EMS.utility;
 
+import java.text.SimpleDateFormat;
+
 public class Constants {
 
 	public static int EMAIL_TOKEN_EXP_DUR = 10;
@@ -8,7 +10,7 @@ public class Constants {
 //	public static String CONTEXT_PATH = "https://pms.titechdev.com"; // Production
 	// public static String CONTEXT_PATH =
 	// "https://stagingpms.titechdev.com";//Staging
-
+	public static final String TASKTRACK_APPROVER_STATUS_REOPEN="REOPEN";
 	public static final String TASKTRACK_APPROVER_STATUS_OPEN = "OPEN";
 	public static final String TASKTRACK_APPROVER_STATUS_SUBMIT = "SUBMITTED";
 	public static final String TASKTRACK_APPROVER_STATUS_LOCK = "LOCKED";
@@ -90,5 +92,9 @@ public class Constants {
 	public static final int SUCCESS_CODE = 200;
 	public static final String SUCCESS = "Success";
 	public static final String OK = "OK";
-	public static final String ERROR = "Error";
+
+	public static final String FAILURE = "Failure";
+
+	public static final String NO_DATA_FOUND_MESSAGE = "No Data Available";	
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 }
