@@ -9130,22 +9130,30 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 
 					}
-					TaskTrackRejection firstHalfRejection = null;
-					TaskTrackRejection secondHalfRejection = null;
-					if(firstHalfStatus.equals(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
-						firstHalfRejection = taskTrackRejectionRepository.findSemiMonthlyRejection(userId, projectId,month,year,
-										Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE,Constants.TASKTRACK_REJECTION_STATUS_OPEN);
+					String firstHalfRejection = null;
+					String secondHalfRejection = null;
+					if(firstHalfStatus.equals(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)
+							|| secondHalfStatus.equals(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
+						List<TaskTrackRejection> rejectionList = taskTrackRejectionRepository.findSemiMonthlyRejection(userId, projectId,month,year,
+								Constants.TASKTRACK_REJECTION_STATUS_OPEN);
+						if(rejectionList != null) {
+							for(TaskTrackRejection rejection : rejectionList) {
+								if(rejection.getCycle().equals(Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE)) {
+									firstHalfRejection = rejection.getRemark();
+								}
+								else if(rejection.getCycle().equals(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE)) {
+									secondHalfRejection = rejection.getRemark();
+								}
+							}
+						}
 					}
-					else if(secondHalfStatus.equals(Constants.TASKTRACK_APPROVER_STATUS_REJECTION)) {
-						secondHalfRejection = taskTrackRejectionRepository.findSemiMonthlyRejection(userId, projectId,month,year,
-										Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE,Constants.TASKTRACK_REJECTION_STATUS_OPEN);
-					}
+					
 					semiMonthlyDataResponse.put("firstHalfHour", firstHalfHour);
 					semiMonthlyDataResponse.put("secondHalfHour", secondHalfHour);
 					semiMonthlyDataResponse.put("firstHalfStatus", firstHalfStatus);
 					semiMonthlyDataResponse.put("secondHalfStatus", secondHalfStatus);
-					semiMonthlyDataResponse.put("firstHalfRejectionRemark", firstHalfRejection == null ? "" : firstHalfRejection.getRemark());
-					semiMonthlyDataResponse.put("secondHalfRejectionRemark", secondHalfRejection == null ? "" : secondHalfRejection.getRemark());
+					semiMonthlyDataResponse.put("firstHalfRejectionRemark", firstHalfRejection);
+					semiMonthlyDataResponse.put("secondHalfRejectionRemark", secondHalfRejection);
 					// semiMonthlyHourData.add(semiMonthlyDataResponse);
 					userDataResponse.set("semiMonthlyData", semiMonthlyDataResponse);
 
@@ -10865,12 +10873,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					|| userData.getTimetrackStatus().equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
 				throw new Exception("This record was already rejected.");
 			}
-			if(approverLevel == 1) {
-				userData.setApprover1Status(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED);
-			}
-			else {
+			if(approverLevel == 2) {
 				userData.setApprover2Status(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED);
 			}
+			userData.setApprover1Status(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED);
 			userData.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
 			userData.setRejectionTime(curDate);
 			taskTrackWeeklyApprovalRepository.save(userData);
@@ -10899,12 +10905,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						|| userData.getUserSecondHalfStatus().equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
 					throw new Exception("This record was already rejected.");
 				}
-				if(approverLevel == 1) {
-					userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
-				}
-				else {
+				if(approverLevel == 2) {
 					userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
 				}
+				userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
 				userData.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
 				rejection.setCycle(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
 			} 
@@ -10914,12 +10918,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						|| userData.getUserFirstHalfStatus().equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
 					throw new Exception("This record was already rejected.");
 				}
-				if(approverLevel == 1) {
-					userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
-				}
-				else {
+				if(approverLevel == 2) {
 					userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
 				}
+				userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REJECTION);
 				userData.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_REJECTION);
 				rejection.setCycle(Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
 			}
