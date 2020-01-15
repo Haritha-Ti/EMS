@@ -296,4 +296,20 @@ public class TasktrackApprovalController {
 			}
 		        return response;	
 		}
+		@PostMapping(value = "/taskTrackDataByUserIdForApprover2")
+		public StatusResponse taskTrackDataByUserIdForApprover2(@RequestBody ApproveHoursRequest requestdata, HttpServletResponse httpstatus) {
+			ObjectNode node = null;
+			StatusResponse response = new StatusResponse<>();
+			try {
+				node = tasktrackApprovalService.getTaskTrackDataByUserIdForApprover2(requestdata);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+				e.printStackTrace();
+				response = new StatusResponse(Constants.ERROR,Constants.ERROR_CODE,"");
+			}
+
+			return response;
+		}
 }
