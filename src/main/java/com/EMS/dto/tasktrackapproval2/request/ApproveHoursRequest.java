@@ -13,9 +13,11 @@ public class ApproveHoursRequest {
 	
 	private long approverId;
 	
-	private Date endDate;
+	private String endDate;
 	
-	private Date startDate;
+	private String startDate;
+	
+	private long sessionId;
 
 	public long getProjectId() {
 		return projectId;
@@ -49,24 +51,26 @@ public class ApproveHoursRequest {
 		this.approverId = approverId;
 	}
 
-	public Date getEndDate() {
+
+
+	public String getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 
-	public Date getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	public ApproveHoursRequest(long projectId, long userId, long loggedId, long approverId, Date endDate,
-			Date startDate) {
+	public ApproveHoursRequest(long projectId, long userId, long loggedId, long approverId, String endDate,
+			String startDate,long sessionId) {
 		super();
 		this.projectId = projectId;
 		this.userId = userId;
@@ -74,6 +78,20 @@ public class ApproveHoursRequest {
 		this.approverId = approverId;
 		this.endDate = endDate;
 		this.startDate = startDate;
+		this.sessionId = sessionId;
+	}
+
+	public long getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(long sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public ApproveHoursRequest() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 	
 	

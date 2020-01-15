@@ -8,7 +8,6 @@ public class GetTaskTrackData {
 	
 	private int month;
 
-	
 	private long sessionId;
 	
 	

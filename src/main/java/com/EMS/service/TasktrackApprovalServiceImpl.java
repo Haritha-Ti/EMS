@@ -9068,20 +9068,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, weekStart,
 										weekEnd, userId);
 						double totalhours = 0.0;
-						String approverSatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
+						String userStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 						if (weeklyUserData != null) {
 							totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
 									+ weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6()
 									+ weeklyUserData.getDay7();
-							approverSatus = weeklyUserData.getApprover1Status() == null
+							userStatus = weeklyUserData.getTimetrackStatus()== null
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: weeklyUserData.getApprover1Status();
+									: weeklyUserData.getTimetrackStatus();
 						}
 
 						weeklyDataResponse.put("totalHour", totalhours);
 						weeklyDataResponse.put("weekStart", sdff.format(weekStart));
 						weeklyDataResponse.put("weekEnd", sdff.format(weekEnd));
-						weeklyDataResponse.put("approverSatus", approverSatus);
+						weeklyDataResponse.put("approverStatus", userStatus);
 						weeklyHourData.add(weeklyDataResponse);
 					}
 					userDataResponse.set("weekData", weeklyHourData);
@@ -9103,9 +9103,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									+ semiMonthlyUserData.getDay11() + semiMonthlyUserData.getDay12()
 									+ semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14()
 									+ semiMonthlyUserData.getDay15();
-							firstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null
+							firstHalfStatus = semiMonthlyUserData.getUserFirstHalfStatus() == null
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: semiMonthlyUserData.getApproverOneFirstHalfStatus();
+									: semiMonthlyUserData.getUserFirstHalfStatus();
 
 						}
 						if (semiMonthlyUserData.getUserSecondHalfStatus().equalsIgnoreCase("SUBMITTED")) {
@@ -9117,9 +9117,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									+ semiMonthlyUserData.getDay26() + semiMonthlyUserData.getDay27()
 									+ semiMonthlyUserData.getDay28() + semiMonthlyUserData.getDay29()
 									+ semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31();
-							secondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null
+							secondHalfStatus = semiMonthlyUserData.getUserSecondHalfStatus() == null
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-									: semiMonthlyUserData.getApproverOneSecondHalfStatus();
+									: semiMonthlyUserData.getUserSecondHalfStatus();
 						}
 
 					}
@@ -9693,19 +9693,25 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						String approverSatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 						if (weeklyUserData != null) {
 							if(weeklyUserData.getTimetrackStatus().
-									equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT) && weeklyUserData.getApprover1Status().
-									equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT))
+									equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT) )
+								if(weeklyUserData.getApprover1Status() != null) {
+									if(weeklyUserData.getApprover1Status().
+											equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
 							totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
 									+ weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6()
 									+ weeklyUserData.getDay7();
 							approverSatus = weeklyUserData.getApprover1Status() == null
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: weeklyUserData.getApprover1Status();
+									}
 						}
+						}
+						System.out.println("-----------"+totalhours);
 						WeekData weekData = new WeekData(totalhours, sdff.format(weekStart), sdff.format(weekEnd), approverSatus);
 						weeksDataArray.add(weekData);
-						
+						System.out.println(new ObjectMapper().writeValueAsString(weeksDataArray));
 					}
+					System.out.println(new ObjectMapper().writeValueAsString(weeksDataArray));
 					userResponse = new UserData(userId, userName, weeksDataArray);
 					userDataArray.add(userResponse);
 					data = new Data(projectWorkFlowType,userDataArray,week);
@@ -10590,8 +10596,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long loggedId = requestdata.getLoggedId();
 		Long approverId = requestdata.getApproverId();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = requestdata.getEndDate();
-		Date startDate = requestdata.getStartDate();
+		Date endDate = df.parse(requestdata.getEndDate());
+		Date startDate = df.parse(requestdata.getStartDate());
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		Date curDate = formatter.parse(formatter.format(date));
@@ -10942,14 +10948,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 
 	@Override
-	public ObjectNode getTaskTrackDataByUserIdForApprover2(ApproveHoursRequest requestdata) {
+	public ObjectNode getTaskTrackDataByUserIdForApprover2(ApproveHoursRequest requestdata) throws ParseException {
 		// TODO Auto-generated method stub
 		ObjectNode node = objectMapper.createObjectNode();
 		Long projectId = requestdata.getProjectId();
 		Long userId = requestdata.getUserId();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = requestdata.getStartDate();
-		Date endDate = requestdata.getEndDate();
+		Date startDate = df.parse(requestdata.getStartDate());
+		Date endDate = df.parse(requestdata.getEndDate());
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		boolean submitButtonStatus = false;
 		if (projectData != null) {
@@ -10965,14 +10971,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					node.put("approver1Status",
 							userData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: userData.getApprover1Status());
-					node.put("approver1SubmittedDate", userData.getApprover1SubmittedDate().toString());
+					node.put("approver1SubmittedDate", userData.getApprover1SubmittedDate() == null? "":userData.getApprover1SubmittedDate().toString());
 					node.put("userSubmittedDate", userData.getUserSubmittedDate().toString());
 					if (projectData.getProjectTier() == 2) {
 
 						node.put("approver2Status",
 								userData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 										: userData.getApprover2Status());
-						node.put("approver2SubmittedDate", userData.getApprover2SubmittedDate().toString());
+						node.put("approver2SubmittedDate",userData.getApprover2SubmittedDate() == null ? "": userData.getApprover2SubmittedDate().toString());
 					} else {
 						node.put("approver2Status", "");
 						node.put("approver2SubmittedDate", "");

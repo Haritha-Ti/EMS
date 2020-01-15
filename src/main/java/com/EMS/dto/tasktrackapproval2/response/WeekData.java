@@ -45,7 +45,7 @@ public class WeekData {
 	}
 	
 	public WeekData(double totalhours,String weekStart,String weekEnd,String approverSatus) {
-		this.totalHour = totalHour;
+		this.totalHour = totalhours;
 		this.weekStart = weekStart;
 		this.weekEnd = weekEnd;
 		this.approverSatus = approverSatus;

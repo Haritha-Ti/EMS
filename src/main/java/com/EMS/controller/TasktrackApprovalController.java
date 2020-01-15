@@ -302,6 +302,10 @@ public class TasktrackApprovalController {
 			StatusResponse response = new StatusResponse<>();
 			try {
 				node = tasktrackApprovalService.getTaskTrackDataByUserIdForApprover2(requestdata);
+				response.setData(node);
+				response.setStatus(Constants.SUCCESS);
+				response.setStatusCode(200);
+				
 				
 			} catch (Exception e) {
 				// TODO: handle exception

@@ -177,6 +177,6 @@ public interface TasktrackApprovalService {
     
     StatusResponse bulkApprovalForApproverTwo(ApproverTwoDto approverTwoDto)throws ParseException, Exception;
 
-	ObjectNode getTaskTrackDataByUserIdForApprover2(ApproveHoursRequest requestdata);
+	ObjectNode getTaskTrackDataByUserIdForApprover2(ApproveHoursRequest requestdata) throws ParseException;
 
 }
