@@ -10055,7 +10055,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					hourDataResponse.put(df.format(cal.getTime()), userData.getDay7());
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
-					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
+
+					JSONObject sublist = new JSONObject();
+					sublist.put("history",getSubmissionHistory(userData.getId(),projectId));
+					node.setAll(sublist);
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
 					if (user != null) {
@@ -10093,7 +10096,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						hourDataResponse.put(df.format(cal.getTime()), 0);
 						hourDataNode.add(hourDataResponse);
 						node.set("hourData", hourDataNode);
-						//node.put("submissionHistory","");
+						node.put("submissionHistory","");
 					}
 				}
 
@@ -10227,7 +10230,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
-					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
+					JSONObject sublist = new JSONObject();
+					sublist.put("history",getSubmissionHistory(userData.getId(),projectId));
+					node.setAll(sublist);
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
 					if (user != null) {
@@ -10323,7 +10328,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 						hourDataNode.add(hourDataResponse);
 						node.set("hourData", hourDataNode);
-						//node.set("submissionHistory","");
+						node.put("submissionHistory","");
 					}
 				}
 			}
