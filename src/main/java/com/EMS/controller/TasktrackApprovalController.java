@@ -176,7 +176,7 @@ public class TasktrackApprovalController {
 		catch (Exception e) {
 			e.printStackTrace();
 			response.put("status", "failure");
-			response.put("message", e.getMessage());
+			response.put("message", "failed. " + e);
 		}
 		response.put("code", httpstatus.getStatus());
 		return response;
@@ -197,7 +197,7 @@ public class TasktrackApprovalController {
 		catch (Exception e) {
 			e.printStackTrace();
 			response.put("status", "failure");
-			response.put("message", e.getMessage());
+			response.put("message", "failed. " + e);
 		}
 		response.put("code", httpstatus.getStatus());
 		return response;
