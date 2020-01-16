@@ -10113,6 +10113,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					node.put("userStatus", userData.getTimetrackStatus()== null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 							: userData.getTimetrackStatus());
 					node.put("userSubmittedDate",userData.getUserSubmittedDate()==null ?"":userData.getUserSubmittedDate().toString());
+					node.put("financeName",userData.getFinanceUser()==null?"":userData.getFinanceUser().getLastName()+" "+userData.getFinanceUser().getFirstName());
 					node.put("financeStatus", userData.getFinanceStatus()== null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 							: userData.getFinanceStatus());
 					node.put("financeSubmittedDate",userData.getFinanceSubmittedDate()==null ?"":userData.getFinanceSubmittedDate().toString());
@@ -10243,6 +10244,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("approver2SubmittedDate","");
 
 						}
+						node.put("financeName",userData.getFirstHalfFinanceId()==null?"":userData.getFirstHalfFinanceId().getLastName()+" "+userData.getFirstHalfFinanceId().getFirstName());
+						node.put("financeStatus", userData.getFinanceFirstHalfStatus()== null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: userData.getFinanceFirstHalfStatus());
+						node.put("financeSubmittedDate",userData.getFinanceFirstHalfSubmittedDate()==null ?"":userData.getFinanceFirstHalfSubmittedDate().toString());
 
 
 					} else {
@@ -10304,6 +10309,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("approver2SubmittedDate","");
 
 						}
+						node.put("financeName",userData.getSecondHalfFinanceId()==null?"":userData.getSecondHalfFinanceId().getLastName()+" "+userData.getSecondHalfFinanceId().getFirstName());
+						node.put("financeStatus", userData.getFinanceSecondHalfStatus()== null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
+								: userData.getFinanceSecondHalfStatus());
+						node.put("financeSubmittedDate",userData.getFinanceSecondHalfSubmittedDate()==null ?"":userData.getFinanceSecondHalfSubmittedDate().toString());
+
 					}
 					//hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataResponse);
@@ -10330,6 +10340,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 						node.put("approver2SubmittedDate","");
 						node.put("loggedId", "");
+						node.put("financeName","");
+						node.put("financeStatus", Constants.TASKTRACK_APPROVER_STATUS_OPEN);
+						node.put("financeSubmittedDate","");
+
 
 						ObjectNode hourDataResponse = objectMapper.createObjectNode();
 						if (day == 15) {
