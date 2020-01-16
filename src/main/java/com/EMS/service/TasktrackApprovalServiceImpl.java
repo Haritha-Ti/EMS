@@ -10906,6 +10906,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		TaskTrackRejection rejection = new TaskTrackRejection();
 		rejection.setProject(project);
 		rejection.setRemark(remark);
+		rejection.setRejectionTime(curDate);
 		rejection.setStatus(Constants.TASKTRACK_REJECTION_STATUS_OPEN);
 		
 		// weekly approval
@@ -10916,9 +10917,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			if (userData == null)
 				throw new Exception("No record found.");
 			
-			String approverStatus = approverLevel == 1 ? userData.getApprover1Status() : userData.getApprover2Status();
+			String approverStatus = approverLevel == 1 ? (userData.getApprover1Status() == null ? "" : userData.getApprover1Status())
+					: (userData.getApprover2Status() == null ? "" : userData.getApprover2Status());
+			String timeTrackStatus = userData.getTimetrackStatus() == null ? "" : userData.getTimetrackStatus();
+			
 			if(approverStatus.equals(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED) 
-					|| userData.getTimetrackStatus().equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
+					|| timeTrackStatus.equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
 				throw new Exception("This record was already rejected.");
 			}
 			if(approverLevel == 2) {
@@ -10933,6 +10937,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			rejection.setYear(userData.getYear());
 			rejection.setStartDate(userData.getStartDate());
 			rejection.setEndDate(userData.getEndDate());
+			if(approverId != null && approverId != 0l) {
+				rejection.setRejectedBy(userRepository.getOne(approverId));
+			}
 			taskTrackRejectionRepository.save(rejection);
 		} 
 		else { 
@@ -10948,9 +10955,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				throw new Exception("No record found.");
 			
 			if (day > 15) {
-				String approverStatus = approverLevel == 1 ? userData.getApproverOneSecondHalfStatus() : userData.getApproverTwoSecondHalfStatus();
+				String approverStatus = approverLevel == 1 ? (userData.getApproverOneSecondHalfStatus() == null ? "" : userData.getApproverOneSecondHalfStatus())
+						: (userData.getApproverTwoSecondHalfStatus() == null ? "" : userData.getApproverTwoSecondHalfStatus());
+				String timeTrackStatus = userData.getUserSecondHalfStatus() == null ? "" : userData.getUserSecondHalfStatus();
+				
 				if(approverStatus.equals(Constants.TASKTRACK_APPROVER_STATUS_REJECTION) 
-						|| userData.getUserSecondHalfStatus().equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
+						|| timeTrackStatus.equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
 					throw new Exception("This record was already rejected.");
 				}
 				if(approverLevel == 2) {
@@ -10961,9 +10971,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				rejection.setCycle(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
 			} 
 			else {
-				String approverStatus = approverLevel == 1 ? userData.getApproverOneFirstHalfStatus() : userData.getApproverTwoFirstHalfStatus();
+				String approverStatus = approverLevel == 1 ? (userData.getApproverOneFirstHalfStatus() == null ? "" : userData.getApproverOneFirstHalfStatus())
+						: (userData.getApproverTwoFirstHalfStatus() == null ? "" : userData.getApproverTwoFirstHalfStatus());
+				String timeTrackStatus = userData.getUserFirstHalfStatus() == null ? "" : userData.getUserFirstHalfStatus();
+				
 				if(approverStatus.equals(Constants.TASKTRACK_APPROVER_STATUS_REJECTION) 
-						|| userData.getUserFirstHalfStatus().equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
+						|| timeTrackStatus.equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
 					throw new Exception("This record was already rejected.");
 				}
 				if(approverLevel == 2) {
@@ -10978,6 +10991,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			rejection.setUser(userData.getUser());
 			rejection.setMonth(userData.getMonth());
 			rejection.setYear(userData.getYear());
+			if(approverId != null && approverId != 0l) {
+				rejection.setRejectedBy(userRepository.getOne(approverId));
+			}
 			taskTrackRejectionRepository.save(rejection);
 		}
 		try {
