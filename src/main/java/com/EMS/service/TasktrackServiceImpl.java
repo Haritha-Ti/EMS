@@ -1031,18 +1031,18 @@ public class TasktrackServiceImpl implements TasktrackService {
 						+ modelObj.getDay4() + modelObj.getDay5() + modelObj.getDay6() + modelObj.getDay7()
 						+ modelObj.getDay8() + modelObj.getDay9() + modelObj.getDay10() + modelObj.getDay11()
 						+ modelObj.getDay12() + modelObj.getDay13() + modelObj.getDay14() + modelObj.getDay15();
-				String firstHalfStatus = modelObj.getUserFirstHalfStatus();
+				String firstHalfFinalStatus = modelObj.getFirstHalfFinalStatus();
 				Double secondHalfHours = modelObj.getDay16() + modelObj.getDay17() + modelObj.getDay18()
 						+ modelObj.getDay19() + modelObj.getDay20() + modelObj.getDay21() + modelObj.getDay22()
 						+ modelObj.getDay23() + modelObj.getDay24() + modelObj.getDay25() + modelObj.getDay26()
 						+ modelObj.getDay27() + modelObj.getDay28() + modelObj.getDay29() + modelObj.getDay30()
 						+ modelObj.getDay31();
-				String secondHalfStatus = modelObj.getUserSecondHalfStatus();
+				String secondHalfFinalStatus = modelObj.getSecondHalfFinalStatus();
 				List<Map<String, Object>> periodsArray = new ArrayList<Map<String, Object>>();
 
 				if (projHalfs.containsKey(String.valueOf(modelObj.getProject().getProjectId()) + "F")) {
 					firstHalfObj.put("hours", firstHalfHours);
-					firstHalfObj.put("status", firstHalfStatus);
+					firstHalfObj.put("status", firstHalfFinalStatus);
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
 					periodsArray.add(firstHalfObj);
@@ -1050,7 +1050,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				}
 				if (projHalfs.containsKey(String.valueOf(modelObj.getProject().getProjectId()) + "S")) {
 					secondHalfObj.put("hours", secondHalfHours);
-					secondHalfObj.put("status", secondHalfStatus);
+					secondHalfObj.put("status", secondHalfFinalStatus);
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
@@ -1137,14 +1137,14 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 				if (hoursObj.containsKey("firstHalfHours")) {
 					firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
-					firstHalfObj.put("status", modelObj.getUserFirstHalfStatus());
+					firstHalfObj.put("status", modelObj.getFirstHalfFinalStatus());
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
 					periodsArray.add(firstHalfObj);
 				}
 				if (hoursObj.containsKey("secondHalfHours")) {
 					secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
-					secondHalfObj.put("status", modelObj.getUserSecondHalfStatus());
+					secondHalfObj.put("status", modelObj.getSecondHalfFinalStatus());
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
@@ -1222,7 +1222,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				HashMap<String, Object> projObj = projectsMap.get(modelObj.getProject().getProjectId());
 				Double hours = modelObj.getDay1() + modelObj.getDay2() + modelObj.getDay3() + modelObj.getDay4()
 						+ modelObj.getDay5() + modelObj.getDay6() + modelObj.getDay7();
-				String status = modelObj.getTimetrackStatus();
+				String status = modelObj.getTimetrackFinalStatus();
 
 				List<Map<String, Object>> periodsArray = (List<Map<String, Object>>) projObj.get("periods");
 
@@ -1333,7 +1333,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				// contain data not in timetrack
 				HashMap<String, Double> hoursObj = hoursProjectObj.get(modelObj.getProject().getProjectId());
 
-				String status = modelObj.getTimetrackStatus();
+				String status = modelObj.getTimetrackFinalStatus();
 
 				int idx = 1;
 				while (weekStartDay.getTime().before(lastWeekEndDay.getTime())) {

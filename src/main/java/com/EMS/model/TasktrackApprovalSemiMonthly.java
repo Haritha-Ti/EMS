@@ -90,6 +90,10 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 
 	private Date financeSecondHalfSubmittedDate;
 
+	private String firstHalfFinalStatus;
+	
+	private String secondHalfFinalStatus;
+
 	public long getId() {
 		return id;
 	}
@@ -546,6 +550,22 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 		this.financeSecondHalfStatus = financeSecondHalfStatus;
 	}
 
+	public UserModel getFirstHalfAapproverTwoId() {
+		return firstHalfAapproverTwoId;
+	}
+
+	public void setFirstHalfAapproverTwoId(UserModel firstHalfAapproverTwoId) {
+		this.firstHalfAapproverTwoId = firstHalfAapproverTwoId;
+	}
+
+	public UserModel getSecondHalfAapproverTwoId() {
+		return secondHalfAapproverTwoId;
+	}
+
+	public void setSecondHalfAapproverTwoId(UserModel secondHalfAapproverTwoId) {
+		this.secondHalfAapproverTwoId = secondHalfAapproverTwoId;
+	}
+
 	public Date getFinanceSecondHalfSubmittedDate() {
 		return financeSecondHalfSubmittedDate;
 	}
@@ -553,5 +573,24 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	public void setFinanceSecondHalfSubmittedDate(Date financeSecondHalfSubmittedDate) {
 		this.financeSecondHalfSubmittedDate = financeSecondHalfSubmittedDate;
 	}
+
+	public String getFirstHalfFinalStatus() {
+		return firstHalfFinalStatus;
+	}
+
+	public void setFirstHalfFinalStatus(String firstHalfFinalStatus) {
+		this.firstHalfFinalStatus = firstHalfFinalStatus;
+	}
+
+	public String getSecondHalfFinalStatus() {
+		return secondHalfFinalStatus;
+	}
+
+	public void setSecondHalfFinalStatus(String secondHalfFinalStatus) {
+		this.secondHalfFinalStatus = secondHalfFinalStatus;
+	}
+
+	
+	
 
 }

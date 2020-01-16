@@ -25,6 +25,8 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
     private ProjectModel project;
     @Column(name = "timetrack_status", length = 25)
     private String timetrackStatus;
+    
+    private String timetrackFinalStatus;
     @ManyToOne
     private UserModel approver1Id;
     @ManyToOne
@@ -214,7 +216,14 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
 	public void setFinanceStatus(String financeStatus) {
 		this.financeStatus = financeStatus;
 	}
+	public String getTimetrackFinalStatus() {
+		return timetrackFinalStatus;
+	}
+	public void setTimetrackFinalStatus(String timetrackFinalStatus) {
+		this.timetrackFinalStatus = timetrackFinalStatus;
+	}
     
+	
 }
 
 
