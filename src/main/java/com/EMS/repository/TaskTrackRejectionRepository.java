@@ -32,6 +32,6 @@ public interface TaskTrackRejectionRepository extends JpaRepository<TaskTrackRej
 	
 	@Query("select rejection FROM TaskTrackRejection rejection "
 			+ "where rejection.user.userId = ?1 and rejection.project.projectId = ?2 and rejection.month = ?3 "
-			+ "and rejection.year = ?4 and rejection.cycle = ?5 and rejection.status = ?6 ")
-	TaskTrackRejection findSemiMonthlyRejection(Long userId, Long projectId, Integer month, Integer year, String cycle,String status);
+			+ "and rejection.year = ?4 and rejection.status = ?5 ")
+	List<TaskTrackRejection> findSemiMonthlyRejection(Long userId, Long projectId, Integer month, Integer year,String status);
 }

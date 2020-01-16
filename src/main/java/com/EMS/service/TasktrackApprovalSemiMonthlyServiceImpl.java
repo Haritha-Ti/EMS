@@ -86,7 +86,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
 				projectId);
-		
+		List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
+		dateRanges.add(endDate);
 		if (approvalSemiMonthly != null) {
 
 			String approverOneFirstHalfStatus = approvalSemiMonthly.getApproverOneFirstHalfStatus();
@@ -97,8 +98,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			String approverTwoSecondHalfStatus = approvalSemiMonthly.getApproverTwoSecondHalfStatus();
 			String financeSecondHalfStatus = approvalSemiMonthly.getFinanceSecondHalfStatus();
 
-			List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
-			dateRanges.add(endDate);
+			
 			Calendar c = Calendar.getInstance();
 			c.setTime(startDate);
 
@@ -181,7 +181,9 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				response.put("approval", approval);
 			}
 			if (date == 16) {
+				
 				for (AllocationModel al : userProjAllocations) {
+				
 					List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());	
 					
 				JSONArray array = new JSONArray();
@@ -261,13 +263,23 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				response.put("approval", approval);
 				
 			}
+			}
 			result = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,response);
-			
-		} else {
-			result = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,Constants.NO_DATA_FOUND_MESSAGE);
+
+		}else {
+			JSONArray array = new JSONArray();
+			for (AllocationModel al : userProjAllocations) {
+				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
+				for (Date date : dateRanges) {
+					if (allocatedDates.contains(date)) {
+						array = addHoursandDaytoArray(array, null, date);
+					}
+				}
+			}
+			response.put("taskList", array);
+			result = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 		}
 
-		}
 		return result;
 
 	}
