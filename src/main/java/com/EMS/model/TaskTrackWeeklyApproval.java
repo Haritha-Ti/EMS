@@ -17,7 +17,7 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
     private Date endDate;
     private Double day1, day2, day3, day4, day5, day6, day7;
     
-    private Integer year;
+  
     @ManyToOne
     private UserModel user;
     private Date userSubmittedDate;
@@ -127,12 +127,7 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
     public void setDay7(Double day7) {
         this.day7 = Constants.roundToDefaultPrecision(day7);
     }
-    public Integer getYear() {
-        return year;
-    }
-    public void setYear(Integer year) {
-        this.year = year;
-    }
+  
     public UserModel getUser() {
         return user;
     }

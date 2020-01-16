@@ -173,10 +173,15 @@ public class TasktrackApprovalController {
 			response.put("status", Constants.SUCCESS);
 			response.put("message", "Successfully Rejected.");
 		} 
+		catch(NullPointerException e) {
+			e.printStackTrace();
+			response.put("status", "failure");
+			response.put("message", "Null Pointer Exception.");
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 			response.put("status", "failure");
-			response.put("message", "failed. " + e);
+			response.put("message", e.getMessage());
 		}
 		response.put("code", httpstatus.getStatus());
 		return response;
@@ -194,10 +199,15 @@ public class TasktrackApprovalController {
 			response.put("status", Constants.SUCCESS);
 			response.put("message", "Successfully Rejected.");
 		} 
+		catch(NullPointerException e) {
+			e.printStackTrace();
+			response.put("status", "failure");
+			response.put("message", "Null Pointer Exception.");
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 			response.put("status", "failure");
-			response.put("message", "failed. " + e);
+			response.put("message", e.getMessage());
 		}
 		response.put("code", httpstatus.getStatus());
 		return response;

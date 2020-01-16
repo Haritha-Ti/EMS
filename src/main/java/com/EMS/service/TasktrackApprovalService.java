@@ -163,7 +163,7 @@ public interface TasktrackApprovalService {
 
 	ObjectNode getTaskTrackDataByUserIdForFinance(ObjectNode requestdata) throws Exception;
 	
-	void rejectionFromApprover(ObjectNode requestdata,Integer approverLevel) throws Exception;
+	void rejectionFromApprover(ObjectNode requestdata,Integer approverLevel) throws NullPointerException,Exception;
 
     ObjectNode approveHoursFinance(ObjectNode requestdata) throws Exception;
 
