@@ -154,7 +154,6 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				projectDateList.add(date);
 				fromDate.add(Calendar.DATE, 1);
 			}
-
 		}
 
 	
@@ -436,6 +435,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				}
 			}
 			response.put("taskList", array);
+			response.put("enabled", true);
 			responseFinal = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 
 		}
