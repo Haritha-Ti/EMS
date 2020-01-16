@@ -385,15 +385,23 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				response.put("enabled", true);
 			}
 
-			String approver = weeklyTasktrack.getApprover1Id().getFirstName() + " "
-					+ weeklyTasktrack.getApprover1Id().getLastName();
+			String approver = weeklyTasktrack.getApprover1Id()!=null? weeklyTasktrack.getApprover1Id().getFirstName() + " "
+					+ weeklyTasktrack.getApprover1Id().getLastName():"";
 			Date approver1SubmittedDate = weeklyTasktrack.getApprover1SubmittedDate();
 
 			JSONObject approvalObj = new JSONObject();
 			approvalObj.put("approver", approver);
-			approvalObj.put("date", sdf.format(approver1SubmittedDate));
+		
+			if(null != approver1SubmittedDate)
+				{ 
+					approvalObj.put("date", sdf.format(approver1SubmittedDate));
+				}
+				
+			else {
+				approvalObj.put("date", "");
+			}
+			
 			approvalObj.put("status", approver1Status);
-
 			response.put("approval", approvalObj);
 
 			JSONArray array = new JSONArray();
