@@ -10881,7 +10881,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			taskTrackWeeklyApprovalRepository.save(userData);
 			
 			rejection.setUser(userData.getUser());
-			rejection.setYear(userData.getYear());
 			rejection.setStartDate(userData.getStartDate());
 			rejection.setEndDate(userData.getEndDate());
 			taskTrackRejectionRepository.save(rejection);
