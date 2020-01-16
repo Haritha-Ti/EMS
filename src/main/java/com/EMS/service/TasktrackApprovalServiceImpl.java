@@ -9093,7 +9093,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						weeklyDataResponse.put("totalHour", totalhours);
 						weeklyDataResponse.put("weekStart", sdff.format(weekStart));
 						weeklyDataResponse.put("weekEnd", sdff.format(weekEnd));
-						weeklyDataResponse.put("approverStatus", userStatus);
+						weeklyDataResponse.put("userStatus", userStatus);
+						weeklyDataResponse.put("approverStatus", approverStatus);
 						weeklyDataResponse.put("rejectionRemark", rejection == null ? "" : rejection.getRemark());
 						weeklyHourData.add(weeklyDataResponse);
 					}
@@ -9169,6 +9170,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					semiMonthlyDataResponse.put("secondHalfStatus", userSecondHalfStatus);
 					semiMonthlyDataResponse.put("firstHalfRejectionRemark", firstHalfRejection);
 					semiMonthlyDataResponse.put("secondHalfRejectionRemark", secondHalfRejection);
+					semiMonthlyDataResponse.put("approverFirstHalfStatus", approverFirstHalfStatus);
+					semiMonthlyDataResponse.put("approverSecondHalfStatus", approverSecondHalfStatus);
 					// semiMonthlyHourData.add(semiMonthlyDataResponse);
 					userDataResponse.set("semiMonthlyData", semiMonthlyDataResponse);
 
@@ -9228,7 +9231,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			weekDataResponse.put("endDate", weekStop.toDateTimeAtStartOfDay().toDate());
 			weeksArray.add(weekDataResponse);
 			weekStart = weekStop.plusDays(1);
+
 		} while (weekStop.isBefore(firstOfNextMonth) && weekStart.isBefore(firstOfNextMonth));
+
 		return weeksArray;
 	}
 
@@ -9751,9 +9756,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						String approver2Status = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 
 						if (weeklyUserData != null) {
+							if(weeklyUserData.getTimetrackStatus() != null)
 							if(weeklyUserData.getTimetrackStatus().
-									equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT) && weeklyUserData.getApprover1Status().
-									equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT))
+									equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT) ) {		
+								if(weeklyUserData.getApprover1Status() != null) {
+									if(weeklyUserData.getApprover1Status().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
 								totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
 								+ weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6()
 								+ weeklyUserData.getDay7();
@@ -9763,6 +9770,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							approver2Status = weeklyUserData.getApprover2Status() == null
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 											: weeklyUserData.getApprover2Status();
+						
+								
+									}
+									}
+								
+							}
 						}
 
 						TaskTrackRejection rejection = null;
@@ -11109,14 +11122,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					node.put("approver1Status",
 							userData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: userData.getApprover1Status());
-					node.put("approver1SubmittedDate", userData.getApprover1SubmittedDate().toString());
-					node.put("userSubmittedDate", userData.getUserSubmittedDate().toString());
+					node.put("approver1SubmittedDate",userData.getApprover1SubmittedDate() == null ? "": userData.getApprover1SubmittedDate().toString());
+					node.put("userSubmittedDate",userData.getUserSubmittedDate() == null ? "" : userData.getUserSubmittedDate().toString());
 					if (projectData.getProjectTier() == 2) {
 
 						node.put("approver2Status",
 								userData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 										: userData.getApprover2Status());
-						node.put("approver2SubmittedDate", userData.getApprover2SubmittedDate().toString());
+						node.put("approver2SubmittedDate",userData.getApprover2SubmittedDate() == null ? "": userData.getApprover2SubmittedDate().toString());
 					} else {
 						node.put("approver2Status", "");
 						node.put("approver2SubmittedDate", "");

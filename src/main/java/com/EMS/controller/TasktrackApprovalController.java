@@ -241,6 +241,9 @@ public class TasktrackApprovalController {
 		StatusResponse node = null;
 		try {
 			node = tasktrackApprovalService.approveHoursLevel2(requestdata);
+			node.setData(null);
+			node.setStatus(Constants.SUCCESS);
+			node.setStatusCode(200);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
