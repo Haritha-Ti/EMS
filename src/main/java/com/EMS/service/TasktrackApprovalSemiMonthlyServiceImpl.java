@@ -277,6 +277,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				}
 			}
 			response.put("taskList", array);
+			response.put("enabled",true);
 			result = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 		}
 
