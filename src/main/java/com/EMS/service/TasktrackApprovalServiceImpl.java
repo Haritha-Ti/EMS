@@ -9784,7 +9784,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									findWeeklyRejection(userId, projectId, year, startDate, endDate, Constants.TASKTRACK_REJECTION_STATUS_OPEN);
 						}
 
-						WeekData weekData = new WeekData(totalhours, sdff.format(weekStart), sdff.format(weekEnd), approverSatus,rejection == null ? "" : rejection.getRemark());
+						WeekData weekData = new WeekData(totalhours, sdff.format(weekStart), sdff.format(weekEnd), approverSatus,rejection == null ? "" : rejection.getRemark(),approver2Status);
 						weeksDataArray.add(weekData);
 					}
 					userResponse = new UserData(userId, userName, weeksDataArray);
@@ -9862,7 +9862,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 					}
 					SemiMonthlyData semiMonthlyData = new SemiMonthlyData(firstHalfHour, secondHalfHour,
-							firstHalfStatus, secondHalfStatus,firstHalfRejection,secondHalfRejection);
+							firstHalfStatus, secondHalfStatus,firstHalfRejection,secondHalfRejection,approver2FirstHalfStatus,approver2SecondHalfStatus);
 
 					userResponse = new UserData(userId, userName, semiMonthlyData);
 					userResponse.setWeekData(weeksDataArray);

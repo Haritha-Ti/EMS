@@ -13,6 +13,8 @@ public class WeekData {
 	private String approverSatus;
 	
 	private String rejectionRemark;
+	
+	private String approver2Status;
 
 	public double getTotalHour() {
 		return totalHour;
@@ -46,12 +48,13 @@ public class WeekData {
 		this.approverSatus = approverSatus;
 	}
 	
-	public WeekData(double totalhours,String weekStart,String weekEnd,String approverSatus,String rejectionRemark) {
+	public WeekData(double totalhours,String weekStart,String weekEnd,String approverSatus,String rejectionRemark,String approver2Status) {
 		this.totalHour = totalhours;
 		this.weekStart = weekStart;
 		this.weekEnd = weekEnd;
 		this.approverSatus = approverSatus;
 		this.rejectionRemark = rejectionRemark;
+		this.approver2Status = approver2Status;
 	}
 
 	public String getRejectionRemark() {
@@ -61,5 +64,14 @@ public class WeekData {
 	public void setRejectionRemark(String rejectionRemark) {
 		this.rejectionRemark = rejectionRemark;
 	}
+
+	public String getApprover2Status() {
+		return approver2Status;
+	}
+
+	public void setApprover2Status(String approver2Status) {
+		this.approver2Status = approver2Status;
+	}
+	
 	
 }
