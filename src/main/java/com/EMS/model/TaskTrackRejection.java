@@ -9,94 +9,99 @@ import javax.persistence.*;
 
 public class TaskTrackRejection {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 
-    @ManyToOne
-    private UserModel user;
+	@ManyToOne
+	private UserModel user;
 
-    @ManyToOne
-    private ProjectModel project;
+	@ManyToOne
+	private ProjectModel project;
 
-    private Integer month;
+	@ManyToOne
+	private UserModel rejectedBy;
 
-    private Integer year;
-    
-    private Date startDate;
-    
-    private Date endDate;
-    
-    private String remark;
+	private Integer month;
 
-    private String status;
-    
-    private String cycle;
+	private Integer year;
 
-    public String getStatus() {
-        return status;
-    }
+	private Date startDate;
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
-    public String getCycle() {
-        return cycle;
-    }
+	private Date endDate;
 
-    public void setCycle(String cycle) {
-        this.cycle = cycle;
-    }
+	private Date rejectionTime;
 
-    public String getRemark() {
-        return remark;
-    }
+	private String remark;
 
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
+	private String status;
 
-    public long getId() {
-        return id;
-    }
+	private String cycle;
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public UserModel getUser() {
-        return user;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public void setUser(UserModel user) {
-        this.user = user;
-    }
+	public String getCycle() {
+		return cycle;
+	}
 
-    public ProjectModel getProject() {
-        return project;
-    }
+	public void setCycle(String cycle) {
+		this.cycle = cycle;
+	}
 
-    public void setProject(ProjectModel project) {
-        this.project = project;
-    }
+	public String getRemark() {
+		return remark;
+	}
 
-    public Integer getMonth() {
-        return month;
-    }
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 
-    public void setMonth(Integer month) {
-        this.month = month;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public Integer getYear() {
-        return year;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public void setYear(Integer year) {
-        this.year = year;
-    }
+	public UserModel getUser() {
+		return user;
+	}
+
+	public void setUser(UserModel user) {
+		this.user = user;
+	}
+
+	public ProjectModel getProject() {
+		return project;
+	}
+
+	public void setProject(ProjectModel project) {
+		this.project = project;
+	}
+
+	public Integer getMonth() {
+		return month;
+	}
+
+	public void setMonth(Integer month) {
+		this.month = month;
+	}
+
+	public Integer getYear() {
+		return year;
+	}
+
+	public void setYear(Integer year) {
+		this.year = year;
+	}
 
 	public Date getStartDate() {
 		return startDate;
@@ -112,5 +117,21 @@ public class TaskTrackRejection {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}  
+	} 
+
+	public UserModel getRejectedBy() {
+		return rejectedBy;
+	}
+
+	public void setRejectedBy(UserModel rejectedBy) {
+		this.rejectedBy = rejectedBy;
+	}
+	
+	public Date getRejectionTime() {
+		return rejectionTime;
+	}
+
+	public void setRejectionTime(Date rejectionTime) {
+		this.rejectionTime = rejectionTime;
+	}
 }
