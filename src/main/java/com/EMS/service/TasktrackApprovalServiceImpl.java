@@ -9021,6 +9021,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	public ObjectNode getTaskTrackDataForApprover1(ObjectNode requestdata) throws Exception {
 		ObjectNode node = objectMapper.createObjectNode();
 		ArrayNode weeksDataArray = objectMapper.createArrayNode();
+		ArrayNode weeksDateArray = objectMapper.createArrayNode();
 
 		ArrayNode userDataArray = objectMapper.createArrayNode();
 
@@ -9033,13 +9034,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		// get startDate and endDate of the month
 		Date startDate;
 		Date endDate;
+		SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
 		String start = year + "-" + month + "-01";
-		startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+		startDate = sdff.parse(start);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		int total = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		String end = year + "-" + month + "-" + total;
-		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+		endDate = sdff.parse(end);
 		// get usersList in the project for the corresponding month
 		int projectWorkFlow = 0;
 		List<AllocationModel> allocatedUserData = allocationRepository.findByProjectProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsBillable(projectId,
@@ -9062,7 +9064,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					for (int i = 0; i < weeksArray.size(); i++) {
 						ObjectNode weeklyDataResponse = objectMapper.createObjectNode();
 						JSONObject objects = (JSONObject) weeksArray.get(i);
-						SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
+
 						Date weekStart = (Date) objects.get("startDate");
 						Date weekEnd = (Date) objects.get("endDate");
 						TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository
@@ -9181,13 +9183,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			if (projectWorkFlow == 3 || projectWorkFlow == 4) {
 				for (int j = 0; j < weeksArray.size(); j++) {
 					JSONObject objects = (JSONObject) weeksArray.get(j);
+					ObjectNode weekDateResponse = objectMapper.createObjectNode();
 					Date weekStart = (Date) objects.get("startDate");
 					Date weekEnd = (Date) objects.get("endDate");
 					SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
 					String weekRange = sdf.format(weekStart) + " - " + sdf.format(weekEnd);
 					weeksDataArray.add(weekRange);
+					weekDateResponse.put("startDate",sdff.format(weekStart));
+					weekDateResponse.put("endDate",sdff.format(weekEnd));
+					weeksDateArray.add(weekDateResponse);
 				}
 				node.set("weeks", weeksDataArray);
+				node.set("weeksDate",weeksDateArray);
 				node.put("projectWorkFlowType", "weekly");
 
 			} else {
