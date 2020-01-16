@@ -11,6 +11,8 @@ public class WeekData {
 	private String weekEnd;
 	
 	private String approverSatus;
+	
+	private String rejectionRemark;
 
 	public double getTotalHour() {
 		return totalHour;
@@ -44,14 +46,20 @@ public class WeekData {
 		this.approverSatus = approverSatus;
 	}
 	
-	public WeekData(double totalhours,String weekStart,String weekEnd,String approverSatus) {
+	public WeekData(double totalhours,String weekStart,String weekEnd,String approverSatus,String rejectionRemark) {
 		this.totalHour = totalhours;
 		this.weekStart = weekStart;
 		this.weekEnd = weekEnd;
 		this.approverSatus = approverSatus;
+		this.rejectionRemark = rejectionRemark;
 	}
-	
-	
-	
+
+	public String getRejectionRemark() {
+		return rejectionRemark;
+	}
+
+	public void setRejectionRemark(String rejectionRemark) {
+		this.rejectionRemark = rejectionRemark;
+	}
 	
 }
