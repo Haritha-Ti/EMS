@@ -9226,7 +9226,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			weekDataResponse.put("endDate", weekStop.toDateTimeAtStartOfDay().toDate());
 			weeksArray.add(weekDataResponse);
 			weekStart = weekStop.plusDays(1);
-		} while (weekStop.isBefore(firstOfNextMonth));
+		} while (weekStop.isBefore(firstOfNextMonth) && weekStart.isBefore(firstOfNextMonth));
 		return weeksArray;
 	}
 
@@ -10110,12 +10110,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					hourDataResponse.put(df.format(cal.getTime()), userData.getDay6());
 					cal.add(Calendar.DATE, 1);
 					hourDataResponse.put(df.format(cal.getTime()), userData.getDay7());
-					hourDataNode.add(hourDataResponse);
-					node.set("hourData", hourDataNode);
-					JSONObject sublist = new JSONObject();
-					sublist.put("history",getSubmissionHistory(userData.getId(),projectId));
-					node.setAll(sublist);
-					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
+					//hourDataNode.add(hourDataResponse);
+					node.set("hourData", hourDataResponse);
+					node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
 					if (user != null) {
@@ -10151,8 +10149,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						hourDataResponse.put(df.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), 0);
-						hourDataNode.add(hourDataResponse);
-						node.set("hourData", hourDataNode);
+						//hourDataNode.add(hourDataResponse);
+						node.set("hourData", hourDataResponse);
 						node.put("submissionHistory","");
 					}
 				}
@@ -10285,11 +10283,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						}
 					}
-					hourDataNode.add(hourDataResponse);
-					node.set("hourData", hourDataNode);
-					JSONObject sublist = new JSONObject();
-					sublist.put("history",getSubmissionHistory(userData.getId(),projectId));
-					node.setAll(sublist);
+					//hourDataNode.add(hourDataResponse);
+					node.set("hourData", hourDataResponse);
+					node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
 					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
@@ -10384,8 +10380,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								hourDataResponse.put(df.format(cal.getTime()), 0);
 							}
 						}
-						hourDataNode.add(hourDataResponse);
-						node.set("hourData", hourDataNode);
+						//hourDataNode.add(hourDataResponse);
+						node.set("hourData", hourDataResponse);
 						node.put("submissionHistory","");
 					}
 				}
