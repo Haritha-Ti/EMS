@@ -4,7 +4,7 @@ public class SemiMonthlyData {
 
 	
 	public SemiMonthlyData(double firstHalfHour, double secondHalfHour, String firstHalfStatus,
-			String secondHalfStatus, String firstHalfRejectionRemark,String secondHalfRejectionRemark) {
+			String secondHalfStatus, String firstHalfRejectionRemark,String secondHalfRejectionRemark,String approver2FirstHalfStatus,String approver2SecondHalfStatus) {
 		super();
 		this.firstHalfHour = firstHalfHour;
 		this.secondHalfHour = secondHalfHour;
@@ -25,6 +25,28 @@ public class SemiMonthlyData {
 	private String firstHalfRejectionRemark;
 	
 	private String secondHalfRejectionRemark;
+	
+	private String approver2FirstHalfStatus;
+	
+	private String approver2SecondHalfStatus;
+	
+	
+
+	public String getApprover2FirstHalfStatus() {
+		return approver2FirstHalfStatus;
+	}
+
+	public void setApprover2FirstHalfStatus(String approver2FirstHalfStatus) {
+		this.approver2FirstHalfStatus = approver2FirstHalfStatus;
+	}
+
+	public String getApprover2SecondHalfStatus() {
+		return approver2SecondHalfStatus;
+	}
+
+	public void setApprover2SecondHalfStatus(String approver2SecondHalfStatus) {
+		this.approver2SecondHalfStatus = approver2SecondHalfStatus;
+	}
 
 	public double getFirstHalfHour() {
 		return firstHalfHour;
