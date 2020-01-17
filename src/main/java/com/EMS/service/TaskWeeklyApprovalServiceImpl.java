@@ -83,8 +83,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			weeklyApproval = new TaskTrackWeeklyApproval();
 		}
 
-		if (null != weeklyApproval.getTimetrackStatus() &&  weeklyApproval.getTimetrackStatus().equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)) {
-			return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Timetrack already submitted.");
+		if (null != weeklyApproval.getTimetrackFinalStatus()) {
+			if (weeklyApproval.getTimetrackFinalStatus().equals(Constants.TASKTRACK_FINAL_STATUS_APPROVED)
+					|| weeklyApproval.getTimetrackFinalStatus()
+							.equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)) {
+				return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE,
+						"Timetrack has already been approved.");
+			}
+			
 		}
 		weeklyApproval.setStartDate(startDate);
 		weeklyApproval.setEndDate(endDate);
