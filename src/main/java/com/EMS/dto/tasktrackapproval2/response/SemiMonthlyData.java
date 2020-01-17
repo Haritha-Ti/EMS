@@ -1,10 +1,13 @@
 package com.EMS.dto.tasktrackapproval2.response;
 
+import com.EMS.utility.Constants;
+
 public class SemiMonthlyData {
 
 	
 	public SemiMonthlyData(double firstHalfHour, double secondHalfHour, String firstHalfStatus,
-			String secondHalfStatus, String firstHalfRejectionRemark,String secondHalfRejectionRemark,String approver2FirstHalfStatus,String approver2SecondHalfStatus) {
+			String secondHalfStatus, String firstHalfRejectionRemark,String secondHalfRejectionRemark,
+			String approver2FirstHalfStatus,String approver2SecondHalfStatus,String firstHalfFinalStatus,String secondHalfFinalStatus) {
 		super();
 		this.firstHalfHour = firstHalfHour;
 		this.secondHalfHour = secondHalfHour;
@@ -12,6 +15,9 @@ public class SemiMonthlyData {
 		this.secondHalfStatus = secondHalfStatus;
 		this.firstHalfRejectionRemark = firstHalfRejectionRemark;
 		this.secondHalfRejectionRemark = secondHalfRejectionRemark;
+		this.firstHalfFinalStatus = firstHalfFinalStatus;
+		this.secondHalfFinalStatus = secondHalfFinalStatus;
+		
 	}
 
 	private double firstHalfHour;
@@ -30,6 +36,9 @@ public class SemiMonthlyData {
 	
 	private String approver2SecondHalfStatus;
 	
+	private String firstHalfFinalStatus ;
+	
+	private String secondHalfFinalStatus ;
 	
 
 	public String getApprover2FirstHalfStatus() {
@@ -95,5 +104,24 @@ public class SemiMonthlyData {
 	public void setSecondHalfRejectionRemark(String secondHalfRejectionRemark) {
 		this.secondHalfRejectionRemark = secondHalfRejectionRemark;
 	}
+
+	public String getFirstHalfFinalStatus() {
+		return firstHalfFinalStatus;
+	}
+
+	public void setFirstHalfFinalStatus(String firstHalfFinalStatus) {
+		this.firstHalfFinalStatus = firstHalfFinalStatus;
+	}
+
+	public String getSecondHalfFinalStatus() {
+		return secondHalfFinalStatus;
+	}
+
+	public void setSecondHalfFinalStatus(String secondHalfFinalStatus) {
+		this.secondHalfFinalStatus = secondHalfFinalStatus;
+	}
+
+	
+
 	
 }

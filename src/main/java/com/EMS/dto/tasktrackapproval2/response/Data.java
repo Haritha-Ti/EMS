@@ -1,17 +1,24 @@
 package com.EMS.dto.tasktrackapproval2.response;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class Data {
 
+	
 	private String projectWorkFlowType;
 	
 	private ArrayList<UserData> userData = new ArrayList<>();
 	
 	private ArrayList<String> weeks = new ArrayList<>();
-
+	
+	private ArrayList<Dates> weeksDate = new ArrayList<>();
+	
 	public String getProjectWorkFlowType() {
 		return projectWorkFlowType;
 	}
@@ -38,12 +45,28 @@ public class Data {
 		this.weeks = weeks;
 	}
 
-	public Data(String projectWorkFlowType, ArrayList<UserData> userData, ArrayList<String> weeks) {
+	public Data(String projectWorkFlowType, ArrayList<UserData> userData, ArrayList<String> weeks,ArrayList<Dates> weeksDate) {
 		super();
 		this.projectWorkFlowType = projectWorkFlowType;
 		this.userData = userData;
 		this.weeks = weeks;
+		this.weeksDate = weeksDate;
 	}
+
+	public ArrayList<Dates> getWeeksDate() {
+		return weeksDate;
+	}
+
+	public void setWeeksDate(ArrayList<Dates> weeksDate) {
+		this.weeksDate = weeksDate;
+	}
+
+	
+
+
+
+	
+	
 	
 	
 }
