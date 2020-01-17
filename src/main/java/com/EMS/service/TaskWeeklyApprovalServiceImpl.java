@@ -396,43 +396,33 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			JSONObject approvalObj = new JSONObject();
 			approvalObj.put("approver", approver);
-		
-			if(null != approver1SubmittedDate)
-				{ 
-					approvalObj.put("date", sdf.format(approver1SubmittedDate));
-				}
-				
+
+			if(null != approver1SubmittedDate){ 
+				approvalObj.put("date", sdf.format(approver1SubmittedDate));
+			}
 			else {
 				approvalObj.put("date", "");
 			}
-			
+
 			approvalObj.put("status", approver1Status);
 			response.put("approval", approvalObj);
 
+			JSONObject user = new JSONObject();
+			user.put("status", weeklyTasktrack.getTimetrackStatus());
+			user.put("date", weeklyTasktrack.getUserSubmittedDate());
+			response.put("user", user);
+
+			
 			JSONArray array = new JSONArray();
 			for (AllocationModel al : userProjAllocations) {
 				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
-				if (allocatedDates.contains(datesInRange.get(0))) {
-					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay1(), datesInRange.get(0));
-				}
-				if (allocatedDates.contains(datesInRange.get(1))) {
-					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay2(), datesInRange.get(1));
-				}
-				if (allocatedDates.contains(datesInRange.get(2))) {
-					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay3(), datesInRange.get(2));
-				}
-				if (allocatedDates.contains(datesInRange.get(3))) {
-					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay4(), datesInRange.get(3));
-				}
-				if (allocatedDates.contains(datesInRange.get(4))) {
-					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay5(), datesInRange.get(4));
-				}
-				if (allocatedDates.contains(datesInRange.get(5))) {
-					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay6(), datesInRange.get(5));
-				}
-				if (allocatedDates.contains(datesInRange.get(6))) {
-					array = addHoursandDaytoArray(array, weeklyTasktrack.getDay7(), datesInRange.get(6));
-				}
+				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay1(), datesInRange.get(0)));
+				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay2(), datesInRange.get(1)));
+				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay3(), datesInRange.get(2)));
+				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay4(), datesInRange.get(3)));
+				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay5(), datesInRange.get(4)));
+				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay6(), datesInRange.get(5)));
+				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay7(), datesInRange.get(6)));
 			}
 
 			response.put("taskList", array);
@@ -442,28 +432,23 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			for (AllocationModel al : userProjAllocations) {
 				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
 				for (Date date : datesInRange) {
-					if (allocatedDates.contains(date)) {
-						array = addHoursandDaytoArray(array, null, date);
-					}
+					array.add(addHoursandDaytoArray(sdf, allocatedDates,null, date));
 				}
 			}
 			response.put("taskList", array);
 			response.put("enabled", true);
 			responseFinal = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
-
 		}
 		return responseFinal;
 	}
 
-	public JSONArray addHoursandDaytoArray(JSONArray array, Double day, Date date) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		JSONObject hour = new JSONObject();
-		hour.put("hour", day);
-		JSONObject finalDay = new JSONObject();
-		finalDay.put(sdf.format(date), hour);
-		array.add(finalDay);
-		return array;
-
+	public JSONObject addHoursandDaytoArray(SimpleDateFormat sdf, List<Date> allocatedDates, Double hour, Date date) {
+		JSONObject response = new JSONObject();
+		JSONObject dayResponse = new JSONObject();
+		dayResponse.put("hour", hour);
+		dayResponse.put("enabled",allocatedDates.contains(date));
+		response.put(sdf.format(date), dayResponse);
+		return response;
 	}
 
 	@Override
