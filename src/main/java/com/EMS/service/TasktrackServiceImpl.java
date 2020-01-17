@@ -1241,6 +1241,16 @@ public class TasktrackServiceImpl implements TasktrackService {
 				}
 				if (weeksMap.isEmpty()) {
 					projWeeksMap.remove(modelObj.getProject().getProjectId());
+					Collections.sort(periodsArray, (arr1, arr2) -> {
+						try {
+							return dateFrmt.parse(arr1.get("startDay").toString())
+									.compareTo(dateFrmt.parse(arr2.get("startDay").toString()));
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return 0;
+						}
+					});
 				}
 			}
 			for (Long projectId : projWeeksMap.keySet()) {
@@ -1256,6 +1266,16 @@ public class TasktrackServiceImpl implements TasktrackService {
 					periodsArray.add(weekObj);
 					projObj.put("periods", periodsArray);
 				}
+				Collections.sort(periodsArray, (arr1, arr2) -> {
+					try {
+						return dateFrmt.parse(arr1.get("startDay").toString())
+								.compareTo(dateFrmt.parse(arr2.get("startDay").toString()));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return 0;
+					}
+				});
 			}
 
 		}
@@ -1353,6 +1373,16 @@ public class TasktrackServiceImpl implements TasktrackService {
 					weekEndDay.add(Calendar.DATE, 7);
 					if (hoursProjectObj.get(modelObj.getProject().getProjectId()).isEmpty()) {
 						hoursProjectObj.remove(modelObj.getProject().getProjectId());
+						Collections.sort(periodsArray, (arr1, arr2) -> {
+							try {
+								return dateFrmt.parse(arr1.get("startDay").toString())
+										.compareTo(dateFrmt.parse(arr2.get("startDay").toString()));
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+								return 0;
+							}
+						});
 					}
 					idx++;
 				}
@@ -1387,6 +1417,17 @@ public class TasktrackServiceImpl implements TasktrackService {
 					weekEndDay.add(Calendar.DATE, 7);
 					idx++;
 				}
+				Collections.sort(periodsArray, (arr1, arr2) -> {
+					try {
+						return dateFrmt.parse(arr1.get("startDay").toString())
+								.compareTo(dateFrmt.parse(arr2.get("startDay").toString()));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return 0;
+					}
+				});
+
 			}
 
 		}
