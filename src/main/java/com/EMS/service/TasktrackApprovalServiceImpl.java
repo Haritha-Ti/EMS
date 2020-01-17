@@ -9295,6 +9295,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				if (userData != null) {
 					node.put("userName", userData.getUser().getLastName() + " " + userData.getUser().getFirstName());
 					node.put("userId", userData.getUser().getUserId());
+					node.put("approver1Name",userData.getApprover1Id()== null ?
+							userData.getProject().getProjectOwner().getLastName()+" "+
+									userData.getProject().getProjectOwner().getFirstName():userData.getApprover1Id().getLastName()+" "+
+							userData.getApprover1Id().getFirstName());
 					node.put("approver1Status",
 							userData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
 									: userData.getApprover1Status());
@@ -9302,12 +9306,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					node.put("userStatus", userData.getTimetrackStatus());
 					node.put("userSubmittedDate", userData.getUserSubmittedDate()==null?"":dff.format(userData.getUserSubmittedDate()));
 					if (projectData.getProjectTier() == 2) {
-
+						node.put("approver2Name",userData.getApprover2Id()== null ?
+								userData.getProject().getOnsite_lead().getLastName()+" "+
+										userData.getProject().getOnsite_lead().getFirstName():userData.getApprover2Id().getLastName()+" "+
+								userData.getApprover2Id().getFirstName());
 						node.put("approver2Status",
 								userData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
 										: userData.getApprover2Status());
 						node.put("approver2SubmittedDate", userData.getApprover2SubmittedDate()==null?"":dff.format(userData.getApprover2SubmittedDate()));
 					} else {
+						node.put("approver2Name","");
 						node.put("approver2Status", "");
 						node.put("approver2SubmittedDate", "");
 					}
@@ -9361,13 +9369,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (user != null) {
 						node.put("userName", user.getLastName() + " " + user.getFirstName());
 						node.put("userId", user.getUserId());
+						node.put("approver1Name",
+								projectData.getProjectOwner().getLastName()+" "+
+										projectData.getProjectOwner().getFirstName());
 						node.put("approver1Status", Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
 						node.put("loggedId", "");
 						node.put("userStatus", Constants.TASKTRACK_USER_STATUS_OPEN);
 						node.put("approver1SubmittedDate", "");
 						node.put("userSubmittedDate", "");
 						if (projectData.getProjectTier() == 2) {
-
+							node.put("approver2Name",
+									projectData.getOnsite_lead().getLastName()+" "+
+											projectData.getOnsite_lead().getFirstName());
 							node.put("approver2Status", Constants.TASKTRACK_APPROVER2_STATUS_OPEN);
 							node.put("approver2SubmittedDate", "");
 						} else {
@@ -9451,6 +9464,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay14():0);
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay15():0);
+						node.put("approver1Name",userData.getFirstHalfApproverOneId()== null ?
+								userData.getProject().getProjectOwner().getLastName()+" "+
+										userData.getProject().getProjectOwner().getFirstName():userData.getFirstHalfApproverOneId().getLastName()+" "+
+								userData.getFirstHalfApproverOneId().getFirstName());
 						node.put("approver1Status", approverOneFirstHalfStatus);
 						node.put("userStatus",userFirstHalfStatus);
 						node.put("approver1SubmittedDate",userData.getApproverOneFirstHalfSubmittedDate()==null?"":
@@ -9458,6 +9475,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("userSubmittedDate", userData.getUserFirstHalfSubmittedDate()==null?"":
 								dff.format(userData.getUserFirstHalfSubmittedDate()));
 						if (projectData.getProjectTier() == 2) {
+							node.put("approver2Name",userData.getFirstHalfApproverTwoId()== null ?
+									userData.getProject().getOnsite_lead().getLastName()+" "+
+											userData.getProject().getOnsite_lead().getFirstName():userData.getFirstHalfApproverTwoId().getLastName()+" "+
+									userData.getFirstHalfApproverTwoId().getFirstName());
 							node.put("approver2Status",
 									userData.getApproverTwoFirstHalfStatus() == null
 											? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
@@ -9465,6 +9486,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("approver2SubmittedDate",userData.getApproverTwoFirstHalfSubmittedDate()==null?"":
 									dff.format(userData.getApproverTwoFirstHalfSubmittedDate()));
 						} else {
+							node.put("approver2Name","");
 							node.put("approver2Status", "");
 							node.put("approver2SubmittedDate", "");
 						}
@@ -9532,13 +9554,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							cal.add(Calendar.DATE, 1);
 							hourDataResponse.put(df.format(cal.getTime()),userSecondHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay31():0);
 						}
+						node.put("approver1Name",userData.getSecondHalfApproverOneId()== null ?
+								userData.getProject().getProjectOwner().getLastName()+" "+
+										userData.getProject().getProjectOwner().getFirstName():userData.getSecondHalfApproverOneId().getLastName()+" "+
+								userData.getSecondHalfApproverOneId().getFirstName());
 						node.put("approver1Status", approverOneSecondHalfStatus);
 						node.put("userStatus", userSecondHalfStatus);
 						node.put("approver1SubmittedDate",
 								userData.getApproverOneSecondHalfSubmittedDate()==null?"":dff.format(userData.getApproverOneSecondHalfSubmittedDate()));
 						node.put("userSubmittedDate", userData.getUserSecondHalfSubmittedDate()==null?"":dff.format(userData.getUserSecondHalfSubmittedDate()));
 						if (projectData.getProjectTier() == 2) {
-
+							node.put("approver2Name",userData.getSecondHalfApproverTwoId()== null ?
+									userData.getProject().getOnsite_lead().getLastName()+" "+
+											userData.getProject().getOnsite_lead().getFirstName():userData.getSecondHalfApproverTwoId().getLastName()+" "+
+									userData.getSecondHalfApproverTwoId().getFirstName());
 							node.put("approver2Status",
 									userData.getApproverTwoSecondHalfStatus() == null
 											? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
@@ -9546,6 +9575,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("approver2SubmittedDate",userData.getApproverTwoSecondHalfSubmittedDate()==null?"":
 									dff.format(userData.getApproverTwoSecondHalfSubmittedDate()));
 						} else {
+							node.put("approver2Name","");
 							node.put("approver2Status", "");
 							node.put("approver2SubmittedDate", "");
 						}
@@ -9579,16 +9609,22 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						node.put("userName", user.getLastName() + " " + user.getFirstName());
 						node.put("userId", user.getUserId());
+						node.put("approver1Name",
+								projectData.getProjectOwner().getLastName()+" "+
+										projectData.getProjectOwner().getFirstName());
 						node.put("approver1Status", Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
 						node.put("loggedId", "");
 						node.put("userStatus", Constants.TASKTRACK_USER_STATUS_OPEN);
 						node.put("approver1SubmittedDate", "");
 						node.put("userSubmittedDate", "");
 						if (projectData.getProjectTier() == 2) {
-
+							node.put("approver2Name",
+									projectData.getOnsite_lead().getLastName()+" "+
+											projectData.getOnsite_lead().getFirstName());
 							node.put("approver2Status", Constants.TASKTRACK_APPROVER2_STATUS_OPEN);
 							node.put("approver2SubmittedDate", "");
 						} else {
+							node.put("approver2Name","");
 							node.put("approver2Status", "");
 							node.put("approver2SubmittedDate", "");
 						}
