@@ -310,11 +310,14 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		if (null == semiMonthlyApproval) {
 			semiMonthlyApproval = new TasktrackApprovalSemiMonthly();
 		}
-		if((isFirstHalf && semiMonthlyApproval.getUserFirstHalfStatus() != null 
-				&& semiMonthlyApproval.getUserFirstHalfStatus().equals(Constants.TASKTRACK_USER_STATUS_SUBMIT))
-				|| (!isFirstHalf && semiMonthlyApproval.getUserSecondHalfStatus() != null
-				&& semiMonthlyApproval.getUserSecondHalfStatus().equals(Constants.TASKTRACK_USER_STATUS_SUBMIT))) {
-			return new StatusResponse("success", 200, "Timetrack already submitted.");
+		if((isFirstHalf && semiMonthlyApproval.getFirstHalfFinalStatus() != null 
+				&& (semiMonthlyApproval.getFirstHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)
+				|| semiMonthlyApproval.getFirstHalfFinalStatus().endsWith(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)))
+				
+				|| (!isFirstHalf && semiMonthlyApproval.getSecondHalfFinalStatus() != null
+				&& (semiMonthlyApproval.getSecondHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)
+				|| semiMonthlyApproval.getSecondHalfFinalStatus().endsWith(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)))) {
+			return new StatusResponse("success", 200, "Timetrack has already been approved.");
 		}
 		semiMonthlyApproval.setYear(year);
 		semiMonthlyApproval.setMonth(month);

@@ -10980,7 +10980,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
 									userId);
 					if (userData != null) {
-						userData.setApprover1Status(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+						if(projectData.getProjectTier()==2) {
+							userData.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+							userData.setTimetrackFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+						}
+						else{
+							userData.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+							userData.setTimetrackFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+						}
 						UserModel approver = userRepository.getOne(approverId);
 						userData.setApprover1Id(approver);
 						userData.setApprover1SubmittedDate(curDate);
@@ -10997,12 +11004,25 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (userData != null) {
 						UserModel approver = userRepository.getOne(approverId);
 						if (day > 15) {
-							userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							if(projectData.getProjectTier()==2) {
+								userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+								userData.setSecondHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+							}
+							else{
+								userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+								userData.setSecondHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+							}
 							userData.setSecondHalfApproverOneId(approver);
 							userData.setApproverOneSecondHalfSubmittedDate(curDate);
 							taskTrackApprovalSemiMonthlyRepository.save(userData);
 						} else {
-							userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							if(projectData.getProjectTier()==2) {
+								userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+								userData.setFirstHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+							}else{
+								userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+								userData.setFirstHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+							}
 							userData.setFirstHalfApproverOneId(approver);
 							userData.setApproverOneFirstHalfSubmittedDate(curDate);
 							taskTrackApprovalSemiMonthlyRepository.save(userData);
