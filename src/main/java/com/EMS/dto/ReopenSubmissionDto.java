@@ -13,6 +13,18 @@ public class ReopenSubmissionDto {
 	private Date startDate;
 	
 	private Date endDate;
+	
+	private long sessionId;
+	
+	
+
+	public long getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(long sessionId) {
+		this.sessionId = sessionId;
+	}
 
 	public Long getId() {
 		return id;

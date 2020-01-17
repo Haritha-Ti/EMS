@@ -11272,6 +11272,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		Boolean submitButtonStatus = Boolean.FALSE;
 		Boolean rejectButtonStatus = Boolean.FALSE;
+		String projectApprover1 = projectData.getProjectOwner().getLastName()+" "+projectData.getProjectOwner().getFirstName();
+		String projectApprover2 = projectData.getOnsite_lead().getLastName()+" "+projectData.getOnsite_lead().getFirstName();
 		if (projectData != null) {
 			ArrayNode hourDataNode = objectMapper.createArrayNode();
 			// weekly
@@ -11327,6 +11329,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					hourDataResponse.put(df.format(cal.getTime()),userData.getApprover1Status() != null?(userData.getApprover1Status().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2) ? userData.getDay7():0):0);
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
+					node.put("approver1Name",userData.getApprover1Id() == null ? projectApprover1 :(userData.getApprover1Id().getLastName() + " "+ userData.getApprover1Id().getFirstName()));
+					node.put("approver2Name",userData.getApprover2Id() == null ? projectApprover2 :(userData.getApprover2Id().getLastName() + " "+ userData.getApprover2Id().getFirstName()));
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
 					if (user != null) {
@@ -11341,9 +11345,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 							node.put("approver2Status", Constants.TASKTRACK_APPROVER_STATUS_OPEN);
 							node.put("approver2SubmittedDate", "");
+							node.put("approver1Name", projectApprover1);
+							node.put("approver2Name", projectApprover2);
 						} else {
 							node.put("approver2Status", "");
 							node.put("approver2SubmittedDate", "");
+							node.put("approver1Name", projectApprover1);
+							node.put("approver2Name", "");
 						}
 						ObjectNode hourDataResponse = objectMapper.createObjectNode();
 						Calendar cal = Calendar.getInstance();
@@ -11449,7 +11457,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 						node.put("submitButtonStatus", submitButtonStatus);
 						node.put("rejectButtonStatus", rejectButtonStatus);
-
+						node.put("approver1Name",userData.getFirstHalfApproverOneId() == null ?projectApprover1:(userData.getFirstHalfApproverOneId().getLastName()+" "+userData.getFirstHalfApproverOneId().getFirstName()));
+						node.put("approver2Name",userData.getFirstHalfApproverTwoId() == null ?projectApprover2:(userData.getFirstHalfApproverTwoId().getLastName()+" "+userData.getFirstHalfApproverTwoId().getFirstName()));
 					} else {
 
 						hourDataResponse.put(df.format(cal.getTime()), userData.getApproverOneFirstHalfStatus() != null?(userData.getApproverOneFirstHalfStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2) ? userData.getDay16():0):0);
@@ -11517,6 +11526,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					node.put("submitButtonStatus", submitButtonStatus);
 					node.put("rejectButtonStatus", rejectButtonStatus);
+					node.put("approver1Name",userData.getSecondHalfApproverOneId() == null ?projectApprover1:(userData.getSecondHalfApproverOneId().getLastName()+" "+userData.getSecondHalfApproverOneId().getFirstName()));
+					node.put("approver2Name",userData.getSecondHalfApproverTwoId() == null ?projectApprover2:(userData.getSecondHalfApproverTwoId().getLastName()+" "+userData.getSecondHalfApproverTwoId().getFirstName()));
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
 				} else {
@@ -11613,6 +11624,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.set("hourData", hourDataNode);
 						node.put("submitButtonStatus", false);
 						node.put("rejectButtonStatus", false);
+						node.put("approver1Name",projectApprover1);
+						node.put("approver2Name", projectApprover2);
 					}
 				}
 			}
