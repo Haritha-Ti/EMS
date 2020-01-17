@@ -59,6 +59,12 @@ public class Constants {
 	public static final String TASKTRACK_USER_STATUS_SAVED = "SAVED";
 	public static final String TASKTRACK_USER_STATUS_REJECTION = "REJECTED";
 	public static final String TASKTRACK_USER_STATUS_OPEN = "OPEN";
+
+	public static final String TASKTRACK_APPROVER1_STATUS_APPROVED = "APPROVED";
+	public static final String TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2 = "FORWARDED_TO_L2";
+
+	public static final String TASKTRACK_APPROVER2_STATUS_APPROVED = "APPROVED";
+	public static final String TASKTRACK_FINANCE_STATUS_APPROVED = "FINANCE_APPROVED";
 	
 
 	public static final Double roundToDefaultPrecision(Double value) {
