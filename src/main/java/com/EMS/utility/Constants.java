@@ -66,6 +66,8 @@ public class Constants {
 	public static final String TASKTRACK_APPROVER2_STATUS_OPEN = "OPEN";
 	public static final String TASKTRACK_APPROVER2_STATUS_APPROVED = "APPROVED";
 	public static final String TASKTRACK_FINANCE_STATUS_APPROVED = "APPROVED";
+	public static final String TASKTRACK_FINANCE_STATUS_OPEN = "OPEN";
+
 	
 
 	public static final Double roundToDefaultPrecision(Double value) {
