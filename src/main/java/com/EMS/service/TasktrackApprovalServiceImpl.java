@@ -11192,7 +11192,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = requestdata.getProjectId();
 		Long userId = requestdata.getUserId();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat sdfdm = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+		SimpleDateFormat sdfdm = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
 		Date startDate = df.parse(requestdata.getStartDate());
 		Date endDate = df.parse(requestdata.getEndDate());
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
