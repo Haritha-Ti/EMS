@@ -394,135 +394,138 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		for(Date date : projectDateList) {
 			cal.setTime(date);
 			int day = cal.get(Calendar.DATE);
-			Double hour = Double.parseDouble(timetrack.get(sdf.format(date)).toString());
-			if(hour < 0 || hour > 24) {
-				requeststatus = 1;
-				break;
-			}
-			switch(day) {
-				case 1: {
-					semiMonthlyApproval.setDay1(hour);
+			Object hr = timetrack.get(sdf.format(date));
+			if(hr != null) {
+			Double hour = Double.parseDouble(hr.toString());
+				if(hour < 0 || hour > 24) {
+					requeststatus = 1;
 					break;
 				}
-				case 2: {
-					semiMonthlyApproval.setDay2(hour);
-					break;
-				}
-				case 3: {
-					semiMonthlyApproval.setDay3(hour);
-					break;
-				}
-				case 4: {
-					semiMonthlyApproval.setDay4(hour);
-					break;
-				}
-				case 5: {
-					semiMonthlyApproval.setDay5(hour);
-					break;
-				}
-				case 6: {
-					semiMonthlyApproval.setDay6(hour);
-					break;
-				}
-				case 7: {
-					semiMonthlyApproval.setDay7(hour);
-					break;
-				}
-				case 8: {
-					semiMonthlyApproval.setDay8(hour);
-					break;
-				}
-				case 9: {
-					semiMonthlyApproval.setDay9(hour);
-					break;
-				}
-				case 10: {
-					semiMonthlyApproval.setDay10(hour);
-					break;
-				}
-				case 11: {
-					semiMonthlyApproval.setDay11(hour);
-					break;
-				}
-				case 12: {
-					semiMonthlyApproval.setDay12(hour);
-					break;
-				}
-				case 13: {
-					semiMonthlyApproval.setDay13(hour);
-					break;
-				}
-				case 14: {
-					semiMonthlyApproval.setDay14(hour);
-					break;
-				}
-				case 15: {
-					semiMonthlyApproval.setDay15(hour);
-					break;
-				}
-				case 16: {
-					semiMonthlyApproval.setDay16(hour);
-					break;
-				}
-				case 17: {
-					semiMonthlyApproval.setDay17(hour);
-					break;
-				}
-				case 18: {
-					semiMonthlyApproval.setDay18(hour);
-					break;
-				}
-				case 19: {
-					semiMonthlyApproval.setDay19(hour);
-					break;
-				}
-				case 20: {
-					semiMonthlyApproval.setDay20(hour);
-					break;
-				}
-				case 21: {
-					semiMonthlyApproval.setDay21(hour);
-					break;
-				}
-				case 22: {
-					semiMonthlyApproval.setDay22(hour);
-					break;
-				}
-				case 23: {
-					semiMonthlyApproval.setDay23(hour);
-					break;
-				}
-				case 24: {
-					semiMonthlyApproval.setDay24(hour);
-					break;
-				}
-				case 25: {
-					semiMonthlyApproval.setDay25(hour);
-					break;
-				}
-				case 26: {
-					semiMonthlyApproval.setDay26(hour);
-					break;
-				}
-				case 27: {
-					semiMonthlyApproval.setDay27(hour);
-					break;
-				}
-				case 28: {
-					semiMonthlyApproval.setDay28(hour);
-					break;
-				}
-				case 29: {
-					semiMonthlyApproval.setDay29(hour);
-					break;
-				}
-				case 30: {
-					semiMonthlyApproval.setDay30(hour);
-					break;
-				}
-				case 31: {
-					semiMonthlyApproval.setDay31(hour);
-					break;
+				switch(day) {
+					case 1: {
+						semiMonthlyApproval.setDay1(hour);
+						break;
+					}
+					case 2: {
+						semiMonthlyApproval.setDay2(hour);
+						break;
+					}
+					case 3: {
+						semiMonthlyApproval.setDay3(hour);
+						break;
+					}
+					case 4: {
+						semiMonthlyApproval.setDay4(hour);
+						break;
+					}
+					case 5: {
+						semiMonthlyApproval.setDay5(hour);
+						break;
+					}
+					case 6: {
+						semiMonthlyApproval.setDay6(hour);
+						break;
+					}
+					case 7: {
+						semiMonthlyApproval.setDay7(hour);
+						break;
+					}
+					case 8: {
+						semiMonthlyApproval.setDay8(hour);
+						break;
+					}
+					case 9: {
+						semiMonthlyApproval.setDay9(hour);
+						break;
+					}
+					case 10: {
+						semiMonthlyApproval.setDay10(hour);
+						break;
+					}
+					case 11: {
+						semiMonthlyApproval.setDay11(hour);
+						break;
+					}
+					case 12: {
+						semiMonthlyApproval.setDay12(hour);
+						break;
+					}
+					case 13: {
+						semiMonthlyApproval.setDay13(hour);
+						break;
+					}
+					case 14: {
+						semiMonthlyApproval.setDay14(hour);
+						break;
+					}
+					case 15: {
+						semiMonthlyApproval.setDay15(hour);
+						break;
+					}
+					case 16: {
+						semiMonthlyApproval.setDay16(hour);
+						break;
+					}
+					case 17: {
+						semiMonthlyApproval.setDay17(hour);
+						break;
+					}
+					case 18: {
+						semiMonthlyApproval.setDay18(hour);
+						break;
+					}
+					case 19: {
+						semiMonthlyApproval.setDay19(hour);
+						break;
+					}
+					case 20: {
+						semiMonthlyApproval.setDay20(hour);
+						break;
+					}
+					case 21: {
+						semiMonthlyApproval.setDay21(hour);
+						break;
+					}
+					case 22: {
+						semiMonthlyApproval.setDay22(hour);
+						break;
+					}
+					case 23: {
+						semiMonthlyApproval.setDay23(hour);
+						break;
+					}
+					case 24: {
+						semiMonthlyApproval.setDay24(hour);
+						break;
+					}
+					case 25: {
+						semiMonthlyApproval.setDay25(hour);
+						break;
+					}
+					case 26: {
+						semiMonthlyApproval.setDay26(hour);
+						break;
+					}
+					case 27: {
+						semiMonthlyApproval.setDay27(hour);
+						break;
+					}
+					case 28: {
+						semiMonthlyApproval.setDay28(hour);
+						break;
+					}
+					case 29: {
+						semiMonthlyApproval.setDay29(hour);
+						break;
+					}
+					case 30: {
+						semiMonthlyApproval.setDay30(hour);
+						break;
+					}
+					case 31: {
+						semiMonthlyApproval.setDay31(hour);
+						break;
+					}
 				}
 			}
 		}

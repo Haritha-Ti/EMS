@@ -130,11 +130,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			requeststatus = 1;
 		}
 
-		Map<Date, Double> timetrack = (Map<Date, Double>) requestData.get("timetrack");
-
-		Map<Object, Object> timetrackRequestData = timetrack.entrySet().stream().sorted(Map.Entry.comparingByKey())
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
-						LinkedHashMap::new));
+		Map<Object, Object> timetrackRequestData = (Map<Object, Object>) requestData.get("timetrack");
 
 		List<String> projectDateList = new ArrayList<String>();
 
@@ -164,29 +160,49 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				fromDate.add(Calendar.DATE, 1);
 			}
 		}
-
-	
-			if (projectDateList.size()>0 && projectDateList.get(0) != null) {
-				weeklyApproval.setDay1(Double.parseDouble(timetrackRequestData.get(projectDateList.get(0)).toString()));
+		
+		int indx = 1;
+		for(Map.Entry<Object, Object> map : timetrackRequestData.entrySet()){
+			Double hour = null;
+			if(projectDateList.contains(map.getKey()) && map.getValue() != null){
+				hour = Double.parseDouble(map.getValue().toString());
 			}
-			if (projectDateList.size()>1 && projectDateList.get(1) != null) {
-				weeklyApproval.setDay2(Double.parseDouble(timetrackRequestData.get(projectDateList.get(1)).toString()));
+			else {
+				indx++;
+				continue;
 			}
-			if (projectDateList.size()>2 && projectDateList.get(2) != null) {
-				weeklyApproval.setDay3(Double.parseDouble(timetrackRequestData.get(projectDateList.get(2)).toString()));
+			switch(indx) {
+				case 1: {
+					weeklyApproval.setDay1(hour);
+					break;
+				}
+				case 2: {
+					weeklyApproval.setDay2(hour);
+					break;
+				}
+				case 3: {
+					weeklyApproval.setDay3(hour);
+					break;
+				}
+				case 4: {
+					weeklyApproval.setDay4(hour);
+					break;
+				}
+				case 5: {
+					weeklyApproval.setDay5(hour);
+					break;
+				}
+				case 6: {
+					weeklyApproval.setDay6(hour);
+					break;
+				}
+				case 7: {
+					weeklyApproval.setDay7(hour);
+					break;
+				}
 			}
-			if (projectDateList.size()>3 && projectDateList.get(3) != null) {
-				weeklyApproval.setDay4(Double.parseDouble(timetrackRequestData.get(projectDateList.get(3)).toString()));
-			}
-			if (projectDateList.size()>4 && projectDateList.get(4) != null) {
-				weeklyApproval.setDay5(Double.parseDouble(timetrackRequestData.get(projectDateList.get(4)).toString()));
-			}
-			if (projectDateList.size()>5 && projectDateList.get(5) != null) {
-				weeklyApproval.setDay6(Double.parseDouble(timetrackRequestData.get(projectDateList.get(5)).toString()));
-			}
-			if (projectDateList.size()>6 && projectDateList.get(6) != null) {
-				weeklyApproval.setDay7(Double.parseDouble(timetrackRequestData.get(projectDateList.get(6)).toString()));
-			}
+			indx++;
+		}
 	
 		weeklyApproval.setUserSubmittedDate(new Date());
 
@@ -247,11 +263,8 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
 				projectId);
 		
-		Map<Date, Integer> timetrack = (Map<Date, Integer>) requestData.get("timetrack");
+		Map<Object, Object> timetrackRequestData = (Map<Object, Object>) requestData.get("timetrack");
 
-		Map<Object, Object> timetrackRequestData = timetrack.entrySet().stream().sorted(Map.Entry.comparingByKey()).collect(Collectors
-				.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-		
 		List<String> projectDateList = new ArrayList<String>();
 		
 		for (AllocationModel al : userProjAllocations) {
@@ -281,31 +294,49 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			}
 
 		}
-
 		
-		
-		if (projectDateList.size()>0 && projectDateList.get(0) != null) {
-			weeklyApproval.setDay1(Double.parseDouble(timetrackRequestData.get(projectDateList.get(0)).toString()));
+		int indx = 1;
+		for(Map.Entry<Object, Object> map : timetrackRequestData.entrySet()){
+			Double hour = null;
+			if(projectDateList.contains(map.getKey()) && map.getValue() != null){
+				hour = Double.parseDouble(map.getValue().toString());
+			}
+			else {
+				indx++;
+				continue;
+			}
+			switch(indx) {
+				case 1: {
+					weeklyApproval.setDay1(hour);
+					break;
+				}
+				case 2: {
+					weeklyApproval.setDay2(hour);
+					break;
+				}
+				case 3: {
+					weeklyApproval.setDay3(hour);
+					break;
+				}
+				case 4: {
+					weeklyApproval.setDay4(hour);
+					break;
+				}
+				case 5: {
+					weeklyApproval.setDay5(hour);
+					break;
+				}
+				case 6: {
+					weeklyApproval.setDay6(hour);
+					break;
+				}
+				case 7: {
+					weeklyApproval.setDay7(hour);
+					break;
+				}
+			}
+			indx++;
 		}
-		if (projectDateList.size()>1 && projectDateList.get(1) != null) {
-			weeklyApproval.setDay2(Double.parseDouble(timetrackRequestData.get(projectDateList.get(1)).toString()));
-		}
-		if (projectDateList.size()>2 && projectDateList.get(2) != null) {
-			weeklyApproval.setDay3(Double.parseDouble(timetrackRequestData.get(projectDateList.get(2)).toString()));
-		}
-		if (projectDateList.size()>3 && projectDateList.get(3) != null) {
-			weeklyApproval.setDay4(Double.parseDouble(timetrackRequestData.get(projectDateList.get(3)).toString()));
-		}
-		if (projectDateList.size()>4 && projectDateList.get(4) != null) {
-			weeklyApproval.setDay5(Double.parseDouble(timetrackRequestData.get(projectDateList.get(4)).toString()));
-		}
-		if (projectDateList.size()>5 && projectDateList.get(5) != null) {
-			weeklyApproval.setDay6(Double.parseDouble(timetrackRequestData.get(projectDateList.get(5)).toString()));
-		}
-		if (projectDateList.size()>6 && projectDateList.get(6) != null) {
-			weeklyApproval.setDay7(Double.parseDouble(timetrackRequestData.get(projectDateList.get(6)).toString()));
-		}
-
 
 		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
 				&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
