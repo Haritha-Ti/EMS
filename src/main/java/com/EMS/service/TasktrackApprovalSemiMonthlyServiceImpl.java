@@ -140,6 +140,14 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
 				}
 				
+				ProjectModel projectModel = projectservice.findById(projectId);
+				
+				if (null == firstHalfApprover1 || firstHalfApprover1.equals("")) {
+					firstHalfApprover1 = null !=  projectModel.getProjectOwner()? projectModel.getProjectOwner().getFirstName() + " "
+							+ projectModel.getProjectOwner().getLastName() :"";
+
+				}
+				
 				String firstHalfApprover2 = null;
 				Date firstHalfSubmittedDate2 = null;
 				if (approvalSemiMonthly.getFirstHalfApproverTwoId() != null) {
@@ -149,6 +157,12 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					firstHalfSubmittedDate2 = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
 				}
 
+				if (null == firstHalfApprover2 || firstHalfApprover2.equals("")) {
+					firstHalfApprover2 = null !=  projectModel.getOnsite_lead()? projectModel.getProjectOwner().getFirstName() + " "
+							+ projectModel.getOnsite_lead().getLastName() :"";
+
+				}
+				
 				JSONObject approver1 = new JSONObject();
 				approver1.put("approver", firstHalfApprover1);
 				approver1.put("date", (firstHalfSubmittedDate != null) ? sdf.format(firstHalfSubmittedDate) : "");
@@ -214,6 +228,14 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 						secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
 					}
 					
+					ProjectModel projectModel = projectservice.findById(projectId);
+					
+					if (null == secondHalfApprover1 || secondHalfApprover1.equals("")) {
+						secondHalfApprover1 = null !=  projectModel.getProjectOwner()? projectModel.getProjectOwner().getFirstName() + " "
+								+ projectModel.getProjectOwner().getLastName() :"";
+
+					}
+					
 					String secondHalfApprover2 = null;
 					Date secondHalfSubmittedDate2 = null;
 					if (approvalSemiMonthly.getFirstHalfApproverTwoId() != null) {
@@ -223,12 +245,17 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 						secondHalfSubmittedDate2 = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
 					}
 
+					if (null == secondHalfApprover2 || secondHalfApprover2.equals("")) {
+						secondHalfApprover2 = null !=  projectModel.getOnsite_lead()? projectModel.getProjectOwner().getFirstName() + " "
+								+ projectModel.getOnsite_lead().getLastName() :"";
+
+					}
 					
 					JSONObject approver1 = new JSONObject();
 					approver1.put("approver", secondHalfApprover1);
 					approver1.put("date", (secondHalfSubmittedDate != null) ? sdf.format(secondHalfSubmittedDate) : "");
 					approver1.put("status", approverOneFirstHalfStatus);
-					response.put("approver1", secondHalfApprover1);
+					response.put("approver1", approver1);
 					
 					JSONObject approver2 = new JSONObject();
 					approver2.put("approver", secondHalfApprover2);
