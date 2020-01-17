@@ -17,6 +17,7 @@ public class ApproverOneDto {
 	private Long approverId;
 	private Date endDate;
 	private Date startDate;
+	private Long sessionId;
 	
 	public Long getProjectId() {
 		return projectId;
@@ -49,6 +50,12 @@ public class ApproverOneDto {
 	}
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
+	}
+	public Long getSessionId() {
+		return sessionId;
+	}
+	public void setSessionId(Long sessionId) {
+		this.sessionId = sessionId;
 	}
 	
 	
