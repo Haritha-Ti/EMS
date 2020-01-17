@@ -521,18 +521,22 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		if (!isFirstHalf) {
 			if(isSave) {
 				semiMonthlyApproval.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
+				semiMonthlyApproval.setSecondHalfFinalStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
 			}
 			else {
 				semiMonthlyApproval.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+				semiMonthlyApproval.setSecondHalfFinalStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
 			}
 			semiMonthlyApproval.setUserSecondHalfSubmittedDate(new Date());
 		
 		} else if(isFirstHalf) {
 			if(isSave) {
 				semiMonthlyApproval.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
+				semiMonthlyApproval.setFirstHalfFinalStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
 			}
 			else {
 				semiMonthlyApproval.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+				semiMonthlyApproval.setFirstHalfFinalStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
 			}
 			semiMonthlyApproval.setUserFirstHalfSubmittedDate(new Date());
 		}

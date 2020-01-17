@@ -83,6 +83,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			weeklyApproval = new TaskTrackWeeklyApproval();
 		}
 
+		if (null != weeklyApproval.getTimetrackStatus() &&  weeklyApproval.getTimetrackStatus().equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)) {
+			return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Timetrack already submitted.");
+		}
 		weeklyApproval.setStartDate(startDate);
 		weeklyApproval.setEndDate(endDate);
 		UserModel userInfo = userservice.getUserdetailsbyId(userId);
@@ -182,6 +185,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		weeklyApproval.setUserSubmittedDate(new Date());
 
 		weeklyApproval.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+		weeklyApproval.setTimetrackFinalStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
 
 		if (requeststatus == 0) {
 			taskWeeklyApprovalRepository.save(weeklyApproval);
@@ -323,6 +327,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			requeststatus = 1;
 		}
 		weeklyApproval.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
+		weeklyApproval.setTimetrackFinalStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
 
 		if (requeststatus == 0) {
 
