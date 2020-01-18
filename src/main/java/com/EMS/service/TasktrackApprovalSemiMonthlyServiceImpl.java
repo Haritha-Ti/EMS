@@ -338,12 +338,12 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			semiMonthlyApproval = new TasktrackApprovalSemiMonthly();
 		}
 		if((isFirstHalf && semiMonthlyApproval.getFirstHalfFinalStatus() != null 
-				&& (semiMonthlyApproval.getFirstHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)
-				|| semiMonthlyApproval.getFirstHalfFinalStatus().endsWith(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)))
+				&& (semiMonthlyApproval.getFirstHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)
+				|| semiMonthlyApproval.getFirstHalfFinalStatus().endsWith(Constants.Finance.TASKTRACK_APPROVED)))
 				
 				|| (!isFirstHalf && semiMonthlyApproval.getSecondHalfFinalStatus() != null
-				&& (semiMonthlyApproval.getSecondHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)
-				|| semiMonthlyApproval.getSecondHalfFinalStatus().endsWith(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)))) {
+				&& (semiMonthlyApproval.getSecondHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)
+				|| semiMonthlyApproval.getSecondHalfFinalStatus().endsWith(Constants.Finance.TASKTRACK_APPROVED)))) {
 			return new StatusResponse("success", 200, "Timetrack has already been approved.");
 		}
 		semiMonthlyApproval.setYear(year);
@@ -532,23 +532,23 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		if (!isFirstHalf) {
 			if(isSave) {
-				semiMonthlyApproval.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
-				semiMonthlyApproval.setSecondHalfFinalStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
+				semiMonthlyApproval.setUserSecondHalfStatus(Constants.UserStatus.TASKTRACK_SAVED);
+				semiMonthlyApproval.setSecondHalfFinalStatus(Constants.UserStatus.TASKTRACK_SAVED);
 			}
 			else {
-				semiMonthlyApproval.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
-				semiMonthlyApproval.setSecondHalfFinalStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+				semiMonthlyApproval.setUserSecondHalfStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
+				semiMonthlyApproval.setSecondHalfFinalStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 			}
 			semiMonthlyApproval.setUserSecondHalfSubmittedDate(new Date());
 		
 		} else if(isFirstHalf) {
 			if(isSave) {
-				semiMonthlyApproval.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
-				semiMonthlyApproval.setFirstHalfFinalStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
+				semiMonthlyApproval.setUserFirstHalfStatus(Constants.UserStatus.TASKTRACK_SAVED);
+				semiMonthlyApproval.setFirstHalfFinalStatus(Constants.UserStatus.TASKTRACK_SAVED);
 			}
 			else {
-				semiMonthlyApproval.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
-				semiMonthlyApproval.setFirstHalfFinalStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+				semiMonthlyApproval.setUserFirstHalfStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
+				semiMonthlyApproval.setFirstHalfFinalStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 			}
 			semiMonthlyApproval.setUserFirstHalfSubmittedDate(new Date());
 		}
@@ -613,11 +613,11 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		if (calendar.get(Calendar.DAY_OF_MONTH) < 5) {
 
 			semiMonthlytasksubmission.setUserFirstHalfSubmittedDate(new Date());
-			semiMonthlytasksubmission.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+			semiMonthlytasksubmission.setUserFirstHalfStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 		} else {
 
 			semiMonthlytasksubmission.setUserSecondHalfSubmittedDate(new Date());
-			semiMonthlytasksubmission.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+			semiMonthlytasksubmission.setUserSecondHalfStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 		}
 
 		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())

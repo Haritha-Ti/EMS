@@ -55,39 +55,45 @@ public class Constants {
 	// Sunday-1, Monday-2, Tuesday-3, Wednesday-4, Thursday-5, Friday-6, Saturday-7
 	public static final Integer WEEK_START_DAY = 1;
 	
-	public static final String TASKTRACK_USER_STATUS_SUBMIT = "SUBMITTED";
-	public static final String TASKTRACK_USER_STATUS_SAVED = "SAVED";
-	public static final String TASKTRACK_USER_STATUS_REJECTION = "REJECTED";
-	public static final String TASKTRACK_USER_STATUS_OPEN = "OPEN";
-	public static final String TASKTRACK_USER_STATUS_REOPEN = "REOPEN";
-
-	public static final String TASKTRACK_APPROVER1_STATUS_OPEN = "OPEN";
-	public static final String TASKTRACK_APPROVER1_STATUS_APPROVED = "APPROVED";
-	public static final String TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2 = "FORWARDED_TO_L2";
-	public static final String TASKTRACK_APPROVER1_STATUS_REOPEN = "REOPEN";
-	public static final String TASKTRACK_APPROVER1_STATUS_REJECTED = "REJECTED";
-
-	public static final String TASKTRACK_APPROVER2_STATUS_OPEN = "OPEN";
-	public static final String TASKTRACK_APPROVER2_STATUS_APPROVED = "APPROVED";
-	public static final String TASKTRACK_APPROVER2_STATUS_REOPEN = "REOPEN";
-	public static final String TASKTRACK_APPROVER2_STATUS_REJECTED = "REJECTED";
-
-	public static final String TASKTRACK_FINANCE_STATUS_APPROVED = "APPROVED";
-	public static final String TASKTRACK_FINANCE_STATUS_OPEN = "OPEN";
-	public static final String TASKTRACK_FINANCE_STATUS_REOPEN = "REOPEN";
-
-	public static final String TASKTRACK_FINAL_STATUS_APPROVED = "APPROVED";
-	public static final String TASKTRACK_FINAL_STATUS_REOPEN = "REOPEN";
-	public static final String TASKTRACK_FINAL_STATUS_FORWARDED_TO_LEVEL2 = "FORWARDED_TO_L2";
-	public static final String TASKTRACK_FINAL_STATUS_SAVE ="SAVED";
-
+	public class UserStatus{
+		public static final String TASKTRACK_SUBMIT = "SUBMITTED";
+		public static final String TASKTRACK_SAVED = "SAVED";
+		public static final String TASKTRACK_REJECTION = "REJECTED";
+		public static final String TASKTRACK_OPEN = "OPEN";
+		public static final String TASKTRACK_REOPEN = "REOPEN";
+	}
 	
-
+	public class Approver1{
+		public static final String TASKTRACK_OPEN = "OPEN";
+		public static final String TASKTRACK_APPROVED = "APPROVED";
+		public static final String TASKTRACK_FORWARDED_TO_LEVEL2 = "FORWARDED_TO_L2";
+		public static final String TASKTRACK_REOPEN = "REOPEN";
+		public static final String TASKTRACK_REJECTED = "REJECTED";
+	}
+	
+	public class Approver2{
+		public static final String TASKTRACK_OPEN = "OPEN";
+		public static final String TASKTRACK_APPROVED = "APPROVED";
+		public static final String TASKTRACK_REOPEN = "REOPEN";
+		public static final String TASKTRACK_REJECTED = "REJECTED";
+	}
+	
+	public class Finance{
+		public static final String TASKTRACK_APPROVED = "APPROVED";
+		public static final String TASKTRACK_OPEN = "OPEN";
+		public static final String TASKTRACK_REOPEN = "REOPEN";
+	}
+	
+	public class FinalStatus{
+		public static final String TASKTRACK_APPROVED = "APPROVED";
+		public static final String TASKTRACK_REOPEN = "REOPEN";
+		public static final String TASKTRACK_FORWARDED_TO_LEVEL2 = "FORWARDED_TO_L2";
+		public static final String TASKTRACK_SAVE ="SAVED";
+	}
+	
 	public static final Double roundToDefaultPrecision(Double value) {
-
 		Double multiplicationConstant = Math.pow(10, Constants.DEFAULT_DECIMAL_PRECISION);
 		value = Math.round(value * multiplicationConstant) / multiplicationConstant;
-
 		return value;
 	}
 

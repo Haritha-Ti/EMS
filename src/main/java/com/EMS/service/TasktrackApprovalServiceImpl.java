@@ -9083,17 +9083,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, weekStart,
 										weekEnd, userId);
 						double totalhours = 0.0;
-						String userStatus = Constants.TASKTRACK_USER_STATUS_OPEN;
+						String userStatus = Constants.UserStatus.TASKTRACK_OPEN;
 						String approverStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 						String finalStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
 						if (weeklyUserData != null) {
 							userStatus =weeklyUserData.getTimetrackStatus()==null
-									? Constants.TASKTRACK_USER_STATUS_SAVED
+									? Constants.UserStatus.TASKTRACK_SAVED
 									:weeklyUserData.getTimetrackStatus();
 							finalStatus = weeklyUserData.getTimetrackFinalStatus() == null
 									? Constants.TASKTRACK_FINAL_STATUS_OPEN
 									: weeklyUserData.getTimetrackFinalStatus();
-							if(!finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+							if(!finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 							|| !finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
 								totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
 										+ weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6()
@@ -9101,7 +9101,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							}
 							userStatus =userStatus;
 							approverStatus = weeklyUserData.getApprover1Status() == null
-									? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+									? Constants.Approver1.TASKTRACK_OPEN
 									: weeklyUserData.getApprover1Status();
 
 						}
@@ -9136,16 +9136,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					
 					if (semiMonthlyUserData != null) {
 						userFirstHalfStatus = semiMonthlyUserData.getUserFirstHalfStatus() == null
-								? Constants.TASKTRACK_USER_STATUS_SAVED
+								? Constants.UserStatus.TASKTRACK_SAVED
 								: semiMonthlyUserData.getUserFirstHalfStatus();
 						userSecondHalfStatus = semiMonthlyUserData.getUserSecondHalfStatus() == null
-								? Constants.TASKTRACK_USER_STATUS_SAVED
+								? Constants.UserStatus.TASKTRACK_SAVED
 								: semiMonthlyUserData.getUserSecondHalfStatus();
 						approverFirstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null
-								? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+								? Constants.Approver1.TASKTRACK_OPEN
 								: semiMonthlyUserData.getApproverOneFirstHalfStatus();
 						approverSecondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null
-								? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+								? Constants.Approver1.TASKTRACK_OPEN
 								: semiMonthlyUserData.getApproverOneSecondHalfStatus();
 						finalFirstHalfStatus = semiMonthlyUserData.getFirstHalfFinalStatus() == null
 								? Constants.TASKTRACK_FINAL_STATUS_OPEN
@@ -9153,7 +9153,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						finalSecondHalfStatus = semiMonthlyUserData.getSecondHalfFinalStatus() == null
 								? Constants.TASKTRACK_FINAL_STATUS_OPEN
 								: semiMonthlyUserData.getSecondHalfFinalStatus();
-						if (!finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+						if (!finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 						|| !finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
 							firstHalfHour = semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2()
 									+ semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4()
@@ -9164,7 +9164,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									+ semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14()
 									+ semiMonthlyUserData.getDay15();
 						}
-						if (!finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+						if (!finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 								|| !finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
 							secondHalfHour = semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17()
 									+ semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19()
@@ -9304,7 +9304,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									userData.getProject().getProjectOwner().getFirstName():userData.getApprover1Id().getLastName()+" "+
 							userData.getApprover1Id().getFirstName());
 					node.put("approver1Status",
-							userData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+							userData.getApprover1Status() == null ? Constants.Approver1.TASKTRACK_OPEN
 									: userData.getApprover1Status());
 					node.put("approver1SubmittedDate",userData.getApprover1SubmittedDate()==null?"": dff.format(userData.getApprover1SubmittedDate()));
 					node.put("userStatus", userData.getTimetrackStatus());
@@ -9315,7 +9315,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 										userData.getProject().getOnsite_lead().getFirstName():userData.getApprover2Id().getLastName()+" "+
 								userData.getApprover2Id().getFirstName());
 						node.put("approver2Status",
-								userData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+								userData.getApprover2Status() == null ? Constants.Approver2.TASKTRACK_OPEN
 										: userData.getApprover2Status());
 						node.put("approver2SubmittedDate", userData.getApprover2SubmittedDate()==null?"":dff.format(userData.getApprover2SubmittedDate()));
 					} else {
@@ -9327,19 +9327,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					String finalStatus = userData.getTimetrackFinalStatus() == null ? Constants.TASKTRACK_FINAL_STATUS_OPEN
 							:userData.getTimetrackFinalStatus();
 					String timeTrackStatus = userData.getTimetrackStatus() == null 
-							? Constants.TASKTRACK_USER_STATUS_SAVED : userData.getTimetrackStatus();
+							? Constants.UserStatus.TASKTRACK_SAVED : userData.getTimetrackStatus();
 					String approverOneStatus = userData.getApprover1Status() == null 
-							? Constants.TASKTRACK_APPROVER1_STATUS_OPEN : userData.getApprover1Status();
+							? Constants.Approver1.TASKTRACK_OPEN : userData.getApprover1Status();
 					
-					if(timeTrackStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT) 
-							&& (approverOneStatus.equals(Constants.TASKTRACK_APPROVER1_STATUS_OPEN)
-									||approverOneStatus.equals(Constants.TASKTRACK_APPROVER1_STATUS_REJECTED)
-									||approverOneStatus.equals(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN))) {
+					if(timeTrackStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT) 
+							&& (approverOneStatus.equals(Constants.Approver1.TASKTRACK_OPEN)
+									||approverOneStatus.equals(Constants.Approver1.TASKTRACK_REJECTED)
+									||approverOneStatus.equals(Constants.Approver1.TASKTRACK_REOPEN))) {
 						submitButtonStatus = true;
 						rejectButtonStatus = true;
 					}
 					if(userData.getFinanceStatus()!=null) {
-						if (userData.getFinanceStatus().equalsIgnoreCase(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)) {
+						if (userData.getFinanceStatus().equalsIgnoreCase(Constants.Finance.TASKTRACK_APPROVED)) {
 							submitButtonStatus = false;
 							rejectButtonStatus = false;
 						}
@@ -9352,7 +9352,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(startDate);
 					int dataFlag =0;
-					if(!finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+					if(!finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 						|| !finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
 						dataFlag =1;
 					}
@@ -9379,16 +9379,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("approver1Name",
 								projectData.getProjectOwner().getLastName()+" "+
 										projectData.getProjectOwner().getFirstName());
-						node.put("approver1Status", Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
+						node.put("approver1Status", Constants.Approver1.TASKTRACK_OPEN);
 						node.put("loggedId", "");
-						node.put("userStatus", Constants.TASKTRACK_USER_STATUS_OPEN);
+						node.put("userStatus", Constants.UserStatus.TASKTRACK_OPEN);
 						node.put("approver1SubmittedDate", "");
 						node.put("userSubmittedDate", "");
 						if (projectData.getProjectTier() == 2) {
 							node.put("approver2Name",
 									projectData.getOnsite_lead().getLastName()+" "+
 											projectData.getOnsite_lead().getFirstName());
-							node.put("approver2Status", Constants.TASKTRACK_APPROVER2_STATUS_OPEN);
+							node.put("approver2Status", Constants.Approver2.TASKTRACK_OPEN);
 							node.put("approver2SubmittedDate", "");
 						} else {
 							node.put("approver2Status", "");
@@ -9438,45 +9438,45 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (day == 15) {
 
 						String userFirstHalfStatus = userData.getUserFirstHalfStatus() == null
-								? Constants.TASKTRACK_USER_STATUS_SAVED : userData.getUserFirstHalfStatus();
+								? Constants.UserStatus.TASKTRACK_SAVED : userData.getUserFirstHalfStatus();
 						String approverOneFirstHalfStatus = userData.getApproverOneFirstHalfStatus() == null
-								? Constants.TASKTRACK_APPROVER1_STATUS_OPEN : userData.getApproverOneFirstHalfStatus();
+								? Constants.Approver1.TASKTRACK_OPEN : userData.getApproverOneFirstHalfStatus();
 						String firstHalfFinalStatus = userData.getFirstHalfFinalStatus() == null
 								? Constants.TASKTRACK_FINAL_STATUS_OPEN : userData.getFirstHalfFinalStatus();
 						int firstHalfDataFlag =0;
-						if(!firstHalfFinalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+						if(!firstHalfFinalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 								|| !firstHalfFinalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
 							firstHalfDataFlag =1;
 						}
-						hourDataResponse.put(df.format(cal.getTime()),userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)? userData.getDay1():0);
+						hourDataResponse.put(df.format(cal.getTime()),userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)? userData.getDay1():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay2():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay2():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay3():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay3():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay4():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay4():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay5():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay5():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay6():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay6():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay7():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay7():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay8():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay8():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay9():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay9():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay10():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay10():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay11():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay11():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay12():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay12():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay13():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay13():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay14():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay14():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT)?userData.getDay15():0);
+						hourDataResponse.put(df.format(cal.getTime()), userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT)?userData.getDay15():0);
 						node.put("approver1Name",userData.getFirstHalfApproverOneId()== null ?
 								userData.getProject().getProjectOwner().getLastName()+" "+
 										userData.getProject().getProjectOwner().getFirstName():userData.getFirstHalfApproverOneId().getLastName()+" "+
@@ -9494,7 +9494,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									userData.getFirstHalfApproverTwoId().getFirstName());
 							node.put("approver2Status",
 									userData.getApproverTwoFirstHalfStatus() == null
-											? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+											? Constants.Approver2.TASKTRACK_OPEN
 											: userData.getApproverTwoFirstHalfStatus());
 							node.put("approver2SubmittedDate",userData.getApproverTwoFirstHalfSubmittedDate()==null?"":
 									dff.format(userData.getApproverTwoFirstHalfSubmittedDate()));
@@ -9504,15 +9504,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("approver2SubmittedDate", "");
 						}
 
-						if(userFirstHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT) 
-								&& (approverOneFirstHalfStatus.equals(Constants.TASKTRACK_APPROVER1_STATUS_OPEN)
-										||approverOneFirstHalfStatus.equals(Constants.TASKTRACK_APPROVER1_STATUS_REJECTED)
-										||approverOneFirstHalfStatus.equals(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN))) {
+						if(userFirstHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT) 
+								&& (approverOneFirstHalfStatus.equals(Constants.Approver1.TASKTRACK_OPEN)
+										||approverOneFirstHalfStatus.equals(Constants.Approver1.TASKTRACK_REJECTED)
+										||approverOneFirstHalfStatus.equals(Constants.Approver1.TASKTRACK_REOPEN))) {
 							submitButtonStatus = true;
 							rejectButtonStatus = true;
 						}
 						if(userData.getFinanceFirstHalfStatus()!=null) {
-							if (userData.getFinanceFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)) {
+							if (userData.getFinanceFirstHalfStatus().equalsIgnoreCase(Constants.Finance.TASKTRACK_APPROVED)) {
 								submitButtonStatus = false;
 								rejectButtonStatus = false;
 							}
@@ -9523,13 +9523,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					} else {
 
 						String userSecondHalfStatus = userData.getUserSecondHalfStatus() == null
-								? Constants.TASKTRACK_USER_STATUS_SAVED : userData.getUserSecondHalfStatus();
+								? Constants.UserStatus.TASKTRACK_SAVED : userData.getUserSecondHalfStatus();
 						String approverOneSecondHalfStatus = userData.getApproverOneSecondHalfStatus() == null
 								? Constants.TASKTRACK_APPROVER_STATUS_OPEN : userData.getApproverOneSecondHalfStatus();
 						String secondHalfFinalStatus = userData.getSecondHalfFinalStatus() == null
 								? Constants.TASKTRACK_FINAL_STATUS_OPEN : userData.getSecondHalfFinalStatus();
 						int secondHalfDataFlag =0;
-						if(!secondHalfFinalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+						if(!secondHalfFinalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 								|| !secondHalfFinalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
 							secondHalfDataFlag =1;
 						}
@@ -9586,7 +9586,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									userData.getSecondHalfApproverTwoId().getFirstName());
 							node.put("approver2Status",
 									userData.getApproverTwoSecondHalfStatus() == null
-											? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+											? Constants.Approver2.TASKTRACK_OPEN
 											: userData.getApproverTwoSecondHalfStatus());
 							node.put("approver2SubmittedDate",userData.getApproverTwoSecondHalfSubmittedDate()==null?"":
 									dff.format(userData.getApproverTwoSecondHalfSubmittedDate()));
@@ -9595,15 +9595,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("approver2Status", "");
 							node.put("approver2SubmittedDate", "");
 						}
-						if(userSecondHalfStatus.equals(Constants.TASKTRACK_USER_STATUS_SUBMIT) 
+						if(userSecondHalfStatus.equals(Constants.UserStatus.TASKTRACK_SUBMIT) 
 								&& (approverOneSecondHalfStatus.equals(Constants.TASKTRACK_APPROVER_STATUS_OPEN)
-										||approverOneSecondHalfStatus.equals(Constants.TASKTRACK_APPROVER1_STATUS_REJECTED)
-										||approverOneSecondHalfStatus.equals(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN))) {
+										||approverOneSecondHalfStatus.equals(Constants.Approver1.TASKTRACK_REJECTED)
+										||approverOneSecondHalfStatus.equals(Constants.Approver1.TASKTRACK_REOPEN))) {
 							submitButtonStatus = true;
 							rejectButtonStatus = true;
 						}
 						if(userData.getFinanceSecondHalfStatus()!=null) {
-							if (userData.getFinanceSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)) {
+							if (userData.getFinanceSecondHalfStatus().equalsIgnoreCase(Constants.Finance.TASKTRACK_APPROVED)) {
 								submitButtonStatus = false;
 								rejectButtonStatus = false;
 							}
@@ -9625,16 +9625,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("approver1Name",
 								projectData.getProjectOwner().getLastName()+" "+
 										projectData.getProjectOwner().getFirstName());
-						node.put("approver1Status", Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
+						node.put("approver1Status", Constants.Approver1.TASKTRACK_OPEN);
 						node.put("loggedId", "");
-						node.put("userStatus", Constants.TASKTRACK_USER_STATUS_OPEN);
+						node.put("userStatus", Constants.UserStatus.TASKTRACK_OPEN);
 						node.put("approver1SubmittedDate", "");
 						node.put("userSubmittedDate", "");
 						if (projectData.getProjectTier() == 2) {
 							node.put("approver2Name",
 									projectData.getOnsite_lead().getLastName()+" "+
 											projectData.getOnsite_lead().getFirstName());
-							node.put("approver2Status", Constants.TASKTRACK_APPROVER2_STATUS_OPEN);
+							node.put("approver2Status", Constants.Approver2.TASKTRACK_OPEN);
 							node.put("approver2SubmittedDate", "");
 						} else {
 							node.put("approver2Name","");
@@ -9745,12 +9745,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									userId);
 					if (userData != null) {
 						if(projectData.getProjectTier()==2) {
-							userData.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
-							userData.setTimetrackFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+							userData.setApprover1Status(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
+							userData.setTimetrackFinalStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
 						}
 						else{
-							userData.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
-							userData.setTimetrackFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+							userData.setApprover1Status(Constants.Approver1.TASKTRACK_APPROVED);
+							userData.setTimetrackFinalStatus(Constants.Approver1.TASKTRACK_APPROVED);
 						}
 						UserModel approver = userRepository.getOne(approverId);
 						userData.setApprover1Id(approver);
@@ -9772,23 +9772,23 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						UserModel approver = userRepository.getOne(approverId);
 						if (day > 15) {
 							if(projectData.getProjectTier()==2) {
-								userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
-								userData.setSecondHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+								userData.setApproverOneSecondHalfStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
+								userData.setSecondHalfFinalStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
 							}
 							else{
-								userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
-								userData.setSecondHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+								userData.setApproverOneSecondHalfStatus(Constants.Approver1.TASKTRACK_APPROVED);
+								userData.setSecondHalfFinalStatus(Constants.Approver1.TASKTRACK_APPROVED);
 							}
 							userData.setSecondHalfApproverOneId(approver);
 							userData.setApproverOneSecondHalfSubmittedDate(curDate);
 							taskTrackApprovalSemiMonthlyRepository.save(userData);
 						} else {
 							if(projectData.getProjectTier()==2) {
-								userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
-								userData.setFirstHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+								userData.setApproverOneFirstHalfStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
+								userData.setFirstHalfFinalStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
 							}else{
-								userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
-								userData.setFirstHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+								userData.setApproverOneFirstHalfStatus(Constants.Approver1.TASKTRACK_APPROVED);
+								userData.setFirstHalfFinalStatus(Constants.Approver1.TASKTRACK_APPROVED);
 							}
 							userData.setFirstHalfApproverOneId(approver);
 							userData.setApproverOneFirstHalfSubmittedDate(curDate);
@@ -9860,11 +9860,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						String approver2Status = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 						String finalStatus = Constants.TASKTRACK_APPROVER_STATUS_OPEN;
 						if (weeklyUserData != null) {
-							String weeklyFinalStatus = weeklyUserData.getTimetrackFinalStatus()== null?Constants.TASKTRACK_APPROVER1_STATUS_OPEN:weeklyUserData.getTimetrackFinalStatus();
+							String weeklyFinalStatus = weeklyUserData.getTimetrackFinalStatus()== null?Constants.Approver1.TASKTRACK_OPEN:weeklyUserData.getTimetrackFinalStatus();
 
-							if((weeklyFinalStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)) ||
-									(weeklyFinalStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED)) ||
-									(weeklyFinalStatus.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN))) {
+							if((weeklyFinalStatus.equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) ||
+									(weeklyFinalStatus.equalsIgnoreCase(Constants.Approver1.TASKTRACK_APPROVED)) ||
+									(weeklyFinalStatus.equalsIgnoreCase(Constants.Approver1.TASKTRACK_REOPEN))) {
 
 								flag = 1;
 
@@ -9915,21 +9915,21 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (semiMonthlyUserData != null) {
 						if(semiMonthlyUserData.getFirstHalfFinalStatus()!= null) {
 							if((semiMonthlyUserData.getFirstHalfFinalStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)) ||
+									.equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) ||
 									(semiMonthlyUserData.getFirstHalfFinalStatus()
-											.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED))||
+											.equalsIgnoreCase(Constants.Approver1.TASKTRACK_APPROVED))||
 									semiMonthlyUserData.getFirstHalfFinalStatus()
-											.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN)) {
+											.equalsIgnoreCase(Constants.Approver1.TASKTRACK_REOPEN)) {
 								flag = 1;
 							}
 						}
 						if(semiMonthlyUserData.getSecondHalfFinalStatus()!= null) {
 							if((semiMonthlyUserData.getSecondHalfFinalStatus()
-									.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)) ||
+									.equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) ||
 									(semiMonthlyUserData.getSecondHalfFinalStatus()
-											.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED))||
+											.equalsIgnoreCase(Constants.Approver1.TASKTRACK_APPROVED))||
 									semiMonthlyUserData.getSecondHalfFinalStatus()
-											.equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN)) {
+											.equalsIgnoreCase(Constants.Approver1.TASKTRACK_REOPEN)) {
 								flag = 1;
 							}
 						}
@@ -10069,14 +10069,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						Date weekEnd = (Date) objects.get("endDate");
 						TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, weekStart, weekEnd, userId);
 						double totalhours = 0.0;
-						String approverStatus = Constants.TASKTRACK_APPROVER2_STATUS_OPEN;
+						String approverStatus = Constants.Approver2.TASKTRACK_OPEN;
 						String financeStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
 						String finalStatus = Constants.TASKTRACK_FINAL_STATUS_OPEN;
 						if (weeklyUserData != null) {
-							String userStatus = weeklyUserData.getTimetrackStatus()==null?Constants.TASKTRACK_USER_STATUS_SAVED:weeklyUserData.getTimetrackStatus();
+							String userStatus = weeklyUserData.getTimetrackStatus()==null?Constants.UserStatus.TASKTRACK_SAVED:weeklyUserData.getTimetrackStatus();
 							finalStatus = weeklyUserData.getTimetrackFinalStatus() == null ? Constants.TASKTRACK_FINAL_STATUS_OPEN
 									: weeklyUserData.getTimetrackFinalStatus();
-							if (!finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE) ||
+							if (!finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE) ||
 									!finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
 								totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3() + weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6() + weeklyUserData.getDay7();
 							}
@@ -10116,19 +10116,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (semiMonthlyUserData != null) {
 						finalFirstHalfStatus = semiMonthlyUserData.getFirstHalfFinalStatus() == null ? Constants.TASKTRACK_FINAL_STATUS_OPEN
 								:semiMonthlyUserData.getFirstHalfFinalStatus();
-						finalSecondHalfStatus = semiMonthlyUserData.getSecondHalfFinalStatus() == null ? Constants.TASKTRACK_USER_STATUS_OPEN
+						finalSecondHalfStatus = semiMonthlyUserData.getSecondHalfFinalStatus() == null ? Constants.UserStatus.TASKTRACK_OPEN
 								: semiMonthlyUserData.getSecondHalfFinalStatus();
-						String userFirstHalfStatus = semiMonthlyUserData.getUserFirstHalfStatus()==null?Constants.TASKTRACK_USER_STATUS_SAVED:semiMonthlyUserData.getUserFirstHalfStatus();
-						String userSecondHalfStatus = semiMonthlyUserData.getUserSecondHalfStatus()==null?Constants.TASKTRACK_USER_STATUS_SAVED:semiMonthlyUserData.getUserSecondHalfStatus();
-						if (!finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)||
+						String userFirstHalfStatus = semiMonthlyUserData.getUserFirstHalfStatus()==null?Constants.UserStatus.TASKTRACK_SAVED:semiMonthlyUserData.getUserFirstHalfStatus();
+						String userSecondHalfStatus = semiMonthlyUserData.getUserSecondHalfStatus()==null?Constants.UserStatus.TASKTRACK_SAVED:semiMonthlyUserData.getUserSecondHalfStatus();
+						if (!finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)||
 								!finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
 							firstHalfHour = semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2() + semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4() + semiMonthlyUserData.getDay5() +
 									semiMonthlyUserData.getDay6() + semiMonthlyUserData.getDay7() + semiMonthlyUserData.getDay8() + semiMonthlyUserData.getDay9() + semiMonthlyUserData.getDay10() +
 									semiMonthlyUserData.getDay11() + semiMonthlyUserData.getDay12() + semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14() + semiMonthlyUserData.getDay15();
-							approverFirstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+							approverFirstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null ? Constants.Approver1.TASKTRACK_OPEN
 									: semiMonthlyUserData.getApproverOneFirstHalfStatus();
 							if (projectTier == 2) {
-								approverFirstHalfStatus = semiMonthlyUserData.getApproverTwoFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+								approverFirstHalfStatus = semiMonthlyUserData.getApproverTwoFirstHalfStatus() == null ? Constants.Approver2.TASKTRACK_OPEN
 										: semiMonthlyUserData.getApproverTwoFirstHalfStatus();
 							}
 							financeFirstHalfStatus = semiMonthlyUserData.getFinanceFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
@@ -10136,15 +10136,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 
 						}
-						if (!finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE) ||
+						if (!finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE) ||
 								!finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
 							secondHalfHour = semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17() + semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19() + semiMonthlyUserData.getDay20() +
 									semiMonthlyUserData.getDay21() + semiMonthlyUserData.getDay22() + semiMonthlyUserData.getDay23() + semiMonthlyUserData.getDay24() + semiMonthlyUserData.getDay25() +
 									semiMonthlyUserData.getDay26() + semiMonthlyUserData.getDay27() + semiMonthlyUserData.getDay28() + semiMonthlyUserData.getDay29() + semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31();
-							approverSecondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+							approverSecondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null ? Constants.Approver1.TASKTRACK_OPEN
 									: semiMonthlyUserData.getApproverOneSecondHalfStatus();
 							if (projectTier == 2) {
-								approverSecondHalfStatus = semiMonthlyUserData.getApproverTwoSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+								approverSecondHalfStatus = semiMonthlyUserData.getApproverTwoSecondHalfStatus() == null ? Constants.Approver2.TASKTRACK_OPEN
 										: semiMonthlyUserData.getApproverTwoSecondHalfStatus();
 							}
 							financeSecondHalfStatus = semiMonthlyUserData.getFinanceSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
@@ -10214,13 +10214,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					node.put("userId", userData.getUser().getUserId());
 					node.put("approver1Name",userData.getApprover1Id()== null ?
 							userData.getProject().getProjectOwner().getLastName()+" "+userData.getProject().getProjectOwner().getFirstName():userData.getApprover1Id().getLastName()+" "+userData.getApprover1Id().getFirstName());
-					node.put("approver1Status", userData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+					node.put("approver1Status", userData.getApprover1Status() == null ? Constants.Approver1.TASKTRACK_OPEN
 							: userData.getApprover1Status());
 					node.put("approver1SubmittedDate",userData.getApprover1SubmittedDate()==null ?"":formatter.format(userData.getApprover1SubmittedDate()));
 					if(projectData.getProjectTier()==2) {
 						node.put("approver2Name",userData.getApprover2Id()== null ?
 								userData.getProject().getOnsite_lead().getLastName()+" "+userData.getProject().getOnsite_lead().getFirstName():userData.getApprover2Id().getLastName()+" "+userData.getApprover2Id().getFirstName());
-						node.put("approver2Status", userData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+						node.put("approver2Status", userData.getApprover2Status() == null ? Constants.Approver2.TASKTRACK_OPEN
 								: userData.getApprover2Status());
 						node.put("approver2SubmittedDate",userData.getApprover2SubmittedDate()==null ?"":formatter.format(userData.getApprover2SubmittedDate()));
 
@@ -10230,12 +10230,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("approver2Name","");
 					}
 					node.put("loggedId", userData.getId());
-					String userStatus = userData.getTimetrackStatus()== null ? Constants.TASKTRACK_USER_STATUS_SAVED
+					String userStatus = userData.getTimetrackStatus()== null ? Constants.UserStatus.TASKTRACK_SAVED
 							: userData.getTimetrackStatus();
 					node.put("userStatus", userStatus);
 					node.put("userSubmittedDate",userData.getUserSubmittedDate()==null ?"":formatter.format(userData.getUserSubmittedDate()));
 					node.put("financeName",userData.getFinanceUser()==null?"":userData.getFinanceUser().getLastName()+" "+userData.getFinanceUser().getFirstName());
-					node.put("financeStatus", userData.getFinanceStatus()== null ? Constants.TASKTRACK_FINANCE_STATUS_OPEN
+					node.put("financeStatus", userData.getFinanceStatus()== null ? Constants.Finance.TASKTRACK_OPEN
 							: userData.getFinanceStatus());
 					node.put("financeSubmittedDate",userData.getFinanceSubmittedDate()==null ?"":formatter.format(userData.getFinanceSubmittedDate()));
 					String finalStatus = userData.getTimetrackFinalStatus()==null?Constants.TASKTRACK_FINAL_STATUS_OPEN:userData.getTimetrackFinalStatus();
@@ -10243,7 +10243,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(startDate);
 					int dataFlag = 0;
-					if(!finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+					if(!finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 							|| !finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
 						dataFlag =1;
 					}
@@ -10269,17 +10269,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (user != null) {
 						node.put("userName", user.getLastName() + " " + user.getFirstName());
 						node.put("userId", user.getUserId());
-						node.put("userStatus", Constants.TASKTRACK_USER_STATUS_OPEN);
+						node.put("userStatus", Constants.UserStatus.TASKTRACK_OPEN);
 						node.put("userSubmittedDate","");
 						node.put("approver1Name",projectData.getProjectOwner().getLastName()+" "+projectData.getProjectOwner().getFirstName());
-						node.put("approver1Status", Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
+						node.put("approver1Status", Constants.Approver1.TASKTRACK_OPEN);
 						node.put("approver1SubmittedDate","");
 						if(projectData.getProjectTier()==2){
 							node.put("approver2Name",projectData.getOnsite_lead().getLastName()+" "+projectData.getOnsite_lead().getFirstName());
-							node.put("approver2Status", Constants.TASKTRACK_APPROVER2_STATUS_OPEN);}
+							node.put("approver2Status", Constants.Approver2.TASKTRACK_OPEN);}
 						else{node.put("approver2Status","");node.put("approver2Name","");}
 						node.put("approver2SubmittedDate","");
-						node.put("financeStatus", Constants.TASKTRACK_FINANCE_STATUS_OPEN);
+						node.put("financeStatus", Constants.Finance.TASKTRACK_OPEN);
 						node.put("financeSubmittedDate","");
 						node.put("loggedId", "");
 
@@ -10321,10 +10321,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					ObjectNode hourDataResponse = objectMapper.createObjectNode();
 					if (day == 15) {
-						String userFirstHalfStatus = userData.getUserFirstHalfStatus()==null?Constants.TASKTRACK_USER_STATUS_SAVED:userData.getUserFirstHalfStatus();
+						String userFirstHalfStatus = userData.getUserFirstHalfStatus()==null?Constants.UserStatus.TASKTRACK_SAVED:userData.getUserFirstHalfStatus();
 						String finalFirstHalfStatus = userData.getFirstHalfFinalStatus()==null?Constants.TASKTRACK_FINAL_STATUS_OPEN:userData.getFirstHalfFinalStatus();
 						int dataFirstHalfFlag = 0;
-						if(!finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+						if(!finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 								|| !finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
 							dataFirstHalfFlag =1;
 						}
@@ -10361,13 +10361,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("userSubmittedDate", userData.getUserFirstHalfSubmittedDate()==null?"":formatter.format(userData.getUserFirstHalfSubmittedDate()));
 						node.put("approver1Name",userData.getFirstHalfApproverOneId()== null ?
 								userData.getProject().getProjectOwner().getLastName()+" "+userData.getProject().getProjectOwner().getFirstName():userData.getFirstHalfApproverOneId().getLastName()+" "+userData.getFirstHalfApproverOneId().getFirstName());
-						node.put("approver1Status", userData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+						node.put("approver1Status", userData.getApproverOneFirstHalfStatus() == null ? Constants.Approver1.TASKTRACK_OPEN
 								: userData.getApproverOneFirstHalfStatus());
 						node.put("approver1SubmittedDate",userData.getApproverOneFirstHalfSubmittedDate()==null?"":formatter.format(userData.getApproverOneFirstHalfSubmittedDate()));
 						if(projectData.getProjectTier()==2){
 							node.put("approver2Name",userData.getFirstHalfApproverTwoId()== null ?
 									userData.getProject().getOnsite_lead().getLastName()+" "+userData.getProject().getOnsite_lead().getFirstName():userData.getFirstHalfApproverTwoId().getLastName()+" "+userData.getFirstHalfApproverTwoId().getFirstName());
-							node.put("approver2Status", userData.getApproverTwoFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+							node.put("approver2Status", userData.getApproverTwoFirstHalfStatus() == null ? Constants.Approver2.TASKTRACK_OPEN
 									: userData.getApproverTwoFirstHalfStatus());
 							node.put("approver2SubmittedDate",userData.getApproverTwoFirstHalfSubmittedDate()==null?"":formatter.format(userData.getApproverTwoFirstHalfSubmittedDate()));
 						}
@@ -10378,16 +10378,16 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						}
 						node.put("financeName",userData.getFirstHalfFinanceId()==null?"":userData.getFirstHalfFinanceId().getLastName()+" "+userData.getFirstHalfFinanceId().getFirstName());
-						node.put("financeStatus", userData.getFinanceFirstHalfStatus()== null ? Constants.TASKTRACK_FINANCE_STATUS_OPEN
+						node.put("financeStatus", userData.getFinanceFirstHalfStatus()== null ? Constants.Finance.TASKTRACK_OPEN
 								: userData.getFinanceFirstHalfStatus());
 						node.put("financeSubmittedDate",userData.getFinanceFirstHalfSubmittedDate()==null ?"":formatter.format(userData.getFinanceFirstHalfSubmittedDate()));
 
 
 					} else {
-						String userSecondHalfStatus = userData.getUserSecondHalfStatus()==null?Constants.TASKTRACK_USER_STATUS_SAVED:userData.getUserSecondHalfStatus();
+						String userSecondHalfStatus = userData.getUserSecondHalfStatus()==null?Constants.UserStatus.TASKTRACK_SAVED:userData.getUserSecondHalfStatus();
 						String finalSecondHalfStatus = userData.getSecondHalfFinalStatus()==null?Constants.TASKTRACK_FINAL_STATUS_OPEN:userData.getSecondHalfFinalStatus();
 						int dataSecondHalfFlag = 0;
-						if(!finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SAVE)
+						if(!finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 								|| !finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
 							dataSecondHalfFlag =1;
 						}
@@ -10432,13 +10432,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("userSubmittedDate", userData.getUserSecondHalfSubmittedDate()==null?"":formatter.format(userData.getUserSecondHalfSubmittedDate()));
 						node.put("approver1Name",userData.getSecondHalfApproverOneId()== null ?
 								userData.getProject().getProjectOwner().getLastName()+" "+userData.getProject().getProjectOwner().getFirstName():userData.getSecondHalfApproverOneId().getLastName()+" "+userData.getSecondHalfApproverOneId().getFirstName());
-						node.put("approver1Status", userData.getApproverOneSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+						node.put("approver1Status", userData.getApproverOneSecondHalfStatus() == null ? Constants.Approver1.TASKTRACK_OPEN
 								: userData.getApproverOneSecondHalfStatus());
 						node.put("approver1SubmittedDate",userData.getApproverOneSecondHalfSubmittedDate()==null?"":formatter.format(userData.getApproverOneSecondHalfSubmittedDate()));
 						if(projectData.getProjectTier()==2){
 							node.put("approver2Name",userData.getSecondHalfApproverTwoId()== null ?
 									userData.getProject().getOnsite_lead().getLastName()+" "+userData.getProject().getOnsite_lead().getFirstName():userData.getSecondHalfApproverTwoId().getLastName()+" "+userData.getSecondHalfApproverTwoId().getFirstName());
-							node.put("approver2Status", userData.getApproverTwoSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+							node.put("approver2Status", userData.getApproverTwoSecondHalfStatus() == null ? Constants.Approver2.TASKTRACK_OPEN
 									: userData.getApproverTwoSecondHalfStatus());
 							node.put("approver2SubmittedDate",userData.getApproverTwoSecondHalfSubmittedDate()==null?"":formatter.format(userData.getApproverTwoSecondHalfSubmittedDate()));
 						}
@@ -10449,7 +10449,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						}
 						node.put("financeName",userData.getSecondHalfFinanceId()==null?"":userData.getSecondHalfFinanceId().getLastName()+" "+userData.getSecondHalfFinanceId().getFirstName());
-						node.put("financeStatus", userData.getFinanceSecondHalfStatus()== null ? Constants.TASKTRACK_FINANCE_STATUS_OPEN
+						node.put("financeStatus", userData.getFinanceSecondHalfStatus()== null ? Constants.Finance.TASKTRACK_OPEN
 								: userData.getFinanceSecondHalfStatus());
 						node.put("financeSubmittedDate",userData.getFinanceSecondHalfSubmittedDate()==null ?"":formatter.format(userData.getFinanceSecondHalfSubmittedDate()));
 
@@ -10464,14 +10464,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 						node.put("userName", user.getLastName() + " " + user.getFirstName());
 						node.put("userId", user.getUserId());
-						node.put("userStatus", Constants.TASKTRACK_USER_STATUS_OPEN);
+						node.put("userStatus", Constants.UserStatus.TASKTRACK_OPEN);
 						node.put("userSubmittedDate","");
 						node.put("approver1Name",projectData.getProjectOwner().getLastName()+" "+projectData.getProjectOwner().getFirstName());
-						node.put("approver1Status", Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
+						node.put("approver1Status", Constants.Approver1.TASKTRACK_OPEN);
 						node.put("approver1SubmittedDate","");
 						if(projectData.getProjectTier()==2){
 							node.put("approver2Name",projectData.getOnsite_lead().getLastName()+" "+projectData.getOnsite_lead().getFirstName());
-							node.put("approver2Status", Constants.TASKTRACK_APPROVER2_STATUS_OPEN);
+							node.put("approver2Status", Constants.Approver2.TASKTRACK_OPEN);
 						}
 						else{
 							node.put("approver2Name","");
@@ -10480,7 +10480,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("approver2SubmittedDate","");
 						node.put("loggedId", "");
 						node.put("financeName","");
-						node.put("financeStatus", Constants.TASKTRACK_FINANCE_STATUS_OPEN);
+						node.put("financeStatus", Constants.Finance.TASKTRACK_OPEN);
 						node.put("financeSubmittedDate","");
 
 
@@ -10608,20 +10608,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					if (projectData.getProjectTier() == 2) {
 						if (userDataWeekly.getApprover2Id() == null || !userDataWeekly.getApprover2Status().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-							userDataWeekly.setApprover2Status(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
+							userDataWeekly.setApprover2Status(Constants.Approver2.TASKTRACK_APPROVED);
 							userDataWeekly.setApprover2Id(approver);
 							userDataWeekly.setApprover2SubmittedDate(curDate);
 						}
 					} else {
 						if (userDataWeekly.getApprover1Id() == null || !userDataWeekly.getApprover1Status().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-							userDataWeekly.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+							userDataWeekly.setApprover1Status(Constants.Approver1.TASKTRACK_APPROVED);
 							userDataWeekly.setApprover1Id(approver);
 							userDataWeekly.setApprover1SubmittedDate(curDate);
 						}
 					}
 
-				userDataWeekly.setFinanceStatus(Constants.TASKTRACK_FINANCE_STATUS_APPROVED);
-				userDataWeekly.setTimetrackFinalStatus(Constants.TASKTRACK_FINANCE_STATUS_APPROVED);
+				userDataWeekly.setFinanceStatus(Constants.Finance.TASKTRACK_APPROVED);
+				userDataWeekly.setTimetrackFinalStatus(Constants.Finance.TASKTRACK_APPROVED);
 				userDataWeekly.setFinanceUser(approver);
 				userDataWeekly.setFinanceSubmittedDate(curDate);
 				while (iter.hasNext()) {
@@ -10665,20 +10665,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				UserModel approver = userRepository.getOne(approverId);
 				if (day > 15) {
 
-					userDataSemiMonthly.setFinanceSecondHalfStatus(Constants.TASKTRACK_FINANCE_STATUS_APPROVED);
-					userDataSemiMonthly.setSecondHalfFinalStatus(Constants.TASKTRACK_FINANCE_STATUS_APPROVED);
+					userDataSemiMonthly.setFinanceSecondHalfStatus(Constants.Finance.TASKTRACK_APPROVED);
+					userDataSemiMonthly.setSecondHalfFinalStatus(Constants.Finance.TASKTRACK_APPROVED);
 					userDataSemiMonthly.setSecondHalfFinanceId(approver);
 					userDataSemiMonthly.setFinanceSecondHalfSubmittedDate(curDate);
 					if(projectData.getProjectTier()==2){
 						if(userDataSemiMonthly.getSecondHalfApproverTwoId()==null || !userDataSemiMonthly.getApproverTwoSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-							userDataSemiMonthly.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
+							userDataSemiMonthly.setApproverTwoSecondHalfStatus(Constants.Approver2.TASKTRACK_APPROVED);
 							userDataSemiMonthly.setSecondHalfApproverTwoId(approver);
 							userDataSemiMonthly.setApproverTwoSecondHalfSubmittedDate(curDate);
 						}
 					}
 					else{
 						if(userDataSemiMonthly.getSecondHalfApproverOneId()==null || !userDataSemiMonthly.getApproverOneSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-							userDataSemiMonthly.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+							userDataSemiMonthly.setApproverOneSecondHalfStatus(Constants.Approver1.TASKTRACK_APPROVED);
 							userDataSemiMonthly.setSecondHalfApproverOneId(approver);
 							userDataSemiMonthly.setApproverOneSecondHalfSubmittedDate(curDate);
 						}
@@ -10721,20 +10721,20 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						counting++;
 					}
 				} else {
-					userDataSemiMonthly.setFinanceFirstHalfStatus(Constants.TASKTRACK_FINANCE_STATUS_APPROVED);
-					userDataSemiMonthly.setFirstHalfFinalStatus(Constants.TASKTRACK_FINANCE_STATUS_APPROVED);
+					userDataSemiMonthly.setFinanceFirstHalfStatus(Constants.Finance.TASKTRACK_APPROVED);
+					userDataSemiMonthly.setFirstHalfFinalStatus(Constants.Finance.TASKTRACK_APPROVED);
 					userDataSemiMonthly.setFirstHalfFinanceId(approver);
 					userDataSemiMonthly.setFinanceFirstHalfSubmittedDate(curDate);
 					if(projectData.getProjectTier()==2){
 						if(userDataSemiMonthly.getFirstHalfApproverTwoId()==null || !userDataSemiMonthly.getApproverTwoFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-							userDataSemiMonthly.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
+							userDataSemiMonthly.setApproverTwoFirstHalfStatus(Constants.Approver2.TASKTRACK_APPROVED);
 							userDataSemiMonthly.setFirstHalfApproverTwoId(approver);
 							userDataSemiMonthly.setApproverTwoFirstHalfSubmittedDate(curDate);
 						}
 					}
 					else{
 						if(userDataSemiMonthly.getFirstHalfApproverOneId()==null || !userDataSemiMonthly.getApproverOneFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-							userDataSemiMonthly.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+							userDataSemiMonthly.setApproverOneFirstHalfStatus(Constants.Approver1.TASKTRACK_APPROVED);
 							userDataSemiMonthly.setFirstHalfApproverOneId(approver);
 							userDataSemiMonthly.setApproverOneFirstHalfSubmittedDate(curDate);
 						}
@@ -10912,7 +10912,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 	@Override
 	public StatusResponse approveHoursLevel2(ApproveHoursRequest requestdata) throws Exception {
-		// TODO Auto-generated method stub
 		StatusResponse node = new StatusResponse<>();
 		Long projectId = requestdata.getProjectId();
 		Long userId = requestdata.getUserId();
@@ -10933,9 +10932,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
 									userId);
 					if (userData != null) {
-						if(userData.getApprover1Status().equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)) {
-							userData.setApprover2Status(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
-							userData.setTimetrackFinalStatus(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
+						if(userData.getApprover1Status().equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
+							userData.setApprover2Status(Constants.Approver2.TASKTRACK_APPROVED);
+							userData.setTimetrackFinalStatus(Constants.Approver2.TASKTRACK_APPROVED);
 							UserModel approver = userRepository.getOne(approverId);
 							userData.setApprover2Id(approver);
 							userData.setApprover2SubmittedDate(curDate);
@@ -10955,17 +10954,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (userData != null) {
 						UserModel approver = userRepository.getOne(approverId);
 						if (day > 15) {
-							if(userData.getApproverOneSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)) {
-								userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
-								userData.setSecondHalfFinalStatus(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
+							if(userData.getApproverOneSecondHalfStatus().equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
+								userData.setApproverTwoSecondHalfStatus(Constants.Approver2.TASKTRACK_APPROVED);
+								userData.setSecondHalfFinalStatus(Constants.Approver2.TASKTRACK_APPROVED);
 								userData.setSecondHalfApproverTwoId(approver);
 								userData.setApproverTwoSecondHalfSubmittedDate(curDate);
 								taskTrackApprovalSemiMonthlyRepository.save(userData);
 							}
 						} else {
-							if(userData.getApproverOneFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)) {
-								userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
-								userData.setFirstHalfFinalStatus(Constants.TASKTRACK_APPROVER2_STATUS_APPROVED);
+							if(userData.getApproverOneFirstHalfStatus().equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
+								userData.setApproverTwoFirstHalfStatus(Constants.Approver2.TASKTRACK_APPROVED);
+								userData.setFirstHalfFinalStatus(Constants.Approver2.TASKTRACK_APPROVED);
 								userData.setFirstHalfApproverTwoId(approver);
 								userData.setApproverTwoFirstHalfSubmittedDate(curDate);
 								taskTrackApprovalSemiMonthlyRepository.save(userData);
@@ -10997,12 +10996,12 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									userId);
 					if (userData != null) {
 						if(projectData.getProjectTier()==2) {
-							userData.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
-							userData.setTimetrackFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+							userData.setApprover1Status(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
+							userData.setTimetrackFinalStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
 						}
 						else{
-							userData.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
-							userData.setTimetrackFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+							userData.setApprover1Status(Constants.Approver1.TASKTRACK_APPROVED);
+							userData.setTimetrackFinalStatus(Constants.Approver1.TASKTRACK_APPROVED);
 						}
 						UserModel approver = userRepository.getOne(approverId);
 						userData.setApprover1Id(approver);
@@ -11021,23 +11020,23 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						UserModel approver = userRepository.getOne(approverId);
 						if (day > 15) {
 							if(projectData.getProjectTier()==2) {
-								userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
-								userData.setSecondHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+								userData.setApproverOneSecondHalfStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
+								userData.setSecondHalfFinalStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
 							}
 							else{
-								userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
-								userData.setSecondHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+								userData.setApproverOneSecondHalfStatus(Constants.Approver1.TASKTRACK_APPROVED);
+								userData.setSecondHalfFinalStatus(Constants.Approver1.TASKTRACK_APPROVED);
 							}
 							userData.setSecondHalfApproverOneId(approver);
 							userData.setApproverOneSecondHalfSubmittedDate(curDate);
 							taskTrackApprovalSemiMonthlyRepository.save(userData);
 						} else {
 							if(projectData.getProjectTier()==2) {
-								userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
-								userData.setFirstHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2);
+								userData.setApproverOneFirstHalfStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
+								userData.setFirstHalfFinalStatus(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2);
 							}else{
-								userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
-								userData.setFirstHalfFinalStatus(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED);
+								userData.setApproverOneFirstHalfStatus(Constants.Approver1.TASKTRACK_APPROVED);
+								userData.setFirstHalfFinalStatus(Constants.Approver1.TASKTRACK_APPROVED);
 							}
 							userData.setFirstHalfApproverOneId(approver);
 							userData.setApproverOneFirstHalfSubmittedDate(curDate);
@@ -11135,8 +11134,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		rejection.setRejectionTime(curDate);
 		rejection.setStatus(Constants.TASKTRACK_REJECTION_STATUS_OPEN);
 		
-		String rejected = approverLevel == 1 ? Constants.TASKTRACK_APPROVER1_STATUS_REJECTED
-				: Constants.TASKTRACK_APPROVER2_STATUS_REJECTED;
+		String rejected = approverLevel == 1 ? Constants.Approver1.TASKTRACK_REJECTED
+				: Constants.Approver2.TASKTRACK_REJECTED;
 		// weekly approval
 		if (project.getWorkflowType() == Constants.ProjectWorkflow.WEEKLY_WITHOUT_DAILY_TASK 
 				|| project.getWorkflowType() == Constants.ProjectWorkflow.WEEKLY_WITH_DAILY_TASK) {
@@ -11152,13 +11151,13 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				throw new Exception("This record was already rejected.");
 			}
 			if(approverLevel == 1) {
-				userData.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_REJECTED);
+				userData.setApprover1Status(Constants.Approver1.TASKTRACK_REJECTED);
 			}
 			else {
-				userData.setApprover2Status(Constants.TASKTRACK_APPROVER2_STATUS_REJECTED);
-				userData.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
+				userData.setApprover2Status(Constants.Approver2.TASKTRACK_REJECTED);
+				userData.setApprover1Status(Constants.Approver1.TASKTRACK_OPEN);
 			}
-			userData.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_OPEN);
+			userData.setTimetrackStatus(Constants.UserStatus.TASKTRACK_OPEN);
 			userData.setTimetrackFinalStatus(rejected);
 			userData.setRejectionTime(curDate);
 			taskTrackWeeklyApprovalRepository.save(userData);
@@ -11191,14 +11190,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					throw new Exception("This record was already rejected.");
 				}
 				if(approverLevel == 1) {
-					userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_REJECTED);
+					userData.setApproverOneSecondHalfStatus(Constants.Approver1.TASKTRACK_REJECTED);
 				}
 				else{
-					userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER2_STATUS_REJECTED);
-					userData.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
+					userData.setApproverTwoSecondHalfStatus(Constants.Approver2.TASKTRACK_REJECTED);
+					userData.setApproverOneSecondHalfStatus(Constants.Approver1.TASKTRACK_OPEN);
 				}
 				
-				userData.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_OPEN);
+				userData.setUserSecondHalfStatus(Constants.UserStatus.TASKTRACK_OPEN);
 				userData.setSecondHalfFinalStatus(rejected);
 				rejection.setCycle(Constants.TASKTRACK_REJECTION_SECOND_HALF_CYCLE);
 			} 
@@ -11208,18 +11207,18 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				String timeTrackStatus = userData.getUserFirstHalfStatus() == null ? "" : userData.getUserFirstHalfStatus();
 				
 				if(approverStatus.equals(Constants.TASKTRACK_APPROVER_STATUS_REJECTION) 
-						|| timeTrackStatus.equals(Constants.TASKTRACK_USER_STATUS_REJECTION)) {
+						|| timeTrackStatus.equals(Constants.UserStatus.TASKTRACK_REJECTION)) {
 					throw new Exception("This record was already rejected.");
 				}
 				if(approverLevel == 1) {
-					userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_REJECTED);
+					userData.setApproverOneFirstHalfStatus(Constants.Approver1.TASKTRACK_REJECTED);
 				}
 				else{
-					userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER2_STATUS_REJECTED);
-					userData.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_OPEN);
+					userData.setApproverTwoFirstHalfStatus(Constants.Approver2.TASKTRACK_REJECTED);
+					userData.setApproverOneFirstHalfStatus(Constants.Approver1.TASKTRACK_OPEN);
 				}
 				
-				userData.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_OPEN);
+				userData.setUserFirstHalfStatus(Constants.UserStatus.TASKTRACK_OPEN);
 				userData.setFirstHalfFinalStatus(rejected);
 				rejection.setCycle(Constants.TASKTRACK_REJECTION_FIRST_HALF_CYCLE);
 			}
@@ -11282,15 +11281,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Calendar cal = Calendar.getInstance();
 		Optional<TaskTrackWeeklyApproval>  weeklySubOpt=taskTrackWeeklyApprovalRepository.findById(Id);
 		TaskTrackWeeklyApproval  weeklySub=weeklySubOpt.get();
-		weeklySub.setFinanceStatus(Constants.TASKTRACK_FINANCE_STATUS_REOPEN);
+		weeklySub.setFinanceStatus(Constants.Finance.TASKTRACK_REOPEN);
 		weeklySub.setFinanceUser(userRepository.findById(userId).get());
 		weeklySub.setFinanceSubmittedDate(cal.getTime());
-		weeklySub.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_REOPEN);
-		weeklySub.setApprover1Status(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN);
+		weeklySub.setTimetrackStatus(Constants.UserStatus.TASKTRACK_REOPEN);
+		weeklySub.setApprover1Status(Constants.Approver1.TASKTRACK_REOPEN);
 		if(projectTier==2) {
-			weeklySub.setApprover2Status(Constants.TASKTRACK_APPROVER2_STATUS_REOPEN);
+			weeklySub.setApprover2Status(Constants.Approver2.TASKTRACK_REOPEN);
 		}
-		weeklySub.setTimetrackFinalStatus(Constants.TASKTRACK_FINAL_STATUS_REOPEN);
+		weeklySub.setTimetrackFinalStatus(Constants.FinalStatus.TASKTRACK_REOPEN);
 		taskTrackWeeklyApprovalRepository.save(weeklySub);
 		return new StatusResponse<String>("Success", 200, null);
 	}
@@ -11305,27 +11304,27 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		cal.setTime(startDate);
 		int day = cal.get(Calendar.DAY_OF_MONTH);
 		if(day<=15){
-			monthlySub.setFinanceFirstHalfStatus(Constants.TASKTRACK_FINANCE_STATUS_REOPEN);
+			monthlySub.setFinanceFirstHalfStatus(Constants.Finance.TASKTRACK_REOPEN);
 			monthlySub.setFirstHalfFinanceId(userRepository.findById(userId).get());
 			monthlySub.setFinanceFirstHalfSubmittedDate(cal.getTime());
-			monthlySub.setUserFirstHalfStatus(Constants.TASKTRACK_USER_STATUS_REOPEN);
-			monthlySub.setApproverOneFirstHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN);
+			monthlySub.setUserFirstHalfStatus(Constants.UserStatus.TASKTRACK_REOPEN);
+			monthlySub.setApproverOneFirstHalfStatus(Constants.Approver1.TASKTRACK_REOPEN);
 			if(projectTier==2) {
-				monthlySub.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER2_STATUS_REOPEN);
+				monthlySub.setApproverTwoFirstHalfStatus(Constants.Approver2.TASKTRACK_REOPEN);
 			}
-			monthlySub.setFirstHalfFinalStatus(Constants.TASKTRACK_FINAL_STATUS_REOPEN);
+			monthlySub.setFirstHalfFinalStatus(Constants.FinalStatus.TASKTRACK_REOPEN);
 		}
 		
 		if(day>15){
-			monthlySub.setFinanceSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_REOPEN);
+			monthlySub.setFinanceSecondHalfStatus(Constants.Finance.TASKTRACK_REOPEN);
 			monthlySub.setSecondHalfFinanceId(userRepository.findById(userId).get());
 			monthlySub.setFinanceSecondHalfSubmittedDate(cal.getTime());
-			monthlySub.setUserSecondHalfStatus(Constants.TASKTRACK_USER_STATUS_REOPEN);
-			monthlySub.setApproverOneSecondHalfStatus(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN);
+			monthlySub.setUserSecondHalfStatus(Constants.UserStatus.TASKTRACK_REOPEN);
+			monthlySub.setApproverOneSecondHalfStatus(Constants.Approver1.TASKTRACK_REOPEN);
 			if(projectTier==2) {
-				monthlySub.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER2_STATUS_REOPEN);
+				monthlySub.setApproverTwoSecondHalfStatus(Constants.Approver2.TASKTRACK_REOPEN);
 			}
-			monthlySub.setSecondHalfFinalStatus(Constants.TASKTRACK_FINAL_STATUS_REOPEN);
+			monthlySub.setSecondHalfFinalStatus(Constants.FinalStatus.TASKTRACK_REOPEN);
 		}
 			
 		taskTrackApprovalSemiMonthlyRepository.save(monthlySub);
@@ -11359,11 +11358,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								userId);
 				
 				if (userData != null) {
-					String approver1Status = userData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+					String approver1Status = userData.getApprover1Status() == null ? Constants.Approver1.TASKTRACK_OPEN
 							: userData.getApprover1Status();
-					String approver2Status = userData.getApprover2Status() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+					String approver2Status = userData.getApprover2Status() == null ? Constants.Approver2.TASKTRACK_OPEN
 							: userData.getApprover2Status();
-					String financeStatus = userData.getFinanceStatus() == null ? Constants.TASKTRACK_FINANCE_STATUS_OPEN
+					String financeStatus = userData.getFinanceStatus() == null ? Constants.Finance.TASKTRACK_OPEN
 							: userData.getFinanceStatus();
 					
 					node.put("userName", userData.getUser().getLastName() + " " + userData.getUser().getFirstName());
@@ -11380,25 +11379,25 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("approver2SubmittedDate", "");
 					}
 					node.put("loggedId", userData.getId());
-					node.put("userStatus", userData.getTimetrackStatus() == null ? Constants.TASKTRACK_USER_STATUS_SAVED:userData.getTimetrackStatus());
+					node.put("userStatus", userData.getTimetrackStatus() == null ? Constants.UserStatus.TASKTRACK_SAVED:userData.getTimetrackStatus());
 
-					if(approver1Status.equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2) 
-							&& (approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_OPEN)
-									|| approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_REJECTED)
-									|| approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_REOPEN))){
+					if(approver1Status.equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2) 
+							&& (approver2Status.equals(Constants.Approver2.TASKTRACK_OPEN)
+									|| approver2Status.equals(Constants.Approver2.TASKTRACK_REJECTED)
+									|| approver2Status.equals(Constants.Approver2.TASKTRACK_REOPEN))){
 						submitButtonStatus = true;
 						rejectButtonStatus = true;
 					}
-					if(financeStatus.equals(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)) {
+					if(financeStatus.equals(Constants.Finance.TASKTRACK_APPROVED)) {
 						submitButtonStatus = false;
 						rejectButtonStatus = false;
 					}
 					
 					int flag = 0;
 					if(userData.getTimetrackFinalStatus() != null) {
-					if(userData.getTimetrackFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2) 
-							||userData.getTimetrackFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED) 
-							|| userData.getTimetrackFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN)
+					if(userData.getTimetrackFinalStatus().equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2) 
+							||userData.getTimetrackFinalStatus().equals(Constants.Approver1.TASKTRACK_APPROVED) 
+							|| userData.getTimetrackFinalStatus().equals(Constants.Approver1.TASKTRACK_REOPEN)
 							|| userData.getTimetrackFinalStatus().equals(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_REJECTED))  {
 						
 						flag = 1;
@@ -11490,17 +11489,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					int flag = 0;
 					if(userData.getFirstHalfFinalStatus() != null) {
-					if(userData.getFirstHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2) 
-							|| userData.getFirstHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED)
-							|| userData.getFirstHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN) 
+					if(userData.getFirstHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2) 
+							|| userData.getFirstHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_APPROVED)
+							|| userData.getFirstHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_REOPEN) 
 							|| userData.getFirstHalfFinalStatus().equals(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED)) {
 						flag = 1;
 					}
 					}
 					if(userData.getSecondHalfFinalStatus() != null) {
-						if(userData.getSecondHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2) 
-								|| userData.getSecondHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_APPROVED)
-								|| userData.getSecondHalfFinalStatus().equals(Constants.TASKTRACK_APPROVER1_STATUS_REOPEN)
+						if(userData.getSecondHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2) 
+								|| userData.getSecondHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_APPROVED)
+								|| userData.getSecondHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_REOPEN)
 								|| userData.getSecondHalfFinalStatus().equals(Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED) ) {
 							flag = 1;
 						}
@@ -11508,11 +11507,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					ObjectNode hourDataResponse = objectMapper.createObjectNode();
 					if (day == 15) {
 
-						String approver1Status = userData.getApproverOneFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+						String approver1Status = userData.getApproverOneFirstHalfStatus() == null ? Constants.Approver1.TASKTRACK_OPEN
 								: userData.getApproverOneFirstHalfStatus();
-						String approver2Status = userData.getApproverTwoFirstHalfStatus() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+						String approver2Status = userData.getApproverTwoFirstHalfStatus() == null ? Constants.Approver2.TASKTRACK_OPEN
 								: userData.getApproverTwoFirstHalfStatus();
-						String financeStatus = userData.getFinanceFirstHalfStatus() == null ? Constants.TASKTRACK_FINANCE_STATUS_OPEN
+						String financeStatus = userData.getFinanceFirstHalfStatus() == null ? Constants.Finance.TASKTRACK_OPEN
 								: userData.getFinanceFirstHalfStatus();
 						
 						hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay1():0);
@@ -11548,7 +11547,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								userData.getApproverOneFirstHalfStatus() == null
 								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 										: userData.getApproverOneFirstHalfStatus());
-						node.put("userStatus", userData.getUserFirstHalfStatus() == null ? Constants.TASKTRACK_USER_STATUS_SAVED :userData.getUserFirstHalfStatus());
+						node.put("userStatus", userData.getUserFirstHalfStatus() == null ? Constants.UserStatus.TASKTRACK_SAVED :userData.getUserFirstHalfStatus());
 						if(userData.getApproverOneFirstHalfSubmittedDate() != null)
 							node.put("approver1SubmittedDate",userData.getApproverOneFirstHalfSubmittedDate() == null ? "" :
 									sdfdm.format(userData.getApproverOneFirstHalfSubmittedDate()));
@@ -11572,15 +11571,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("approver2SubmittedDate", "");
 						}
 
-						if(approver1Status.equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2) 
-								&& (approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_OPEN)
-										|| approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_REJECTED)
-										|| approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_REOPEN))){
+						if(approver1Status.equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2) 
+								&& (approver2Status.equals(Constants.Approver2.TASKTRACK_OPEN)
+										|| approver2Status.equals(Constants.Approver2.TASKTRACK_REJECTED)
+										|| approver2Status.equals(Constants.Approver2.TASKTRACK_REOPEN))){
 
 							submitButtonStatus = true;
 							rejectButtonStatus = true;
 						}
-						if(financeStatus.equals(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)) {
+						if(financeStatus.equals(Constants.Finance.TASKTRACK_APPROVED)) {
 							submitButtonStatus = false;
 							rejectButtonStatus = false;
 						}
@@ -11590,11 +11589,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("approver2Name",userData.getFirstHalfApproverTwoId() == null ?projectApprover2:(userData.getFirstHalfApproverTwoId().getLastName()+" "+userData.getFirstHalfApproverTwoId().getFirstName()));
 					} else {
 
-						String approver1Status = userData.getApproverOneSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER1_STATUS_OPEN
+						String approver1Status = userData.getApproverOneSecondHalfStatus() == null ? Constants.Approver1.TASKTRACK_OPEN
 								: userData.getApproverOneSecondHalfStatus();
-						String approver2Status = userData.getApproverTwoSecondHalfStatus() == null ? Constants.TASKTRACK_APPROVER2_STATUS_OPEN
+						String approver2Status = userData.getApproverTwoSecondHalfStatus() == null ? Constants.Approver2.TASKTRACK_OPEN
 								: userData.getApproverTwoSecondHalfStatus();
-						String financeStatus = userData.getFinanceSecondHalfStatus() == null ? Constants.TASKTRACK_FINANCE_STATUS_OPEN
+						String financeStatus = userData.getFinanceSecondHalfStatus() == null ? Constants.Finance.TASKTRACK_OPEN
 								: userData.getFinanceSecondHalfStatus();
 						
 						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay16():0);
@@ -11638,7 +11637,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								userData.getApproverOneSecondHalfStatus() == null
 								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 										: userData.getApproverOneFirstHalfStatus());
-						node.put("userStatus", userData.getUserSecondHalfStatus() == null ? Constants.TASKTRACK_USER_STATUS_SAVED :userData.getUserSecondHalfStatus());
+						node.put("userStatus", userData.getUserSecondHalfStatus() == null ? Constants.UserStatus.TASKTRACK_SAVED :userData.getUserSecondHalfStatus());
 						node.put("approver1SubmittedDate",
 								userData.getApproverOneSecondHalfStatus().toString());
 						node.put("userSubmittedDate", sdfdm.format(userData.getUserSecondHalfSubmittedDate()));
@@ -11655,14 +11654,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("approver2SubmittedDate", "");
 						}
 						
-						if(approver1Status.equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2) 
-								&& (approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_OPEN)
-										|| approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_REJECTED)
-										|| approver2Status.equals(Constants.TASKTRACK_APPROVER2_STATUS_REOPEN))){
+						if(approver1Status.equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2) 
+								&& (approver2Status.equals(Constants.Approver2.TASKTRACK_OPEN)
+										|| approver2Status.equals(Constants.Approver2.TASKTRACK_REJECTED)
+										|| approver2Status.equals(Constants.Approver2.TASKTRACK_REOPEN))){
 							submitButtonStatus = true;
 							rejectButtonStatus = true;
 						}
-						if(financeStatus.equals(Constants.TASKTRACK_FINANCE_STATUS_APPROVED)) {
+						if(financeStatus.equals(Constants.Finance.TASKTRACK_APPROVED)) {
 							submitButtonStatus = false;
 							rejectButtonStatus = false;
 						}

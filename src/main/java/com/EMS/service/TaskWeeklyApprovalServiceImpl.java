@@ -84,9 +84,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		}
 
 		if (null != weeklyApproval.getTimetrackFinalStatus()) {
-			if (weeklyApproval.getTimetrackFinalStatus().equals(Constants.TASKTRACK_FINAL_STATUS_APPROVED)
+			if (weeklyApproval.getTimetrackFinalStatus().equals(Constants.FinalStatus.TASKTRACK_APPROVED)
 					|| weeklyApproval.getTimetrackFinalStatus()
-							.equals(Constants.TASKTRACK_APPROVER1_STATUS_FORWARDED_TO_LEVEL2)) {
+							.equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
 				return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE,
 						"Timetrack has already been approved.");
 			}
@@ -206,8 +206,8 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	
 		weeklyApproval.setUserSubmittedDate(new Date());
 
-		weeklyApproval.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
-		weeklyApproval.setTimetrackFinalStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
+		weeklyApproval.setTimetrackFinalStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 
 		if (requeststatus == 0) {
 			taskWeeklyApprovalRepository.save(weeklyApproval);
@@ -363,8 +363,8 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		else {
 			requeststatus = 1;
 		}
-		weeklyApproval.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
-		weeklyApproval.setTimetrackFinalStatus(Constants.TASKTRACK_USER_STATUS_SAVED);
+		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);
+		weeklyApproval.setTimetrackFinalStatus(Constants.UserStatus.TASKTRACK_SAVED);
 
 		if (requeststatus == 0) {
 
@@ -656,7 +656,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		weeklytasksubmission.setUserSubmittedDate(new Date());
-		weeklytasksubmission.setTimetrackStatus(Constants.TASKTRACK_USER_STATUS_SUBMIT);
+		weeklytasksubmission.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 
 		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
