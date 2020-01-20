@@ -11,5 +11,6 @@ import com.EMS.model.Tasktrack;
 public interface AssignUserRepository  extends JpaRepository<ApprovalUserAsignModel, Long> {
 	
 	List<ApprovalUserAsignModel> findByProjectIdProjectId(Long projectId);
+	List<ApprovalUserAsignModel> findByProjectIdProjectIdAndStartDateAfterAndEndDateBefore(Long projectId,Date startDate,Date endDate);
 
 }

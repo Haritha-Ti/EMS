@@ -10205,6 +10205,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		if (projectData != null) {
 			node.put("clientName",projectData.getClientName().getClientName());
 			ArrayNode hourDataNode = objectMapper.createArrayNode();
+			boolean reopenButtonStatus = false;
 			//weekly
 			if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {
 				TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate, userId);
@@ -10242,6 +10243,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					ObjectNode hourDataResponse = objectMapper.createObjectNode();
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(startDate);
+					if(finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_APPROVED)
+					|| finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+					|| finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_FORWARDED_TO_LEVEL2)){
+						reopenButtonStatus = true;
+					}
 					int dataFlag = 0;
 					if(!finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 							|| !finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
@@ -10263,6 +10269,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					//hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataResponse);
 					node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					node.put("reopenButtonStatus",reopenButtonStatus);
 
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
@@ -10302,6 +10309,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						//hourDataNode.add(hourDataResponse);
 						node.set("hourData", hourDataResponse);
 						node.put("submissionHistory","");
+						node.put("reopenButtonStatus",false);
 					}
 				}
 
@@ -10323,6 +10331,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (day == 15) {
 						String userFirstHalfStatus = userData.getUserFirstHalfStatus()==null?Constants.UserStatus.TASKTRACK_SAVED:userData.getUserFirstHalfStatus();
 						String finalFirstHalfStatus = userData.getFirstHalfFinalStatus()==null?Constants.TASKTRACK_FINAL_STATUS_OPEN:userData.getFirstHalfFinalStatus();
+						if(finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_APPROVED)
+								|| finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+								|| finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_FORWARDED_TO_LEVEL2)){
+							reopenButtonStatus = true;
+						}
 						int dataFirstHalfFlag = 0;
 						if(!finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 								|| !finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
@@ -10386,6 +10399,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					} else {
 						String userSecondHalfStatus = userData.getUserSecondHalfStatus()==null?Constants.UserStatus.TASKTRACK_SAVED:userData.getUserSecondHalfStatus();
 						String finalSecondHalfStatus = userData.getSecondHalfFinalStatus()==null?Constants.TASKTRACK_FINAL_STATUS_OPEN:userData.getSecondHalfFinalStatus();
+						if(finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_APPROVED)
+								|| finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_SUBMIT)
+								|| finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_FORWARDED_TO_LEVEL2)){
+							reopenButtonStatus = true;
+						}
 						int dataSecondHalfFlag = 0;
 						if(!finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 								|| !finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
@@ -10457,6 +10475,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					//hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataResponse);
 					node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					node.put("reopenButtonStatus",reopenButtonStatus);
 					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
 				} else {
 					UserModel user = userRepository.findOneByUserId(userId);
@@ -10558,6 +10577,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						//hourDataNode.add(hourDataResponse);
 						node.set("hourData", hourDataResponse);
 						node.put("submissionHistory","");
+						node.put("reopenButtonStatus",false);
 					}
 				}
 			}
