@@ -11166,6 +11166,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		rejection.setProject(project);
 		rejection.setRemark(remark);
 		rejection.setRejectionTime(curDate);
+		rejection.setRejectionLevel(approverLevel);
 		rejection.setStatus(Constants.TASKTRACK_REJECTION_STATUS_OPEN);
 		
 		String rejected = approverLevel == 1 ? Constants.Approver1.TASKTRACK_REJECTED
