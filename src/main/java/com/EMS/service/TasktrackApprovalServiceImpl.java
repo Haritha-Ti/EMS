@@ -11816,8 +11816,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, startDate, endDate,
 									userId);
 					if (userData != null) {
-						if(userData.getApprover1Status().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-							userData.setApprover2Status(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+						if(userData.getApprover1Status().equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
+							userData.setApprover2Status(Constants.Approver1.TASKTRACK_APPROVED);
 							UserModel approver = userRepository.getOne(approverId);
 							userData.setApprover2Id(approver);
 							userData.setApprover2SubmittedDate(curDate);
@@ -11835,15 +11835,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					if (userData != null) {
 						UserModel approver = userRepository.getOne(approverId);
 						if (day > 15) {
-							if(userData.getApproverOneSecondHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-								userData.setApproverTwoSecondHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							if(userData.getApproverOneSecondHalfStatus().equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
+								userData.setApproverTwoSecondHalfStatus(Constants.Approver1.TASKTRACK_APPROVED);
 								userData.setSecondHalfApproverTwoId(approver);
 								userData.setApproverTwoSecondHalfSubmittedDate(curDate);
 								taskTrackApprovalSemiMonthlyRepository.save(userData);
 							}
 						} else {
-							if(userData.getApproverOneFirstHalfStatus().equalsIgnoreCase(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT)) {
-								userData.setApproverTwoFirstHalfStatus(Constants.TASKTRACK_APPROVER_STATUS_SUBMIT);
+							if(userData.getApproverOneFirstHalfStatus().equalsIgnoreCase(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
+								userData.setApproverTwoFirstHalfStatus(Constants.Approver1.TASKTRACK_APPROVED);
 								userData.setFirstHalfApproverTwoId(approver);
 								userData.setApproverTwoFirstHalfSubmittedDate(curDate);
 								taskTrackApprovalSemiMonthlyRepository.save(userData);
