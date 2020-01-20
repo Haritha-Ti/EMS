@@ -36,68 +36,50 @@ public class TasktrackApprovalController {
 	private  TasktrackApprovalService tasktrackApprovalService;
 
 	@PostMapping(value = "/taskTrackDataForApprover1")
-	public ObjectNode getTaskTrackDataForApprover1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode responseData = objectMapper.createObjectNode();
+	public StatusResponse getTaskTrackDataForApprover1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode node = objectMapper.createObjectNode();
+		StatusResponse response = new StatusResponse<>();
 		try {
 			node = tasktrackApprovalService.getTaskTrackDataForApprover1(requestdata);
-            responseData.set("data",node);
-			responseData.put("status", "Sucess");
-			responseData.put("message", "Sucess ");
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-            responseData.set("data",node);
-			responseData.put("status", "failure");
-			responseData.put("message", "failed. " + e);
+			response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
-
-		responseData.put("code", httpstatus.getStatus());
-		return responseData;
+		return response;
 	}
 
 	@PostMapping(value = "/taskTrackDataByUserId")
-	public ObjectNode getTaskTrackDataByUserId(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode responseData = objectMapper.createObjectNode();
+	public StatusResponse getTaskTrackDataByUserId(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode node = objectMapper.createObjectNode();
+		StatusResponse response = new StatusResponse<>();
 		try {
 			node = tasktrackApprovalService.getTaskTrackDataByUserId(requestdata);
-			responseData.set("data",node);
-			responseData.put("status", "Sucess");
-			responseData.put("message", "Sucess ");
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			responseData.set("data",node);
-			responseData.put("status", "failure");
-			responseData.put("message", "failed. " + e);
+			response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
-
-		responseData.put("code", httpstatus.getStatus());
-		return responseData;
+		return response;
 	}
 	@PutMapping(value = "/approveHoursLevel1")
-	public ObjectNode approveHoursLevel1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode responseData = objectMapper.createObjectNode();
+	public StatusResponse approveHoursLevel1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode node = objectMapper.createObjectNode();
+		StatusResponse response = new StatusResponse<>();
 		try {
 			node = tasktrackApprovalService.approveHoursLevel1(requestdata);
-			responseData.set("data",node);
-			responseData.put("status", "Sucess");
-			responseData.put("message", "Sucess ");
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			responseData.set("data",node);
-			responseData.put("status", "failure");
-			responseData.put("message", "failed. " + e);
+			response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
-
-		responseData.put("code", httpstatus.getStatus());
-		return responseData;
+		return response;
 	}
 	
 	@PostMapping(value = "/taskTrackDataForApprover2")
@@ -118,47 +100,35 @@ public class TasktrackApprovalController {
 
 	//Nisha
 	@PostMapping(value = "/taskTrackDataForFinance")
-	public ObjectNode getTaskTrackDataForFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode responseData = objectMapper.createObjectNode();
+	public StatusResponse getTaskTrackDataForFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode node = objectMapper.createObjectNode();
+		StatusResponse response = new StatusResponse<>();
 		try {
 			node = tasktrackApprovalService.getTaskTrackDataForFinance(requestdata);
-			responseData.set("data",node);
-			responseData.put("status", Constants.SUCCESS);
-			responseData.put("message", Constants.SUCCESS);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			responseData.set("data",node);
-			responseData.put("status", "failure");
-			responseData.put("message", "failed. " + e);
+			response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
-
-		responseData.put("code", httpstatus.getStatus());
-		return responseData;
+		return response;
 	}
 	//nisha
 	@PostMapping(value = "/taskTrackDataByUserIdForFinance")
-	public ObjectNode getTaskTrackDataByUserIdForFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode responseData = objectMapper.createObjectNode();
+	public StatusResponse getTaskTrackDataByUserIdForFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		ObjectNode node = objectMapper.createObjectNode();
+		StatusResponse response = new StatusResponse<>();
 		try {
 			node = tasktrackApprovalService.getTaskTrackDataByUserIdForFinance(requestdata);
-			responseData.set("data",node);
-			responseData.put("status", Constants.SUCCESS);
-			responseData.put("message", Constants.SUCCESS);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			responseData.set("data",node);
-			responseData.put("status", "failure");
-			responseData.put("message", "failed. " + e);
+			response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
-
-		responseData.put("code", httpstatus.getStatus());
-		return responseData;
+		return response;
 	}
 	
 	/**
@@ -215,25 +185,19 @@ public class TasktrackApprovalController {
 	
 	//Nisha
 	@PutMapping(value = "/approveHoursFinance")
-	public ObjectNode approveHoursFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode responseData = objectMapper.createObjectNode();
+	public StatusResponse approveHoursFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
+		StatusResponse response = new StatusResponse<>();
 		ObjectNode node = objectMapper.createObjectNode();
 		try {
 			node = tasktrackApprovalService.approveHoursFinance(requestdata);
-			responseData.set("data",node);
-			responseData.put("status", Constants.SUCCESS);
-			responseData.put("message", Constants.SUCCESS);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			responseData.set("data",node);
-			responseData.put("status", "failure");
-			responseData.put("message", "failed. " + e);
+			response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
-
-		responseData.put("code", httpstatus.getStatus());
-		return responseData;
+		return response;
 	}
 
 	@PutMapping(value = "/approveHoursLevel2")
@@ -322,7 +286,6 @@ public class TasktrackApprovalController {
 				
 			} catch (Exception e) {
 				// TODO: handle exception
-				e.printStackTrace();
 				e.printStackTrace();
 				response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 			}

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
@@ -127,6 +128,10 @@ public class TaskWeeklyApprovalController {
 		return response;
 	}
 	
+	@PostMapping(value = "/save_weekly_approval/with_task")
+	public StatusResponse saveWeeklyTasktrackWithTask(@RequestBody SaveWeeklyTasktrackWithTaskRequestDTO requestData) {
 
+		return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, null);
+	}
 
 }
