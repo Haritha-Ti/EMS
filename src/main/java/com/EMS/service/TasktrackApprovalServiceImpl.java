@@ -11582,12 +11582,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 										: userData.getApproverOneFirstHalfStatus());
 						node.put("userStatus", userData.getUserFirstHalfStatus() == null ? Constants.UserStatus.TASKTRACK_SAVED :userData.getUserFirstHalfStatus());
-						if(userData.getApproverOneFirstHalfSubmittedDate() != null)
 							node.put("approver1SubmittedDate",userData.getApproverOneFirstHalfSubmittedDate() == null ? "" :
 									sdfdm.format(userData.getApproverOneFirstHalfSubmittedDate()));
-						else
-							node.put("approver1SubmittedDate",
-									"");
 						if(userData.getUserFirstHalfSubmittedDate()!= null)
 							node.put("userSubmittedDate", userData.getUserFirstHalfSubmittedDate() == null ? "" :sdfdm.format(userData.getUserFirstHalfSubmittedDate()));
 						else
@@ -11599,7 +11595,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 											: userData.getApproverTwoFirstHalfStatus());
 							node.put("approver2SubmittedDate",
-									userData.getApproverTwoFirstHalfSubmittedDate() == null ? "" : sdfdm.format(userData.getApproverTwoFirstHalfSubmittedDate().toString()));
+									userData.getApproverTwoFirstHalfSubmittedDate() == null ? "" : sdfdm.format(userData.getApproverTwoFirstHalfSubmittedDate()));
 						} else {
 							node.put("approver2Status", "");
 							node.put("approver2SubmittedDate", "");
