@@ -10979,7 +10979,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					Calendar cale = Calendar.getInstance();
 					cale.setTime(endDate);
 					int day = cale.get(Calendar.DAY_OF_MONTH);
-					int month = cale.get(Calendar.MONTH);
+					int month = cale.get(Calendar.MONTH)+1;
 					int year = cale.get(Calendar.YEAR);
 					TasktrackApprovalSemiMonthly userData = taskTrackApprovalSemiMonthlyRepository
 							.findByUserUserIdAndProjectProjectIdAndMonthAndYear(userId, projectId, month, year);
