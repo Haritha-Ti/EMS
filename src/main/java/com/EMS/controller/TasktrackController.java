@@ -3545,7 +3545,7 @@ public class TasktrackController {
 			@RequestParam("year") Integer year, @RequestParam("uid") Long userId) {
 		StatusResponse response = new StatusResponse();
 		try {
-			response = tasktrackService.getTimeTrackData(userId, month, year);
+			response = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,tasktrackService.getTimeTrackData(userId, month, year));
 		} catch (Exception e) {
 			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
 			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionresponse);

@@ -910,7 +910,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 	 * @author sreejith.j
 	 */
 	@Override
-	public StatusResponse getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
+	public List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
 
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 
@@ -1042,7 +1042,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 				if (projHalfs.containsKey(String.valueOf(modelObj.getProject().getProjectId()) + "F")) {
 					firstHalfObj.put("hours", firstHalfHours);
-					firstHalfObj.put("status", firstHalfFinalStatus);
+					firstHalfObj.put("status", firstHalfFinalStatus == null ? "OPEN" : firstHalfFinalStatus.toUpperCase());
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
 					periodsArray.add(firstHalfObj);
@@ -1050,7 +1050,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				}
 				if (projHalfs.containsKey(String.valueOf(modelObj.getProject().getProjectId()) + "S")) {
 					secondHalfObj.put("hours", secondHalfHours);
-					secondHalfObj.put("status", secondHalfFinalStatus);
+					secondHalfObj.put("status", secondHalfFinalStatus == null ? "OPEN" : secondHalfFinalStatus.toUpperCase());
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
@@ -1137,14 +1137,14 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 				if (hoursObj.containsKey("firstHalfHours")) {
 					firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
-					firstHalfObj.put("status", modelObj.getFirstHalfFinalStatus());
+					firstHalfObj.put("status", modelObj.getFirstHalfFinalStatus() == null ? "OPEN": modelObj.getFirstHalfFinalStatus().toUpperCase());
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
 					periodsArray.add(firstHalfObj);
 				}
 				if (hoursObj.containsKey("secondHalfHours")) {
 					secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
-					secondHalfObj.put("status", modelObj.getSecondHalfFinalStatus());
+					secondHalfObj.put("status", modelObj.getSecondHalfFinalStatus() == null ? "OPEN": modelObj.getSecondHalfFinalStatus().toUpperCase());
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					periodsArray.add(secondHalfObj);
@@ -1434,13 +1434,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 		Collection<HashMap<String, Object>> resultCollection = projectsMap.values();
 		result = new ArrayList<>(resultCollection);
-		StatusResponse response;
-		if (!result.isEmpty()) {
-			response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, result);
-		} else {
-			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "No data available");
-		}
-		return response;
+		return result;
 	}
 
 }

@@ -68,7 +68,8 @@ public class AssignUserServiceImpl implements  AssignUserService{
 	public StatusResponse getAssignUserByProjectAndDate(Long projectId, Date startDate, Date endDate) {
 		StatusResponse  response =null;
 		List<AssignUserReturnDto>  dtoList =new ArrayList<AssignUserReturnDto>();
-		List<ApprovalUserAsignModel> data=assignUserRepository.findByProjectIdProjectId(projectId);
+		//List<ApprovalUserAsignModel> data=assignUserRepository.findByProjectIdProjectId(projectId);
+		List<ApprovalUserAsignModel> data=assignUserRepository.findByProjectIdProjectIdAndStartDateAfterAndEndDateBefore(projectId, startDate, endDate);
 		for(ApprovalUserAsignModel m: data ){
 			AssignUserReturnDto   dto= new AssignUserReturnDto();
 			UserModel  user = userRepo.findById(m.getUserId().getUserId()).get() ;
