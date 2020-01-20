@@ -124,8 +124,8 @@ public class TasktrackApprovalController {
 		try {
 			node = tasktrackApprovalService.getTaskTrackDataForFinance(requestdata);
 			responseData.set("data",node);
-			responseData.put("status", "Sucess");
-			responseData.put("message", "Sucess ");
+			responseData.put("status", Constants.SUCCESS);
+			responseData.put("message", Constants.SUCCESS);
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -146,8 +146,8 @@ public class TasktrackApprovalController {
 		try {
 			node = tasktrackApprovalService.getTaskTrackDataByUserIdForFinance(requestdata);
 			responseData.set("data",node);
-			responseData.put("status", "Sucess");
-			responseData.put("message", "Sucess ");
+			responseData.put("status", Constants.SUCCESS);
+			responseData.put("message", Constants.SUCCESS);
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -221,8 +221,8 @@ public class TasktrackApprovalController {
 		try {
 			node = tasktrackApprovalService.approveHoursFinance(requestdata);
 			responseData.set("data",node);
-			responseData.put("status", "Sucess");
-			responseData.put("message", "Sucess ");
+			responseData.put("status", Constants.SUCCESS);
+			responseData.put("message", Constants.SUCCESS);
 
 		} catch (Exception e) {
 			// TODO: handle exception
