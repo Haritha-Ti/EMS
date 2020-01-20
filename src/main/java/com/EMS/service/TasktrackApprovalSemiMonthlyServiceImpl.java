@@ -76,6 +76,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			endDate = sdf.parse(requestData.getEndDate());
 		}
 
+		ProjectModel projectModel = projectservice.findById(projectId);
+		
 		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
 		List<String> taskStatusList = Arrays.asList(taskStatusArray);
 		TasktrackApprovalSemiMonthly approvalSemiMonthly = (TasktrackApprovalSemiMonthly) semiMonthlyRepository
@@ -140,7 +142,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					firstHalfSubmittedDate = approvalSemiMonthly.getUserFirstHalfSubmittedDate();
 				}
 				
-				ProjectModel projectModel = projectservice.findById(projectId);
+			
 				
 				if (null == firstHalfApprover1 || firstHalfApprover1.equals("")) {
 					firstHalfApprover1 = null !=  projectModel.getProjectOwner()? projectModel.getProjectOwner().getFirstName() + " "
@@ -228,7 +230,6 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 						secondHalfSubmittedDate = approvalSemiMonthly.getUserSecondHalfSubmittedDate();
 					}
 					
-					ProjectModel projectModel = projectservice.findById(projectId);
 					
 					if (null == secondHalfApprover1 || secondHalfApprover1.equals("")) {
 						secondHalfApprover1 = null !=  projectModel.getProjectOwner()? projectModel.getProjectOwner().getFirstName() + " "
@@ -267,6 +268,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					user.put("status", approvalSemiMonthly.getUserSecondHalfStatus());
 					user.put("date", approvalSemiMonthly.getUserSecondHalfSubmittedDate()!=null?approvalSemiMonthly.getUserSecondHalfSubmittedDate():"");
 					response.put("user", user);
+					
 
 				}
 			}
@@ -280,6 +282,27 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 						array.add(addHoursandDaytoArray(sdf, allocatedDates, null, date));																																																																																																																			
 				}
 			}
+			JSONObject user = new JSONObject();
+			user.put("status", Constants.UserStatus.TASKTRACK_OPEN);
+			user.put("date", "");
+			response.put("user", user);
+			
+			String approver1 = null != projectModel.getProjectOwner()
+					? projectModel.getProjectOwner().getFirstName() + " " + projectModel.getProjectOwner().getLastName()
+					: "";
+
+			JSONObject approver1Obj = new JSONObject();
+			approver1Obj.put("approver", approver1);
+			response.put("approver1", approver1);
+
+			String approver2 = null != projectModel.getOnsite_lead()
+					? projectModel.getOnsite_lead().getFirstName() + " " + projectModel.getOnsite_lead().getLastName()
+					: "";
+
+			JSONObject approver2Obj = new JSONObject();
+			approver2Obj.put("approver", approver2);
+			response.put("approver2", approver2);
+			
 			response.put("taskList", array);
 			response.put("enabled",true);
 			result = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);

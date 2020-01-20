@@ -23,6 +23,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.AllocationModel;
@@ -415,6 +416,8 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		List<Date> datesInRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
 		datesInRange.add(endDate);
 
+		ProjectModel projectModel = projectservice.findById(projectId);
+		
 		if (weeklyTasktrack != null) {
 			String approver1Status = weeklyTasktrack.getApprover1Status();
 			String approver2Status = weeklyTasktrack.getApprover2Status();
@@ -427,7 +430,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				response.put("enabled", true);
 			}
 
-			ProjectModel projectModel = projectservice.findById(projectId);
+		
 			
 			String approver1 = weeklyTasktrack.getApprover1Id()!=null? weeklyTasktrack.getApprover1Id().getFirstName() + " "
 					+ weeklyTasktrack.getApprover1Id().getLastName():"";
@@ -507,6 +510,26 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				}
 			}
 			response.put("taskList", array);
+			JSONObject user = new JSONObject();
+			user.put("status", Constants.UserStatus.TASKTRACK_OPEN);
+			user.put("date", "");
+			response.put("user", user);
+			
+			String approver1 = null != projectModel.getProjectOwner()? projectModel.getProjectOwner().getFirstName() + " "
+						+ projectModel.getProjectOwner().getLastName() :"";
+
+			JSONObject approver1Obj = new JSONObject();
+			approver1Obj.put("approver", approver1);
+			response.put("approver1", approver1);
+			
+			String approver2 = null != projectModel.getOnsite_lead()
+					? projectModel.getOnsite_lead().getFirstName() + " " + projectModel.getOnsite_lead().getLastName()
+					: "";
+
+			JSONObject approver2Obj = new JSONObject();
+			approver2Obj.put("approver", approver2);
+			response.put("approver2", approver2);
+
 			response.put("enabled", true);
 			responseFinal = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 		}
@@ -546,12 +569,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		List<Tasktrack> tasktrackList = tasktrackRepository
 				.findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(userId, projectId, startDate, endDate);
-
+		System.out.print(tasktrackList);
+		
 		TaskTrackWeeklyApproval tasktrackStatus = taskWeeklyApprovalRepository
-
 				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId, projectId, startDate,
 						endDate);
-
+		System.out.println(tasktrackStatus);
+		
 		JSONArray taskList = new JSONArray();
 		HashSet<Date> trackdate = new HashSet<Date>();
 		for (Tasktrack tasktrackOuter : tasktrackList) {
@@ -699,5 +723,157 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		return response;
 	}
+	
+	@Override
+	public StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO requestData) throws Exception {
+
+		StatusResponse response = new StatusResponse();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Date startDate = sdf.parse(requestData.getStartDate());
+			
+		Date	 endDate = sdf.parse(requestData.getEndDate());
+	
+		Long userId = requestData.getuId();
+		
+		TaskTrackWeeklyApproval weeklyApproval = null;
+		weeklyApproval = taskWeeklyApprovalRepository.getDuplicateEntryCount(startDate,
+				endDate, userId);
+
+		if (null == weeklyApproval) {
+			weeklyApproval = new TaskTrackWeeklyApproval();
+		}
+		weeklyApproval.setStartDate(startDate);
+		weeklyApproval.setEndDate(endDate);
+		
+		UserModel userInfo = userservice.getUserdetailsbyId(userId);
+		if (!userInfo.equals(null)) {
+			weeklyApproval.setUser(userInfo);
+		} 
+		
+		Long projectId = requestData.getProjectId();
+		ProjectModel projectInfo = projectservice.findById(projectId);
+		
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
+				projectId);
+		
+		Map<Date, Tasktrack> timetrackRequestData = (Map<Date, Tasktrack>) requestData.getDateTaskMap();
+
+		List<String> projectDateList = new ArrayList<String>();
+		
+		for (AllocationModel al : userProjAllocations) {
+			Date allocStartDate = al.getStartDate();
+			Date allocEndDate = al.getEndDate();
+
+			Calendar fromDate = Calendar.getInstance();
+			Calendar toDate = Calendar.getInstance();
+
+			if (allocStartDate.before(startDate)) {
+				fromDate.setTime(startDate);
+			} else {
+				fromDate.setTime(allocStartDate);
+			}
+
+			if (allocEndDate.before(endDate)) {
+				toDate.setTime(allocEndDate);
+			} else {
+				toDate.setTime(endDate);
+			}
+
+			while (fromDate.before(toDate) || fromDate.equals(toDate)) {
+				Date result = fromDate.getTime();
+				String date = sdf.format(result);
+				projectDateList.add(date);
+				fromDate.add(Calendar.DATE, 1);
+			}
+
+		}
+		
+		int indx = 1;
+		for(Map.Entry<Date, Tasktrack> map : timetrackRequestData.entrySet()){
+			Double hour = null;
+			if(projectDateList.contains(map.getKey()) && map.getValue() != null){
+				hour = Double.parseDouble(map.getValue().toString());
+			}
+			else {
+				indx++;
+				continue;
+			}
+			switch(indx) {
+				case 1: {
+					weeklyApproval.setDay1(hour);
+					break;
+				}
+				case 2: {
+					weeklyApproval.setDay2(hour);
+					break;
+				}
+				case 3: {
+					weeklyApproval.setDay3(hour);
+					break;
+				}
+				case 4: {
+					weeklyApproval.setDay4(hour);
+					break;
+				}
+				case 5: {
+					weeklyApproval.setDay5(hour);
+					break;
+				}
+				case 6: {
+					weeklyApproval.setDay6(hour);
+					break;
+				}
+				case 7: {
+					weeklyApproval.setDay7(hour);
+					break;
+				}
+			}
+			indx++;
+		}
+
+		int requeststatus = 0;
+		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
+				&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
+				&& (!weeklyApproval.getDay5().equals(null)) && (!weeklyApproval.getDay6().equals(null))
+				&& (!weeklyApproval.getDay7().equals(null))) {
+
+			if ((weeklyApproval.getDay1() < 0) || (weeklyApproval.getDay1() > 24) || (weeklyApproval.getDay2() < 0)
+					|| (weeklyApproval.getDay2() > 24) || (weeklyApproval.getDay3() < 0)
+					|| (weeklyApproval.getDay3() > 24) || (weeklyApproval.getDay4() < 0)
+					|| (weeklyApproval.getDay4() > 24) || (weeklyApproval.getDay5() < 0)
+					|| (weeklyApproval.getDay5() > 24) || (weeklyApproval.getDay6() < 0)
+					|| (weeklyApproval.getDay6() > 24) || (weeklyApproval.getDay7() < 0)
+					|| (weeklyApproval.getDay7() > 24))
+				requeststatus  = 1;
+		} else
+		{
+			requeststatus = 1;
+		}
+	
+
+		if (!projectInfo.equals(null)) {
+			weeklyApproval.setProject(projectInfo);
+		}
+		else {
+			requeststatus = 1;
+		}
+		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);
+		weeklyApproval.setTimetrackFinalStatus(Constants.UserStatus.TASKTRACK_SAVED);
+
+		if (requeststatus == 0) {
+
+		taskWeeklyApprovalRepository.save(weeklyApproval);
+		response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Insertion completed");
+
+		} else
+		{
+			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
+		}
+		return response;
+
+	}
+
 
 }
