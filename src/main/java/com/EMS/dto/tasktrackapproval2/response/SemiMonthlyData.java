@@ -17,6 +17,8 @@ public class SemiMonthlyData {
 		this.secondHalfRejectionRemark = secondHalfRejectionRemark;
 		this.firstHalfFinalStatus = firstHalfFinalStatus;
 		this.secondHalfFinalStatus = secondHalfFinalStatus;
+		this.approver2FirstHalfStatus = approver2FirstHalfStatus;
+		this.approver2SecondHalfStatus = approver2SecondHalfStatus;
 		
 	}
 

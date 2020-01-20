@@ -11509,7 +11509,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			} else {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(startDate);
-				int month = cal.get(Calendar.MONTH + 1);
+				int month = cal.get(Calendar.MONTH)+1;
 				int year = cal.get(Calendar.YEAR);
 				Calendar cale = Calendar.getInstance();
 				cale.setTime(endDate);
@@ -11578,10 +11578,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay14():0);
 						cal.add(Calendar.DATE, 1);
 						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay15():0);
-						node.put("approver1Status",
-								userData.getApproverOneFirstHalfStatus() == null
-								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-										: userData.getApproverOneFirstHalfStatus());
+						node.put("approver1Status",approver1Status);
 						node.put("userStatus", userData.getUserFirstHalfStatus() == null ? Constants.UserStatus.TASKTRACK_SAVED :userData.getUserFirstHalfStatus());
 							node.put("approver1SubmittedDate",userData.getApproverOneFirstHalfSubmittedDate() == null ? "" :
 									sdfdm.format(userData.getApproverOneFirstHalfSubmittedDate()));
@@ -11591,10 +11588,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							node.put("userSubmittedDate", "");	
 						if (projectData.getProjectTier() == 2) {
 
-							node.put("approver2Status",
-									userData.getApproverTwoFirstHalfStatus() == null
-									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-											: userData.getApproverTwoFirstHalfStatus());
+							node.put("approver2Status",approver2Status);
 							node.put("approver2SubmittedDate",
 									userData.getApproverTwoFirstHalfSubmittedDate() == null ? "" : sdfdm.format(userData.getApproverTwoFirstHalfSubmittedDate()));
 						} else {
@@ -11664,21 +11658,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							cal.add(Calendar.DATE, 1);
 							hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay31():0);
 						}
-						node.put("approver1Status",
-								userData.getApproverOneSecondHalfStatus() == null
-								? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-										: userData.getApproverOneFirstHalfStatus());
+						node.put("approver1Status",approver1Status);
 						node.put("userStatus", userData.getUserSecondHalfStatus() == null ? Constants.UserStatus.TASKTRACK_SAVED :userData.getUserSecondHalfStatus());
 						node.put("approver1SubmittedDate",
-								userData.getApproverOneSecondHalfStatus().toString());
-						node.put("userSubmittedDate", sdfdm.format(userData.getUserSecondHalfSubmittedDate()));
+								userData.getApproverOneSecondHalfSubmittedDate() == null ? "" : sdfdm.format(userData.getApproverOneSecondHalfSubmittedDate()));
+						node.put("userSubmittedDate", userData.getUserSecondHalfSubmittedDate() == null ? "" :sdfdm.format(userData.getUserSecondHalfSubmittedDate()));
 						if (projectData.getProjectTier() == 2) {
 
-							node.put("approver2Status",
-									userData.getApproverTwoSecondHalfStatus() == null
-									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
-											: userData.getApproverTwoSecondHalfStatus());
-							node.put("approver2SubmittedDate",
+							node.put("approver2Status",approver2Status);
+							node.put("approver2SubmittedDate", userData.getApproverTwoSecondHalfSubmittedDate() == null ? "" :
 									sdfdm.format(userData.getApproverTwoSecondHalfSubmittedDate()));
 						} else {
 							node.put("approver2Status", "");
