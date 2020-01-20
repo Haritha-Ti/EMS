@@ -910,7 +910,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 	 * @author sreejith.j
 	 */
 	@Override
-	public StatusResponse getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
+	public List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception {
 
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 
@@ -1434,13 +1434,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 		Collection<HashMap<String, Object>> resultCollection = projectsMap.values();
 		result = new ArrayList<>(resultCollection);
-		StatusResponse response;
-		if (!result.isEmpty()) {
-			response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, result);
-		} else {
-			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "No data available");
-		}
-		return response;
+		return result;
 	}
 
 }
