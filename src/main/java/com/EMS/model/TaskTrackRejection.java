@@ -22,6 +22,8 @@ public class TaskTrackRejection {
 
 	@ManyToOne
 	private UserModel rejectedBy;
+	
+	private Integer rejectionLevel;
 
 	private Integer month;
 
@@ -61,6 +63,14 @@ public class TaskTrackRejection {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Integer getRejectionLevel() {
+		return rejectionLevel;
+	}
+
+	public void setRejectionLevel(Integer rejectionLevel) {
+		this.rejectionLevel = rejectionLevel;
 	}
 
 	public long getId() {

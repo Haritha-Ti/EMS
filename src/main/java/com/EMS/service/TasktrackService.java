@@ -76,5 +76,5 @@ public interface TasktrackService {
 	 * @param userId 
 	 * @return
 	 */
-	StatusResponse getTimeTrackData(Long userId, Integer month, Integer year) throws Exception;
+	List<Map<String, Object>> getTimeTrackData(Long userId, Integer month, Integer year) throws Exception;
 }
