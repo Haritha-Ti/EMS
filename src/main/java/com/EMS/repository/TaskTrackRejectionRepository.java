@@ -36,10 +36,20 @@ public interface TaskTrackRejectionRepository extends JpaRepository<TaskTrackRej
 	TaskTrackRejection findWeeklyRejection(Long userId, Long projectId, Date startDate,Date endDate,String status,Integer rejectionLevel);
 	
 	@Query("select rejection FROM TaskTrackRejection rejection "
+			+ "where rejection.user.userId = ?1 and rejection.project.projectId = ?2 "
+			+ "and rejection.startDate = ?3 and rejection.endDate = ?4 and rejection.status = ?5 ")
+	TaskTrackRejection findWeeklyRejection(Long userId, Long projectId, Date startDate,Date endDate,String status);
+	
+	@Query("select rejection FROM TaskTrackRejection rejection "
 			+ "where rejection.user.userId = ?1 and rejection.project.projectId = ?2 and rejection.month = ?3 "
 			+ "and rejection.year = ?4 and rejection.status = ?5 "
 			+ "and rejection.rejectionLevel = ?6")
 	List<TaskTrackRejection> findSemiMonthlyRejection(Long userId, Long projectId, Integer month, Integer year,String status,Integer rejectionLevel);
+	
+	@Query("select rejection FROM TaskTrackRejection rejection "
+			+ "where rejection.user.userId = ?1 and rejection.project.projectId = ?2 and rejection.month = ?3 "
+			+ "and rejection.year = ?4 and rejection.status = ?5 ")
+	List<TaskTrackRejection> findSemiMonthlyRejection(Long userId, Long projectId, Integer month, Integer year,String status);
 	
 	@Transactional
 	@Modifying
