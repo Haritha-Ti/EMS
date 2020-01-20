@@ -39,6 +39,8 @@ public class TasktrackApprovalReporting {
 
 		private Integer month;
 
+		private String projectType;
+
 		public long getId() {
 			return id;
 		}
@@ -418,6 +420,14 @@ public class TasktrackApprovalReporting {
 
 		public void setMonth(Integer month) {
 			this.month = month;
+		}
+
+		public String getProjectType() {
+			return projectType;
+		}
+
+		public void setProjectType(String projectType) {
+			this.projectType = projectType;
 		}
 		
 
