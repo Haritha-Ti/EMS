@@ -10327,7 +10327,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			} else {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(startDate);
-				int month = cal.get(Calendar.MONTH + 1);
+				int month = (cal.get(Calendar.MONTH)+1);
 				int year = cal.get(Calendar.YEAR);
 				Calendar cale = Calendar.getInstance();
 				cale.setTime(endDate);
