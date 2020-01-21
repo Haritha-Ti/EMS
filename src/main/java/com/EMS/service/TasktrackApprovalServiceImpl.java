@@ -11386,6 +11386,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		String projectApprover2 = projectData.getOnsite_lead().getLastName()+" "+projectData.getOnsite_lead().getFirstName();
 		if (projectData != null) {
 			ArrayNode hourDataNode = objectMapper.createArrayNode();
+			node.put("clientName", projectData.getClientName() == null ? "" : projectData.getClientName().getClientName() );
 			// weekly
 			if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {
 				TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository
