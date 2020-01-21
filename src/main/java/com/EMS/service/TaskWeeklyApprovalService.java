@@ -22,6 +22,6 @@ public interface TaskWeeklyApprovalService {
 	
 	StatusResponse getWeeklyTasksForSubmission(JsonNode requestData) throws ParseException;
 
-	StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO requestData) throws Exception;
+	StatusResponse saveOrSubmitWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO requestData, Boolean isSave) throws Exception;
 }
 

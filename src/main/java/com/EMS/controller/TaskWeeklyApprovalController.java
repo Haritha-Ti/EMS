@@ -131,7 +131,27 @@ public class TaskWeeklyApprovalController {
 	@PostMapping(value = "/save_weekly_approval/with_task")
 	public StatusResponse saveWeeklyTasktrackWithTask(@RequestBody SaveWeeklyTasktrackWithTaskRequestDTO requestData) {
 
-		return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, null);
+		try {
+			weeklyApprovalService.saveOrSubmitWeeklyTasktrackWithTask(requestData, Boolean.TRUE);
+			return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, null);
+		} catch (Exception e) {
+			return new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "");
+		}
+		
 	}
 
+
+	
+	@PostMapping(value = "/submit_weekly_approval/with_task")
+	public StatusResponse submitWeeklyTasktrackWithTask(@RequestBody SaveWeeklyTasktrackWithTaskRequestDTO requestData) {
+
+		try {
+			weeklyApprovalService.saveOrSubmitWeeklyTasktrackWithTask(requestData, Boolean.FALSE);
+			return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, null);
+		} catch (Exception e) {
+			return new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "");
+		}
+		
+	}
+	
 }

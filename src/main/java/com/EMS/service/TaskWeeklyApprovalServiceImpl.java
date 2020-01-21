@@ -6,16 +6,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
@@ -23,6 +19,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.EMS.dto.DailyTasktrackDto;
+import com.EMS.dto.DateBasedTaskDto;
 import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
@@ -36,10 +34,11 @@ import com.EMS.repository.AllocationRepository;
 import com.EMS.repository.TaskWeeklyApprovalRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
+import com.EMS.utility.Constants.FinalStatus;
 import com.EMS.utility.DateUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes", "unchecked"})
 @Service
 public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService {
 
@@ -57,6 +56,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 	@Autowired
 	private AllocationRepository allocationRepository;
+
 
 	@Override
 	public StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException, Exception {
@@ -91,7 +91,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE,
 						"Timetrack has already been approved.");
 			}
-			
+
 		}
 		weeklyApproval.setStartDate(startDate);
 		weeklyApproval.setEndDate(endDate);
@@ -161,50 +161,49 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				fromDate.add(Calendar.DATE, 1);
 			}
 		}
-		
+
 		int indx = 1;
-		for(Map.Entry<Object, Object> map : timetrackRequestData.entrySet()){
+		for (Map.Entry<Object, Object> map : timetrackRequestData.entrySet()) {
 			Double hour = null;
-			if(projectDateList.contains(map.getKey()) && map.getValue() != null){
+			if (projectDateList.contains(map.getKey()) && map.getValue() != null) {
 				hour = Double.parseDouble(map.getValue().toString());
-			}
-			else {
+			} else {
 				indx++;
 				continue;
 			}
-			switch(indx) {
-				case 1: {
-					weeklyApproval.setDay1(hour);
-					break;
-				}
-				case 2: {
-					weeklyApproval.setDay2(hour);
-					break;
-				}
-				case 3: {
-					weeklyApproval.setDay3(hour);
-					break;
-				}
-				case 4: {
-					weeklyApproval.setDay4(hour);
-					break;
-				}
-				case 5: {
-					weeklyApproval.setDay5(hour);
-					break;
-				}
-				case 6: {
-					weeklyApproval.setDay6(hour);
-					break;
-				}
-				case 7: {
-					weeklyApproval.setDay7(hour);
-					break;
-				}
+			switch (indx) {
+			case 1: {
+				weeklyApproval.setDay1(hour);
+				break;
+			}
+			case 2: {
+				weeklyApproval.setDay2(hour);
+				break;
+			}
+			case 3: {
+				weeklyApproval.setDay3(hour);
+				break;
+			}
+			case 4: {
+				weeklyApproval.setDay4(hour);
+				break;
+			}
+			case 5: {
+				weeklyApproval.setDay5(hour);
+				break;
+			}
+			case 6: {
+				weeklyApproval.setDay6(hour);
+				break;
+			}
+			case 7: {
+				weeklyApproval.setDay7(hour);
+				break;
+			}
 			}
 			indx++;
 		}
-	
+
 		weeklyApproval.setUserSubmittedDate(new Date());
 
 		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
@@ -224,10 +223,10 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	public StatusResponse saveWeeklyApproval(JSONObject requestData) throws ParseException {
 
 		Date startDate = null;
-		Date endDate  = null;		
-		
+		Date endDate = null;
+
 		StatusResponse response = new StatusResponse();
-		
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		int requeststatus = 0;
 
@@ -235,39 +234,38 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				|| (!requestData.get("startDate").toString().equals(" ")))
 				&& ((!requestData.get("endDate").toString().equals(null))
 						|| (!requestData.get("endDate").toString().equals(" ")))) {
-			 startDate = sdf.parse(requestData.get("startDate").toString());
-			
-			 endDate = sdf.parse(requestData.get("endDate").toString());
-			
-		} 		
-		
+			startDate = sdf.parse(requestData.get("startDate").toString());
+
+			endDate = sdf.parse(requestData.get("endDate").toString());
+
+		}
+
 		Long userId = Long.parseLong(requestData.get("userId").toString());
-		
+
 		TaskTrackWeeklyApproval weeklyApproval = null;
-		weeklyApproval = taskWeeklyApprovalRepository.getDuplicateEntryCount(startDate,
-				endDate, userId);
+		weeklyApproval = taskWeeklyApprovalRepository.getDuplicateEntryCount(startDate, endDate, userId);
 
 		if (null == weeklyApproval) {
 			weeklyApproval = new TaskTrackWeeklyApproval();
 		}
 		weeklyApproval.setStartDate(startDate);
 		weeklyApproval.setEndDate(endDate);
-		
+
 		UserModel userInfo = userservice.getUserdetailsbyId(userId);
 		if (!userInfo.equals(null)) {
 			weeklyApproval.setUser(userInfo);
-		} 
-		
+		}
+
 		Long projectId = Long.parseLong(requestData.get("projectId").toString());
 		ProjectModel projectInfo = projectservice.findById(projectId);
-		
+
 		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
 				projectId);
-		
+
 		Map<Object, Object> timetrackRequestData = (Map<Object, Object>) requestData.get("timetrack");
 
 		List<String> projectDateList = new ArrayList<String>();
-		
+
 		for (AllocationModel al : userProjAllocations) {
 			Date allocStartDate = al.getStartDate();
 			Date allocEndDate = al.getEndDate();
@@ -295,46 +293,45 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			}
 
 		}
-		
+
 		int indx = 1;
-		for(Map.Entry<Object, Object> map : timetrackRequestData.entrySet()){
+		for (Map.Entry<Object, Object> map : timetrackRequestData.entrySet()) {
 			Double hour = null;
-			if(projectDateList.contains(map.getKey()) && map.getValue() != null){
+			if (projectDateList.contains(map.getKey()) && map.getValue() != null) {
 				hour = Double.parseDouble(map.getValue().toString());
-			}
-			else {
+			} else {
 				indx++;
 				continue;
 			}
-			switch(indx) {
-				case 1: {
-					weeklyApproval.setDay1(hour);
-					break;
-				}
-				case 2: {
-					weeklyApproval.setDay2(hour);
-					break;
-				}
-				case 3: {
-					weeklyApproval.setDay3(hour);
-					break;
-				}
-				case 4: {
-					weeklyApproval.setDay4(hour);
-					break;
-				}
-				case 5: {
-					weeklyApproval.setDay5(hour);
-					break;
-				}
-				case 6: {
-					weeklyApproval.setDay6(hour);
-					break;
-				}
-				case 7: {
-					weeklyApproval.setDay7(hour);
-					break;
-				}
+			switch (indx) {
+			case 1: {
+				weeklyApproval.setDay1(hour);
+				break;
+			}
+			case 2: {
+				weeklyApproval.setDay2(hour);
+				break;
+			}
+			case 3: {
+				weeklyApproval.setDay3(hour);
+				break;
+			}
+			case 4: {
+				weeklyApproval.setDay4(hour);
+				break;
+			}
+			case 5: {
+				weeklyApproval.setDay5(hour);
+				break;
+			}
+			case 6: {
+				weeklyApproval.setDay6(hour);
+				break;
+			}
+			case 7: {
+				weeklyApproval.setDay7(hour);
+				break;
+			}
 			}
 			indx++;
 		}
@@ -352,16 +349,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 					|| (weeklyApproval.getDay6() > 24) || (weeklyApproval.getDay7() < 0)
 					|| (weeklyApproval.getDay7() > 24))
 				requeststatus = 1;
-		} else
-		{
+		} else {
 			requeststatus = 1;
 		}
-	
 
 		if (!projectInfo.equals(null)) {
 			weeklyApproval.setProject(projectInfo);
-		}
-		else {
+		} else {
 			requeststatus = 1;
 		}
 		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);
@@ -369,11 +363,10 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		if (requeststatus == 0) {
 
-		taskWeeklyApprovalRepository.save(weeklyApproval);
-		response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Insertion completed");
+			taskWeeklyApprovalRepository.save(weeklyApproval);
+			response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Insertion completed");
 
-		} else
-		{
+		} else {
 			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
 		}
 		return response;
@@ -414,10 +407,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				projectId);
 
 		List<Date> datesInRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
-		datesInRange.add(endDate);
-
-		ProjectModel projectModel = projectservice.findById(projectId);
 		
+		ProjectModel projectModel = projectservice.findById(projectId);
+
 		if (weeklyTasktrack != null) {
 			String approver1Status = weeklyTasktrack.getApprover1Status();
 			String approver2Status = weeklyTasktrack.getApprover2Status();
@@ -430,73 +422,72 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				response.put("enabled", true);
 			}
 
-		
 			
-			String approver1 = weeklyTasktrack.getApprover1Id()!=null? weeklyTasktrack.getApprover1Id().getFirstName() + " "
-					+ weeklyTasktrack.getApprover1Id().getLastName():"";
-		
+			String approver1 = weeklyTasktrack.getApprover1Id() != null
+					? weeklyTasktrack.getApprover1Id().getFirstName() + " "
+							+ weeklyTasktrack.getApprover1Id().getLastName()
+					: "";
+
 			if (null == approver1 || approver1.equals("")) {
-				approver1 = null !=  projectModel.getProjectOwner()? projectModel.getProjectOwner().getFirstName() + " "
-						+ projectModel.getProjectOwner().getLastName() :"";
+				approver1 = null != projectModel.getProjectOwner() ? projectModel.getProjectOwner().getFirstName() + " "
+						+ projectModel.getProjectOwner().getLastName() : "";
 
 			}
-			
+
 			Date approver1SubmittedDate = weeklyTasktrack.getApprover1SubmittedDate();
 
 			JSONObject approver1Obj = new JSONObject();
 			approver1Obj.put("approver", approver1);
 
-			if(null != approver1SubmittedDate){ 
+			if (null != approver1SubmittedDate) {
 				approver1Obj.put("date", sdf.format(approver1SubmittedDate));
-			}
-			else {
+			} else {
 				approver1Obj.put("date", "");
 			}
 
 			approver1Obj.put("status", approver1Status);
 			response.put("approver1", approver1Obj);
 
-			String approver2 = weeklyTasktrack.getApprover1Id()!=null? weeklyTasktrack.getApprover1Id().getFirstName() + " "
-					+ weeklyTasktrack.getApprover1Id().getLastName():"";
-		
+			String approver2 = weeklyTasktrack.getApprover1Id() != null
+					? weeklyTasktrack.getApprover1Id().getFirstName() + " "
+							+ weeklyTasktrack.getApprover1Id().getLastName()
+					: "";
+
 			if (null == approver2 || approver2.equals("")) {
-				approver2 = null !=  projectModel.getOnsite_lead()? projectModel.getOnsite_lead().getFirstName() + " "
-						+ projectModel.getOnsite_lead().getLastName() :"";
+				approver2 = null != projectModel.getOnsite_lead() ? projectModel.getOnsite_lead().getFirstName() + " "
+						+ projectModel.getOnsite_lead().getLastName() : "";
 
 			}
-			
+
 			Date approver2SubmittedDate = weeklyTasktrack.getApprover2SubmittedDate();
-			
-			JSONObject approver2Obj = new JSONObject();
-			approver2Obj.put("approver", approver1);
 
-			if(null != approver2SubmittedDate){ 
+			JSONObject approver2Obj = new JSONObject();
+			approver2Obj.put("approver", approver2);
+
+			if (null != approver2SubmittedDate) {
 				approver2Obj.put("date", sdf.format(approver2SubmittedDate));
-			}
-			else {
+			} else {
 				approver2Obj.put("date", "");
 			}
 
-			approver2Obj.put("status", approver1Status);
+			approver2Obj.put("status", approver2Status);
 			response.put("approver2", approver2Obj);
-			
-			
+
 			JSONObject user = new JSONObject();
 			user.put("status", weeklyTasktrack.getTimetrackStatus());
 			user.put("date", weeklyTasktrack.getUserSubmittedDate());
 			response.put("user", user);
 
-			
 			JSONArray array = new JSONArray();
 			for (AllocationModel al : userProjAllocations) {
 				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
-				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay1(), datesInRange.get(0)));
-				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay2(), datesInRange.get(1)));
-				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay3(), datesInRange.get(2)));
-				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay4(), datesInRange.get(3)));
-				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay5(), datesInRange.get(4)));
-				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay6(), datesInRange.get(5)));
-				array.add(addHoursandDaytoArray(sdf,allocatedDates,weeklyTasktrack.getDay7(), datesInRange.get(6)));
+				array.add(addHoursandDaytoArray(sdf, allocatedDates, weeklyTasktrack.getDay1(), datesInRange.get(0)));
+				array.add(addHoursandDaytoArray(sdf, allocatedDates, weeklyTasktrack.getDay2(), datesInRange.get(1)));
+				array.add(addHoursandDaytoArray(sdf, allocatedDates, weeklyTasktrack.getDay3(), datesInRange.get(2)));
+				array.add(addHoursandDaytoArray(sdf, allocatedDates, weeklyTasktrack.getDay4(), datesInRange.get(3)));
+				array.add(addHoursandDaytoArray(sdf, allocatedDates, weeklyTasktrack.getDay5(), datesInRange.get(4)));
+				array.add(addHoursandDaytoArray(sdf, allocatedDates, weeklyTasktrack.getDay6(), datesInRange.get(5)));
+				array.add(addHoursandDaytoArray(sdf, allocatedDates, weeklyTasktrack.getDay7(), datesInRange.get(6)));
 			}
 
 			response.put("taskList", array);
@@ -506,7 +497,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			for (AllocationModel al : userProjAllocations) {
 				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
 				for (Date date : datesInRange) {
-					array.add(addHoursandDaytoArray(sdf, allocatedDates,null, date));
+					array.add(addHoursandDaytoArray(sdf, allocatedDates, null, date));
 				}
 			}
 			response.put("taskList", array);
@@ -514,14 +505,15 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			user.put("status", Constants.UserStatus.TASKTRACK_OPEN);
 			user.put("date", "");
 			response.put("user", user);
-			
-			String approver1 = null != projectModel.getProjectOwner()? projectModel.getProjectOwner().getFirstName() + " "
-						+ projectModel.getProjectOwner().getLastName() :"";
+
+			String approver1 = null != projectModel.getProjectOwner()
+					? projectModel.getProjectOwner().getFirstName() + " " + projectModel.getProjectOwner().getLastName()
+					: "";
 
 			JSONObject approver1Obj = new JSONObject();
 			approver1Obj.put("approver", approver1);
 			response.put("approver1", approver1);
-			
+
 			String approver2 = null != projectModel.getOnsite_lead()
 					? projectModel.getOnsite_lead().getFirstName() + " " + projectModel.getOnsite_lead().getLastName()
 					: "";
@@ -540,13 +532,24 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		JSONObject response = new JSONObject();
 		JSONObject dayResponse = new JSONObject();
 		dayResponse.put("hour", hour);
-		dayResponse.put("enabled",allocatedDates.contains(date));
+		dayResponse.put("enabled", allocatedDates.contains(date));
 		response.put(sdf.format(date), dayResponse);
 		return response;
 	}
 
+
+	public JSONObject addTaskAandDaytoArray(SimpleDateFormat sdf, List<Date> allocatedDates, Double hour, Date date) {
+		JSONObject response = new JSONObject();
+		JSONObject dayResponse = new JSONObject();
+		dayResponse.put("hour", hour);
+		dayResponse.put("enabled", allocatedDates.contains(date));
+		response.put(sdf.format(date), dayResponse);
+		return response;
+	}
+	
 	@Override
 	public StatusResponse getWeeklyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception {
+
 		StatusResponse response = new StatusResponse();
 		Long userId = null;
 		Long projectId = null;
@@ -569,12 +572,43 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		List<Tasktrack> tasktrackList = tasktrackRepository
 				.findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(userId, projectId, startDate, endDate);
-		System.out.print(tasktrackList);
-		
+
 		TaskTrackWeeklyApproval tasktrackStatus = taskWeeklyApprovalRepository
 				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId, projectId, startDate,
 						endDate);
-		System.out.println(tasktrackStatus);
+
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
+				projectId);
+		
+		List<String> projectDateList = new ArrayList<String>();
+		
+		for (AllocationModel al : userProjAllocations) {
+			Date allocStartDate = al.getStartDate();
+			Date allocEndDate = al.getEndDate();
+
+			Calendar fromDate = Calendar.getInstance();
+			Calendar toDate = Calendar.getInstance();
+
+			if (allocStartDate.before(startDate)) {
+				fromDate.setTime(startDate);
+			} else {
+				fromDate.setTime(allocStartDate);
+			}
+
+			if (allocEndDate.before(endDate)) {
+				toDate.setTime(allocEndDate);
+			} else {
+				toDate.setTime(endDate);
+			}
+
+			while (fromDate.before(toDate) || fromDate.equals(toDate)) {
+				Date result = fromDate.getTime();
+				String date = sdf.format(result);
+				projectDateList.add(date);
+				fromDate.add(Calendar.DATE, 1);
+			}
+		}
+		
 		
 		JSONArray taskList = new JSONArray();
 		HashSet<Date> trackdate = new HashSet<Date>();
@@ -587,8 +621,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				for (Tasktrack tasktrack : tasktrackList) {
 					JSONObject taskObj = new JSONObject();
 					taskObj.put("hour", tasktrack.getHours());
-					taskObj.put("task_type", tasktrack.getTask().getTaskName());
-					taskObj.put("description", tasktrack.getDescription());
+					taskObj.put("taskType", null != tasktrack.getTask()? tasktrack.getTask().getTaskName():"");
+					taskObj.put("taskSummary", tasktrack.getDescription());
+					taskObj.put("enabled", true);
 					if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
 						dateTaskArray.add(taskObj);
 					}
@@ -601,9 +636,6 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("taskList", taskList);
 
-		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
-				projectId);
-
 		if (tasktrackStatus != null) {
 
 			String approver1Status = tasktrackStatus.getApprover1Status();
@@ -615,12 +647,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
 					|| taskStatusList.contains(financeStatus)) {
-				for (AllocationModel al : userProjAllocations) {
-					List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
-					if (allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
-						jsonObject.put("enabled", false);
-					}
-				}
+				jsonObject.put("enabled", false);
 			} else {
 				jsonObject.put("enabled", true);
 			}
@@ -631,6 +658,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		response.setStatusCode(Constants.SUCCESS_CODE);
 
 		return response;
+
 	}
 
 	@Override
@@ -723,43 +751,28 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		return response;
 	}
-	
+
+
 	@Override
-	public StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO requestData) throws Exception {
+	public StatusResponse saveOrSubmitWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO requestData, Boolean isSave)
+			throws Exception {
 
 		StatusResponse response = new StatusResponse();
 		
+		int requeststatus = 0;
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		
 		Date startDate = sdf.parse(requestData.getStartDate());
-			
-		Date	 endDate = sdf.parse(requestData.getEndDate());
+		Date endDate = sdf.parse(requestData.getEndDate());
 	
-		Long userId = requestData.getuId();
-		
-		TaskTrackWeeklyApproval weeklyApproval = null;
-		weeklyApproval = taskWeeklyApprovalRepository.getDuplicateEntryCount(startDate,
-				endDate, userId);
-
-		if (null == weeklyApproval) {
-			weeklyApproval = new TaskTrackWeeklyApproval();
-		}
-		weeklyApproval.setStartDate(startDate);
-		weeklyApproval.setEndDate(endDate);
-		
-		UserModel userInfo = userservice.getUserdetailsbyId(userId);
-		if (!userInfo.equals(null)) {
-			weeklyApproval.setUser(userInfo);
-		} 
-		
 		Long projectId = requestData.getProjectId();
-		ProjectModel projectInfo = projectservice.findById(projectId);
+		Long uId = requestData.getuId();
 		
-		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
-				projectId);
-		
-		Map<Date, Tasktrack> timetrackRequestData = (Map<Date, Tasktrack>) requestData.getDateTaskMap();
-
+		ProjectModel projectModel = projectservice.findById(projectId);
+		UserModel userModel = userservice.getUserdetailsbyId(uId);
+	
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(requestData.getuId(),
+				requestData.getProjectId());
 		List<String> projectDateList = new ArrayList<String>();
 		
 		for (AllocationModel al : userProjAllocations) {
@@ -787,53 +800,90 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				projectDateList.add(date);
 				fromDate.add(Calendar.DATE, 1);
 			}
+		}
+		
+		Map<String, Double> hoursByDate = new LinkedHashMap<>();
+		List<DateBasedTaskDto> dateBasedTaskDtoList = requestData.getDateBasedTaskDtoList();
+	
+		for (DateBasedTaskDto dateBasedTaskDto : dateBasedTaskDtoList) {
+			Double hourSum = 0.0;
+			for (DailyTasktrackDto dailyTasktrackDto : dateBasedTaskDto.getDailyTasktrackDtos()) {					
+				if (projectDateList.contains(dateBasedTaskDto.getTaskDate())) {						
+					Tasktrack tasktrack = new Tasktrack();
+					tasktrack.setHours(dailyTasktrackDto.getHour());
+					tasktrack.setDescription(dailyTasktrackDto.getTaskSummary());
+					tasktrack.setTaskTypeId(dailyTasktrackDto.getTaskType());
+					tasktrack.setDate(sdf.parse(dateBasedTaskDto.getTaskDate()));
+					tasktrack.setProject(projectModel);
+					tasktrack.setUser(userModel);	
+					tasktrackRepository.save(tasktrack);
+					
+					hourSum += dailyTasktrackDto.getHour();
+				}
+			}
+			hoursByDate.put(dateBasedTaskDto.getTaskDate(), hourSum);
+		}
+		
+		TaskTrackWeeklyApproval weeklyApproval = taskWeeklyApprovalRepository.getDuplicateEntryCount(startDate, endDate, uId);
+		
+		
+		if (null == weeklyApproval) {
+			weeklyApproval= new TaskTrackWeeklyApproval();
+		}
+			
+		if (null != weeklyApproval.getTimetrackFinalStatus()) {
+			if (weeklyApproval.getTimetrackFinalStatus().equals(Constants.FinalStatus.TASKTRACK_APPROVED)
+					|| weeklyApproval.getTimetrackFinalStatus()
+							.equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
+				return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE,
+						"Timetrack has already been approved.");
+			}
 
 		}
 		
 		int indx = 1;
-		for(Map.Entry<Date, Tasktrack> map : timetrackRequestData.entrySet()){
+		for (Map.Entry<String, Double> map : hoursByDate.entrySet()) {
 			Double hour = null;
-			if(projectDateList.contains(map.getKey()) && map.getValue() != null){
+			if (projectDateList.contains(map.getKey()) && map.getValue() != null) {
 				hour = Double.parseDouble(map.getValue().toString());
-			}
-			else {
+			} else {
 				indx++;
 				continue;
 			}
-			switch(indx) {
-				case 1: {
-					weeklyApproval.setDay1(hour);
-					break;
-				}
-				case 2: {
-					weeklyApproval.setDay2(hour);
-					break;
-				}
-				case 3: {
-					weeklyApproval.setDay3(hour);
-					break;
-				}
-				case 4: {
-					weeklyApproval.setDay4(hour);
-					break;
-				}
-				case 5: {
-					weeklyApproval.setDay5(hour);
-					break;
-				}
-				case 6: {
-					weeklyApproval.setDay6(hour);
-					break;
-				}
-				case 7: {
-					weeklyApproval.setDay7(hour);
-					break;
-				}
+			switch (indx) {
+			case 1: {
+				weeklyApproval.setDay1(hour);
+				break;
+			}
+			case 2: {
+				weeklyApproval.setDay2(hour);
+				break;
+			}
+			case 3: {
+				weeklyApproval.setDay3(hour);
+				break;
+			}
+			case 4: {
+				weeklyApproval.setDay4(hour);
+				break;
+			}
+			case 5: {
+				weeklyApproval.setDay5(hour);
+				break;
+			}
+			case 6: {
+				weeklyApproval.setDay6(hour);
+				break;
+			}
+			case 7: {
+				weeklyApproval.setDay7(hour);
+				break;
+			}
 			}
 			indx++;
 		}
+	
 
-		int requeststatus = 0;
 		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
 				&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
 				&& (!weeklyApproval.getDay5().equals(null)) && (!weeklyApproval.getDay6().equals(null))
@@ -846,34 +896,34 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 					|| (weeklyApproval.getDay5() > 24) || (weeklyApproval.getDay6() < 0)
 					|| (weeklyApproval.getDay6() > 24) || (weeklyApproval.getDay7() < 0)
 					|| (weeklyApproval.getDay7() > 24))
-				requeststatus  = 1;
-		} else
-		{
+				requeststatus = 1;
+		} else {
 			requeststatus = 1;
 		}
-	
-
-		if (!projectInfo.equals(null)) {
-			weeklyApproval.setProject(projectInfo);
+		
+		weeklyApproval.setStartDate(startDate);
+		weeklyApproval.setEndDate(endDate);
+		weeklyApproval.setProject(projectModel);
+		weeklyApproval.setUser(userModel);
+				
+		if (isSave) {
+			weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);	
 		}
 		else {
-			requeststatus = 1;
+			weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 		}
-		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);
-		weeklyApproval.setTimetrackFinalStatus(Constants.UserStatus.TASKTRACK_SAVED);
-
+		
+		weeklyApproval.setTimetrackFinalStatus(weeklyApproval.getTimetrackStatus());
+		
 		if (requeststatus == 0) {
-
-		taskWeeklyApprovalRepository.save(weeklyApproval);
-		response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Insertion completed");
-
-		} else
-		{
-			response = new StatusResponse("Success", 200, "Insertion failed due to invalid credientials");
+			taskWeeklyApprovalRepository.save(weeklyApproval);
+			response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Insertion completed");
 		}
+		else {
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "Could not saved");
+		}
+		
 		return response;
-
 	}
-
 
 }
