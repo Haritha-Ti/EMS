@@ -10279,7 +10279,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay7():0);
 					//hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataResponse);
-					node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					//node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					node.put("submissionHistory","");
 					node.put("reopenButtonStatus",reopenButtonStatus);
 
 				} else {
@@ -10327,7 +10328,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			} else {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(startDate);
-				int month = cal.get(Calendar.MONTH + 1);
+				int month = (cal.get(Calendar.MONTH)+1);
 				int year = cal.get(Calendar.YEAR);
 				Calendar cale = Calendar.getInstance();
 				cale.setTime(endDate);
@@ -10485,7 +10486,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					//hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataResponse);
-					node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					//node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					node.put("submissionHistory","");
 					node.put("reopenButtonStatus",reopenButtonStatus);
 					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
 				} else {
@@ -11386,6 +11388,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		String projectApprover2 = projectData.getOnsite_lead().getLastName()+" "+projectData.getOnsite_lead().getFirstName();
 		if (projectData != null) {
 			ArrayNode hourDataNode = objectMapper.createArrayNode();
+			node.put("clientName", projectData.getClientName() == null ? "" : projectData.getClientName().getClientName() );
 			// weekly
 			if (projectData.getWorkflowType() == 3 || projectData.getWorkflowType() == 4) {
 				TaskTrackWeeklyApproval userData = taskTrackWeeklyApprovalRepository

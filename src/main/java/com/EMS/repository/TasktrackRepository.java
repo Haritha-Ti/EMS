@@ -345,4 +345,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 
 	List<Tasktrack> findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(Long userId, Long projectId, Date startDate, Date endDate);
 
+	//nisha
+	@Query("SELECT DISTINCT a.project_Id.projectName,a.project_Id.projectId,a.project_Id.projectTier from ProjectRegion  a where  (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) AND project_category=1 AND a.region_Id.id=?1  order by a.project_Id.projectName")
+	public List<Object[]> getProjectNamesForFinance(long regionId, Date startDate, int month, int year);
 }
