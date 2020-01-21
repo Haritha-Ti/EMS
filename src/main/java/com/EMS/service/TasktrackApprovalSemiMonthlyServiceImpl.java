@@ -239,7 +239,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					
 					String secondHalfApprover2 = null;
 					Date secondHalfSubmittedDate2 = null;
-					if (approvalSemiMonthly.getFirstHalfApproverTwoId() != null) {
+					if (approvalSemiMonthly.getSecondHalfApproverTwoId() != null) {
 						secondHalfApprover2 =  approvalSemiMonthly.getSecondHalfApproverTwoId().getFirstName() + " "
 										+ approvalSemiMonthly.getSecondHalfApproverTwoId().getLastName();
 

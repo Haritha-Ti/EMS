@@ -3172,7 +3172,12 @@ public class TasktrackController {
 
 		if (user.getRole().getroleId() == 5) {
 			projectList = tasktrackRepository.getTier2ProjectNames(startDate);
-		} else {
+		}
+		else if(user.getRole().getroleId() == 6) {
+			projectList = tasktrackRepository.getProjectNamesForFinance(user.getRegion().getId(), startDate, month, year);
+		}
+		else
+		{
 			projectList = tasktrackRepository.getProjectNamesForApprovalLevel2(uId, startDate, month, year);
 		}
 

@@ -10279,7 +10279,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay7():0);
 					//hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataResponse);
-					node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					//node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					node.put("submissionHistory","");
 					node.put("reopenButtonStatus",reopenButtonStatus);
 
 				} else {
@@ -10485,7 +10486,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					}
 					//hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataResponse);
-					node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					//node.set("submissionHistory",objectMapper.valueToTree(getSubmissionHistory(userData.getId(),projectId)));
+					node.put("submissionHistory","");
 					node.put("reopenButtonStatus",reopenButtonStatus);
 					//node.set("submissionHistory",getSubmissionHistory(userData.getId(),projectId));
 				} else {

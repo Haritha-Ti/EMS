@@ -41,6 +41,7 @@ public class TasktrackApprovalSemiMonthlyController {
 		try {
 			response = approvalSemiMonthlyService.getSemiMonthlyTasktrack(requestData);
 		} catch (Exception e) {
+			e.printStackTrace();
 			ExceptionResponse exceptionResponse = new ExceptionResponse(501, e.getMessage(), new Date());
 			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
 		}
