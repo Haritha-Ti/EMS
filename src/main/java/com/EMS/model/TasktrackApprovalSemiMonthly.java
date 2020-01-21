@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import org.hibernate.envers.Audited;
 
 import com.EMS.listener.ModelListener;
+import com.EMS.utility.Constants;
 
 @Audited
 @EntityListeners(ModelListener.class)
@@ -383,6 +384,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getUserFirstHalfStatus() {
+		if(userFirstHalfStatus == null)
+			userFirstHalfStatus = Constants.UserStatus.TASKTRACK_OPEN;
 		return userFirstHalfStatus;
 	}
 
@@ -399,6 +402,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getUserSecondHalfStatus() {
+		if(userSecondHalfStatus == null)
+			userSecondHalfStatus = Constants.UserStatus.TASKTRACK_OPEN;
 		return userSecondHalfStatus;
 	}
 
@@ -431,6 +436,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getApproverOneFirstHalfStatus() {
+		if(approverOneFirstHalfStatus == null)
+			approverOneFirstHalfStatus = Constants.Approver1.TASKTRACK_OPEN;
 		return approverOneFirstHalfStatus;
 	}
 
@@ -447,6 +454,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getApproverOneSecondHalfStatus() {
+		if(approverOneSecondHalfStatus == null)
+			approverOneSecondHalfStatus = Constants.Approver1.TASKTRACK_OPEN;
 		return approverOneSecondHalfStatus;
 	}
 
@@ -479,6 +488,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getApproverTwoFirstHalfStatus() {
+		if(approverTwoFirstHalfStatus == null)
+			approverTwoFirstHalfStatus = Constants.Approver2.TASKTRACK_OPEN;
 		return approverTwoFirstHalfStatus;
 	}
 
@@ -495,6 +506,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getApproverTwoSecondHalfStatus() {
+		if(approverTwoSecondHalfStatus == null)
+			approverTwoSecondHalfStatus = Constants.Approver2.TASKTRACK_OPEN;
 		return approverTwoSecondHalfStatus;
 	}
 
@@ -527,6 +540,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getFinanceFirstHalfStatus() {
+		if(financeFirstHalfStatus == null)
+			financeFirstHalfStatus = Constants.Finance.TASKTRACK_OPEN;
 		return financeFirstHalfStatus;
 	}
 
@@ -543,6 +558,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getFinanceSecondHalfStatus() {
+		if(financeSecondHalfStatus == null)
+			financeSecondHalfStatus = Constants.Finance.TASKTRACK_OPEN;
 		return financeSecondHalfStatus;
 	}
 
@@ -575,6 +592,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getFirstHalfFinalStatus() {
+		if(firstHalfFinalStatus == null)
+			firstHalfFinalStatus = Constants.FinalStatus.TASKTRACK_OPEN;
 		return firstHalfFinalStatus;
 	}
 
@@ -583,6 +602,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public String getSecondHalfFinalStatus() {
+		if(secondHalfFinalStatus == null)
+			secondHalfFinalStatus = Constants.FinalStatus.TASKTRACK_OPEN;
 		return secondHalfFinalStatus;
 	}
 

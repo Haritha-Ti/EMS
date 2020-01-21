@@ -149,6 +149,8 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
         this.project = project;
     }
     public String getTimetrackStatus() {
+    	if(timetrackStatus == null)
+    		timetrackStatus = Constants.UserStatus.TASKTRACK_OPEN;
         return timetrackStatus;
     }
     public void setTimetrackStatus(String timetrackStatus) {
@@ -199,24 +201,32 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
         this.rejectionTime = rejectionTime;
     }
 	public String getApprover1Status() {
+		if(approver1Status == null)
+			approver1Status = Constants.Approver1.TASKTRACK_OPEN;
 		return approver1Status;
 	}
 	public void setApprover1Status(String approver1Status) {
 		this.approver1Status = approver1Status;
 	}
 	public String getApprover2Status() {
+		if(approver2Status == null)
+			approver2Status = Constants.Approver2.TASKTRACK_OPEN;
 		return approver2Status;
 	}
 	public void setApprover2Status(String approver2Status) {
 		this.approver2Status = approver2Status;
 	}
 	public String getFinanceStatus() {
+		if(financeStatus == null)
+			financeStatus = Constants.Finance.TASKTRACK_OPEN;
 		return financeStatus;
 	}
 	public void setFinanceStatus(String financeStatus) {
 		this.financeStatus = financeStatus;
 	}
 	public String getTimetrackFinalStatus() {
+		if(timetrackFinalStatus == null)
+			timetrackFinalStatus = Constants.FinalStatus.TASKTRACK_OPEN;
 		return timetrackFinalStatus;
 	}
 	public void setTimetrackFinalStatus(String timetrackFinalStatus) {
