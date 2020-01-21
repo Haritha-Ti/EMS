@@ -85,6 +85,7 @@ public class Constants {
 	}
 	
 	public class FinalStatus{
+		public static final String TASKTRACK_OPEN = "OPEN";
 		public static final String TASKTRACK_APPROVED = "APPROVED";
 		public static final String TASKTRACK_REOPEN = "REOPEN";
 		public static final String TASKTRACK_FORWARDED_TO_LEVEL2 = "FORWARDED_TO_L2";
