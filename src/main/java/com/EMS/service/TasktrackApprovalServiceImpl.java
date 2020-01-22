@@ -9096,9 +9096,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									: weeklyUserData.getTimetrackFinalStatus();
 							if(!finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 							|| !finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
-								totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
+								totalhours = Constants.roundToDefaultPrecision(weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
 										+ weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6()
-										+ weeklyUserData.getDay7();
+										+ weeklyUserData.getDay7());
 							}
 							userStatus =userStatus;
 							approver1Status = weeklyUserData.getApprover1Status() == null
@@ -9160,25 +9160,25 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								: semiMonthlyUserData.getSecondHalfFinalStatus();
 						if (!finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 						|| !finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
-							firstHalfHour = semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2()
+							firstHalfHour = Constants.roundToDefaultPrecision(semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2()
 									+ semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4()
 									+ semiMonthlyUserData.getDay5() + semiMonthlyUserData.getDay6()
 									+ semiMonthlyUserData.getDay7() + semiMonthlyUserData.getDay8()
 									+ semiMonthlyUserData.getDay9() + semiMonthlyUserData.getDay10()
 									+ semiMonthlyUserData.getDay11() + semiMonthlyUserData.getDay12()
 									+ semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14()
-									+ semiMonthlyUserData.getDay15();
+									+ semiMonthlyUserData.getDay15());
 						}
 						if (!finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)
 								|| !finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
-							secondHalfHour = semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17()
+							secondHalfHour = Constants.roundToDefaultPrecision(semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17()
 									+ semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19()
 									+ semiMonthlyUserData.getDay20() + semiMonthlyUserData.getDay21()
 									+ semiMonthlyUserData.getDay22() + semiMonthlyUserData.getDay23()
 									+ semiMonthlyUserData.getDay24() + semiMonthlyUserData.getDay25()
 									+ semiMonthlyUserData.getDay26() + semiMonthlyUserData.getDay27()
 									+ semiMonthlyUserData.getDay28() + semiMonthlyUserData.getDay29()
-									+ semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31();
+									+ semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31());
 						}
 
 					}
@@ -9242,7 +9242,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			node.set("userData", userDataArray);
 		}
 		return node;
-
 	}
 
 	// Nisha
@@ -9881,9 +9880,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 							}
 									if(flag == 1) {
-								totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
+								totalhours = Constants.roundToDefaultPrecision(weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3()
 								+ weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6()
-								+ weeklyUserData.getDay7();
+								+ weeklyUserData.getDay7());
 							approverSatus = weeklyUserData.getApprover1Status() == null
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 											: weeklyUserData.getApprover1Status();
@@ -9945,14 +9944,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							}
 						}
 							if(flag == 1) {
-									firstHalfHour = semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2()
+									firstHalfHour = Constants.roundToDefaultPrecision(semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2()
 									+ semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4()
 									+ semiMonthlyUserData.getDay5() + semiMonthlyUserData.getDay6()
 									+ semiMonthlyUserData.getDay7() + semiMonthlyUserData.getDay8()
 									+ semiMonthlyUserData.getDay9() + semiMonthlyUserData.getDay10()
 									+ semiMonthlyUserData.getDay11() + semiMonthlyUserData.getDay12()
 									+ semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14()
-									+ semiMonthlyUserData.getDay15();
+									+ semiMonthlyUserData.getDay15());
 									firstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null
 											? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 													: semiMonthlyUserData.getApproverOneFirstHalfStatus();
@@ -9962,14 +9961,14 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							}
 						
 						if (flag == 1) {
-							secondHalfHour = semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17()
+							secondHalfHour = Constants.roundToDefaultPrecision(semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17()
 							+ semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19()
 							+ semiMonthlyUserData.getDay20() + semiMonthlyUserData.getDay21()
 							+ semiMonthlyUserData.getDay22() + semiMonthlyUserData.getDay23()
 							+ semiMonthlyUserData.getDay24() + semiMonthlyUserData.getDay25()
 							+ semiMonthlyUserData.getDay26() + semiMonthlyUserData.getDay27()
 							+ semiMonthlyUserData.getDay28() + semiMonthlyUserData.getDay29()
-							+ semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31();
+							+ semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31());
 							secondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null
 									? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 											: semiMonthlyUserData.getApproverOneSecondHalfStatus();
@@ -10089,7 +10088,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									: weeklyUserData.getTimetrackFinalStatus();
 							if (!finalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE) ||
 									!finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
-								totalhours = weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3() + weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6() + weeklyUserData.getDay7();
+								totalhours = Constants.roundToDefaultPrecision(weeklyUserData.getDay1() + weeklyUserData.getDay2() + weeklyUserData.getDay3() + weeklyUserData.getDay4() + weeklyUserData.getDay5() + weeklyUserData.getDay6() + weeklyUserData.getDay7());
 							}
 							approverStatus = weeklyUserData.getApprover1Status() == null ? Constants.TASKTRACK_APPROVER_STATUS_OPEN
 									: weeklyUserData.getApprover1Status();
@@ -10133,9 +10132,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						String userSecondHalfStatus = semiMonthlyUserData.getUserSecondHalfStatus()==null?Constants.UserStatus.TASKTRACK_SAVED:semiMonthlyUserData.getUserSecondHalfStatus();
 						if (!finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE)||
 								!finalFirstHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
-							firstHalfHour = semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2() + semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4() + semiMonthlyUserData.getDay5() +
+							firstHalfHour = Constants.roundToDefaultPrecision(semiMonthlyUserData.getDay1() + semiMonthlyUserData.getDay2() + semiMonthlyUserData.getDay3() + semiMonthlyUserData.getDay4() + semiMonthlyUserData.getDay5() +
 									semiMonthlyUserData.getDay6() + semiMonthlyUserData.getDay7() + semiMonthlyUserData.getDay8() + semiMonthlyUserData.getDay9() + semiMonthlyUserData.getDay10() +
-									semiMonthlyUserData.getDay11() + semiMonthlyUserData.getDay12() + semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14() + semiMonthlyUserData.getDay15();
+									semiMonthlyUserData.getDay11() + semiMonthlyUserData.getDay12() + semiMonthlyUserData.getDay13() + semiMonthlyUserData.getDay14() + semiMonthlyUserData.getDay15());
 							approverFirstHalfStatus = semiMonthlyUserData.getApproverOneFirstHalfStatus() == null ? Constants.Approver1.TASKTRACK_OPEN
 									: semiMonthlyUserData.getApproverOneFirstHalfStatus();
 							if (projectTier == 2) {
@@ -10149,9 +10148,9 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 						if (!finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_SAVE) ||
 								!finalSecondHalfStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)) {
-							secondHalfHour = semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17() + semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19() + semiMonthlyUserData.getDay20() +
+							secondHalfHour = Constants.roundToDefaultPrecision(semiMonthlyUserData.getDay16() + semiMonthlyUserData.getDay17() + semiMonthlyUserData.getDay18() + semiMonthlyUserData.getDay19() + semiMonthlyUserData.getDay20() +
 									semiMonthlyUserData.getDay21() + semiMonthlyUserData.getDay22() + semiMonthlyUserData.getDay23() + semiMonthlyUserData.getDay24() + semiMonthlyUserData.getDay25() +
-									semiMonthlyUserData.getDay26() + semiMonthlyUserData.getDay27() + semiMonthlyUserData.getDay28() + semiMonthlyUserData.getDay29() + semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31();
+									semiMonthlyUserData.getDay26() + semiMonthlyUserData.getDay27() + semiMonthlyUserData.getDay28() + semiMonthlyUserData.getDay29() + semiMonthlyUserData.getDay30() + semiMonthlyUserData.getDay31());
 							approverSecondHalfStatus = semiMonthlyUserData.getApproverOneSecondHalfStatus() == null ? Constants.Approver1.TASKTRACK_OPEN
 									: semiMonthlyUserData.getApproverOneSecondHalfStatus();
 							if (projectTier == 2) {
