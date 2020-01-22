@@ -78,7 +78,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		ProjectModel projectModel = projectservice.findById(projectId);
 		
-		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
+		String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED,Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2 };
 		List<String> taskStatusList = Arrays.asList(taskStatusArray);
 		TasktrackApprovalSemiMonthly approvalSemiMonthly = (TasktrackApprovalSemiMonthly) semiMonthlyRepository
 				.getSemiMonthlyTasktrack(startDate, userId, projectId);
