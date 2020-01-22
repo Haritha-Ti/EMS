@@ -612,6 +612,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		
 		JSONArray taskList = new JSONArray();
 		HashSet<Date> trackdate = new HashSet<Date>();
+		
+	List<Date> reqDateRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
+	
+if (!tasktrackList.isEmpty()) {
+
+	for (Date date : reqDateRange) {
+	if (projectDateList.contains(sdf.format(date))) {		
 		for (Tasktrack tasktrackOuter : tasktrackList) {
 			if (!trackdate.contains(tasktrackOuter.getDate())) {
 				trackdate.add(tasktrackOuter.getDate());
@@ -632,15 +639,54 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				taskList.add(dateTaskObj);
 			}
 		}
+	 }
+	else {
+		JSONArray dateTaskArray = new JSONArray();
+		JSONObject dateTaskObj = new JSONObject();
+		JSONObject taskObj = new JSONObject();
+		taskObj.put("hour", null);
+		taskObj.put("taskType", "");
+		taskObj.put("taskSummary", "");
+		taskObj.put("enabled", false);		
+		dateTaskArray.add(taskObj);
+		dateTaskObj.put(sdf.format(date), dateTaskArray);
+		taskList.add(dateTaskObj);
+	}
+	
+	}
+	}
+	if (tasktrackList.isEmpty()) {
+		for (Date reqDate : reqDateRange) {		
+				JSONArray dateTaskArray = new JSONArray();
+				JSONObject dateTaskObj = new JSONObject();
+				JSONObject taskObj = new JSONObject();
+				taskObj.put("hour", null);
+				taskObj.put("taskType", "");
+				taskObj.put("taskSummary", "");
+				if (projectDateList.contains(sdf.format(reqDate))) {
+					taskObj.put("enabled", true);
+				}
+				else {
+					taskObj.put("enabled", false);
+				}
+				dateTaskArray.add(taskObj);
+				dateTaskObj.put(sdf.format(reqDate), dateTaskArray);
+				taskList.add(dateTaskObj);			
+		}	
+	}	
 
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("taskList", taskList);
 
+		String approver1Status = null;
+		String approver2Status = null;
+		String financeStatus = null;
+		
 		if (tasktrackStatus != null) {
 
-			String approver1Status = tasktrackStatus.getApprover1Status();
-			String approver2Status = tasktrackStatus.getApprover2Status();
-			String financeStatus = tasktrackStatus.getFinanceStatus();
+			 approver1Status = tasktrackStatus.getApprover1Status();
+			 approver2Status = tasktrackStatus.getApprover2Status();
+			 financeStatus = tasktrackStatus.getFinanceStatus();
 
 			String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
 			List<String> taskStatusList = Arrays.asList(taskStatusArray);
@@ -652,7 +698,64 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				jsonObject.put("enabled", true);
 			}
 
+	
+		ProjectModel projectModel = projectservice.findById(projectId);
+		
+		String approver1 = tasktrackStatus.getApprover1Id() != null
+				? tasktrackStatus.getApprover1Id().getFirstName() + " "
+						+ tasktrackStatus.getApprover1Id().getLastName()
+				: "";
+
+		if (null == approver1 || approver1.equals("")) {
+			approver1 = null != projectModel.getProjectOwner() ? projectModel.getProjectOwner().getFirstName() + " "
+					+ projectModel.getProjectOwner().getLastName() : "";
+
 		}
+
+		Date approver1SubmittedDate = tasktrackStatus.getApprover1SubmittedDate();
+
+		JSONObject approver1Obj = new JSONObject();
+		approver1Obj.put("approver", approver1);
+
+		if (null != approver1SubmittedDate) {
+			approver1Obj.put("date", sdf.format(approver1SubmittedDate));
+		} else {
+			approver1Obj.put("date", "");
+		}
+
+		approver1Obj.put("status", approver1Status);
+		jsonObject.put("approver1", approver1Obj);
+
+		String approver2 = tasktrackStatus.getApprover1Id() != null
+				? tasktrackStatus.getApprover1Id().getFirstName() + " "
+						+ tasktrackStatus.getApprover1Id().getLastName()
+				: "";
+
+		if (null == approver2 || approver2.equals("")) {
+			approver2 = null != projectModel.getOnsite_lead() ? projectModel.getOnsite_lead().getFirstName() + " "
+					+ projectModel.getOnsite_lead().getLastName() : "";
+
+		}
+
+		Date approver2SubmittedDate = tasktrackStatus.getApprover2SubmittedDate();
+
+		JSONObject approver2Obj = new JSONObject();
+		approver2Obj.put("approver", approver2);
+
+		if (null != approver2SubmittedDate) {
+			approver2Obj.put("date", sdf.format(approver2SubmittedDate));
+		} else {
+			approver2Obj.put("date", "");
+		}
+
+		approver2Obj.put("status", approver2Status);
+		jsonObject.put("approver2", approver2Obj);
+
+		JSONObject user = new JSONObject();
+		user.put("status", tasktrackStatus.getTimetrackStatus());
+		user.put("date", tasktrackStatus.getUserSubmittedDate());
+		jsonObject.put("user", user);
+	}
 		response.setData(jsonObject);
 		response.setStatus(Constants.SUCCESS);
 		response.setStatusCode(Constants.SUCCESS_CODE);
