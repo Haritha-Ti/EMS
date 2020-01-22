@@ -28,6 +28,7 @@ import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
+import com.EMS.model.Task;
 import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
@@ -35,7 +36,6 @@ import com.EMS.repository.AllocationRepository;
 import com.EMS.repository.TaskWeeklyApprovalRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
-import com.EMS.utility.Constants.FinalStatus;
 import com.EMS.utility.DateUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -58,7 +58,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	@Autowired
 	private AllocationRepository allocationRepository;
 
-
+	@Autowired
+	TasktrackService tasktrackService;
+	
 	@Override
 	public StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException, Exception {
 
@@ -633,6 +635,7 @@ if (!tasktrackList.isEmpty()) {
 					JSONObject taskObj = new JSONObject();
 					taskObj.put("hour", tasktrack.getHours());
 					taskObj.put("taskType", null != tasktrack.getTask()? tasktrack.getTask().getTaskName():"");
+					taskObj.put("taskId", null != tasktrack.getTask()? tasktrack.getTask().getId(): null);
 					taskObj.put("taskSummary", tasktrack.getDescription());
 					taskObj.put("enabled", true);
 					if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
@@ -922,6 +925,7 @@ if (!tasktrackList.isEmpty()) {
 					tasktrack.setHours(dailyTasktrackDto.getHour());
 					tasktrack.setDescription(dailyTasktrackDto.getTaskSummary());
 					tasktrack.setTaskTypeId(dailyTasktrackDto.getTaskType());
+					tasktrack.setTask(tasktrackService.getTaskById(dailyTasktrackDto.getTaskType()));
 					tasktrack.setDate(sdf.parse(dateBasedTaskDto.getTaskDate()));
 					tasktrack.setProject(projectModel);
 					tasktrack.setUser(userModel);	

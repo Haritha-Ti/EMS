@@ -4,7 +4,7 @@ public class DailyTasktrackDto {
 
 	private Double hour;
 	private String taskSummary;
-	private Integer taskType;
+	private Long taskType;
 	
 	public Double getHour() {
 		return hour;
@@ -18,10 +18,10 @@ public class DailyTasktrackDto {
 	public void setTaskSummary(String taskSummary) {
 		this.taskSummary = taskSummary;
 	}
-	public Integer getTaskType() {
+	public Long getTaskType() {
 		return taskType;
 	}
-	public void setTaskType(Integer taskType) {
+	public void setTaskType(Long taskType) {
 		this.taskType = taskType;
 	}
 	
