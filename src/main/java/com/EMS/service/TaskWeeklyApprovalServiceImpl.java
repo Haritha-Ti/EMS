@@ -518,7 +518,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			JSONObject approver1Obj = new JSONObject();
 			approver1Obj.put("approver", approver1);
-			response.put("approver1", approver1);
+			approver1Obj.put("date", "");
+			approver1Obj.put("status", Constants.Approver1.TASKTRACK_OPEN);
+			response.put("approver1", approver1Obj);
 
 			String approver2 = null != projectModel.getOnsite_lead()
 					? projectModel.getOnsite_lead().getFirstName() + " " + projectModel.getOnsite_lead().getLastName()
@@ -526,7 +528,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			JSONObject approver2Obj = new JSONObject();
 			approver2Obj.put("approver", approver2);
-			response.put("approver2", approver2);
+			approver2Obj.put("date", "");
+			approver2Obj.put("status", Constants.Approver2.TASKTRACK_OPEN);
+			response.put("approver2", approver2Obj);
 
 			response.put("enabled", true);
 			responseFinal = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
