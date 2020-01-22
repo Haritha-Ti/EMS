@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.EMS.dto.DateBasedTaskTrackDto;
 import com.EMS.dto.SemiMonthlyTaskTrackRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
@@ -134,5 +135,44 @@ public class TasktrackApprovalSemiMonthlyController {
 
 		return response;
 	}
+	
+	
+	/**
+	 * @author Renjith
+	 * */
+	
+	@PostMapping(value = "/submitSemiMonthlyWithTasks")
+	public StatusResponse submitSemiMonthlyWithTasks(@RequestBody DateBasedTaskTrackDto dateBasedTaskTrackDto) {
+		
+		StatusResponse response = new StatusResponse();
+		try {
+			//response = approvalSemiMonthlyService.submitSemiMonthlyWithTasks(dateBasedTaskTrackDto);
+			response = approvalSemiMonthlyService.submitSemiMonthlyTasktrackWithTask(dateBasedTaskTrackDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
+			response = new StatusResponse("Failure", 500, exceptionresponse);
+		}
+
+		return response;
+	}
+	
+	@PostMapping(value = "/saveSemiMonthlyWithTasks")
+	public StatusResponse saveSemiMonthlyWithTasks(@RequestBody DateBasedTaskTrackDto dateBasedTaskTrackDto) {
+		
+		StatusResponse response = new StatusResponse();
+		try {
+			//response = approvalSemiMonthlyService.submitSemiMonthlyWithTasks(dateBasedTaskTrackDto);
+			response = approvalSemiMonthlyService.saveSemiMonthlyTasktrackWithTask(dateBasedTaskTrackDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			ExceptionResponse exceptionresponse = new ExceptionResponse(501, e.getMessage(), new Date());
+			response = new StatusResponse("Failure", 500, exceptionresponse);
+		}
+
+		return response;
+	}
+	
+	
 
 }
