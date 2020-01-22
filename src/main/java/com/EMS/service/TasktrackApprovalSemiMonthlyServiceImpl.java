@@ -160,7 +160,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 				}
 
 				if (null == firstHalfApprover2 || firstHalfApprover2.equals("")) {
-					firstHalfApprover2 = null !=  projectModel.getOnsite_lead()? projectModel.getProjectOwner().getFirstName() + " "
+					firstHalfApprover2 = null !=  projectModel.getOnsite_lead()? projectModel.getOnsite_lead().getFirstName() + " "
 							+ projectModel.getOnsite_lead().getLastName() :"";
 
 				}
@@ -247,7 +247,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					}
 
 					if (null == secondHalfApprover2 || secondHalfApprover2.equals("")) {
-						secondHalfApprover2 = null !=  projectModel.getOnsite_lead()? projectModel.getProjectOwner().getFirstName() + " "
+						secondHalfApprover2 = null !=  projectModel.getOnsite_lead()? projectModel.getOnsite_lead().getFirstName() + " "
 								+ projectModel.getOnsite_lead().getLastName() :"";
 
 					}
@@ -255,7 +255,7 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 					JSONObject approver1 = new JSONObject();
 					approver1.put("approver", secondHalfApprover1);
 					approver1.put("date", (secondHalfSubmittedDate != null) ? sdf.format(secondHalfSubmittedDate) : "");
-					approver1.put("status", approverOneFirstHalfStatus);
+					approver1.put("status", approverOneSecondHalfStatus);
 					response.put("approver1", approver1);
 					
 					JSONObject approver2 = new JSONObject();
