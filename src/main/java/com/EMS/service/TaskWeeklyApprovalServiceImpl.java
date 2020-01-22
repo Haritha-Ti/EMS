@@ -448,9 +448,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			approver1Obj.put("status", approver1Status);
 			response.put("approver1", approver1Obj);
 
-			String approver2 = weeklyTasktrack.getApprover1Id() != null
-					? weeklyTasktrack.getApprover1Id().getFirstName() + " "
-							+ weeklyTasktrack.getApprover1Id().getLastName()
+			String approver2 = weeklyTasktrack.getApprover2Id() != null
+					? weeklyTasktrack.getApprover2Id().getFirstName() + " "
+							+ weeklyTasktrack.getApprover2Id().getLastName()
 					: "";
 
 			if (null == approver2 || approver2.equals("")) {
