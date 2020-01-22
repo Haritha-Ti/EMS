@@ -1007,7 +1007,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				if (!allocStartDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))
 						|| !allocEndDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
 					firstHalfObj.put("hours", 0);
-					firstHalfObj.put("firstHalfRejectionRemark", "");
+					firstHalfObj.put("rejectionRemark", "");
 					firstHalfObj.put("status", "OPEN");
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
@@ -1016,7 +1016,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				if (!allocStartDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))
 						|| !allocEndDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
 					secondHalfObj.put("hours", 0);
-					secondHalfObj.put("secondHalfRejectionRemark", "");
+					secondHalfObj.put("rejectionRemark", "");
 					secondHalfObj.put("status", "OPEN");
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
@@ -1066,7 +1066,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				
 				if (projHalfs.containsKey(String.valueOf(modelObj.getProject().getProjectId()) + "F")) {
 					firstHalfObj.put("hours", firstHalfHours);	
-					firstHalfObj.put("firstHalfRejectionRemark", firstHalfRejection);
+					firstHalfObj.put("rejectionRemark", firstHalfRejection);
 					firstHalfObj.put("status", firstHalfFinalStatus == null ? "OPEN" : firstHalfFinalStatus.toUpperCase());
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
@@ -1075,7 +1075,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				}
 				if (projHalfs.containsKey(String.valueOf(modelObj.getProject().getProjectId()) + "S")) {
 					secondHalfObj.put("hours", secondHalfHours);
-					secondHalfObj.put("secondHalfRejectionRemark", secondHalfRejection);
+					secondHalfObj.put("rejectionRemark", secondHalfRejection);
 					secondHalfObj.put("status", secondHalfFinalStatus == null ? "OPEN" : secondHalfFinalStatus.toUpperCase());
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
@@ -1120,7 +1120,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				if (!allocStartDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))
 						|| !allocEndDate.after(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
 					firstHalfObj.put("hours", 0);
-					firstHalfObj.put("firstHalfRejectionRemark", "");
+					firstHalfObj.put("rejectionRemark", "");
 					firstHalfObj.put("status", "OPEN");
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
@@ -1130,7 +1130,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 						|| !allocEndDate.before(dateFrmt.parse(year + "-" + month + "-" + "15"))) {
 					secondHalfObj.put("hours", 0);
 					secondHalfObj.put("status", "OPEN");
-					secondHalfObj.put("secondHalfRejectionRemark", "");
+					secondHalfObj.put("rejectionRemark", "");
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
 					hoursObj.put("secondHalfHours", 0d);
@@ -1184,7 +1184,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 				if (hoursObj.containsKey("firstHalfHours")) {
 					firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
-					firstHalfObj.put("firstHalfRejectionRemark", firstHalfRejection);
+					firstHalfObj.put("rejectionRemark", firstHalfRejection);
 					firstHalfObj.put("status", modelObj.getFirstHalfFinalStatus() == null ? "OPEN": modelObj.getFirstHalfFinalStatus().toUpperCase());
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
@@ -1192,7 +1192,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				}
 				if (hoursObj.containsKey("secondHalfHours")) {
 					secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
-					secondHalfObj.put("secondHalfRejectionRemark", secondHalfRejection);
+					secondHalfObj.put("rejectionRemark", secondHalfRejection);
 					secondHalfObj.put("status", modelObj.getSecondHalfFinalStatus() == null ? "OPEN": modelObj.getSecondHalfFinalStatus().toUpperCase());
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
@@ -1215,7 +1215,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 
 				if (hoursObj.containsKey("firstHalfHours")) {
 					firstHalfObj.put("hours", hoursObj.get("firstHalfHours"));
-					firstHalfObj.put("firstHalfRejectionRemark", "");
+					firstHalfObj.put("rejectionRemark", "");
 					firstHalfObj.put("status", "OPEN");
 					firstHalfObj.put("startDay", dateFrmt.format(monthStartCal.getTime()));
 					firstHalfObj.put("endDay", year + "-" + month + "-" + "15");
@@ -1223,7 +1223,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 				}
 				if (hoursObj.containsKey("secondHalfHours")) {
 					secondHalfObj.put("hours", hoursObj.get("secondHalfHours"));
-					secondHalfObj.put("secondHalfRejectionRemark", "");
+					secondHalfObj.put("rejectionRemark", "");
 					secondHalfObj.put("status", "OPEN");
 					secondHalfObj.put("startDay", year + "-" + month + "-" + "16");
 					secondHalfObj.put("endDay", dateFrmt.format(monthEndCal.getTime()));
