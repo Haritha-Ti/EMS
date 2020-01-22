@@ -1,5 +1,6 @@
 package com.EMS.service;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -228,6 +229,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		StatusResponse response = new StatusResponse();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    DecimalFormat decimalFormat = new DecimalFormat("0.0");
 		int requeststatus = 0;
 
 		if (((!requestData.get("startDate").toString().equals(null))
@@ -298,7 +300,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		for (Map.Entry<Object, Object> map : timetrackRequestData.entrySet()) {
 			Double hour = null;
 			if (projectDateList.contains(map.getKey()) && map.getValue() != null) {
-				hour = Double.parseDouble(map.getValue().toString());
+				String hourStr = decimalFormat.format(map.getValue());
+				hour = Double.parseDouble(hourStr);
+				
 			} else {
 				indx++;
 				continue;
@@ -865,6 +869,8 @@ if (!tasktrackList.isEmpty()) {
 		int requeststatus = 0;
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		DecimalFormat decimalFormat = new DecimalFormat("0.0");
+		 
 		Date startDate = sdf.parse(requestData.getStartDate());
 		Date endDate = sdf.parse(requestData.getEndDate());
 	
@@ -947,8 +953,10 @@ if (!tasktrackList.isEmpty()) {
 		int indx = 1;
 		for (Map.Entry<String, Double> map : hoursByDate.entrySet()) {
 			Double hour = null;
-			if (projectDateList.contains(map.getKey()) && map.getValue() != null) {
-				hour = Double.parseDouble(map.getValue().toString());
+			if (projectDateList.contains(map.getKey()) && map.getValue() != null) {				
+				String hourStr = decimalFormat.format(map.getValue());
+				hour = Double.parseDouble(hourStr);				
+			//	hour = Double.parseDouble(map.getValue().toString());
 			} else {
 				indx++;
 				continue;
