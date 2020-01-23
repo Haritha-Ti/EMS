@@ -101,26 +101,26 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	int checkprojectallocated(long projectId, Date startdate, Date enddate);
 
 	// Nisha
-	@Query("from ProjectModel p where (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) order by p.projectName")
+	@Query("from ProjectModel p where (month(start_date)<=?1 and year(start_date)<=?2) and ( (month(end_date)>=?1 and year(end_date)>=?2) or  year(end_date)>?2) AND project_category=1 AND is_billable=1 order by p.projectName")
 	public List<ProjectModel> getProjectNamesForApproval(int month, int year) throws Exception;
 
 	@Query("from ProjectModel p where startDate<=?2 and endDate>=?1 and projectCategory=1 order by p.projectName")
 	public List<ProjectModel> getProjectNamesForApproval(Date startDate, Date endDate) throws Exception;
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.onsite_lead.userId=?1 AND (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) AND project_category=1  order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.onsite_lead.userId=?1 AND (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) AND project_category=1 AND is_billable=1 order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel2(long uId, Date startDate, int month, int year);
 
 	// @Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from
 	// ProjectModel a where a.projectOwner.userId=?1 AND (month(start_date)<=?2 and
 	// year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or
 	// year(end_date)>?3) order by a.projectName")
-	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectOwner.userId=?1 AND (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) AND project_category=1 order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectOwner.userId=?1 AND (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) AND project_category=1 AND is_billable=1 order by a.projectName")
 	public List<Object[]> getProjectNamesForApprovalLevel1(long uId, Date startDate, int month, int year);
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectTier = 1 or a.projectTier = 2) AND (?1 BETWEEN start_date and end_date or last_day(?1) BETWEEN start_date and end_date) AND project_category=1 order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectTier = 1 or a.projectTier = 2) AND (?1 BETWEEN start_date and end_date or last_day(?1) BETWEEN start_date and end_date) AND project_category=1 AND is_billable=1 order by a.projectName")
 	public List<Object[]> getTier1And2ProjectNames(Date startDate);
 
-	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectTier = 2 AND (?1 BETWEEN start_date and end_date or last_day(?1) BETWEEN start_date and end_date)  AND project_category=1 order by a.projectName")
+	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where a.projectTier = 2 AND (?1 BETWEEN start_date and end_date or last_day(?1) BETWEEN start_date and end_date)  AND project_category=1 AND is_billable=1 order by a.projectName")
 	public List<Object[]> getTier2ProjectNames(Date startDate);
 
 	@Query("SELECT DISTINCT a.projectName,a.projectId,a.projectTier from ProjectModel a where (a.projectOwner.userId=?1 or a.onsite_lead.userId=?1) AND (month(start_date)<=?2 and year(start_date)<=?3) and ( (month(end_date)>=?2 and year(end_date)>=?3) or  year(end_date)>?3) order by a.projectName")
@@ -346,7 +346,7 @@ public interface TasktrackRepository extends JpaRepository<Tasktrack, Long> {
 	List<Tasktrack> findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(Long userId, Long projectId, Date startDate, Date endDate);
 
 	//nisha
-	@Query("SELECT DISTINCT a.project_Id.projectName,a.project_Id.projectId,a.project_Id.projectTier from ProjectRegion  a where  (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) AND project_category=1 AND a.region_Id.id=?1  order by a.project_Id.projectName")
+	@Query("SELECT DISTINCT a.project_Id.projectName,a.project_Id.projectId,a.project_Id.projectTier from ProjectRegion  a where  (?2 BETWEEN start_date and end_date or last_day(?2) BETWEEN start_date and end_date) AND project_category=1 AND a.region_Id.id=?1 AND is_billable=1 order by a.project_Id.projectName")
 	public List<Object[]> getProjectNamesForFinance(long regionId, Date startDate, int month, int year);
 
 }
