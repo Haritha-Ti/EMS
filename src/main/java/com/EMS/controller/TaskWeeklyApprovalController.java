@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
+import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
@@ -129,10 +130,11 @@ public class TaskWeeklyApprovalController {
 	}
 	
 	@PostMapping(value = "/save_weekly_approval/with_task")
-	public StatusResponse saveWeeklyTasktrackWithTask(@RequestBody SaveWeeklyTasktrackWithTaskRequestDTO requestData) {
+	public StatusResponse saveWeeklyTasktrackWithTask(@RequestBody SaveWeeklyTasktrackWithTaskRequestDTO2 requestData) {
 
 		try {
-			weeklyApprovalService.saveOrSubmitWeeklyTasktrackWithTask(requestData, Boolean.TRUE);
+			weeklyApprovalService.saveWeeklyTasktrackWithTask(requestData);
+			//weeklyApprovalService.saveOrSubmitWeeklyTasktrackWithTask(requestData, Boolean.TRUE);
 			return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, null);
 		} catch (Exception e) {
 			return new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "");
