@@ -4,7 +4,7 @@ import java.text.ParseException;
 
 import org.json.simple.JSONObject;
 
-import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO2;
+import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.SubmitWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithTaskResponseDTO;
@@ -24,7 +24,7 @@ public interface TaskWeeklyApprovalService {
 	
 	StatusResponse getWeeklyTasksForSubmission(JsonNode requestData) throws ParseException;
 
-	StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO2 requestData) throws Exception;
+	StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO requestData) throws Exception;
 
 	StatusResponse submitWeeklyTasktrackWithTask(SubmitWeeklyTasktrackWithTaskRequestDTO2 requestData) throws Exception;
 }

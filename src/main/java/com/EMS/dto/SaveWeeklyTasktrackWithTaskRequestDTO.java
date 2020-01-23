@@ -1,6 +1,6 @@
 package com.EMS.dto;
 
-public class SaveWeeklyTasktrackWithTaskRequestDTO2 {
+public class SaveWeeklyTasktrackWithTaskRequestDTO {
 
 	private Long uId;
 	private Long projectId;

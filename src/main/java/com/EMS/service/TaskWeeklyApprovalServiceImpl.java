@@ -19,7 +19,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO2;
+import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.SubmitWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.TasktrackDto;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
@@ -851,7 +851,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	}
 
 	@Override
-	public StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO2 requestData) throws Exception {
+	public StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO requestData) throws Exception {
 		
 		StatusResponse response = new StatusResponse();
 				
