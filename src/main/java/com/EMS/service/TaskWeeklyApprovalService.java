@@ -8,6 +8,7 @@ import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.SubmitWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
+import com.EMS.dto.WeeklyTaskTrackWithTaskResponseDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.StatusResponse;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,7 +21,7 @@ public interface TaskWeeklyApprovalService {
 	
 	StatusResponse getWeeklyTasktrack(WeeklyTaskTrackWithoutTaskRequestDTO requestData) throws  Exception;
 
-	StatusResponse getWeeklyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception;
+	WeeklyTaskTrackWithTaskResponseDTO getWeeklyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception;
 	
 	StatusResponse getWeeklyTasksForSubmission(JsonNode requestData) throws ParseException;
 

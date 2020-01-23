@@ -27,6 +27,8 @@ import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.SubmitWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.TasktrackDto;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
+import com.EMS.dto.WeeklyTaskTrackWithTaskResponse;
+import com.EMS.dto.WeeklyTaskTrackWithTaskResponseDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
@@ -560,9 +562,10 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	}
 	
 	@Override
-	public StatusResponse getWeeklyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception {
+	public WeeklyTaskTrackWithTaskResponseDTO getWeeklyTasktrackWithTask(WeeklyTaskTrackWithTaskRequestDTO requestData) throws Exception {
 
-		StatusResponse response = new StatusResponse();
+		WeeklyTaskTrackWithTaskResponseDTO weeklyTaskTrackWithTaskResponseDTO = new WeeklyTaskTrackWithTaskResponseDTO();
+		List<WeeklyTaskTrackWithTaskResponse> taskTrackResponseList = new ArrayList<>();
 		Long userId = null;
 		Long projectId = null;
 		Date startDate = null;
@@ -591,9 +594,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
 				projectId);
-		
+
 		List<String> projectDateList = new ArrayList<String>();
-		
+
 		for (AllocationModel al : userProjAllocations) {
 			Date allocStartDate = al.getStartDate();
 			Date allocEndDate = al.getEndDate();
@@ -620,160 +623,143 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				fromDate.add(Calendar.DATE, 1);
 			}
 		}
-		
-		
-		JSONArray taskList = new JSONArray();
-		HashSet<Date> trackdate = new HashSet<Date>();
-		
-	List<Date> reqDateRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
-	
-if (!tasktrackList.isEmpty()) {
 
-	for (Date date : reqDateRange) {
-	if (projectDateList.contains(sdf.format(date))) {		
-		for (Tasktrack tasktrackOuter : tasktrackList) {
-			if (!trackdate.contains(tasktrackOuter.getDate())) {
-				trackdate.add(tasktrackOuter.getDate());
-				String intialDate = sdf.format(tasktrackOuter.getDate());
-				JSONArray dateTaskArray = new JSONArray();
-				JSONObject dateTaskObj = new JSONObject();
-				for (Tasktrack tasktrack : tasktrackList) {
-					JSONObject taskObj = new JSONObject();
-					taskObj.put("hour", tasktrack.getHours());
-					taskObj.put("taskType", null != tasktrack.getTask()? tasktrack.getTask().getTaskName():"");
-					taskObj.put("taskId", null != tasktrack.getTask()? tasktrack.getTask().getId(): null);
-					taskObj.put("taskSummary", tasktrack.getDescription());
-					taskObj.put("enabled", true);
-					if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
-						dateTaskArray.add(taskObj);
+		HashSet<Date> trackdate = new HashSet<Date>();
+
+		List<Date> reqDateRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
+
+		if (!tasktrackList.isEmpty()) {
+
+			for (Date date : reqDateRange) {
+				if (projectDateList.contains(sdf.format(date))) {
+
+					for (Tasktrack tasktrackOuter : tasktrackList) {
+						if (!trackdate.contains(tasktrackOuter.getDate())) {
+							trackdate.add(tasktrackOuter.getDate());
+							String intialDate = sdf.format(tasktrackOuter.getDate());
+
+							WeeklyTaskTrackWithTaskResponse taskTrackResponse = new WeeklyTaskTrackWithTaskResponse();
+							List<TasktrackDto> tasktrackDtoList = new ArrayList<>();
+							Double finalHour = 0.0;
+							for (Tasktrack tasktrack : tasktrackList) {
+								TasktrackDto tasktrackDto = new TasktrackDto();
+								tasktrackDto.setHour(tasktrack.getHours());
+								tasktrackDto.setTaskType(
+										null != tasktrack.getTask() ? tasktrack.getTask().getTaskName() : "");
+								tasktrackDto.setTaskTypeId(
+										null != tasktrack.getTask() ? tasktrack.getTask().getId() : null);
+								tasktrackDto.setDescription(tasktrack.getDescription());
+								if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
+									finalHour += tasktrack.getHours();
+									tasktrackDtoList.add(tasktrackDto);
+								}
+							}
+							taskTrackResponse.setTaskList(tasktrackDtoList);
+							taskTrackResponse.setEnabled(true);
+							taskTrackResponse.setDate(sdf.format(tasktrackOuter.getDate()));
+							taskTrackResponse.setFinalHour(finalHour);
+							taskTrackResponseList.add(taskTrackResponse);
+
+						}
 					}
+					weeklyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
+				} else {
+					WeeklyTaskTrackWithTaskResponse taskTrackResponse = new WeeklyTaskTrackWithTaskResponse();
+					taskTrackResponse.setTaskList(new ArrayList<>());
+					taskTrackResponse.setEnabled(false);
+					taskTrackResponse.setDate(sdf.format(date));
+					taskTrackResponse.setFinalHour(0.0);
+					taskTrackResponseList.add(taskTrackResponse);
+					weeklyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
 				}
-				dateTaskObj.put(sdf.format(tasktrackOuter.getDate()), dateTaskArray);
-				taskList.add(dateTaskObj);
+
 			}
 		}
-	 }
-	else {
-		JSONArray dateTaskArray = new JSONArray();
-		JSONObject dateTaskObj = new JSONObject();
-		JSONObject taskObj = new JSONObject();
-		taskObj.put("hour", null);
-		taskObj.put("taskType", "");
-		taskObj.put("taskSummary", "");
-		taskObj.put("enabled", false);		
-		dateTaskArray.add(taskObj);
-		dateTaskObj.put(sdf.format(date), dateTaskArray);
-		taskList.add(dateTaskObj);
-	}
-	
-	}
-	}
-	if (tasktrackList.isEmpty()) {
-		for (Date reqDate : reqDateRange) {		
-				JSONArray dateTaskArray = new JSONArray();
-				JSONObject dateTaskObj = new JSONObject();
-				JSONObject taskObj = new JSONObject();
-				taskObj.put("hour", null);
-				taskObj.put("taskType", "");
-				taskObj.put("taskSummary", "");
-				if (projectDateList.contains(sdf.format(reqDate))) {
-					taskObj.put("enabled", true);
-				}
-				else {
-					taskObj.put("enabled", false);
-				}
-				dateTaskArray.add(taskObj);
-				dateTaskObj.put(sdf.format(reqDate), dateTaskArray);
-				taskList.add(dateTaskObj);			
-		}	
-	}	
+		if (tasktrackList.isEmpty()) {
 
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("taskList", taskList);
+			for (Date reqDate : reqDateRange) {
 
-		String approver1Status = null;
-		String approver2Status = null;
-		String financeStatus = null;
-		
+				WeeklyTaskTrackWithTaskResponse taskTrackResponse = new WeeklyTaskTrackWithTaskResponse();
+				taskTrackResponse.setTaskList(new ArrayList<>());
+				taskTrackResponse.setDate(sdf.format(reqDate));
+				taskTrackResponse.setFinalHour(0.0);
+				taskTrackResponse.setEnabled(projectDateList.contains(sdf.format(reqDate)) ? true : false);
+				taskTrackResponseList.add(taskTrackResponse);
+				weeklyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
+			}
+		}
+
 		if (tasktrackStatus != null) {
 
-			 approver1Status = tasktrackStatus.getApprover1Status();
-			 approver2Status = tasktrackStatus.getApprover2Status();
-			 financeStatus = tasktrackStatus.getFinanceStatus();
+			String approver1Status = tasktrackStatus.getApprover1Status();
+			String approver2Status = tasktrackStatus.getApprover2Status();
+			String financeStatus = tasktrackStatus.getFinanceStatus();
 
 			String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
 			List<String> taskStatusList = Arrays.asList(taskStatusArray);
 
-			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
-					|| taskStatusList.contains(financeStatus)) {
-				jsonObject.put("enabled", false);
-			} else {
-				jsonObject.put("enabled", true);
+			weeklyTaskTrackWithTaskResponseDTO
+					.setEnabled((taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
+							|| taskStatusList.contains(financeStatus)) ? false : true);
+
+			ProjectModel projectModel = projectservice.findById(projectId);
+
+			String approver1 = tasktrackStatus.getApprover1Id() != null
+					? tasktrackStatus.getApprover1Id().getFirstName() + " "
+							+ tasktrackStatus.getApprover1Id().getLastName()
+					: "";
+
+			if (null == approver1 || approver1.equals("")) {
+				approver1 = null != projectModel.getProjectOwner() ? projectModel.getProjectOwner().getFirstName() + " "
+						+ projectModel.getProjectOwner().getLastName() : "";
+
 			}
 
-	
-		ProjectModel projectModel = projectservice.findById(projectId);
-		
-		String approver1 = tasktrackStatus.getApprover1Id() != null
-				? tasktrackStatus.getApprover1Id().getFirstName() + " "
-						+ tasktrackStatus.getApprover1Id().getLastName()
-				: "";
+			Date approver1SubmittedDate = tasktrackStatus.getApprover1SubmittedDate();
 
-		if (null == approver1 || approver1.equals("")) {
-			approver1 = null != projectModel.getProjectOwner() ? projectModel.getProjectOwner().getFirstName() + " "
-					+ projectModel.getProjectOwner().getLastName() : "";
+			JSONObject approver1Obj = new JSONObject();
+			approver1Obj.put("approver", approver1);
 
+			if (null != approver1SubmittedDate) {
+				approver1Obj.put("date", sdf.format(approver1SubmittedDate));
+			} else {
+				approver1Obj.put("date", "");
+			}
+
+			approver1Obj.put("status", approver1Status);
+			weeklyTaskTrackWithTaskResponseDTO.setApprover1(approver1Obj);
+
+			String approver2 = tasktrackStatus.getApprover1Id() != null
+					? tasktrackStatus.getApprover1Id().getFirstName() + " "
+							+ tasktrackStatus.getApprover1Id().getLastName()
+					: "";
+
+			if (null == approver2 || approver2.equals("")) {
+				approver2 = null != projectModel.getOnsite_lead() ? projectModel.getOnsite_lead().getFirstName() + " "
+						+ projectModel.getOnsite_lead().getLastName() : "";
+
+			}
+
+			Date approver2SubmittedDate = tasktrackStatus.getApprover2SubmittedDate();
+
+			JSONObject approver2Obj = new JSONObject();
+			approver2Obj.put("approver", approver2);
+
+			if (null != approver2SubmittedDate) {
+				approver2Obj.put("date", sdf.format(approver2SubmittedDate));
+			} else {
+				approver2Obj.put("date", "");
+			}
+
+			approver2Obj.put("status", approver2Status);
+			weeklyTaskTrackWithTaskResponseDTO.setApprover2(approver2Obj);
+
+			JSONObject user = new JSONObject();
+			user.put("status", tasktrackStatus.getTimetrackStatus());
+			user.put("date", tasktrackStatus.getUserSubmittedDate());
+			weeklyTaskTrackWithTaskResponseDTO.setUser(user);
 		}
-
-		Date approver1SubmittedDate = tasktrackStatus.getApprover1SubmittedDate();
-
-		JSONObject approver1Obj = new JSONObject();
-		approver1Obj.put("approver", approver1);
-
-		if (null != approver1SubmittedDate) {
-			approver1Obj.put("date", sdf.format(approver1SubmittedDate));
-		} else {
-			approver1Obj.put("date", "");
-		}
-
-		approver1Obj.put("status", approver1Status);
-		jsonObject.put("approver1", approver1Obj);
-
-		String approver2 = tasktrackStatus.getApprover1Id() != null
-				? tasktrackStatus.getApprover1Id().getFirstName() + " "
-						+ tasktrackStatus.getApprover1Id().getLastName()
-				: "";
-
-		if (null == approver2 || approver2.equals("")) {
-			approver2 = null != projectModel.getOnsite_lead() ? projectModel.getOnsite_lead().getFirstName() + " "
-					+ projectModel.getOnsite_lead().getLastName() : "";
-
-		}
-
-		Date approver2SubmittedDate = tasktrackStatus.getApprover2SubmittedDate();
-
-		JSONObject approver2Obj = new JSONObject();
-		approver2Obj.put("approver", approver2);
-
-		if (null != approver2SubmittedDate) {
-			approver2Obj.put("date", sdf.format(approver2SubmittedDate));
-		} else {
-			approver2Obj.put("date", "");
-		}
-
-		approver2Obj.put("status", approver2Status);
-		jsonObject.put("approver2", approver2Obj);
-
-		JSONObject user = new JSONObject();
-		user.put("status", tasktrackStatus.getTimetrackStatus());
-		user.put("date", tasktrackStatus.getUserSubmittedDate());
-		jsonObject.put("user", user);
-	}
-		response.setData(jsonObject);
-		response.setStatus(Constants.SUCCESS);
-		response.setStatusCode(Constants.SUCCESS_CODE);
-
-		return response;
+		return weeklyTaskTrackWithTaskResponseDTO;
 
 	}
 

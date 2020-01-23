@@ -4,6 +4,7 @@ public class TasktrackDto {
 
 	private Double hour;
 	private Long taskTypeId;
+	private String taskType;
 	private String description;
 	private String date;
 	public Double getHour() {
@@ -31,5 +32,12 @@ public class TasktrackDto {
 		this.date = date;
 	}
 	
+	public String getTaskType() {
+		return taskType;
+	}
+	
+	public void setTaskType(String taskType) {
+		this.taskType = taskType;
+	}
 	
 }

@@ -97,8 +97,8 @@ public class TaskWeeklyApprovalController {
 	public StatusResponse getWeeklyTasktrackWithTask(@RequestBody WeeklyTaskTrackWithTaskRequestDTO requestData) {
 		StatusResponse response = new StatusResponse();
 		try {
-			response = weeklyApprovalService.getWeeklyTasktrackWithTask(requestData);
-			System.out.println(response);
+			response = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,weeklyApprovalService.getWeeklyTasktrackWithTask(requestData));
+
 		} catch (Exception e) {
 			ExceptionResponse exceptionResponse = new ExceptionResponse(1234, e.getMessage(), new Date());
 			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
