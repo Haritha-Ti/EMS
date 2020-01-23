@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO2;
+import com.EMS.dto.SubmitWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.StatusResponse;
@@ -26,5 +27,7 @@ public interface TaskWeeklyApprovalService {
 	StatusResponse saveOrSubmitWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO requestData, Boolean isSave) throws Exception;
 
 	StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO2 requestData) throws Exception;
+
+	StatusResponse submitWeeklyTasktrackWithTask(SubmitWeeklyTasktrackWithTaskRequestDTO2 requestData) throws Exception;
 }
 
