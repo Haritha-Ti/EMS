@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.DateBasedTaskTrackDto;
+import com.EMS.dto.SaveSemiMonthlyWithTasksRequestDto;
 import com.EMS.dto.SemiMonthlyTaskTrackRequestDTO;
+import com.EMS.dto.SubmitSemiMonthlyTasktrackWithTaskRequestDto;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
 import com.EMS.model.StatusResponse;
@@ -139,10 +141,11 @@ public class TasktrackApprovalSemiMonthlyController {
 	
 	/**
 	 * @author Renjith
+	 * version 1.1
 	 * */
 	
 	@PostMapping(value = "/submitSemiMonthlyWithTasks")
-	public StatusResponse submitSemiMonthlyWithTasks(@RequestBody DateBasedTaskTrackDto dateBasedTaskTrackDto) {
+	public StatusResponse submitSemiMonthlyWithTasks(@RequestBody SubmitSemiMonthlyTasktrackWithTaskRequestDto dateBasedTaskTrackDto) {
 		
 		StatusResponse response = new StatusResponse();
 		try {
@@ -157,8 +160,14 @@ public class TasktrackApprovalSemiMonthlyController {
 		return response;
 	}
 	
+	/*
+	 * 	@Author Haritha
+	 * 	version 1.1
+	 * 	
+	 */
+	
 	@PostMapping(value = "/saveSemiMonthlyWithTasks")
-	public StatusResponse saveSemiMonthlyWithTasks(@RequestBody DateBasedTaskTrackDto dateBasedTaskTrackDto) {
+	public StatusResponse saveSemiMonthlyWithTasks(@RequestBody SaveSemiMonthlyWithTasksRequestDto dateBasedTaskTrackDto) {
 		
 		StatusResponse response = new StatusResponse();
 		try {
