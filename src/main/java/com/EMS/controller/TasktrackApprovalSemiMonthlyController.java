@@ -48,7 +48,6 @@ public class TasktrackApprovalSemiMonthlyController {
 			ExceptionResponse exceptionResponse = new ExceptionResponse(501, e.getMessage(), new Date());
 			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
 		}
-
 		return response;
 	}
 
