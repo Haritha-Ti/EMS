@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO2;
-import com.EMS.dto.SubmitWeeklyTasktrackWithTaskRequestDTO;
 import com.EMS.dto.SubmitWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
@@ -136,7 +134,6 @@ public class TaskWeeklyApprovalController {
 		StatusResponse response = new StatusResponse();
 		try {
 			 response = weeklyApprovalService.saveWeeklyTasktrackWithTask(requestData);
-			//weeklyApprovalService.saveOrSubmitWeeklyTasktrackWithTask(requestData, Boolean.TRUE);
 			return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 		} catch (Exception e) {
 			return new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, response);
@@ -150,7 +147,6 @@ public class TaskWeeklyApprovalController {
 	public StatusResponse submitWeeklyTasktrackWithTask(@RequestBody SubmitWeeklyTasktrackWithTaskRequestDTO2 requestData) {
 		StatusResponse response = new StatusResponse();
 		try {
-//			weeklyApprovalService.saveOrSubmitWeeklyTasktrackWithTask(requestData, Boolean.FALSE);
 			response = weeklyApprovalService.submitWeeklyTasktrackWithTask(requestData);
 			return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 		} catch (Exception e) {
