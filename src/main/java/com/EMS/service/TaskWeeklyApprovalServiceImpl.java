@@ -23,12 +23,12 @@ import org.springframework.stereotype.Service;
 import com.EMS.dto.DailyTasktrackDto;
 import com.EMS.dto.DateBasedTaskDto;
 import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO;
+import com.EMS.dto.SaveWeeklyTasktrackWithTaskRequestDTO2;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
-import com.EMS.model.Task;
 import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
@@ -1042,6 +1042,97 @@ if (!tasktrackList.isEmpty()) {
 			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "Could not saved");
 		}
 		
+		return response;
+	}
+
+	@Override
+	public StatusResponse saveWeeklyTasktrackWithTask(SaveWeeklyTasktrackWithTaskRequestDTO2 requestData) throws Exception {
+		
+		StatusResponse response = new StatusResponse();
+				
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Long projectId = requestData.getProjectId();
+		Long uId = requestData.getuId();
+		
+		ProjectModel projectModel = projectservice.findById(projectId);
+		UserModel userModel = userservice.getUserdetailsbyId(uId);
+		
+		Date startDate = sdf.parse(requestData.getStartDate());
+		Date endDate = sdf.parse(requestData.getEndDate());
+		
+		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(requestData.getuId(),
+				requestData.getProjectId());
+		List<String> projectDateList = new ArrayList<String>();
+		
+		for (AllocationModel al : userProjAllocations) {
+			Date allocStartDate = al.getStartDate();
+			Date allocEndDate = al.getEndDate();
+
+			Calendar fromDate = Calendar.getInstance();
+			Calendar toDate = Calendar.getInstance();
+
+			if (allocStartDate.before(startDate)) {
+				fromDate.setTime(startDate);
+			} else {
+				fromDate.setTime(allocStartDate);
+			}
+
+			if (allocEndDate.before(endDate)) {
+				toDate.setTime(allocEndDate);
+			} else {
+				toDate.setTime(endDate);
+			}
+
+			while (fromDate.before(toDate) || fromDate.equals(toDate)) {
+				Date result = fromDate.getTime();
+				String date = sdf.format(result);
+				projectDateList.add(date);
+				fromDate.add(Calendar.DATE, 1);
+			}
+		}
+		
+		if (projectDateList.contains(requestData.getTask().getDate())) {
+	
+		Tasktrack tasktrack = new Tasktrack();
+		tasktrack.setDate(sdf.parse(requestData.getTask().getDate()));
+		tasktrack.setHours(requestData.getTask().getHour());
+		tasktrack.setDescription(requestData.getTask().getDescription());
+		tasktrack.setTask(tasktrackService.getTaskById(requestData.getTask().getTaskTypeId()));
+		tasktrack.setProject(projectModel);
+		tasktrack.setUser(userModel);
+		tasktrackRepository.save(tasktrack);
+		
+		TaskTrackWeeklyApproval weeklyApproval = taskWeeklyApprovalRepository.getDuplicateEntryCount(startDate, endDate, uId);
+				
+		if (null == weeklyApproval) {
+			weeklyApproval= new TaskTrackWeeklyApproval();
+		}
+			
+		if (null != weeklyApproval.getTimetrackFinalStatus()) {
+			if (weeklyApproval.getTimetrackFinalStatus().equals(Constants.FinalStatus.TASKTRACK_APPROVED)
+					|| weeklyApproval.getTimetrackFinalStatus()
+							.equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)) {
+				return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE,
+						"Timetrack has already been approved.");
+			}
+
+		}
+		
+		weeklyApproval.setStartDate(startDate);
+		weeklyApproval.setEndDate(endDate);
+		weeklyApproval.setProject(projectModel);
+		weeklyApproval.setUser(userModel);
+		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);
+		weeklyApproval.setTimetrackFinalStatus(weeklyApproval.getTimetrackFinalStatus());
+		taskWeeklyApprovalRepository.save(weeklyApproval);
+		
+		response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Insertion completed");
+		
+		}
+		else {
+			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, "You are not allocated.");
+		}
 		return response;
 	}
 
