@@ -10,7 +10,8 @@ public class WeeklyTaskTrackWithTaskResponseDTO {
 	private JSONObject approver1;
 	private JSONObject approver2;
 	private JSONObject user;
-			
+	private List<WeeklyTaskTrackWithTaskResponse> tasktrackList;
+	
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -43,7 +44,6 @@ public class WeeklyTaskTrackWithTaskResponseDTO {
 		this.user = user;
 	}
 
-	private List<WeeklyTaskTrackWithTaskResponse> tasktrackList;
 
 	public List<WeeklyTaskTrackWithTaskResponse> getTasktrackList() {
 		return tasktrackList;

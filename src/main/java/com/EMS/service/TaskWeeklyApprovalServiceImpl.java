@@ -37,6 +37,7 @@ import com.EMS.repository.TaskWeeklyApprovalRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
 import com.EMS.utility.DateUtil;
+import com.EMS.utility.ProjectAllocationUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @SuppressWarnings({ "rawtypes", "unchecked"})
@@ -113,8 +114,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			requeststatus = 1;
 		}
 
-		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
-				projectId);
+		
 
 		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
 				&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
@@ -136,34 +136,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		Map<Object, Object> timetrackRequestData = (Map<Object, Object>) requestData.get("timetrack");
 
-		List<String> projectDateList = new ArrayList<String>();
-
-		for (AllocationModel al : userProjAllocations) {
-			Date allocStartDate = al.getStartDate();
-			Date allocEndDate = al.getEndDate();
-
-			Calendar fromDate = Calendar.getInstance();
-			Calendar toDate = Calendar.getInstance();
-
-			if (allocStartDate.before(startDate)) {
-				fromDate.setTime(startDate);
-			} else {
-				fromDate.setTime(allocStartDate);
-			}
-
-			if (allocEndDate.before(endDate)) {
-				toDate.setTime(allocEndDate);
-			} else {
-				toDate.setTime(endDate);
-			}
-
-			while (fromDate.before(toDate) || fromDate.equals(toDate)) {
-				Date result = fromDate.getTime();
-				String date = sdf.format(result);
-				projectDateList.add(date);
-				fromDate.add(Calendar.DATE, 1);
-			}
-		}
+		List<String> projectDateList = ProjectAllocationUtil.findAllocatedDates(allocationRepository, startDate, endDate, sdf, userId, projectId);
 
 		int indx = 1;
 		for (Map.Entry<Object, Object> map : timetrackRequestData.entrySet()) {
@@ -263,40 +236,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		Long projectId = Long.parseLong(requestData.get("projectId").toString());
 		ProjectModel projectInfo = projectservice.findById(projectId);
 
-		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
-				projectId);
-
 		Map<Object, Object> timetrackRequestData = (Map<Object, Object>) requestData.get("timetrack");
 
-		List<String> projectDateList = new ArrayList<String>();
-
-		for (AllocationModel al : userProjAllocations) {
-			Date allocStartDate = al.getStartDate();
-			Date allocEndDate = al.getEndDate();
-
-			Calendar fromDate = Calendar.getInstance();
-			Calendar toDate = Calendar.getInstance();
-
-			if (allocStartDate.before(startDate)) {
-				fromDate.setTime(startDate);
-			} else {
-				fromDate.setTime(allocStartDate);
-			}
-
-			if (allocEndDate.before(endDate)) {
-				toDate.setTime(allocEndDate);
-			} else {
-				toDate.setTime(endDate);
-			}
-
-			while (fromDate.before(toDate) || fromDate.equals(toDate)) {
-				Date result = fromDate.getTime();
-				String date = sdf.format(result);
-				projectDateList.add(date);
-				fromDate.add(Calendar.DATE, 1);
-			}
-
-		}
+		List<String> projectDateList = ProjectAllocationUtil.findAllocatedDates(allocationRepository, startDate, endDate, sdf, userId, projectId);
 
 		int indx = 1;
 		for (Map.Entry<Object, Object> map : timetrackRequestData.entrySet()) {
@@ -588,37 +530,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				.findByUserUserIdAndProjectProjectIdInAndStartDateEqualsAndEndDateEquals(userId, projectId, startDate,
 						endDate);
 
-		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
-				projectId);
-
-		List<String> projectDateList = new ArrayList<String>();
-
-		for (AllocationModel al : userProjAllocations) {
-			Date allocStartDate = al.getStartDate();
-			Date allocEndDate = al.getEndDate();
-
-			Calendar fromDate = Calendar.getInstance();
-			Calendar toDate = Calendar.getInstance();
-
-			if (allocStartDate.before(startDate)) {
-				fromDate.setTime(startDate);
-			} else {
-				fromDate.setTime(allocStartDate);
-			}
-
-			if (allocEndDate.before(endDate)) {
-				toDate.setTime(allocEndDate);
-			} else {
-				toDate.setTime(endDate);
-			}
-
-			while (fromDate.before(toDate) || fromDate.equals(toDate)) {
-				Date result = fromDate.getTime();
-				String date = sdf.format(result);
-				projectDateList.add(date);
-				fromDate.add(Calendar.DATE, 1);
-			}
-		}
+		List<String> projectDateList = ProjectAllocationUtil.findAllocatedDates(allocationRepository, startDate, endDate, sdf, userId, projectId);
 
 		HashSet<Date> trackdate = new HashSet<Date>();
 
@@ -659,6 +571,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 						}
 					}
 					weeklyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
+					
+					
+					
 				} else {
 					WeeklyTaskTrackWithTaskResponse taskTrackResponse = new WeeklyTaskTrackWithTaskResponse();
 					taskTrackResponse.setTaskList(new ArrayList<>());
@@ -865,37 +780,8 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		
 		Date startDate = sdf.parse(requestData.getStartDate());
 		Date endDate = sdf.parse(requestData.getEndDate());
-		
-		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(requestData.getuId(),
-				requestData.getProjectId());
-		List<String> projectDateList = new ArrayList<String>();
-		
-		for (AllocationModel al : userProjAllocations) {
-			Date allocStartDate = al.getStartDate();
-			Date allocEndDate = al.getEndDate();
-
-			Calendar fromDate = Calendar.getInstance();
-			Calendar toDate = Calendar.getInstance();
-
-			if (allocStartDate.before(startDate)) {
-				fromDate.setTime(startDate);
-			} else {
-				fromDate.setTime(allocStartDate);
-			}
-
-			if (allocEndDate.before(endDate)) {
-				toDate.setTime(allocEndDate);
-			} else {
-				toDate.setTime(endDate);
-			}
-
-			while (fromDate.before(toDate) || fromDate.equals(toDate)) {
-				Date result = fromDate.getTime();
-				String date = sdf.format(result);
-				projectDateList.add(date);
-				fromDate.add(Calendar.DATE, 1);
-			}
-		}
+	
+		List<String> projectDateList = ProjectAllocationUtil.findAllocatedDates(allocationRepository, startDate, endDate, sdf, uId, projectId);
 		
 		if (projectDateList.contains(requestData.getTask().getDate())) {
 	
@@ -958,37 +844,9 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		
 		ProjectModel projectModel = projectservice.findById(projectId);
 		UserModel userModel = userservice.getUserdetailsbyId(uId);
-	
-		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(requestData.getuId(),
-				requestData.getProjectId());
-		List<String> projectDateList = new ArrayList<String>();
-		
-		for (AllocationModel al : userProjAllocations) {
-			Date allocStartDate = al.getStartDate();
-			Date allocEndDate = al.getEndDate();
 
-			Calendar fromDate = Calendar.getInstance();
-			Calendar toDate = Calendar.getInstance();
-
-			if (allocStartDate.before(startDate)) {
-				fromDate.setTime(startDate);
-			} else {
-				fromDate.setTime(allocStartDate);
-			}
-
-			if (allocEndDate.before(endDate)) {
-				toDate.setTime(allocEndDate);
-			} else {
-				toDate.setTime(endDate);
-			}
-
-			while (fromDate.before(toDate) || fromDate.equals(toDate)) {
-				Date result = fromDate.getTime();
-				String date = sdf.format(result);
-				projectDateList.add(date);
-				fromDate.add(Calendar.DATE, 1);
-			}
-		}
+		List<String> projectDateList = ProjectAllocationUtil.findAllocatedDates(allocationRepository, startDate, endDate, sdf, uId, projectId);
+ 
 		List<Tasktrack> taskList = tasktrackRepository.findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(uId, projectId, startDate, endDate);
 		
 		HashMap<Date, Double> dateHourMap = new HashMap<>();
