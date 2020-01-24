@@ -929,7 +929,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		weeklyApproval.setProject(projectModel);
 		weeklyApproval.setUser(userModel);
 		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);
-		weeklyApproval.setTimetrackFinalStatus(weeklyApproval.getTimetrackFinalStatus());
+		weeklyApproval.setTimetrackFinalStatus(weeklyApproval.getTimetrackStatus());
 		taskWeeklyApprovalRepository.save(weeklyApproval);
 		
 		response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Insertion completed");
@@ -1076,7 +1076,6 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		weeklyApproval.setEndDate(endDate);
 		weeklyApproval.setProject(projectModel);
 		weeklyApproval.setUser(userModel);
-
 		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 		weeklyApproval.setTimetrackFinalStatus(weeklyApproval.getTimetrackStatus());
 
