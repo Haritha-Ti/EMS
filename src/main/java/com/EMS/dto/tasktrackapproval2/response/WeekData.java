@@ -10,11 +10,7 @@ public class WeekData {
 	
 	private String weekEnd;
 	
-	private String approverSatus;
-	
 	private String rejectionRemark;
-	
-	private String approver2Status;
 	
 	private String finalStatus;
 
@@ -41,22 +37,12 @@ public class WeekData {
 	public void setWeekEnd(String weekEnd) {
 		this.weekEnd = weekEnd;
 	}
-
-	public String getApproverSatus() {
-		return approverSatus;
-	}
-
-	public void setApproverSatus(String approverSatus) {
-		this.approverSatus = approverSatus;
-	}
 	
-	public WeekData(double totalhours,String weekStart,String weekEnd,String approverSatus,String rejectionRemark,String approver2Status,String finalStatus) {
+	public WeekData(double totalhours,String weekStart,String weekEnd,String rejectionRemark,String finalStatus) {
 		this.totalHour = totalhours;
 		this.weekStart = weekStart;
 		this.weekEnd = weekEnd;
-		this.approverSatus = approverSatus;
 		this.rejectionRemark = rejectionRemark;
-		this.approver2Status = approver2Status;
 		this.finalStatus = finalStatus;
 	}
 
@@ -66,14 +52,6 @@ public class WeekData {
 
 	public void setRejectionRemark(String rejectionRemark) {
 		this.rejectionRemark = rejectionRemark;
-	}
-
-	public String getApprover2Status() {
-		return approver2Status;
-	}
-
-	public void setApprover2Status(String approver2Status) {
-		this.approver2Status = approver2Status;
 	}
 
 	public String getFinalStatus() {

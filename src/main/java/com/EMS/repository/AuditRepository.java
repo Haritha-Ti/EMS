@@ -124,7 +124,7 @@ public List<JSONObject> getProjectAuditDataByProjectIdAndDateRange(Long projectI
  * Submission Report
  * 
  */
-@Query(value="  select sm.monthly_id ,sm.trx_date  ,sm.approver_one_first_half_status, sm.approver_one_first_half_submitted_date ,sm.approver_one_second_half_status, sm.approver_one_second_half_submitted_date ,"
+/*@Query(value="  select sm.monthly_id ,sm.trx_date  ,sm.approver_one_first_half_status, sm.approver_one_first_half_submitted_date ,sm.approver_one_second_half_status, sm.approver_one_second_half_submitted_date ,"
 	+ " sm.day1 ,sm.day10 ,sm.day11 ,sm.day12 ,sm.day13 ,sm.day14 ,sm.day15 ,sm.day16 ,sm.day17 ,sm.day18 ,sm.day19 ,sm.day2 ,sm.day20 ,sm.day21 ,sm.day22 ,sm.day23 ,sm.day24 ,sm.day25 ,sm.day26 ,sm.day27 ,"
 	+ " sm.day28 ,sm.day29 ,sm.day3 ,sm.day30 ,sm.day31 ,sm.day4 ,sm.day5 ,sm.day6 ,sm.day7 ,sm.day8 ,sm.day9 ,sm.month ,sm.user_first_half_status  , sm.user_first_half_submitted_date  , sm.user_second_half_status  , "
 	+ " sm.user_second_half_submitted_date  , sm.year ,sm.first_half_approver_one_id_user_id  ,sm.project_project_id  ,sm.user_user_id  ,sm.approver_two_first_half_status  , sm.approver_two_first_half_submitted_date  , "
@@ -140,12 +140,32 @@ public List<JSONObject> getProjectAuditDataByProjectIdAndDateRange(Long projectI
 	+ " left JOIN user ua ON sm.user_in_action=ua.user_id "
 	+ " left JOIN project p ON sm.project_project_id=p.project_id"
 	+ " where sm.monthly_id=?1 "
+	+ " order by sm.trx_date ",nativeQuery=true)*/
+@Query(value="select sm.monthly_id ,sm.trx_date , sm.day1 ,sm.day10 ,sm.day11 ,sm.day12 ,sm.day13 ,sm.day14 ,sm.day15 ,sm.day16 ,sm.day17, "
+	+ " sm.day18 ,sm.day19 ,sm.day2 ,sm.day20 ,sm.day21 ,sm.day22 ,sm.day23 ,sm.day24 ,sm.day25 ,sm.day26 ,sm.day27, "
+	+ " sm.day28 ,sm.day29 ,sm.day3 ,sm.day30 ,sm.day31 ,sm.day4 ,sm.day5 ,sm.day6 ,sm.day7 ,sm.day8 ,sm.day9 , "
+	+ " sm.first_half_final_status as firstHalfStatus,sm.second_half_final_status as  secondHalfStatus, "
+	+ " concat(ua.last_name,' ',ua.first_name) as user,"
+	+ " case "
+	+ " when sm.user_in_action = sm.user_user_id "
+	+ " then 'Consultant' "
+	+ " when (sm.user_in_action = sm.first_half_approver_one_id_user_id ) or (sm.user_in_action = sm.second_half_approver_one_id_user_id) "
+	+ " then 'Approver 1' "
+	+ " when (sm.user_in_action = sm.first_half_aapprover_two_id_user_id ) or (sm.user_in_action = sm.second_half_aapprover_two_id_user_id) "
+	+ " then 'Approver 2' "
+	+ " when (sm.user_in_action = sm.first_half_finance_id_user_id ) or (sm.user_in_action = sm.second_half_finance_id_user_id) "
+	+ " then 'Finance' "
+	+ " else 'Watcher' "
+	+ " end as role "
+	+ " from  tasktrack_approval_semimonthly_aud sm "
+	+ " left JOIN user ua ON sm.user_in_action=ua.user_id "
+	+ " where sm.monthly_id=?1 and sm.submission_period =?2 "
 	+ " order by sm.trx_date ",nativeQuery=true)
-public List<JSONObject>   getmonthlySubmission(Long Id)     ;
+	public List<JSONObject>   getmonthlySubmission(Long Id,String submissionPeriod);
 
 
 
-@Query(value=" SELECT wk.weekly_id,wk.rev,wk.revtype,wk.trx_date,wk.approver1_status,wk.approver2_status,wk.day1,wk.day2,wk.day3,wk.day4,wk.day5,wk.day6,wk.day7,wk.timetrack_status,"
+/*@Query(value=" SELECT wk.weekly_id,wk.rev,wk.revtype,wk.trx_date,wk.approver1_status,wk.approver2_status,wk.day1,wk.day2,wk.day3,wk.day4,wk.day5,wk.day6,wk.day7,wk.timetrack_status,"
 	+ " wk.approver1id_user_id,wk.approver2id_user_id,wk.project_project_id,wk.user_user_id,wk.approver1submitted_date,wk.approver2submitted_date,wk.end_date,wk.start_date,"
 	+ " wk.user_submitted_date,wk.finance_status,wk.finance_submitted_date,wk.rejection_time,wk.finance_user_user_id,"
 	+ " case when wk.revtype=0  then 'Created' when wk.revtype=1  then 'Updated' when wk.revtype=2  then 'Deleted' end as trxn  ,"
@@ -159,7 +179,28 @@ public List<JSONObject>   getmonthlySubmission(Long Id)     ;
 	+ " left JOIN user ua ON wk.user_in_action=ua.user_id "
 	+ " left JOIN project p ON wk.project_project_id=p.project_id"
 	+ " where wk.weekly_id=?1 "
-	+ "ORDER BY wk.trx_date",nativeQuery=true)
-public List<JSONObject>   getWeeklySubmission(Long Id);
+	+ "ORDER BY wk.trx_date",nativeQuery=true)*/
+	@Query(value="SELECT wk.weekly_id,wk.trx_date, wk.day1,wk.day2,wk.day3,wk.day4,wk.day5,wk.day6,wk.day7, "
+	+ " wk.timetrack_final_status as status,wk.user_in_action,wk.user_user_id, wk.approver1id_user_id,wk.approver2id_user_id, "
+	+ " wk.finance_user_user_id,ua.first_name as user, "
+	+ " case"
+	+ " when wk.user_in_action = wk.user_user_id "
+	+ " then 'Consultant' "
+	+ " when wk.user_in_action = wk.approver1id_user_id "
+	+ " then 'Approver 1'"
+	+ " when wk.user_in_action = wk.approver2id_user_id "
+	+ " then 'Approver 2' "
+	+ " when wk.user_in_action = wk.finance_user_user_id "
+	+ " then 'Finance' "
+	+ " else 'Watcher' "
+	+ " end as role"
+	+ " FROM "
+	+ " tasktrack_weekly_approval_aud wk "
+	+ " left JOIN "
+	+ " user ua ON wk.user_in_action=ua.user_id "
+	+ " where "
+	+ " wk.weekly_id=2 "
+	+ " ORDER BY wk.trx_date",nativeQuery=true)
+	public List<JSONObject>   getWeeklySubmission(Long Id);
 
 }

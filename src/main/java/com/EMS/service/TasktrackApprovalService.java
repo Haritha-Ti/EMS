@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import com.EMS.dto.submissionHistoryRequestDTO;
 import org.json.simple.JSONObject;
 
 import com.EMS.dto.ApproverOneDto;
@@ -167,7 +168,7 @@ public interface TasktrackApprovalService {
 
     ObjectNode approveHoursFinance(ObjectNode requestdata) throws Exception;
 
-    public List<Submission>   getSubmissionHistory(Long Id,Long projectId);
+    public List<Submission>   getSubmissionHistory(submissionHistoryRequestDTO requestdata);
 
     StatusResponse approveHoursLevel2(ApproveHoursRequest requestdata) throws Exception;
     
