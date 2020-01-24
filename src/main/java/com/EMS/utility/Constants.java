@@ -61,6 +61,8 @@ public class Constants {
 		public static final String TASKTRACK_REJECTION = "REJECTED";
 		public static final String TASKTRACK_OPEN = "OPEN";
 		public static final String TASKTRACK_REOPEN = "REOPEN";
+		public static final String TASKTRACK_FIRSTHALF_PERIOD_STATUS = "FIRSTHALF";
+		public static final String TASKTRACK_SECONDHALF_PERIOD_STATUS = "SECONDHALF";
 	}
 	
 	public class Approver1{
@@ -69,6 +71,8 @@ public class Constants {
 		public static final String TASKTRACK_FORWARDED_TO_LEVEL2 = "FORWARDED_TO_L2";
 		public static final String TASKTRACK_REOPEN = "REOPEN";
 		public static final String TASKTRACK_REJECTED = "REJECTED";
+		public static final String TASKTRACK_FIRSTHALF_PERIOD_STATUS = "FIRSTHALF";
+		public static final String TASKTRACK_SECONDHALF_PERIOD_STATUS = "SECONDHALF";
 	}
 	
 	public class Approver2{
@@ -76,12 +80,16 @@ public class Constants {
 		public static final String TASKTRACK_APPROVED = "APPROVED";
 		public static final String TASKTRACK_REOPEN = "REOPEN";
 		public static final String TASKTRACK_REJECTED = "REJECTED";
+		public static final String TASKTRACK_FIRSTHALF_PERIOD_STATUS = "FIRSTHALF";
+		public static final String TASKTRACK_SECONDHALF_PERIOD_STATUS = "SECONDHALF";
 	}
 	
 	public class Finance{
 		public static final String TASKTRACK_APPROVED = "APPROVED";
 		public static final String TASKTRACK_OPEN = "OPEN";
 		public static final String TASKTRACK_REOPEN = "REOPEN";
+		public static final String TASKTRACK_FIRSTHALF_PERIOD_STATUS = "FIRSTHALF";
+		public static final String TASKTRACK_SECONDHALF_PERIOD_STATUS = "SECONDHALF";
 	}
 	
 	public class FinalStatus{

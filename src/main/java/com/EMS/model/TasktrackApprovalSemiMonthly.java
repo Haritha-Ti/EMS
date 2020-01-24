@@ -92,8 +92,10 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	private Date financeSecondHalfSubmittedDate;
 
 	private String firstHalfFinalStatus;
-	
+
 	private String secondHalfFinalStatus;
+
+	private String submissionPeriod;
 
 	public long getId() {
 		return id;
@@ -611,7 +613,13 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 		this.secondHalfFinalStatus = secondHalfFinalStatus;
 	}
 
-	
+	public String getSubmissionPeriod() {
+		return submissionPeriod;
+	}
+
+	public void setSubmissionPeriod(String submissionPeriod) {
+		this.submissionPeriod = submissionPeriod;
+	}
 	
 
 }
