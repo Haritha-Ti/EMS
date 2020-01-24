@@ -1,17 +1,26 @@
 package com.EMS.dto;
 
-import java.util.List;
-
 public class SaveWeeklyTasktrackWithTaskRequestDTO {
+
 	private Long uId;
 	private Long projectId;
 	private Long sessionId;
 
+
+	
 	private String startDate;
 	private String endDate;
 	
-	private List<DateBasedTaskDto> dateBasedTaskDtoList;
-
+	private TasktrackDto task;
+	
+	public TasktrackDto getTask() {
+		return task;
+	}
+	
+	public void setTask(TasktrackDto task) {
+		this.task = task;
+	}
+	
 	public Long getuId() {
 		return uId;
 	}
@@ -36,28 +45,22 @@ public class SaveWeeklyTasktrackWithTaskRequestDTO {
 		this.sessionId = sessionId;
 	}
 
-	public List<DateBasedTaskDto> getDateBasedTaskDtoList() {
-		return dateBasedTaskDtoList;
-	}
-
-	public void setDateBasedTaskDtoList(List<DateBasedTaskDto> dateBasedTaskDtoList) {
-		this.dateBasedTaskDtoList = dateBasedTaskDtoList;
-	}
 
 	public String getStartDate() {
 		return startDate;
-	}
-
-	public String getEndDate() {
-		return endDate;
 	}
 
 	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
+	public String getEndDate() {
+		return endDate;
+	}
+
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
+
 
 }
