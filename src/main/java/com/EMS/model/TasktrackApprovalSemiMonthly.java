@@ -24,8 +24,8 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "monthly_id")
-	private long id;
+	@Column(name = "semi_monthly_id")
+	private long semiMonthlyId;
 
 	private Double day1, day2, day3, day4, day5, day6, day7, day8, day9, day10, day11, day12, day13, day14, day15,
 			day16, day17, day18, day19, day20, day21, day22, day23, day24, day25, day26, day27, day28, day29, day30,
@@ -41,68 +41,88 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 
 	private Integer month;
 
-	private String userFirstHalfStatus;
 
-	private Date userFirstHalfSubmittedDate;
-
-	private String userSecondHalfStatus;
-
-	private Date userSecondHalfSubmittedDate;
 
 	@ManyToOne
-	private UserModel firstHalfApproverOneId;
+	private UserModel firstHalfApproverOne;
 
 	@ManyToOne
-	private UserModel secondHalfApproverOneId;
-
-	private String approverOneFirstHalfStatus;
-
-	private Date approverOneFirstHalfSubmittedDate;
-
-	private String approverOneSecondHalfStatus;
-
-	private Date approverOneSecondHalfSubmittedDate;
+	private UserModel secondHalfApproverOne;
 
 	@ManyToOne
-	private UserModel firstHalfAapproverTwoId;
+	private UserModel firstHalfAapproverTwo;
 
 	@ManyToOne
-	private UserModel secondHalfAapproverTwoId;
-
-	private String approverTwoFirstHalfStatus;
-
-	private Date approverTwoFirstHalfSubmittedDate;
-
-	private String approverTwoSecondHalfStatus;
-
-	private Date approverTwoSecondHalfSubmittedDate;
+	private UserModel secondHalfAapproverTwo;
 
 	@ManyToOne
-	private UserModel firstHalfFinanceId;
+	private UserModel firstHalfFinance;
 
 	@ManyToOne
-	private UserModel secondHalfFinanceId;
+	private UserModel secondHalfFinance;
 
-	private String financeFirstHalfStatus;
 
-	private Date financeFirstHalfSubmittedDate;
-
-	private String financeSecondHalfStatus;
-
-	private Date financeSecondHalfSubmittedDate;
 
 	private String firstHalfFinalStatus;
 
 	private String secondHalfFinalStatus;
 
 	private String submissionPeriod;
-
-	public long getId() {
-		return id;
+	
+	public long getSemiMonthlyId() {
+		return semiMonthlyId;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setSemiMonthlyId(long semiMonthlyId) {
+		this.semiMonthlyId = semiMonthlyId;
+	}
+
+	public UserModel getFirstHalfApproverOne() {
+		return firstHalfApproverOne;
+	}
+
+	public void setFirstHalfApproverOne(UserModel firstHalfApproverOne) {
+		this.firstHalfApproverOne = firstHalfApproverOne;
+	}
+
+	public UserModel getSecondHalfApproverOne() {
+		return secondHalfApproverOne;
+	}
+
+	public void setSecondHalfApproverOne(UserModel secondHalfApproverOne) {
+		this.secondHalfApproverOne = secondHalfApproverOne;
+	}
+
+	public UserModel getFirstHalfAapproverTwo() {
+		return firstHalfAapproverTwo;
+	}
+
+	public void setFirstHalfAapproverTwo(UserModel firstHalfAapproverTwo) {
+		this.firstHalfAapproverTwo = firstHalfAapproverTwo;
+	}
+
+	public UserModel getSecondHalfAapproverTwo() {
+		return secondHalfAapproverTwo;
+	}
+
+	public void setSecondHalfAapproverTwo(UserModel secondHalfAapproverTwo) {
+		this.secondHalfAapproverTwo = secondHalfAapproverTwo;
+	}
+
+	public UserModel getFirstHalfFinance() {
+		return firstHalfFinance;
+	}
+
+	public void setFirstHalfFinance(UserModel firstHalfFinance) {
+		this.firstHalfFinance = firstHalfFinance;
+	}
+
+	public UserModel getSecondHalfFinance() {
+		return secondHalfFinance;
+	}
+
+	public void setSecondHalfFinance(UserModel secondHalfFinance) {
+		this.secondHalfFinance = secondHalfFinance;
 	}
 
 	public Double getDay1() {
@@ -385,213 +405,6 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 		this.month = month;
 	}
 
-	public String getUserFirstHalfStatus() {
-		if(userFirstHalfStatus == null)
-			userFirstHalfStatus = Constants.UserStatus.TASKTRACK_OPEN;
-		return userFirstHalfStatus;
-	}
-
-	public void setUserFirstHalfStatus(String userFirstHalfStatus) {
-		this.userFirstHalfStatus = userFirstHalfStatus;
-	}
-
-	public Date getUserFirstHalfSubmittedDate() {
-		return userFirstHalfSubmittedDate;
-	}
-
-	public void setUserFirstHalfSubmittedDate(Date userFirstHalfSubmittedDate) {
-		this.userFirstHalfSubmittedDate = userFirstHalfSubmittedDate;
-	}
-
-	public String getUserSecondHalfStatus() {
-		if(userSecondHalfStatus == null)
-			userSecondHalfStatus = Constants.UserStatus.TASKTRACK_OPEN;
-		return userSecondHalfStatus;
-	}
-
-	public void setUserSecondHalfStatus(String userSecondHalfStatus) {
-		this.userSecondHalfStatus = userSecondHalfStatus;
-	}
-
-	public Date getUserSecondHalfSubmittedDate() {
-		return userSecondHalfSubmittedDate;
-	}
-
-	public void setUserSecondHalfSubmittedDate(Date userSecondHalfSubmittedDate) {
-		this.userSecondHalfSubmittedDate = userSecondHalfSubmittedDate;
-	}
-
-	public UserModel getFirstHalfApproverOneId() {
-		return firstHalfApproverOneId;
-	}
-
-	public void setFirstHalfApproverOneId(UserModel firstHalfApproverOneId) {
-		this.firstHalfApproverOneId = firstHalfApproverOneId;
-	}
-
-	public UserModel getSecondHalfApproverOneId() {
-		return secondHalfApproverOneId;
-	}
-
-	public void setSecondHalfApproverOneId(UserModel secondHalfApproverOneId) {
-		this.secondHalfApproverOneId = secondHalfApproverOneId;
-	}
-
-	public String getApproverOneFirstHalfStatus() {
-		if(approverOneFirstHalfStatus == null)
-			approverOneFirstHalfStatus = Constants.Approver1.TASKTRACK_OPEN;
-		return approverOneFirstHalfStatus;
-	}
-
-	public void setApproverOneFirstHalfStatus(String approverOneFirstHalfStatus) {
-		this.approverOneFirstHalfStatus = approverOneFirstHalfStatus;
-	}
-
-	public Date getApproverOneFirstHalfSubmittedDate() {
-		return approverOneFirstHalfSubmittedDate;
-	}
-
-	public void setApproverOneFirstHalfSubmittedDate(Date approverOneFirstHalfSubmittedDate) {
-		this.approverOneFirstHalfSubmittedDate = approverOneFirstHalfSubmittedDate;
-	}
-
-	public String getApproverOneSecondHalfStatus() {
-		if(approverOneSecondHalfStatus == null)
-			approverOneSecondHalfStatus = Constants.Approver1.TASKTRACK_OPEN;
-		return approverOneSecondHalfStatus;
-	}
-
-	public void setApproverOneSecondHalfStatus(String approverOneSecondHalfStatus) {
-		this.approverOneSecondHalfStatus = approverOneSecondHalfStatus;
-	}
-
-	public Date getApproverOneSecondHalfSubmittedDate() {
-		return approverOneSecondHalfSubmittedDate;
-	}
-
-	public void setApproverOneSecondHalfSubmittedDate(Date approverOneSecondHalfSubmittedDate) {
-		this.approverOneSecondHalfSubmittedDate = approverOneSecondHalfSubmittedDate;
-	}
-
-	public UserModel getFirstHalfApproverTwoId() {
-		return firstHalfAapproverTwoId;
-	}
-
-	public void setFirstHalfApproverTwoId(UserModel firstHalfAapproverTwoId) {
-		this.firstHalfAapproverTwoId = firstHalfAapproverTwoId;
-	}
-
-	public UserModel getSecondHalfApproverTwoId() {
-		return secondHalfAapproverTwoId;
-	}
-
-	public void setSecondHalfApproverTwoId(UserModel secondHalfAapproverTwoId) {
-		this.secondHalfAapproverTwoId = secondHalfAapproverTwoId;
-	}
-
-	public String getApproverTwoFirstHalfStatus() {
-		if(approverTwoFirstHalfStatus == null)
-			approverTwoFirstHalfStatus = Constants.Approver2.TASKTRACK_OPEN;
-		return approverTwoFirstHalfStatus;
-	}
-
-	public void setApproverTwoFirstHalfStatus(String approverTwoFirstHalfStatus) {
-		this.approverTwoFirstHalfStatus = approverTwoFirstHalfStatus;
-	}
-
-	public Date getApproverTwoFirstHalfSubmittedDate() {
-		return approverTwoFirstHalfSubmittedDate;
-	}
-
-	public void setApproverTwoFirstHalfSubmittedDate(Date approverTwoFirstHalfSubmittedDate) {
-		this.approverTwoFirstHalfSubmittedDate = approverTwoFirstHalfSubmittedDate;
-	}
-
-	public String getApproverTwoSecondHalfStatus() {
-		if(approverTwoSecondHalfStatus == null)
-			approverTwoSecondHalfStatus = Constants.Approver2.TASKTRACK_OPEN;
-		return approverTwoSecondHalfStatus;
-	}
-
-	public void setApproverTwoSecondHalfStatus(String approverTwoSecondHalfStatus) {
-		this.approverTwoSecondHalfStatus = approverTwoSecondHalfStatus;
-	}
-
-	public Date getApproverTwoSecondHalfSubmittedDate() {
-		return approverTwoSecondHalfSubmittedDate;
-	}
-
-	public void setApproverTwoSecondHalfSubmittedDate(Date approverTwoSecondHalfSubmittedDate) {
-		this.approverTwoSecondHalfSubmittedDate = approverTwoSecondHalfSubmittedDate;
-	}
-
-	public UserModel getFirstHalfFinanceId() {
-		return firstHalfFinanceId;
-	}
-
-	public void setFirstHalfFinanceId(UserModel firstHalfFinanceId) {
-		this.firstHalfFinanceId = firstHalfFinanceId;
-	}
-
-	public UserModel getSecondHalfFinanceId() {
-		return secondHalfFinanceId;
-	}
-
-	public void setSecondHalfFinanceId(UserModel secondHalfFinanceId) {
-		this.secondHalfFinanceId = secondHalfFinanceId;
-	}
-
-	public String getFinanceFirstHalfStatus() {
-		if(financeFirstHalfStatus == null)
-			financeFirstHalfStatus = Constants.Finance.TASKTRACK_OPEN;
-		return financeFirstHalfStatus;
-	}
-
-	public void setFinanceFirstHalfStatus(String financeFirstHalfStatus) {
-		this.financeFirstHalfStatus = financeFirstHalfStatus;
-	}
-
-	public Date getFinanceFirstHalfSubmittedDate() {
-		return financeFirstHalfSubmittedDate;
-	}
-
-	public void setFinanceFirstHalfSubmittedDate(Date financeFirstHalfSubmittedDate) {
-		this.financeFirstHalfSubmittedDate = financeFirstHalfSubmittedDate;
-	}
-
-	public String getFinanceSecondHalfStatus() {
-		if(financeSecondHalfStatus == null)
-			financeSecondHalfStatus = Constants.Finance.TASKTRACK_OPEN;
-		return financeSecondHalfStatus;
-	}
-
-	public void setFinanceSecondHalfStatus(String financeSecondHalfStatus) {
-		this.financeSecondHalfStatus = financeSecondHalfStatus;
-	}
-
-	public UserModel getFirstHalfAapproverTwoId() {
-		return firstHalfAapproverTwoId;
-	}
-
-	public void setFirstHalfAapproverTwoId(UserModel firstHalfAapproverTwoId) {
-		this.firstHalfAapproverTwoId = firstHalfAapproverTwoId;
-	}
-
-	public UserModel getSecondHalfAapproverTwoId() {
-		return secondHalfAapproverTwoId;
-	}
-
-	public void setSecondHalfAapproverTwoId(UserModel secondHalfAapproverTwoId) {
-		this.secondHalfAapproverTwoId = secondHalfAapproverTwoId;
-	}
-
-	public Date getFinanceSecondHalfSubmittedDate() {
-		return financeSecondHalfSubmittedDate;
-	}
-
-	public void setFinanceSecondHalfSubmittedDate(Date financeSecondHalfSubmittedDate) {
-		this.financeSecondHalfSubmittedDate = financeSecondHalfSubmittedDate;
-	}
 
 	public String getFirstHalfFinalStatus() {
 		if(firstHalfFinalStatus == null)
@@ -621,5 +434,4 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 		this.submissionPeriod = submissionPeriod;
 	}
 	
-
 }

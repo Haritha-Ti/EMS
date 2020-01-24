@@ -11,8 +11,8 @@ import java.util.Date;
 public class TaskTrackWeeklyApproval extends Auditable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "weekly_id")
-    private long id;
+    @Column(name = "weekly_approval_id")
+    private long weeklyApprovalId;
     private Date startDate;
     private Date endDate;
     private Double day1, day2, day3, day4, day5, day6, day7;
@@ -20,41 +20,25 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
   
     @ManyToOne
     private UserModel user;
-    private Date userSubmittedDate;
     @ManyToOne
     private ProjectModel project;
-    @Column(name = "timetrack_status", length = 25)
-    private String timetrackStatus;
     
     private String timetrackFinalStatus;
     @ManyToOne
-    private UserModel approver1Id;
+    private UserModel approver1;
     @ManyToOne
-    private UserModel approver2Id;
+    private UserModel approver2;
     
     @ManyToOne
     private UserModel financeUser;
-    @Column(name = "approver1_status", length = 25)
-    private String approver1Status;
-    @Column(name = "approver2_status", length = 25)
-    private String approver2Status;
-    
-    @Column(name = "financeStatus", length = 25)
-    private String financeStatus;
-        
-    private Date approver1SubmittedDate;
-    private Date approver2SubmittedDate;
-    
-    private Date financeSubmittedDate;
-    
-    private Date rejectionTime;
-    public long getId() {
-        return id;
-    }
-    public void setId(long id) {
-        this.id = id;
-    }
-    public Date getStartDate() {
+
+    public long getWeeklyApprovalId() {
+		return weeklyApprovalId;
+	}
+	public void setWeeklyApprovalId(long weeklyApprovalId) {
+		this.weeklyApprovalId = weeklyApprovalId;
+	}
+	public Date getStartDate() {
         return startDate;
     }
     public void setStartDate(Date startDate) {
@@ -136,94 +120,33 @@ public class TaskTrackWeeklyApproval extends Auditable<Long> {
     public void setUser(UserModel user) {
         this.user = user;
     }
-    public Date getUserSubmittedDate() {
-        return userSubmittedDate;
-    }
-    public void setUserSubmittedDate(Date userSubmittedDate) {
-        this.userSubmittedDate = userSubmittedDate;
-    }
+
     public ProjectModel getProject() {
         return project;
     }
     public void setProject(ProjectModel project) {
         this.project = project;
     }
-    public String getTimetrackStatus() {
-    	if(timetrackStatus == null)
-    		timetrackStatus = Constants.UserStatus.TASKTRACK_OPEN;
-        return timetrackStatus;
-    }
-    public void setTimetrackStatus(String timetrackStatus) {
-        this.timetrackStatus = timetrackStatus;
-    }
-    public UserModel getApprover1Id() {
-        return approver1Id;
-    }
-    public void setApprover1Id(UserModel approver1Id) {
-        this.approver1Id = approver1Id;
-    }
-    public UserModel getApprover2Id() {
-        return approver2Id;
-    }
-    public void setApprover2Id(UserModel approver2Id) {
-        this.approver2Id = approver2Id;
-    }
-    public Date getApprover1SubmittedDate() {
-        return approver1SubmittedDate;
-    }
-    public void setApprover1SubmittedDate(Date approver1SubmittedDate) {
-        this.approver1SubmittedDate = approver1SubmittedDate;
-    }
-    public Date getApprover2SubmittedDate() {
-        return approver2SubmittedDate;
-    }
-    public void setApprover2SubmittedDate(Date approver2SubmittedDate) {
-        this.approver2SubmittedDate = approver2SubmittedDate;
-    }
-    public UserModel getFinanceUser() {
+    
+    public UserModel getApprover1() {
+		return approver1;
+	}
+	public void setApprover1(UserModel approver1) {
+		this.approver1 = approver1;
+	}
+	public UserModel getApprover2() {
+		return approver2;
+	}
+	public void setApprover2(UserModel approver2) {
+		this.approver2 = approver2;
+	}
+	public UserModel getFinanceUser() {
         return financeUser;
     }
     public void setFinanceUser(UserModel financeUser) {
         this.financeUser = financeUser;
     }
-    public Date getFinanceSubmittedDate() {
-        return financeSubmittedDate;
-    }
-    public void setFinanceSubmittedDate(Date financeSubmittedDate) {
-        this.financeSubmittedDate = financeSubmittedDate;
-    }
   
-    public Date getRejectionTime() {
-        return rejectionTime;
-    }
-    
-    public void setRejectionTime(Date rejectionTime) {
-        this.rejectionTime = rejectionTime;
-    }
-	public String getApprover1Status() {
-		if(approver1Status == null)
-			approver1Status = Constants.Approver1.TASKTRACK_OPEN;
-		return approver1Status;
-	}
-	public void setApprover1Status(String approver1Status) {
-		this.approver1Status = approver1Status;
-	}
-	public String getApprover2Status() {
-		if(approver2Status == null)
-			approver2Status = Constants.Approver2.TASKTRACK_OPEN;
-		return approver2Status;
-	}
-	public void setApprover2Status(String approver2Status) {
-		this.approver2Status = approver2Status;
-	}
-	public String getFinanceStatus() {
-		if(financeStatus == null)
-			financeStatus = Constants.Finance.TASKTRACK_OPEN;
-		return financeStatus;
-	}
-	public void setFinanceStatus(String financeStatus) {
-		this.financeStatus = financeStatus;
-	}
 	public String getTimetrackFinalStatus() {
 		if(timetrackFinalStatus == null)
 			timetrackFinalStatus = Constants.FinalStatus.TASKTRACK_OPEN;
