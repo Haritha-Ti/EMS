@@ -50,10 +50,10 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	private UserModel secondHalfApproverOne;
 
 	@ManyToOne
-	private UserModel firstHalfAapproverTwo;
+	private UserModel firstHalfApproverTwo;
 
 	@ManyToOne
-	private UserModel secondHalfAapproverTwo;
+	private UserModel secondHalfApproverTwo;
 
 	@ManyToOne
 	private UserModel firstHalfFinance;
@@ -94,19 +94,19 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 	}
 
 	public UserModel getFirstHalfAapproverTwo() {
-		return firstHalfAapproverTwo;
+		return firstHalfApproverTwo;
 	}
 
 	public void setFirstHalfAapproverTwo(UserModel firstHalfAapproverTwo) {
-		this.firstHalfAapproverTwo = firstHalfAapproverTwo;
+		this.firstHalfApproverTwo = firstHalfAapproverTwo;
 	}
 
 	public UserModel getSecondHalfAapproverTwo() {
-		return secondHalfAapproverTwo;
+		return secondHalfApproverTwo;
 	}
 
 	public void setSecondHalfAapproverTwo(UserModel secondHalfAapproverTwo) {
-		this.secondHalfAapproverTwo = secondHalfAapproverTwo;
+		this.secondHalfApproverTwo = secondHalfAapproverTwo;
 	}
 
 	public UserModel getFirstHalfFinance() {
