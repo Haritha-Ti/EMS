@@ -62,7 +62,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	private AllocationRepository allocationRepository;
 
 	@Autowired
-	TasktrackService tasktrackService;
+	private TasktrackService tasktrackService;
 	
 	@Override
 	public StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException, Exception {
