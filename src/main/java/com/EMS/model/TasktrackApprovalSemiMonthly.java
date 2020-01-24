@@ -93,19 +93,19 @@ public class TasktrackApprovalSemiMonthly extends Auditable<Long> {
 		this.secondHalfApproverOne = secondHalfApproverOne;
 	}
 
-	public UserModel getFirstHalfAapproverTwo() {
+	public UserModel getFirstHalfApproverTwo() {
 		return firstHalfApproverTwo;
 	}
 
-	public void setFirstHalfAapproverTwo(UserModel firstHalfAapproverTwo) {
+	public void setFirstHalfApproverTwo(UserModel firstHalfAapproverTwo) {
 		this.firstHalfApproverTwo = firstHalfAapproverTwo;
 	}
 
-	public UserModel getSecondHalfAapproverTwo() {
+	public UserModel getSecondHalfApproverTwo() {
 		return secondHalfApproverTwo;
 	}
 
-	public void setSecondHalfAapproverTwo(UserModel secondHalfAapproverTwo) {
+	public void setSecondHalfApproverTwo(UserModel secondHalfAapproverTwo) {
 		this.secondHalfApproverTwo = secondHalfAapproverTwo;
 	}
 
