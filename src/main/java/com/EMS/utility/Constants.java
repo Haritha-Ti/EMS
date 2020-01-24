@@ -98,6 +98,8 @@ public class Constants {
 		public static final String TASKTRACK_REOPEN = "REOPEN";
 		public static final String TASKTRACK_FORWARDED_TO_LEVEL2 = "FORWARDED_TO_L2";
 		public static final String TASKTRACK_SAVE ="SAVED";
+		public static final String TASKTRACK_REJECTED = "REJECTED";
+		public static final String TASKTRACK_SUBMIT = "SUBMITTED";
 	}
 	
 	public static final Double roundToDefaultPrecision(Double value) {
