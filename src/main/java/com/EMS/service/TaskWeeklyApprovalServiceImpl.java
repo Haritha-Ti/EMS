@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -535,17 +536,16 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		HashSet<Date> trackdate = new HashSet<Date>();
 
 		List<Date> reqDateRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
-
+		
 		if (!tasktrackList.isEmpty()) {
 
 			for (Date date : reqDateRange) {
 				if (projectDateList.contains(sdf.format(date))) {
 
 					for (Tasktrack tasktrackOuter : tasktrackList) {
-						if (!trackdate.contains(tasktrackOuter.getDate())) {
+						if (!trackdate.contains(tasktrackOuter.getDate())) {							
 							trackdate.add(tasktrackOuter.getDate());
 							String intialDate = sdf.format(tasktrackOuter.getDate());
-
 							WeeklyTaskTrackWithTaskResponse taskTrackResponse = new WeeklyTaskTrackWithTaskResponse();
 							List<TasktrackDto> tasktrackDtoList = new ArrayList<>();
 							Double finalHour = 0.0;
@@ -567,13 +567,11 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 							taskTrackResponse.setDate(sdf.format(tasktrackOuter.getDate()));
 							taskTrackResponse.setFinalHour(finalHour);
 							taskTrackResponseList.add(taskTrackResponse);
-
-						}
+						}						
 					}
+										
 					weeklyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
-					
-					
-					
+
 				} else {
 					WeeklyTaskTrackWithTaskResponse taskTrackResponse = new WeeklyTaskTrackWithTaskResponse();
 					taskTrackResponse.setTaskList(new ArrayList<>());
@@ -583,9 +581,11 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 					taskTrackResponseList.add(taskTrackResponse);
 					weeklyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
 				}
-
+				
 			}
+			weeklyTaskTrackWithTaskResponseDTO.setTasktrackList(addMissingDate(reqDateRange,taskTrackResponseList));
 		}
+		
 		if (tasktrackList.isEmpty()) {
 
 			for (Date reqDate : reqDateRange) {
@@ -599,7 +599,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 				weeklyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
 			}
 		}
-
+		 
 		if (tasktrackStatus != null) {
 
 			String approver1Status = tasktrackStatus.getApprover1Status();
@@ -670,8 +670,40 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			user.put("date", tasktrackStatus.getUserSubmittedDate());
 			weeklyTaskTrackWithTaskResponseDTO.setUser(user);
 		}
+		
+		
 		return weeklyTaskTrackWithTaskResponseDTO;
 
+	}
+
+	private List<WeeklyTaskTrackWithTaskResponse> addMissingDate(List<Date> reqDateRange,
+			List<WeeklyTaskTrackWithTaskResponse> taskTrackResponseList) {
+
+		reqDateRange.forEach(date -> {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String requestDate = sdf.format(date);
+			boolean isDatePresent = false;
+			for (WeeklyTaskTrackWithTaskResponse taskTrackResp : taskTrackResponseList) {
+				if (taskTrackResp.getDate().equals(requestDate)) {
+					isDatePresent = true;
+					 break;
+				}
+				
+			}
+			if(!isDatePresent) {
+				WeeklyTaskTrackWithTaskResponse taskTrackWithTaskResponse = new WeeklyTaskTrackWithTaskResponse();
+				taskTrackWithTaskResponse.setDate(sdf.format(date));
+				taskTrackWithTaskResponse.setEnabled(true);
+				taskTrackWithTaskResponse.setFinalHour(0.0);
+				taskTrackWithTaskResponse.setTaskList(new ArrayList<>());	
+				taskTrackResponseList.add(taskTrackWithTaskResponse);
+			}
+
+		});
+		Collections.sort(taskTrackResponseList, (s1, s2) -> s1.getDate().
+	            compareTo(s2.getDate()));
+
+		return taskTrackResponseList;
 	}
 
 	@Override
