@@ -38,11 +38,9 @@ public class TasktrackApprovalController {
 
 	@PostMapping(value = "/taskTrackDataForApprover1")
 	public StatusResponse getTaskTrackDataForApprover1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode node = objectMapper.createObjectNode();
 		StatusResponse response = new StatusResponse<>();
 		try {
-			node = tasktrackApprovalService.getTaskTrackDataForApprover1(requestdata);
-			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.getTaskTrackDataForApprover1(requestdata));
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -54,11 +52,9 @@ public class TasktrackApprovalController {
 
 	@PostMapping(value = "/taskTrackDataByUserId")
 	public StatusResponse getTaskTrackDataByUserId(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode node = objectMapper.createObjectNode();
 		StatusResponse response = new StatusResponse<>();
 		try {
-			node = tasktrackApprovalService.getTaskTrackDataByUserId(requestdata);
-			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.getTaskTrackDataByUserId(requestdata));
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -69,11 +65,9 @@ public class TasktrackApprovalController {
 	}
 	@PutMapping(value = "/approveHoursLevel1")
 	public StatusResponse approveHoursLevel1(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode node = objectMapper.createObjectNode();
 		StatusResponse response = new StatusResponse<>();
 		try {
-			node = tasktrackApprovalService.approveHoursLevel1(requestdata);
-			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.approveHoursLevel1(requestdata));
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -102,11 +96,9 @@ public class TasktrackApprovalController {
 	//Nisha
 	@PostMapping(value = "/taskTrackDataForFinance")
 	public StatusResponse getTaskTrackDataForFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode node = objectMapper.createObjectNode();
 		StatusResponse response = new StatusResponse<>();
 		try {
-			node = tasktrackApprovalService.getTaskTrackDataForFinance(requestdata);
-			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.getTaskTrackDataForFinance(requestdata));
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -118,11 +110,9 @@ public class TasktrackApprovalController {
 	//nisha
 	@PostMapping(value = "/taskTrackDataByUserIdForFinance")
 	public StatusResponse getTaskTrackDataByUserIdForFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
-		ObjectNode node = objectMapper.createObjectNode();
 		StatusResponse response = new StatusResponse<>();
 		try {
-			node = tasktrackApprovalService.getTaskTrackDataByUserIdForFinance(requestdata);
-			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.getTaskTrackDataByUserIdForFinance(requestdata));
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -188,10 +178,8 @@ public class TasktrackApprovalController {
 	@PutMapping(value = "/approveHoursFinance")
 	public StatusResponse approveHoursFinance(@RequestBody ObjectNode requestdata, HttpServletResponse httpstatus) {
 		StatusResponse response = new StatusResponse<>();
-		ObjectNode node = objectMapper.createObjectNode();
 		try {
-			node = tasktrackApprovalService.approveHoursFinance(requestdata);
-			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),node);
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.approveHoursFinance(requestdata));
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -203,18 +191,15 @@ public class TasktrackApprovalController {
 
 	@PutMapping(value = "/approveHoursLevel2")
 	public StatusResponse approveHoursLevel2(@RequestBody ApproveHoursRequest requestdata, HttpServletResponse httpstatus) {
-		StatusResponse node = null;
+		StatusResponse response = new StatusResponse();
 		try {
-			node = tasktrackApprovalService.approveHoursLevel2(requestdata);
-			node.setData(null);
-			node.setStatus(Constants.SUCCESS);
-			node.setStatusCode(200);
+			response = new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.approveHoursLevel2(requestdata));
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			node = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
+			response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
 		}
-		return node;
+		return response;
 	}
 	/**
 	 * Bulk approval for approver 1
@@ -269,7 +254,7 @@ public class TasktrackApprovalController {
 			try {
 				  response= tasktrackApprovalService.reopenSubmission(reopenSub.getId(), reopenSub.getProjectId(), reopenSub.getUserId(), reopenSub.getStartDate(), reopenSub.getEndDate());
 			} catch (ParseException e) {
-				response  =new StatusResponse<String>("failure", 500, e.getMessage());
+				response  =new StatusResponse<String>(Constants.FAILURE,Constants.ERROR_CODE, e.getMessage());
 				 e.printStackTrace();
 			}
 		        return response;	
@@ -279,11 +264,7 @@ public class TasktrackApprovalController {
 			ObjectNode node = null;
 			StatusResponse response = new StatusResponse<>();
 			try {
-				node = tasktrackApprovalService.getTaskTrackDataByUserIdForApprover2(requestdata);
-				response.setData(node);
-				response.setStatus(Constants.SUCCESS);
-				response.setStatusCode(200);
-				
+				response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.getTaskTrackDataByUserIdForApprover2(requestdata));
 				
 			} catch (Exception e) {
 				// TODO: handle exception

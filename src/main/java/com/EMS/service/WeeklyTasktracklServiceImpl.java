@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -644,10 +646,8 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 			}
 
 		});
-		Collections.sort(taskTrackResponseList, (s1, s2) -> s1.getDate().
-	            compareTo(s2.getDate()));
-
-		return taskTrackResponseList;
+		return taskTrackResponseList.stream().sorted((s1, s2) -> s1.getDate().
+	            compareTo(s2.getDate())).collect(Collectors.toList());
 	}
 
 	@Override
