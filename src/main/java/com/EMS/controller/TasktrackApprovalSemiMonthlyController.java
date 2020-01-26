@@ -113,7 +113,7 @@ public class TasktrackApprovalSemiMonthlyController {
 	public StatusResponse getSemiMonthlyTasktrackWithTask(@RequestBody SemiMonthlyTaskTrackRequestDTO requestData) {
 		StatusResponse response = new StatusResponse();
 		try {
-			response = approvalSemiMonthlyService.getSemiMonthlyTasktrackWithTask(requestData);
+			response = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,approvalSemiMonthlyService.getSemiMonthlyTasktrackWithTask(requestData));
 			System.out.println(response);
 		} catch (Exception e) {
 

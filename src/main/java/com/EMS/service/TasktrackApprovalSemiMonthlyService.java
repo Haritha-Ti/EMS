@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import com.EMS.dto.DateBasedTaskTrackDto;
 import com.EMS.dto.SaveSemiMonthlyWithTasksRequestDto;
 import com.EMS.dto.SemiMonthlyTaskTrackRequestDTO;
+import com.EMS.dto.SemiMonthlyTaskTrackWithTaskResponseDTO;
 import com.EMS.dto.SubmitSemiMonthlyTasktrackWithTaskRequestDto;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.StatusResponse;
@@ -23,7 +24,7 @@ public interface TasktrackApprovalSemiMonthlyService {
 
 	StatusResponse getSemiMonthlyTasksForSubmission(JsonNode requestData) throws ParseException;
 
-	StatusResponse getSemiMonthlyTasktrackWithTask(SemiMonthlyTaskTrackRequestDTO requestData) throws Exception;
+	SemiMonthlyTaskTrackWithTaskResponseDTO getSemiMonthlyTasktrackWithTask(SemiMonthlyTaskTrackRequestDTO requestData) throws Exception;
 	
 	  StatusResponse saveSemiMonthlyTasktrackWithTask(SaveSemiMonthlyWithTasksRequestDto dateBasedTaskTrackDto) throws Exception;
 	    
