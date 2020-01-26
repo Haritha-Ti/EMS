@@ -73,13 +73,7 @@ public class TasktrackApprovalSemiMonthlyController {
 		return response;
 	}
 
-	/*
-	 * To save timetrack semimonthly
-	 * 
-	 * @Author Haritha version 1.0
-	 * 
-	 * @Since 09-01-2020
-	 */
+	
 
 	@PostMapping(value = "/saveSemiMonthlyTaskTrackApproval")
 	public StatusResponse saveSemiMonthlyTaskTrackApproval(@RequestBody JSONObject requestData) {
@@ -95,13 +89,7 @@ public class TasktrackApprovalSemiMonthlyController {
 		return response;
 	}
 
-	/*
-	 * To submit timetrack semimonthly with daily tasks
-	 * 
-	 * @Author Haritha version 1.0
-	 * 
-	 * @Since 10-01-2020
-	 */
+
 
 	@PostMapping(value = "/submitTasktrackSemimonthly")
 	public StatusResponse submitTasktrackSemimonthly(@RequestBody JsonNode requestData, HttpServletResponse httpstatus) {

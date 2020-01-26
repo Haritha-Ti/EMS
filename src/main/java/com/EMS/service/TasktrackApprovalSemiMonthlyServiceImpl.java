@@ -534,11 +534,13 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 			semiMonthlyApproval
 					.setFirstHalfFinalStatus(isSave ? UserStatus.TASKTRACK_SAVED : UserStatus.TASKTRACK_SUBMIT);
+			semiMonthlyApproval.setSubmissionPeriod(Constants.UserStatus.TASKTRACK_SECONDHALF_PERIOD_STATUS);
 
 		} else {
 
 			semiMonthlyApproval
 					.setSecondHalfFinalStatus(isSave ? UserStatus.TASKTRACK_SAVED : UserStatus.TASKTRACK_SUBMIT);
+			semiMonthlyApproval.setSubmissionPeriod(Constants.UserStatus.TASKTRACK_FIRSTHALF_PERIOD_STATUS);
 		}
 	
 		if (requeststatus == 0) {
