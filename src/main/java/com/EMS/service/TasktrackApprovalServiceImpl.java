@@ -34,7 +34,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.EMS.dto.*;
-import org.joda.time.DateTimeConstants;
+import com.EMS.utility.DateUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9037,18 +9037,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = requestdata.get("projectId").asLong();
 		int month = requestdata.get("month").asInt();
 		// get weeks of the month
-		weeksArray = findWeeks(month, year);
+		weeksArray = DateUtil.findWeeks(month, year);
 		// get startDate and endDate of the month
 		Date startDate;
 		Date endDate;
-		SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
 		String start = year + "-" + month + "-01";
-		startDate = sdff.parse(start);
+		startDate = DateUtil.dateFormat1.parse(start);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		int total = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		String end = year + "-" + month + "-" + total;
-		endDate = sdff.parse(end);
+		endDate = DateUtil.dateFormat1.parse(end);
 		// get usersList in the project for the corresponding month
 		int projectWorkFlow = 0;
 		List<AllocationModel> allocatedUserData = allocationRepository.findByProjectProjectIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndIsBillable(projectId,
@@ -9095,8 +9094,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									findWeeklyRejection(userId, projectId, startDate, endDate, Constants.TASKTRACK_REJECTION_STATUS_OPEN,1);
 						}
 						weeklyDataResponse.put("totalHour", totalhours);
-						weeklyDataResponse.put("weekStart", sdff.format(weekStart));
-						weeklyDataResponse.put("weekEnd", sdff.format(weekEnd));
+						weeklyDataResponse.put("weekStart", DateUtil.dateFormat1.format(weekStart));
+						weeklyDataResponse.put("weekEnd", DateUtil.dateFormat1.format(weekEnd));
 						weeklyDataResponse.put("finalStatus",finalStatus);
 						weeklyDataResponse.put("rejectionRemark", rejection == null ? "" : rejection.getRemark());
 						weeklyHourData.add(weeklyDataResponse);
@@ -9178,11 +9177,10 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					ObjectNode weekDateResponse = objectMapper.createObjectNode();
 					Date weekStart = (Date) objects.get("startDate");
 					Date weekEnd = (Date) objects.get("endDate");
-					SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
-					String weekRange = sdf.format(weekStart) + " - " + sdf.format(weekEnd);
+					String weekRange = DateUtil.dateFormat3.format(weekStart) + " - " + DateUtil.dateFormat3.format(weekEnd);
 					weeksDataArray.add(weekRange);
-					weekDateResponse.put("startDate",sdff.format(weekStart));
-					weekDateResponse.put("endDate",sdff.format(weekEnd));
+					weekDateResponse.put("startDate",DateUtil.dateFormat1.format(weekStart));
+					weekDateResponse.put("endDate",DateUtil.dateFormat1.format(weekEnd));
 					weeksDateArray.add(weekDateResponse);
 				}
 				node.set("weeks", weeksDataArray);
@@ -9197,53 +9195,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		return node;
 	}
 
-	// Nisha
-	public JSONArray findWeeks(int curMonth, int curYear) {
-		int month = curMonth;
-		int year = curYear;
-		int dayOfWeek = DateTimeConstants.SUNDAY;
-		String weekRange;
-		JSONArray weeksArray = new JSONArray();
-		org.joda.time.LocalDate firstOfMonth = new org.joda.time.LocalDate(year, month, 1);
-		org.joda.time.LocalDate firstOfNextMonth = firstOfMonth.plusMonths(1);
-		org.joda.time.LocalDate firstDateInGrid = firstOfMonth.withDayOfWeek(dayOfWeek);
-		if (firstDateInGrid.isAfter(firstOfMonth)) { // If getting the next start of week instead of desired week's
-														// start, adjust backwards.
-			firstDateInGrid = firstDateInGrid.minusWeeks(1);
-		}
 
-		org.joda.time.LocalDate weekStart = firstDateInGrid;
-		org.joda.time.LocalDate weekStop = null;
-		int weekNumber = 0;
-
-		do {
-			JSONObject weekDataResponse = new JSONObject();
-
-			weekNumber = weekNumber + 1;
-			weekStop = weekStart.plusDays(6);
-			// System.out.println( weekNumber + " week: " + weekStart + " --- " + weekStop
-			// ); // 1 week: 03-30-2014 --- 04-05-2014
-			weekRange = weekStart + " - " + weekStop;
-
-			weekDataResponse.put("startDate", weekStart.toDateTimeAtStartOfDay().toDate());
-			weekDataResponse.put("endDate", weekStop.toDateTimeAtStartOfDay().toDate());
-			weeksArray.add(weekDataResponse);
-			weekStart = weekStop.plusDays(1);
-
-		} while (weekStop.isBefore(firstOfNextMonth) && weekStart.isBefore(firstOfNextMonth));
-
-		return weeksArray;
-	}
 
 	@Override
 	public ObjectNode getTaskTrackDataByUserId(ObjectNode requestdata) throws Exception {
 		ObjectNode node = objectMapper.createObjectNode();
 		Long projectId = requestdata.get("projectId").asLong();
 		Long userId = requestdata.get("userId").asLong();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat dff = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
-		Date startDate = df.parse(requestdata.get("startDate").asText());
-		Date endDate = df.parse(requestdata.get("endDate").asText());
+		Date startDate = DateUtil.dateFormat1.parse(requestdata.get("startDate").asText());
+		Date endDate = DateUtil.dateFormat1.parse(requestdata.get("endDate").asText());
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		Boolean submitButtonStatus = Boolean.FALSE;
 		Boolean rejectButtonStatus = Boolean.FALSE;
@@ -9285,19 +9245,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						|| !finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
 						dataFlag =1;
 					}
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay1():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay1():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay2():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay2():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay3():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay3():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay4():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay4():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay5():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay5():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay6():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay6():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay7():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay7():0);
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
 					node.put("finalStatus",finalStatus);
@@ -9322,19 +9282,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						ObjectNode hourDataResponse = objectMapper.createObjectNode();
 						Calendar cal = Calendar.getInstance();
 						cal.setTime(startDate);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						hourDataNode.add(hourDataResponse);
 						node.set("hourData", hourDataNode);
 						node.put("finalStatus","");
@@ -9347,9 +9307,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			} else {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(startDate);
-
 				int month = cal.get(Calendar.MONTH)+1;
-				//System.out.println("month----++++++"+month);
 				int year = cal.get(Calendar.YEAR);
 				Calendar cale = Calendar.getInstance();
 				cale.setTime(endDate);
@@ -9371,35 +9329,35 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								|| !firstHalfFinalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_OPEN)){
 							firstHalfDataFlag =1;
 						}
-						hourDataResponse.put(df.format(cal.getTime()),firstHalfDataFlag==1? userData.getDay1():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()),firstHalfDataFlag==1? userData.getDay1():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay2():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay2():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay3():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay3():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay4():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay4():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay5():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay5():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay6():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay6():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay7():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay7():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay8():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay8():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay9():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay9():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay10():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay10():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay11():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay11():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay12():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay12():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay13():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay13():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay14():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay14():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay15():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), firstHalfDataFlag==1?userData.getDay15():0);
 						node.put("approver1Name",userData.getFirstHalfApproverOne()== null ?
 								userData.getProject().getProjectOwner().getLastName()+" "+
 										userData.getProject().getProjectOwner().getFirstName():userData.getFirstHalfApproverOne().getLastName()+" "+
@@ -9429,42 +9387,42 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								|| !secondHalfFinalStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_OPEN)){
 							secondHalfDataFlag =1;
 						}
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay16():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay16():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay17():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay17():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay18():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay18():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay19():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay19():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay20():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay20():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay21():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay21():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay22():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay22():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay23():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay23():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay24():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay24():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay25():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay25():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay26():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay26():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay27():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay27():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay28():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay28():0);
 						if (day > 28) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay29():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay29():0);
 						}
 						if (day > 29) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay30():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), secondHalfDataFlag==1?userData.getDay30():0);
 						}
 						if (day > 30) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()),secondHalfDataFlag==1?userData.getDay31():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()),secondHalfDataFlag==1?userData.getDay31():0);
 						}
 						node.put("approver1Name",userData.getSecondHalfApproverOne()== null ?
 								userData.getProject().getProjectOwner().getLastName()+" "+
@@ -9499,92 +9457,84 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("approver1Name",
 								projectData.getProjectOwner().getLastName()+" "+
 										projectData.getProjectOwner().getFirstName());
-						node.put("approver1Status", Constants.Approver1.TASKTRACK_OPEN);
 						node.put("loggedId", "");
-						node.put("userStatus", Constants.UserStatus.TASKTRACK_OPEN);
-						node.put("approver1SubmittedDate", "");
-						node.put("userSubmittedDate", "");
 						if (projectData.getProjectTier() == 2) {
 							node.put("approver2Name",
 									projectData.getOnsite_lead().getLastName()+" "+
 											projectData.getOnsite_lead().getFirstName());
-							node.put("approver2Status", Constants.Approver2.TASKTRACK_OPEN);
-							node.put("approver2SubmittedDate", "");
 						} else {
 							node.put("approver2Name","");
-							node.put("approver2Status", "");
-							node.put("approver2SubmittedDate", "");
 						}
 						ObjectNode hourDataResponse = objectMapper.createObjectNode();
 						if (day == 15) {
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							node.put("period",Constants.UserStatus.TASKTRACK_FIRSTHALF_PERIOD_STATUS);
 
 						} else {
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							if (day > 28) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							if (day > 29) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							if (day > 30) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							node.put("period",Constants.UserStatus.TASKTRACK_SECONDHALF_PERIOD_STATUS);
 						}
@@ -9606,12 +9556,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long userId = requestdata.get("userId").asLong();
 		Long loggedId = requestdata.get("loggedId").asLong();
 		Long approverId = requestdata.get("approverId").asLong();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = df.parse(requestdata.get("endDate").asText());
-		Date startDate = df.parse(requestdata.get("startDate").asText());
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Date curDate = formatter.parse(formatter.format(date));
+		Date endDate = DateUtil.dateFormat1.parse(requestdata.get("endDate").asText());
+		Date startDate = DateUtil.dateFormat1.parse(requestdata.get("startDate").asText());
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		if (projectData != null) {
 			// weekly approval
@@ -9682,26 +9628,24 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		int projectWorkFlow  = 0;
 		UserData userResponse = null;
 		ArrayList<UserData> userDataArray = new ArrayList<>();
-		//HashMap<String, Date> weeks = new HashMap<>();
 		ArrayList<String> week = new ArrayList<>();
 		ArrayList<Dates> weeksDate = new ArrayList<>();
 		JSONArray weeksArray = new JSONArray();
 		int year = requestdata.getYear();
 		Long projectId = requestdata.getProjectId();
 		int month = requestdata.getMonth();
-		weeksArray = findWeeks(month, year);
+		weeksArray = DateUtil.findWeeks(month, year);
 		String projectWorkFlowType = null;
 		// get startDate and endDate of the months
-		SimpleDateFormat sdffs = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate;
 		Date endDate;
 		String start = year + "-" + month + "-01";
-		startDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);
+		startDate = DateUtil.dateFormat1.parse(start);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		int total = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		String end = year + "-" + month + "-" + total;
-		endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);
+		endDate = DateUtil.dateFormat1.parse(end);
 		// get usersList in the project for the corresponding month
 
 		List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId,
@@ -9720,7 +9664,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					for (int i = 0; i < weeksArray.size(); i++) {
 
 						JSONObject objects = (JSONObject) weeksArray.get(i);
-						SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
 						Date weekStart = (Date) objects.get("startDate");
 						Date weekEnd = (Date) objects.get("endDate");
 						TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository
@@ -9754,7 +9697,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 									findWeeklyRejection(userId, projectId, startDate, endDate, Constants.TASKTRACK_REJECTION_STATUS_OPEN,2);
 						}
 
-						WeekData weekData = new WeekData(totalhours, sdff.format(weekStart), sdff.format(weekEnd),rejection == null ? "" : rejection.getRemark(),finalStatus);
+						WeekData weekData = new WeekData(totalhours, DateUtil.dateFormat1.format(weekStart), DateUtil.dateFormat1.format(weekEnd),rejection == null ? "" : rejection.getRemark(),finalStatus);
 						weeksDataArray.add(weekData);
 					}
 					userResponse = new UserData(userId, userName, weeksDataArray);
@@ -9851,7 +9794,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					Date weekEnd = (Date) objects.get("endDate");
 					SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
 					String weekRange = sdf.format(weekStart) + " - " + sdf.format(weekEnd);
-					Dates dates = new Dates(sdffs.format(weekStart),sdffs.format(weekEnd));
+					Dates dates = new Dates(DateUtil.dateFormat1.format(weekStart),DateUtil.dateFormat1.format(weekEnd));
 					weeksDate.add(dates);
 					week.add(weekRange);
 					data.setWeeks(week);
@@ -9879,18 +9822,17 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = requestdata.get("projectId").asLong();
 		int month = requestdata.get("month").asInt();
 		//get weeks of the month
-		weeksArray = findWeeks(month, year);
+		weeksArray = DateUtil.findWeeks(month, year);
 		//get startDate and endDate of the month
 		Date startDate;
 		Date endDate;
 		String start = year + "-" + month + "-01";
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		startDate = df.parse(start);
+		startDate = DateUtil.dateFormat1.parse(start);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		int total = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		String end = year + "-" + month + "-" + total;
-		endDate = df.parse(end);
+		endDate = DateUtil.dateFormat1.parse(end);
 		//get usersList in the project for the corresponding month
 		int projectWorkFlow = 0;
 		//List<AllocationModel> allocatedUserData = projectAllocationRepository.getUserDataByProjectAndDate(projectId, startDate, endDate);
@@ -9912,7 +9854,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					for (int i = 0; i < weeksArray.size(); i++) {
 						ObjectNode weeklyDataResponse = objectMapper.createObjectNode();
 						JSONObject objects = (JSONObject) weeksArray.get(i);
-						SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
 						Date weekStart = (Date) objects.get("startDate");
 						Date weekEnd = (Date) objects.get("endDate");
 						TaskTrackWeeklyApproval weeklyUserData = taskTrackWeeklyApprovalRepository.findByProjectProjectIdAndStartDateAndEndDateAndUserUserId(projectId, weekStart, weekEnd, userId);
@@ -9928,8 +9869,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						}
 
 						weeklyDataResponse.put("totalHour", totalhours);
-						weeklyDataResponse.put("weekStart", sdff.format(weekStart));
-						weeklyDataResponse.put("weekEnd", sdff.format(weekEnd));
+						weeklyDataResponse.put("weekStart", DateUtil.dateFormat1.format(weekStart));
+						weeklyDataResponse.put("weekEnd", DateUtil.dateFormat1.format(weekEnd));
 						weeklyDataResponse.put("finalStatus", finalStatus);
 						weeklyHourData.add(weeklyDataResponse);
 					}
@@ -9962,11 +9903,11 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 					}
 					semiMonthlyFirstHalfDataResponse.put("totalHour", firstHalfHour);
-					semiMonthlyFirstHalfDataResponse.put("startDate",df.format(df.parse(year + "-" + month + "-01")));
-					semiMonthlyFirstHalfDataResponse.put("endDate",df.format(df.parse(year + "-" + month + "-15")));
+					semiMonthlyFirstHalfDataResponse.put("startDate",DateUtil.dateFormat1.format(DateUtil.dateFormat1.parse(year + "-" + month + "-01")));
+					semiMonthlyFirstHalfDataResponse.put("endDate",DateUtil.dateFormat1.format(DateUtil.dateFormat1.parse(year + "-" + month + "-15")));
 					semiMonthlySecondHalfDataResponse.put("totalHour", secondHalfHour);
-					semiMonthlySecondHalfDataResponse.put("startDate",df.format(df.parse(year + "-" + month + "-16")));
-					semiMonthlySecondHalfDataResponse.put("endDate",df.format(df.parse(end)));
+					semiMonthlySecondHalfDataResponse.put("startDate",DateUtil.dateFormat1.format(DateUtil.dateFormat1.parse(year + "-" + month + "-16")));
+					semiMonthlySecondHalfDataResponse.put("endDate",DateUtil.dateFormat1.format(DateUtil.dateFormat1.parse(end)));
 					semiMonthlyFirstHalfDataResponse.put("finalFirstHalfStatus", finalFirstHalfStatus);
 					semiMonthlySecondHalfDataResponse.put("finalSecondHalfStatus", finalSecondHalfStatus);
 					semiMonthlyHourData.add(semiMonthlyFirstHalfDataResponse);
@@ -9981,8 +9922,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					JSONObject objects = (JSONObject) weeksArray.get(j);
 					Date weekStart = (Date) objects.get("startDate");
 					Date weekEnd = (Date) objects.get("endDate");
-					SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
-					String weekRange = sdf.format(weekStart) + " - " + sdf.format(weekEnd);
+					String weekRange = DateUtil.dateFormat3.format(weekStart) + " - " + DateUtil.dateFormat3.format(weekEnd);
 					weeksDataArray.add(weekRange);
 				}
 				node.set("weeks", weeksDataArray);
@@ -10001,10 +9941,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ObjectNode node = objectMapper.createObjectNode();
 		Long projectId = requestdata.get("projectId").asLong();
 		Long userId = requestdata.get("userId").asLong();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat formatter = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
-		Date startDate = df.parse(requestdata.get("startDate").asText());
-		Date endDate = df.parse(requestdata.get("endDate").asText());
+		Date startDate = DateUtil.dateFormat1.parse(requestdata.get("startDate").asText());
+		Date endDate = DateUtil.dateFormat1.parse(requestdata.get("endDate").asText());
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		if (projectData != null) {
 			node.put("clientName",projectData.getClientName().getClientName());
@@ -10043,19 +9981,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 							|| !finalStatus.equalsIgnoreCase(Constants.TASKTRACK_FINAL_STATUS_OPEN)){
 						dataFlag =1;
 					}
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay1():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay1():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay2():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay2():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay3():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay3():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay4():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay4():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay5():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay5():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay6():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay6():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), dataFlag==1?userData.getDay7():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFlag==1?userData.getDay7():0);
 					node.set("hourData", hourDataResponse);
 					node.put("reopenButtonStatus",reopenButtonStatus);
 					node.put("period","");
@@ -10073,19 +10011,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						ObjectNode hourDataResponse = objectMapper.createObjectNode();
 						Calendar cal = Calendar.getInstance();
 						cal.setTime(startDate);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						node.set("hourData", hourDataResponse);
 						node.put("reopenButtonStatus",false);
 						node.put("period","");
@@ -10119,35 +10057,35 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								|| !finalFirstHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_OPEN)){
 							dataFirstHalfFlag =1;
 						}
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay1():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay1():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay2():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay2():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay3():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay3():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay4():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay4():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay5():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay5():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay6():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay6():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay7():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay7():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay8():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay8():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay9():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay9():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay10():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay10():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay11():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay11():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay12():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay12():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay13():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay13():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay14():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay14():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay15():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataFirstHalfFlag==1?userData.getDay15():0);
 						node.put("approver1Name",userData.getFirstHalfApproverOne()== null ?
 								userData.getProject().getProjectOwner().getLastName()+" "+userData.getProject().getProjectOwner().getFirstName()
 								:userData.getFirstHalfApproverOne().getLastName()+" "+userData.getFirstHalfApproverOne().getFirstName());
@@ -10174,42 +10112,42 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 								|| !finalSecondHalfStatus.equalsIgnoreCase(Constants.FinalStatus.TASKTRACK_OPEN)){
 							dataSecondHalfFlag =1;
 						}
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay16():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay16():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay17():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay17():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay18():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay18():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay19():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay19():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay20():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay20():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay21():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay21():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay22():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay22():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay23():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay23():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay24():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay24():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay25():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay25():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay26():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay26():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay27():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay27():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay28():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay28():0);
 						if (day > 28) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay29():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay29():0);
 						}
 						if (day > 29) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay30():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay30():0);
 						}
 						if (day > 30) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay31():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), dataSecondHalfFlag==1?userData.getDay31():0);
 						}
 						node.put("approver1Name",userData.getSecondHalfApproverOne()== null ?
 								userData.getProject().getProjectOwner().getLastName()+" "+userData.getProject().getProjectOwner().getFirstName()
@@ -10244,74 +10182,74 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("financeName","");
 						ObjectNode hourDataResponse = objectMapper.createObjectNode();
 						if (day == 15) {
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							node.put("period",Constants.Finance.TASKTRACK_FIRSTHALF_PERIOD_STATUS);
 
 						} else {
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							if (day > 28) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							if (day > 29) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							if (day > 30) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							node.put("period",Constants.Finance.TASKTRACK_SECONDHALF_PERIOD_STATUS);
 						}
@@ -10333,12 +10271,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long userId = requestdata.get("userId").asLong();
 		Long loggedId = requestdata.get("loggedId").asLong();
 		Long approverId = requestdata.get("approverId").asLong();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = df.parse(requestdata.get("endDate").asText());
-		Date startDate = df.parse(requestdata.get("startDate").asText());
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Date curDate = formatter.parse(formatter.format(date));
+		Date endDate = DateUtil.dateFormat1.parse(requestdata.get("endDate").asText());
+		Date startDate = DateUtil.dateFormat1.parse(requestdata.get("startDate").asText());
 
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		TaskTrackWeeklyApproval userDataWeekly = null;
@@ -10528,22 +10462,23 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	
 	/**
 	 * @author @Renjith
+     * @return
 	 */
 	@Override
-	public List<Submission> getSubmissionHistory(submissionHistoryRequestDTO requestdata) throws  Exception {
-		SimpleDateFormat sdfdm = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
+	public List<JSONObject> getSubmissionHistory(submissionHistoryRequestDTO requestdata) throws  Exception {
 		ProjectModel p = projectService.getProjectDetails(requestdata.getProjectId());
 		int wfType = p.getWorkflowType();
 		List<JSONObject> objNodeList = null;
-		List<Submission> subList = null;
+		List<JSONObject> subList =  new ArrayList<JSONObject>();
 		if (wfType == 3 || wfType == 4)
 			objNodeList = auditRepository.getWeeklySubmission(requestdata.getLoggedId());
 
 		if (objNodeList!=null  && !objNodeList.isEmpty() && (wfType == 3 || wfType == 4) ) {
-			subList = new ArrayList<Submission>();
+			subList = new ArrayList<JSONObject>();
 			for (JSONObject objNode : objNodeList) {
-				WeeklySubmissionDto weekly = new WeeklySubmissionDto();
-				weekly.setUsrInAction((String) objNode.get("user"));
+//				WeeklySubmissionDto weekly = new WeeklySubmissionDto();
+				JSONObject weeklyData = new JSONObject();
+				/*weekly.setUsrInAction((String) objNode.get("user"));
 				weekly.setTrxDate((String) sdfdm.format(objNode.get("trx_date")));
 				weekly.setRole((String) objNode.get("role"));
 				weekly.setStatus((String) objNode.get("status"));
@@ -10553,17 +10488,39 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				weekly.setD4((Double) objNode.get("day4"));
 				weekly.setD5((Double) objNode.get("day5"));
 				weekly.setD6((Double) objNode.get("day6"));
-				weekly.setD7((Double) objNode.get("day7"));
-				subList.add(weekly);
+				weekly.setD7((Double) objNode.get("day7"));*/
+                weeklyData.put("user",(String) objNode.get("user"));
+                weeklyData.put("trx_date",(String) DateUtil.dateFormat4.format(objNode.get("trx_date")));
+                weeklyData.put("role",(String) objNode.get("role"));
+                weeklyData.put("status",(String) objNode.get("status"));
+				Date startDate = DateUtil.dateFormat1.parse(objNode.get("start_date").toString());
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(startDate);
+				weeklyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day1")==null?0d:objNode.get("day1"));
+				cal.add(Calendar.DATE, 1);
+				weeklyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day2")==null?0d:objNode.get("day2"));
+				cal.add(Calendar.DATE, 1);
+				weeklyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day3")==null?0d:objNode.get("day3"));
+				cal.add(Calendar.DATE, 1);
+				weeklyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day4")==null?0d:objNode.get("day4"));
+				cal.add(Calendar.DATE, 1);
+				weeklyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day5")==null?0d:objNode.get("day5"));
+				cal.add(Calendar.DATE, 1);
+				weeklyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day6")==null?0d:objNode.get("day6"));
+				cal.add(Calendar.DATE, 1);
+				weeklyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day7")==null?0d:objNode.get("day7"));
+
+				subList.add(weeklyData);
 			}
 		}
 		if (wfType == 1 || wfType == 2)
 		objNodeList = auditRepository.getmonthlySubmission(requestdata.getLoggedId(),requestdata.getPeriod());
 		if (objNodeList!=null  && !objNodeList.isEmpty() && (wfType == 1 || wfType == 2) ) {
-			subList = new ArrayList<Submission>();
+			subList = new ArrayList<JSONObject>();
 			for (JSONObject objNode : objNodeList) {
-				MonthlySubmissionDto monthly = new MonthlySubmissionDto();
-				monthly.setTrxDate((String) sdfdm.format(objNode.get("trx_date")));
+//				MonthlySubmissionDto monthly = new MonthlySubmissionDto();
+                JSONObject monthlyData = new JSONObject();
+				/*monthly.setTrxDate((String) sdfdm.format(objNode.get("trx_date")));
 				monthly.setUsrInAction((String) objNode.get("user"));
 				monthly.setRole((String) objNode.get("role"));
 				monthly.setD1((Double) objNode.get("day1"));
@@ -10587,8 +10544,92 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 				}
 				else{
 					monthly.setStatus((String) objNode.get("firstHalfStatus"));
+				}*/
+
+				monthlyData.put("trx_date",(String) DateUtil.dateFormat4.format(objNode.get("trx_date")));
+				monthlyData.put("user",(String) objNode.get("user"));
+				monthlyData.put("role",(String) objNode.get("role"));
+				if(requestdata.getPeriod().equals(Constants.UserStatus.TASKTRACK_FIRSTHALF_PERIOD_STATUS)) {
+					monthlyData.put("status",(String) objNode.get("firstHalfStatus"));
+					Date startDate = DateUtil.dateFormat1.parse(objNode.get("year")+"-"+objNode.get("month")+"-"+"01");
+					Calendar cal = Calendar.getInstance();
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day1")==null?0d:objNode.get("day1"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day2")==null?0d:objNode.get("day2"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day3")==null?0d:objNode.get("day3"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day4")==null?0d:objNode.get("day4"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day5")==null?0d:objNode.get("day5"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day6")==null?0d:objNode.get("day6"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day7")==null?0d:objNode.get("day7"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day8")==null?0d:objNode.get("day8"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day9")==null?0d:objNode.get("day9"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day10")==null?0d:objNode.get("day10"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day11")==null?0d:objNode.get("day11"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day12")==null?0d:objNode.get("day12"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day13")==null?0d:objNode.get("day13"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day14")==null?0d:objNode.get("day14"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day15")==null?0d:objNode.get("day15"));
 				}
-				subList.add(monthly);
+				else{
+					monthlyData.put("status",(String) objNode.get("secondHalfStatus"));
+					Date startDate = DateUtil.dateFormat1.parse(objNode.get("year")+"-"+objNode.get("month")+"-"+"16");
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(startDate);
+					int lastday = cal.getActualMaximum(Calendar.DATE);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day16")==null?0:objNode.get("day16"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day17")==null?0d:objNode.get("day17"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day18")==null?0d:objNode.get("day18"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day19")==null?0d:objNode.get("day19"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day20")==null?0d:objNode.get("day20"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day21")==null?0d:objNode.get("day21"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day22")==null?0d:objNode.get("day22"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day23")==null?0d:objNode.get("day23"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day24")==null?0d:objNode.get("day24"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day25")==null?0d:objNode.get("day25"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day26")==null?0d:objNode.get("day26"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day27")==null?0d:objNode.get("day27"));
+					cal.add(Calendar.DATE, 1);
+					monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()),(Double) objNode.get("day28")==null?0d:objNode.get("day28"));
+					if(lastday>28) {
+						cal.add(Calendar.DATE, 1);
+						monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()), (Double) objNode.get("day29")==null?0d:objNode.get("day29"));
+					}
+					if(lastday>29) {
+						cal.add(Calendar.DATE, 1);
+						monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()), (Double) objNode.get("day30")==null?0d:objNode.get("day30"));
+					}
+					if(lastday>30) {
+
+						cal.add(Calendar.DATE, 1);
+						monthlyData.put(DateUtil.dateFormat1.format(cal.getTime()), (Double) objNode.get("day31")==null?0d:objNode.get("day31"));
+					}
+				}
+
+				subList.add(monthlyData);
 			}
 
 			
@@ -10604,12 +10645,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long userId = requestdata.getUserId();
 		Long loggedId = requestdata.getLoggedId();
 		Long approverId = requestdata.getApproverId();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = df.parse(requestdata.getEndDate());
-		Date startDate = df.parse(requestdata.getStartDate());
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Date curDate = formatter.parse(formatter.format(date));
+		Date endDate = DateUtil.dateFormat1.parse(requestdata.getEndDate());
+		Date startDate = DateUtil.dateFormat1.parse(requestdata.getStartDate());
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		if (projectData != null) {
 			// weekly approval
@@ -10674,11 +10711,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = approverOneDto.getProjectId();
 		List<Long> userIds = approverOneDto.getUserId();
 		Long approverId = approverOneDto.getApproverId();
-		Date endDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverOneDto.getEndDate()));
-		Date startDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverOneDto.getStartDate()));
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Date curDate = formatter.parse(formatter.format(date));
+		Date endDate = DateUtil.dateFormat1.parse(DateUtil.dateFormat1.format(approverOneDto.getEndDate()));
+		Date startDate = DateUtil.dateFormat1.parse(DateUtil.dateFormat1.format(approverOneDto.getStartDate()));
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		if (projectData != null) {
 			for(Long userId : userIds) {
@@ -10740,12 +10774,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = approverTwoDto.getProjectId();
 		List<Long> userIds = approverTwoDto.getUserId();
 		Long approverId = approverTwoDto.getApproverId();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = df.parse(df.format(approverTwoDto.getEndDate()));
-		Date startDate = df.parse(df.format(approverTwoDto.getStartDate()));
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Date curDate = formatter.parse(formatter.format(date));
+		Date endDate = DateUtil.dateFormat1.parse(DateUtil.dateFormat1.format(approverTwoDto.getEndDate()));
+		Date startDate = DateUtil.dateFormat1.parse(DateUtil.dateFormat1.format(approverTwoDto.getStartDate()));
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		if (projectData != null) {
 			for(Long userId : userIds) {
@@ -10800,17 +10830,15 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	@Override
 	@Transactional
 	public void rejectionFromApprover(ObjectNode requestdata, Integer approverLevel) throws NullPointerException,Exception {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date endDate = df.parse(requestdata.get("endDate").asText());
-		Date startDate = df.parse(requestdata.get("startDate").asText());
+		Date endDate = DateUtil.dateFormat1.parse(requestdata.get("endDate").asText());
+		Date startDate = DateUtil.dateFormat1.parse(requestdata.get("startDate").asText());
 		Long projectId = requestdata.get("projectId").asLong();
 		Long userId = requestdata.get("userId").asLong();
 		Long approverId = requestdata.get("approverId").asLong();
 		String remark = requestdata.get("remark").asText();
-		
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 		Date date = new Date();
-		Date curDate = formatter.parse(formatter.format(date));
+		Date curDate = DateUtil.dateFormat2.parse(DateUtil.dateFormat2.format(date));
 		ProjectModel project = projectRepository.getProjectDetails(projectId);
 		if (project == null)
 			throw new Exception("Invalid project.");
@@ -10947,8 +10975,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	}
 	
 	if (wfType == 1 || wfType == 2){
-		SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
-		//startDate=simpleDateFormat.parse(startDate.toString());
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(startDate);
 		Optional<TasktrackApprovalSemiMonthly>  monthlySubOpt=taskTrackApprovalSemiMonthlyRepository.findById(Id);
@@ -10981,9 +11007,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		ObjectNode node = objectMapper.createObjectNode();
 		Long projectId = requestdata.getProjectId();
 		Long userId = requestdata.getUserId();
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = df.parse(requestdata.getStartDate());
-		Date endDate = df.parse(requestdata.getEndDate());
+		Date startDate = DateUtil.dateFormat1.parse(requestdata.getStartDate());
+		Date endDate = DateUtil.dateFormat1.parse(requestdata.getEndDate());
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		Boolean submitButtonStatus = Boolean.FALSE;
 		Boolean rejectButtonStatus = Boolean.FALSE;
@@ -11028,19 +11053,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					ObjectNode hourDataResponse = objectMapper.createObjectNode();
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(startDate);
-					hourDataResponse.put(df.format(cal.getTime()),flag != 0 ? userData.getDay1():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()),flag != 0 ? userData.getDay1():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay2():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay2():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()),flag != 0 ? userData.getDay3():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()),flag != 0 ? userData.getDay3():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay4():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay4():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay5():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay5():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay6():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay6():0);
 					cal.add(Calendar.DATE, 1);
-					hourDataResponse.put(df.format(cal.getTime()),flag != 0 ?userData.getDay7():0);
+					hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()),flag != 0 ?userData.getDay7():0);
 					hourDataNode.add(hourDataResponse);
 					node.set("hourData", hourDataNode);
 					node.put("approver1Name",userData.getApprover1() == null ? projectApprover1 :(userData.getApprover1().getLastName() + " "+ userData.getApprover1().getFirstName()));
@@ -11062,19 +11087,19 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						ObjectNode hourDataResponse = objectMapper.createObjectNode();
 						Calendar cal = Calendar.getInstance();
 						cal.setTime(startDate);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), 0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 						hourDataNode.add(hourDataResponse);
 						node.set("hourData", hourDataNode);
 						node.put("submitButtonStatus", false);
@@ -11119,35 +11144,35 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 					ObjectNode hourDataResponse = objectMapper.createObjectNode();
 					if (day == 15) {
 						
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay1():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay1():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay2():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay2():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()),flag != 0 ? userData.getDay3():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()),flag != 0 ? userData.getDay3():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay4():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay4():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay5():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay5():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay6():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay6():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay7():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay7():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay8():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay8():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay9():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay9():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay10():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay10():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay11():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay11():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay12():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay12():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay13():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay13():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay14():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay14():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay15():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay15():0);
 
 						if(userData.getFirstHalfFinalStatus().equals(Constants.FinalStatus.TASKTRACK_FORWARDED_TO_LEVEL2)){
 
@@ -11162,42 +11187,42 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("period",Constants.UserStatus.TASKTRACK_FIRSTHALF_PERIOD_STATUS);
 					} else {
 						
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay16():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay16():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay17():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay17():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay18():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay18():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay19():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay19():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay20():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay20():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay21():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay21():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay22():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay22():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay23():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay23():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay24():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay24():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay25():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay25():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay26():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay26():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay27():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay27():0);
 						cal.add(Calendar.DATE, 1);
-						hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay28():0);
+						hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay28():0);
 						if (day > 28) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay29():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay29():0);
 						}
 						if (day > 29) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), flag != 0 ? userData.getDay30():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0 ? userData.getDay30():0);
 						}
 						if (day > 30) {
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), flag != 0  ? userData.getDay31():0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), flag != 0  ? userData.getDay31():0);
 						}
 						
 						if(userData.getSecondHalfFinalStatus().equals(Constants.FinalStatus.TASKTRACK_FORWARDED_TO_LEVEL2)){
@@ -11224,74 +11249,74 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 						node.put("loggedId", "");
 						ObjectNode hourDataResponse = objectMapper.createObjectNode();
 						if (day == 15) {
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							node.put("period",Constants.UserStatus.TASKTRACK_FIRSTHALF_PERIOD_STATUS);
 
 						} else {
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							cal.add(Calendar.DATE, 1);
-							hourDataResponse.put(df.format(cal.getTime()), 0);
+							hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							if (day > 28) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							if (day > 29) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							if (day > 30) {
 								cal.add(Calendar.DATE, 1);
-								hourDataResponse.put(df.format(cal.getTime()), 0);
+								hourDataResponse.put(DateUtil.dateFormat1.format(cal.getTime()), 0);
 							}
 							node.put("period",Constants.UserStatus.TASKTRACK_SECONDHALF_PERIOD_STATUS);
 						}
@@ -11314,11 +11339,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = approverTwoDto.getProjectId();
 		List<Long> userIds = approverTwoDto.getUserId();
 		Long approverId = approverTwoDto.getApproverId();
-		Date endDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverTwoDto.getEndDate()));
-		Date startDate = Constants.dateFormat.parse(Constants.dateFormat.format(approverTwoDto.getStartDate()));
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		Date curDate = formatter.parse(formatter.format(date));
+		Date endDate = DateUtil.dateFormat1.parse(DateUtil.dateFormat1.format(approverTwoDto.getEndDate()));
+		Date startDate = DateUtil.dateFormat1.parse(DateUtil.dateFormat1.format(approverTwoDto.getStartDate()));
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
 		if (projectData != null) {
 			for(Long userId : userIds) {
