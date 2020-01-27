@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +26,12 @@ import com.EMS.dto.DateBasedTaskDto;
 import com.EMS.dto.DateBasedTaskTrackDto;
 import com.EMS.dto.SaveSemiMonthlyWithTasksRequestDto;
 import com.EMS.dto.SemiMonthlyTaskTrackRequestDTO;
+import com.EMS.dto.SemiMonthlyTaskTrackWithTaskResponse;
+import com.EMS.dto.SemiMonthlyTaskTrackWithTaskResponseDTO;
 import com.EMS.dto.SubmitSemiMonthlyTasktrackWithTaskRequestDto;
+import com.EMS.dto.TasktrackDto;
+import com.EMS.dto.WeeklyTaskTrackWithTaskResponse;
+import com.EMS.dto.WeeklyTaskTrackWithTaskResponseDTO;
 import com.EMS.model.AllocationModel;
 import com.EMS.model.ProjectModel;
 import com.EMS.model.StatusResponse;
@@ -33,18 +39,19 @@ import com.EMS.model.Tasktrack;
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.model.UserModel;
 import com.EMS.repository.AllocationRepository;
-import com.EMS.repository.TaskTrackApprovalSemiMonthlyRepository;
+import com.EMS.repository.SemiMonthlyTasktrackRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
 import com.EMS.utility.DateUtil;
+import com.EMS.utility.ProjectAllocationUtil;
 import com.EMS.utility.Constants.UserStatus;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
-public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprovalSemiMonthlyService {
+public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackService {
 
 	@Autowired
-	private TaskTrackApprovalSemiMonthlyRepository semiMonthlyRepository;
+	private SemiMonthlyTasktrackRepository semiMonthlyRepository;
 
 	@Autowired
 	UserService userservice;
@@ -697,8 +704,12 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public StatusResponse getSemiMonthlyTasktrackWithTask(SemiMonthlyTaskTrackRequestDTO requestData) throws Exception {
+	public SemiMonthlyTaskTrackWithTaskResponseDTO getSemiMonthlyTasktrackWithTask(SemiMonthlyTaskTrackRequestDTO requestData) throws Exception {
 		StatusResponse response = new StatusResponse();
+		
+		SemiMonthlyTaskTrackWithTaskResponseDTO semiMonthlyTaskTrackWithTaskResponseDTO = new SemiMonthlyTaskTrackWithTaskResponseDTO();
+		List<SemiMonthlyTaskTrackWithTaskResponse> taskTrackResponseList = new ArrayList<>();
+	
 		Long userId = null;
 		Long projectId = null;
 		Date startDate = null;
@@ -718,6 +729,13 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			endDate = sdf.parse(requestData.getEndDate());
 		}
 
+		Boolean isFirstHalf = Boolean.TRUE;
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startDate);
+		if (cal.get(Calendar.DAY_OF_MONTH) > 15) {
+			isFirstHalf = Boolean.FALSE;
+		} 
+		
 		List<Tasktrack> tasktrackList = tasktrackRepository
 				.findByUserUserIdAndProjectProjectIdAndDateBetweenOrderByDateAsc(userId, projectId, startDate, endDate);
 
@@ -729,83 +747,119 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 
 		TasktrackApprovalSemiMonthly tasktrackStatus = semiMonthlyRepository
 				.findByUserUserIdAndProjectProjectIdInAndMonthEqualsAndYearEquals(userId, projectId, month, year);
-
-		JSONArray taskList = new JSONArray();
-		HashSet<Date> trackdate = new HashSet<Date>();
-		for (Tasktrack tasktrackOuter : tasktrackList) {
-			if (!trackdate.contains(tasktrackOuter.getDate())) {
-				trackdate.add(tasktrackOuter.getDate());
-				String intialDate = sdf.format(tasktrackOuter.getDate());
-				JSONArray dateTaskArray = new JSONArray();
-				JSONObject dateTaskObj = new JSONObject();
-				for (Tasktrack tasktrack : tasktrackList) {
-					JSONObject taskObj = new JSONObject();
-					taskObj.put("hour", tasktrack.getHours());
-					taskObj.put("task_type", tasktrack.getTask().getTaskName());
-					taskObj.put("description", tasktrack.getDescription());
-					if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
-						dateTaskArray.add(taskObj);
-					}
-				}
-				dateTaskObj.put(sdf.format(tasktrackOuter.getDate()), dateTaskArray);
-				taskList.add(dateTaskObj);
-			}
-		}
-
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("taskList", taskList);
-
-		String[] taskStatusArray = {
-				Constants.TaskTrackSemiMonthlyApproval.TASKTRACK_SEMI_MONTHLY_APPROVER_STATUS_APPROVED };
-		List<String> taskStatusList = Arrays.asList(taskStatusArray);
-
-		List<AllocationModel> userProjAllocations = allocationRepository.findByUserUserIdAndProjectProjectId(userId,
-				projectId);
-
-		if (tasktrackStatus != null) {
 		
-			List<Date> dateRanges = DateUtil.getDatesBetweenTwo(startDate, endDate);
-			dateRanges.add(endDate);
+		List<String> projectDateList = ProjectAllocationUtil.findAllocatedDates(allocationRepository, startDate, endDate, sdf, userId, projectId);
 
-			int date = c.get(Calendar.DATE);
-			if (date == 1) {
-				if (taskStatusList.contains(tasktrackStatus.getFirstHalfFinalStatus())) {
-					for (AllocationModel al : userProjAllocations) {
-						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
-						if (allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
-							jsonObject.put("enabled", false);
-						}
+		HashSet<Date> trackdate = new HashSet<Date>();
+
+		List<Date> reqDateRange = DateUtil.getDatesBetweenTwo(startDate, endDate);
+		
+		
+		if (!tasktrackList.isEmpty()) {
+
+			for (Date date : reqDateRange) {
+				if (projectDateList.contains(sdf.format(date))) {
+
+					for (Tasktrack tasktrackOuter : tasktrackList) {
+						if (!trackdate.contains(tasktrackOuter.getDate())) {							
+							trackdate.add(tasktrackOuter.getDate());
+							String intialDate = sdf.format(tasktrackOuter.getDate());
+							SemiMonthlyTaskTrackWithTaskResponse taskTrackResponse = new SemiMonthlyTaskTrackWithTaskResponse();
+							List<TasktrackDto> tasktrackDtoList = new ArrayList<>();
+							Double finalHour = 0.0;
+							for (Tasktrack tasktrack : tasktrackList) {
+								TasktrackDto tasktrackDto = new TasktrackDto();
+								tasktrackDto.setHour(tasktrack.getHours());
+								tasktrackDto.setTaskType(
+										null != tasktrack.getTask() ? tasktrack.getTask().getTaskName() : "");
+								tasktrackDto.setTaskTypeId(
+										null != tasktrack.getTask() ? tasktrack.getTask().getId() : null);
+								tasktrackDto.setDescription(tasktrack.getDescription());
+								if (intialDate.equals(sdf.format(tasktrack.getDate()))) {
+									finalHour += tasktrack.getHours();
+									tasktrackDtoList.add(tasktrackDto);
+								}
+							}
+							taskTrackResponse.setTaskList(tasktrackDtoList);
+							taskTrackResponse.setEnabled(true);
+							taskTrackResponse.setDate(sdf.format(tasktrackOuter.getDate()));
+							taskTrackResponse.setFinalHour(finalHour);
+							taskTrackResponseList.add(taskTrackResponse);
+						}						
 					}
+										
+					semiMonthlyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
 
+				} else {
+					SemiMonthlyTaskTrackWithTaskResponse taskTrackResponse = new SemiMonthlyTaskTrackWithTaskResponse();
+					taskTrackResponse.setTaskList(new ArrayList<>());
+					taskTrackResponse.setEnabled(false);
+					taskTrackResponse.setDate(sdf.format(date));
+					taskTrackResponse.setFinalHour(0.0);
+					taskTrackResponseList.add(taskTrackResponse);
+					semiMonthlyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
 				}
-
-				else {
-					jsonObject.put("enabled", true);
-				}
-
-			} else if (date == 16) {
-				if (taskStatusList.contains(tasktrackStatus.getSecondHalfFinalStatus())) {
-					for (AllocationModel al : userProjAllocations) {
-						List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
-						if (allocatedDates.contains(startDate) || allocatedDates.contains(endDate)) {
-							jsonObject.put("enabled", false);
-						}
-					}
-
-				}
-
-				else {
-					jsonObject.put("enabled", true);
-				}
+				
 			}
-
+			semiMonthlyTaskTrackWithTaskResponseDTO.setTasktrackList(addMissingDate(reqDateRange,taskTrackResponseList));
 		}
+		
+		if (tasktrackList.isEmpty()) {
 
-		response.setData(jsonObject);
-		response.setStatus(Constants.SUCCESS);
-		response.setStatusCode(Constants.SUCCESS_CODE);
+			for (Date reqDate : reqDateRange) {
 
-		return response;
+				SemiMonthlyTaskTrackWithTaskResponse taskTrackResponse = new SemiMonthlyTaskTrackWithTaskResponse();
+				taskTrackResponse.setTaskList(new ArrayList<>());
+				taskTrackResponse.setDate(sdf.format(reqDate));
+				taskTrackResponse.setFinalHour(0.0);
+				taskTrackResponse.setEnabled(projectDateList.contains(sdf.format(reqDate)) ? true : false);
+				taskTrackResponseList.add(taskTrackResponse);
+				semiMonthlyTaskTrackWithTaskResponseDTO.setTasktrackList(taskTrackResponseList);
+			}
+		}
+		 
+		if (tasktrackStatus != null) {
+			String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
+			List<String> taskStatusList = Arrays.asList(taskStatusArray);
+
+			
+			if(isFirstHalf) {
+				semiMonthlyTaskTrackWithTaskResponseDTO.setEnabled(taskStatusList.contains(tasktrackStatus.getFirstHalfFinalStatus()) ? Boolean.FALSE : Boolean.TRUE);
+			}else
+				semiMonthlyTaskTrackWithTaskResponseDTO.setEnabled(taskStatusList.contains(tasktrackStatus.getSecondHalfFinalStatus()) ? Boolean.FALSE : Boolean.TRUE);
+
+			ProjectModel projectModel = projectservice.findById(projectId);
+
+			String	approver1 = null != projectModel.getProjectOwner() ? projectModel.getProjectOwner().getFirstName() + " "
+						+ projectModel.getProjectOwner().getLastName() : "";
+
+
+
+			JSONObject approver1Obj = new JSONObject();
+			approver1Obj.put("approver", approver1);
+
+			semiMonthlyTaskTrackWithTaskResponseDTO.setApprover1(approver1Obj);
+
+				String approver2 = null != projectModel.getOnsite_lead() ? projectModel.getOnsite_lead().getFirstName() + " "
+						+ projectModel.getOnsite_lead().getLastName() : "";
+
+
+			JSONObject approver2Obj = new JSONObject();
+			approver2Obj.put("approver", approver2);
+
+			semiMonthlyTaskTrackWithTaskResponseDTO.setApprover2(approver2Obj);
+
+			JSONObject user = new JSONObject();
+			semiMonthlyTaskTrackWithTaskResponseDTO.setUser(user);
+		}
+		
+		
+		return semiMonthlyTaskTrackWithTaskResponseDTO;
+		
+		
+		
+		
+
 	}
 	
 	
@@ -1259,6 +1313,36 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 		response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Submitted successfully");
 
 		return response;
+	}
+	
+	private List<SemiMonthlyTaskTrackWithTaskResponse> addMissingDate(List<Date> reqDateRange,
+			List<SemiMonthlyTaskTrackWithTaskResponse> taskTrackResponseList) {
+
+		reqDateRange.forEach(date -> {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String requestDate = sdf.format(date);
+			boolean isDatePresent = false;
+			for (SemiMonthlyTaskTrackWithTaskResponse taskTrackResp : taskTrackResponseList) {
+				if (taskTrackResp.getDate().equals(requestDate)) {
+					isDatePresent = true;
+					 break;
+				}
+				
+			}
+			if(!isDatePresent) {
+				SemiMonthlyTaskTrackWithTaskResponse taskTrackWithTaskResponse = new SemiMonthlyTaskTrackWithTaskResponse();
+				taskTrackWithTaskResponse.setDate(sdf.format(date));
+				taskTrackWithTaskResponse.setEnabled(true);
+				taskTrackWithTaskResponse.setFinalHour(0.0);
+				taskTrackWithTaskResponse.setTaskList(new ArrayList<>());	
+				taskTrackResponseList.add(taskTrackWithTaskResponse);
+			}
+
+		});
+		Collections.sort(taskTrackResponseList, (s1, s2) -> s1.getDate().
+	            compareTo(s2.getDate()));
+
+		return taskTrackResponseList;
 	}
     
 	/*

@@ -74,7 +74,7 @@ import com.EMS.repository.ProjectRepository;
 import com.EMS.repository.TaskRepository;
 import com.EMS.repository.TaskTrackApprovalFinalRepository;
 import com.EMS.repository.TaskTrackApprovalLevel2Repository;
-import com.EMS.repository.TaskTrackApprovalSemiMonthlyRepository;
+import com.EMS.repository.SemiMonthlyTasktrackRepository;
 import com.EMS.repository.TaskTrackCorrectionRepository;
 import com.EMS.repository.TaskTrackDaySubmissionRepository;
 import com.EMS.repository.TaskTrackFinalJPARepository;
@@ -98,7 +98,7 @@ import freemarker.template.Template;
 public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 
 	@Autowired
-	TaskTrackApprovalSemiMonthlyRepository taskTrackApprovalSemiMonthlyRepository;
+	SemiMonthlyTasktrackRepository taskTrackApprovalSemiMonthlyRepository;
 
 	@Autowired
 	TaskTrackWeeklyApprovalRepository taskTrackWeeklyApprovalRepository;
