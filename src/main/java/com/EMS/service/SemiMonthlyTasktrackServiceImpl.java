@@ -843,7 +843,6 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 		
 	}
 	
-	
 
 	@Override
 	public StatusResponse saveSemiMonthlyTasktrackWithTask(SaveSemiMonthlyWithTasksRequestDto dateBasedTaskTrackDto)
