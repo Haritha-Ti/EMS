@@ -10530,7 +10530,8 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 	 * @author @Renjith
 	 */
 	@Override
-	public List<Submission> getSubmissionHistory(submissionHistoryRequestDTO requestdata) {
+	public List<Submission> getSubmissionHistory(submissionHistoryRequestDTO requestdata) throws  Exception {
+		SimpleDateFormat sdfdm = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
 		ProjectModel p = projectService.getProjectDetails(requestdata.getProjectId());
 		int wfType = p.getWorkflowType();
 		List<JSONObject> objNodeList = null;
@@ -10543,7 +10544,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			for (JSONObject objNode : objNodeList) {
 				WeeklySubmissionDto weekly = new WeeklySubmissionDto();
 				weekly.setUsrInAction((String) objNode.get("user"));
-				weekly.setTrxDate((Date) objNode.get("trx_date"));
+				weekly.setTrxDate((String) sdfdm.format(objNode.get("trx_date")));
 				weekly.setRole((String) objNode.get("role"));
 				weekly.setStatus((String) objNode.get("status"));
 				weekly.setD1((Double) objNode.get("day1"));
@@ -10562,7 +10563,7 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 			subList = new ArrayList<Submission>();
 			for (JSONObject objNode : objNodeList) {
 				MonthlySubmissionDto monthly = new MonthlySubmissionDto();
-				monthly.setTrxDate((Date) objNode.get("trx_date"));
+				monthly.setTrxDate((String) sdfdm.format(objNode.get("trx_date")));
 				monthly.setUsrInAction((String) objNode.get("user"));
 				monthly.setRole((String) objNode.get("role"));
 				monthly.setD1((Double) objNode.get("day1"));
@@ -10981,7 +10982,6 @@ public class TasktrackApprovalServiceImpl implements TasktrackApprovalService {
 		Long projectId = requestdata.getProjectId();
 		Long userId = requestdata.getUserId();
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat sdfdm = new SimpleDateFormat("MMM dd yyyy HH:mm:ss");
 		Date startDate = df.parse(requestdata.getStartDate());
 		Date endDate = df.parse(requestdata.getEndDate());
 		ProjectModel projectData = projectRepository.getProjectDetails(projectId);
