@@ -338,8 +338,8 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			semiMonthlyApproval = new TasktrackApprovalSemiMonthly();
 		}
 		if((isFirstHalf && semiMonthlyApproval.getFirstHalfFinalStatus() != null 
-				&& (semiMonthlyApproval.getFirstHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)
-				|| semiMonthlyApproval.getFirstHalfFinalStatus().endsWith(Constants.Finance.TASKTRACK_APPROVED)))
+				&& (semiMonthlyApproval.getFirstHalfFinalStatus().equals(Constants.FinalStatus.TASKTRACK_FORWARDED_TO_LEVEL2)
+				|| semiMonthlyApproval.getFirstHalfFinalStatus().endsWith(Constants.FinalStatus.TASKTRACK_APPROVED)))
 				
 				|| (!isFirstHalf && semiMonthlyApproval.getSecondHalfFinalStatus() != null
 				&& (semiMonthlyApproval.getSecondHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)
@@ -530,15 +530,17 @@ public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprova
 			}
 		}
 
-		if (!isFirstHalf) {
+		if (isFirstHalf) {
 
 			semiMonthlyApproval
 					.setFirstHalfFinalStatus(isSave ? UserStatus.TASKTRACK_SAVED : UserStatus.TASKTRACK_SUBMIT);
+			semiMonthlyApproval.setSubmissionPeriod(UserStatus.TASKTRACK_FIRSTHALF_PERIOD_STATUS);
 
 		} else {
 
 			semiMonthlyApproval
 					.setSecondHalfFinalStatus(isSave ? UserStatus.TASKTRACK_SAVED : UserStatus.TASKTRACK_SUBMIT);
+			semiMonthlyApproval.setSecondHalfFinalStatus(UserStatus.TASKTRACK_SECONDHALF_PERIOD_STATUS);
 		}
 	
 		if (requeststatus == 0) {
