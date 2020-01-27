@@ -832,6 +832,8 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 			approver2Obj.put("approver", approver2);
 
 			semiMonthlyTaskTrackWithTaskResponseDTO.setApprover2(approver2Obj);
+			semiMonthlyTaskTrackWithTaskResponseDTO.setFirstHalfFinalStatus(tasktrackStatus.getFirstHalfFinalStatus());
+			semiMonthlyTaskTrackWithTaskResponseDTO.setSecondHalfFinalStatus(tasktrackStatus.getSecondHalfFinalStatus());
 
 //			JSONObject user = new JSONObject();
 //			semiMonthlyTaskTrackWithTaskResponseDTO.setUser(user);

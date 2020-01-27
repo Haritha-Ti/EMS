@@ -12,6 +12,8 @@ public class SemiMonthlyTaskTrackWithTaskResponseDTO {
 	private JSONObject approver2;
 //	private JSONObject user;
 	private List<SemiMonthlyTaskTrackWithTaskResponse> tasktrackList;
+	private String firstHalfFinalStatus;
+	private String secondHalfFinalStatus;
 	
 	
 	public Boolean getEnabled() {
@@ -44,6 +46,19 @@ public class SemiMonthlyTaskTrackWithTaskResponseDTO {
 	public void setTasktrackList(List<SemiMonthlyTaskTrackWithTaskResponse> tasktrackList) {
 		this.tasktrackList = tasktrackList;
 	}
+	public String getFirstHalfFinalStatus() {
+		return firstHalfFinalStatus;
+	}
+	public void setFirstHalfFinalStatus(String firstHalfFinalStatus) {
+		this.firstHalfFinalStatus = firstHalfFinalStatus;
+	}
+	public String getSecondHalfFinalStatus() {
+		return secondHalfFinalStatus;
+	}
+	public void setSecondHalfFinalStatus(String secondHalfFinalStatus) {
+		this.secondHalfFinalStatus = secondHalfFinalStatus;
+	}
+
 	
 	
 }
