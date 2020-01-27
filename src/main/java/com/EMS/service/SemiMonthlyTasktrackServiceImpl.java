@@ -39,7 +39,7 @@ import com.EMS.model.Tasktrack;
 import com.EMS.model.TasktrackApprovalSemiMonthly;
 import com.EMS.model.UserModel;
 import com.EMS.repository.AllocationRepository;
-import com.EMS.repository.TaskTrackApprovalSemiMonthlyRepository;
+import com.EMS.repository.SemiMonthlyTasktrackRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
 import com.EMS.utility.DateUtil;
@@ -48,10 +48,10 @@ import com.EMS.utility.Constants.UserStatus;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
-public class TasktrackApprovalSemiMonthlyServiceImpl implements TasktrackApprovalSemiMonthlyService {
+public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackService {
 
 	@Autowired
-	private TaskTrackApprovalSemiMonthlyRepository semiMonthlyRepository;
+	private SemiMonthlyTasktrackRepository semiMonthlyRepository;
 
 	@Autowired
 	UserService userservice;

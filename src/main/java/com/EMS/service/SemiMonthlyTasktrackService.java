@@ -13,7 +13,7 @@ import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.StatusResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public interface TasktrackApprovalSemiMonthlyService {
+public interface SemiMonthlyTasktrackService {
 	
 	
 	StatusResponse getSemiMonthlyTasktrack(SemiMonthlyTaskTrackRequestDTO requestData) throws Exception;

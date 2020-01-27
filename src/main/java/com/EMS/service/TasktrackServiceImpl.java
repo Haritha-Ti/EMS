@@ -86,7 +86,7 @@ public class TasktrackServiceImpl implements TasktrackService {
 	TaskTrackCorrectionRepository taskTrackCorrectionRepository;
 
 	@Autowired
-	TaskTrackApprovalSemiMonthlyRepository taskTrackApprovalSemiMonthlyRepository;
+	SemiMonthlyTasktrackRepository taskTrackApprovalSemiMonthlyRepository;
 
 	@Autowired
 	TaskTrackWeeklyApprovalRepository taskTrackWeeklyApprovalRepository;
