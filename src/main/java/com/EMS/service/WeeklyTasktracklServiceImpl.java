@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -34,7 +36,7 @@ import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
 import com.EMS.repository.AllocationRepository;
-import com.EMS.repository.TaskWeeklyApprovalRepository;
+import com.EMS.repository.WeeklyTasktrackRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
 import com.EMS.utility.Constants.UserStatus;
@@ -44,10 +46,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 @SuppressWarnings({ "rawtypes", "unchecked"})
 @Service
-public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService {
+public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 
 	@Autowired
-	private TaskWeeklyApprovalRepository taskWeeklyApprovalRepository;
+	private WeeklyTasktrackRepository taskWeeklyApprovalRepository;
 
 	@Autowired
 	private UserService userservice;
@@ -644,10 +646,8 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			}
 
 		});
-		Collections.sort(taskTrackResponseList, (s1, s2) -> s1.getDate().
-	            compareTo(s2.getDate()));
-
-		return taskTrackResponseList;
+		return taskTrackResponseList.stream().sorted((s1, s2) -> s1.getDate().
+	            compareTo(s2.getDate())).collect(Collectors.toList());
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.EMS.model.TaskTrackWeeklyApproval;
 
-public interface TaskWeeklyApprovalRepository extends JpaRepository<TaskTrackWeeklyApproval, Long> {
+public interface WeeklyTasktrackRepository extends JpaRepository<TaskTrackWeeklyApproval, Long> {
 	
 	@Query(value = "SELECT ta FROM TaskTrackWeeklyApproval AS ta WHERE ta.startDate = :startDate and ta.endDate = :endDate and ta.user.userId = :userId and ta.project.projectId = :projectId")
 	public TaskTrackWeeklyApproval getWeeklyTasktrack(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("userId") long userId, @Param("projectId") long projectId) throws Exception;
