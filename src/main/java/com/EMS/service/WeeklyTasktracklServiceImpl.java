@@ -34,7 +34,7 @@ import com.EMS.model.TaskTrackWeeklyApproval;
 import com.EMS.model.Tasktrack;
 import com.EMS.model.UserModel;
 import com.EMS.repository.AllocationRepository;
-import com.EMS.repository.TaskWeeklyApprovalRepository;
+import com.EMS.repository.WeeklyTasktrackRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
 import com.EMS.utility.Constants.UserStatus;
@@ -44,10 +44,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 @SuppressWarnings({ "rawtypes", "unchecked"})
 @Service
-public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService {
+public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 
 	@Autowired
-	private TaskWeeklyApprovalRepository taskWeeklyApprovalRepository;
+	private WeeklyTasktrackRepository taskWeeklyApprovalRepository;
 
 	@Autowired
 	private UserService userservice;
