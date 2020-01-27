@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.EMS.dto.DateBasedTaskTrackDto;
+import com.EMS.dto.SaveSemiMonthlyWithTasksRequestDto;
 import com.EMS.dto.SemiMonthlyTaskTrackRequestDTO;
+import com.EMS.dto.SubmitSemiMonthlyTasktrackWithTaskRequestDto;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
 import com.EMS.model.StatusResponse;
@@ -46,7 +48,6 @@ public class TasktrackApprovalSemiMonthlyController {
 			ExceptionResponse exceptionResponse = new ExceptionResponse(501, e.getMessage(), new Date());
 			response = new StatusResponse(Constants.FAILURE, Constants.ERROR_CODE, exceptionResponse);
 		}
-
 		return response;
 	}
 
@@ -72,13 +73,7 @@ public class TasktrackApprovalSemiMonthlyController {
 		return response;
 	}
 
-	/*
-	 * To save timetrack semimonthly
-	 * 
-	 * @Author Haritha version 1.0
-	 * 
-	 * @Since 09-01-2020
-	 */
+	
 
 	@PostMapping(value = "/saveSemiMonthlyTaskTrackApproval")
 	public StatusResponse saveSemiMonthlyTaskTrackApproval(@RequestBody JSONObject requestData) {
@@ -94,13 +89,7 @@ public class TasktrackApprovalSemiMonthlyController {
 		return response;
 	}
 
-	/*
-	 * To submit timetrack semimonthly with daily tasks
-	 * 
-	 * @Author Haritha version 1.0
-	 * 
-	 * @Since 10-01-2020
-	 */
+
 
 	@PostMapping(value = "/submitTasktrackSemimonthly")
 	public StatusResponse submitTasktrackSemimonthly(@RequestBody JsonNode requestData, HttpServletResponse httpstatus) {
@@ -139,10 +128,11 @@ public class TasktrackApprovalSemiMonthlyController {
 	
 	/**
 	 * @author Renjith
+	 * version 1.1
 	 * */
 	
 	@PostMapping(value = "/submitSemiMonthlyWithTasks")
-	public StatusResponse submitSemiMonthlyWithTasks(@RequestBody DateBasedTaskTrackDto dateBasedTaskTrackDto) {
+	public StatusResponse submitSemiMonthlyWithTasks(@RequestBody SubmitSemiMonthlyTasktrackWithTaskRequestDto dateBasedTaskTrackDto) {
 		
 		StatusResponse response = new StatusResponse();
 		try {
@@ -157,8 +147,14 @@ public class TasktrackApprovalSemiMonthlyController {
 		return response;
 	}
 	
+	/*
+	 * 	@Author Haritha
+	 * 	version 1.1
+	 * 	
+	 */
+	
 	@PostMapping(value = "/saveSemiMonthlyWithTasks")
-	public StatusResponse saveSemiMonthlyWithTasks(@RequestBody DateBasedTaskTrackDto dateBasedTaskTrackDto) {
+	public StatusResponse saveSemiMonthlyWithTasks(@RequestBody SaveSemiMonthlyWithTasksRequestDto dateBasedTaskTrackDto) {
 		
 		StatusResponse response = new StatusResponse();
 		try {

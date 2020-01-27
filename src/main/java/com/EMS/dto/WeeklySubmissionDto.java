@@ -23,42 +23,13 @@ public class WeeklySubmissionDto implements Submission {
 
 	private Double d7 ;
 
-	private String approverOne;
+	private String role;
 
-	private String approverTwo;
+	private String status;
 
-	private String finance;
+	private String comments;
 
-	private String trxn;
-
-	private String approverOneStatus;
-
-	private String approverTwoStatus;
-
-	private String financeStatus;
-
-	private String usrStatus;
-
-	private String user;
-
-	private Date approverOneSubmtdDate;
-
-	private Date approverTwoSubmtdDate;
-
-	private Date financeSubmtdDate;
-
-	private Date usrSubmtdDate;
-
-	private Date startDate;
-
-	private Date endDate;
-
-	private Date rejectnDate;
-
-	private String project;
-
-	
-    public Date getTrxDate() {
+	public Date getTrxDate() {
 		return trxDate;
 	}
 
@@ -130,142 +101,33 @@ public class WeeklySubmissionDto implements Submission {
 		this.d7 = d7;
 	}
 
-	public String getApproverOne() {
-		return approverOne;
+	public String getRole() {
+		return role;
 	}
 
-	public void setApproverOne(String approverOne) {
-		this.approverOne = approverOne;
+	public void setRole(String role) {
+		this.role = role;
 	}
 
-	public String getApproverTwo() {
-		return approverTwo;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setApproverTwo(String approverTwo) {
-		this.approverTwo = approverTwo;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
-	public String getFinance() {
-		return finance;
+	public String getComments() {
+		return comments;
 	}
 
-	public void setFinance(String finance) {
-		this.finance = finance;
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
 
-	public String getTrxn() {
-		return trxn;
-	}
 
-	public void setTrxn(String trxn) {
-		this.trxn = trxn;
-	}
 
-	public String getApproverOneStatus() {
-		return approverOneStatus;
-	}
 
-	public void setApproverOneStatus(String approverOneStatus) {
-		this.approverOneStatus = approverOneStatus;
-	}
-
-	public String getApproverTwoStatus() {
-		return approverTwoStatus;
-	}
-
-	public void setApproverTwoStatus(String approverTwoStatus) {
-		this.approverTwoStatus = approverTwoStatus;
-	}
-
-	public String getFinanceStatus() {
-		return financeStatus;
-	}
-
-	public void setFinanceStatus(String financeStatus) {
-		this.financeStatus = financeStatus;
-	}
-
-	public String getUsrStatus() {
-		return usrStatus;
-	}
-
-	public void setUsrStatus(String usrStatus) {
-		this.usrStatus = usrStatus;
-	}
-
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
-
-	public Date getApproverOneSubmtdDate() {
-		return approverOneSubmtdDate;
-	}
-
-	public void setApproverOneSubmtdDate(Date approverOneSubmtdDate) {
-		this.approverOneSubmtdDate = approverOneSubmtdDate;
-	}
-
-	public Date getApproverTwoSubmtdDate() {
-		return approverTwoSubmtdDate;
-	}
-
-	public void setApproverTwoSubmtdDate(Date approverTwoSubmtdDate) {
-		this.approverTwoSubmtdDate = approverTwoSubmtdDate;
-	}
-
-	public Date getFinanceSubmtdDate() {
-		return financeSubmtdDate;
-	}
-
-	public void setFinanceSubmtdDate(Date financeSubmtdDate) {
-		this.financeSubmtdDate = financeSubmtdDate;
-	}
-
-	public Date getUsrSubmtdDate() {
-		return usrSubmtdDate;
-	}
-
-	public void setUsrSubmtdDate(Date usrSubmtdDate) {
-		this.usrSubmtdDate = usrSubmtdDate;
-	}
-
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-
-	public Date getRejectnDate() {
-		return rejectnDate;
-	}
-
-	public void setRejectnDate(Date rejectnDate) {
-		this.rejectnDate = rejectnDate;
-	}
-
-	public String getProject() {
-		return project;
-	}
-
-	public void setProject(String project) {
-		this.project = project;
-	}
-	
 	
 
 }

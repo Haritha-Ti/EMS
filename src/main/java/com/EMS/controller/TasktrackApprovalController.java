@@ -8,6 +8,7 @@ import com.EMS.dto.ApproverOneDto;
 import com.EMS.dto.ApproverTwoDto;
 import com.EMS.dto.ReopenSubmissionDto;
 
+import com.EMS.dto.submissionHistoryRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -292,4 +293,18 @@ public class TasktrackApprovalController {
 
 			return response;
 		}
+	//nisha
+	@PostMapping(value = "/submissionHistory")
+	public StatusResponse getSubmissionHistory(@RequestBody submissionHistoryRequestDTO requestdata, HttpServletResponse httpstatus) {
+		StatusResponse response = new StatusResponse<>();
+		try {
+			response=new StatusResponse(Constants.SUCCESS,httpstatus.getStatus(),tasktrackApprovalService.getSubmissionHistory(requestdata));
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			response = new StatusResponse(Constants.FAILURE,Constants.ERROR_CODE,"");
+		}
+		return response;
+	}
 }

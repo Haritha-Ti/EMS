@@ -37,6 +37,7 @@ import com.EMS.repository.AllocationRepository;
 import com.EMS.repository.TaskWeeklyApprovalRepository;
 import com.EMS.repository.TasktrackRepository;
 import com.EMS.utility.Constants;
+import com.EMS.utility.Constants.UserStatus;
 import com.EMS.utility.DateUtil;
 import com.EMS.utility.ProjectAllocationUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,7 +62,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 	private AllocationRepository allocationRepository;
 
 	@Autowired
-	TasktrackService tasktrackService;
+	private TasktrackService tasktrackService;
 	
 	@Override
 	public StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException, Exception {
@@ -181,9 +182,6 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 			indx++;
 		}
 
-		weeklyApproval.setUserSubmittedDate(new Date());
-
-		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 		weeklyApproval.setTimetrackFinalStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
 
 		if (requeststatus == 0) {
@@ -307,7 +305,6 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		} else {
 			requeststatus = 1;
 		}
-		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);
 		weeklyApproval.setTimetrackFinalStatus(Constants.UserStatus.TASKTRACK_SAVED);
 
 		if (requeststatus == 0) {
@@ -359,22 +356,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		
 		ProjectModel projectModel = projectservice.findById(projectId);
 
-		if (weeklyTasktrack != null) {
-			String approver1Status = weeklyTasktrack.getApprover1Status();
-			String approver2Status = weeklyTasktrack.getApprover2Status();
-			String financeStatus = weeklyTasktrack.getFinanceStatus();
-
-			if (taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
-					|| taskStatusList.contains(financeStatus)) {
-				response.put("enabled", false);
-			} else {
-				response.put("enabled", true);
-			}
-
+		if (weeklyTasktrack != null) {			
 			
-			String approver1 = weeklyTasktrack.getApprover1Id() != null
-					? weeklyTasktrack.getApprover1Id().getFirstName() + " "
-							+ weeklyTasktrack.getApprover1Id().getLastName()
+			response.put("enabled", taskStatusList.contains(weeklyTasktrack.getTimetrackFinalStatus())? Boolean.TRUE : Boolean.FALSE);
+		
+			String approver1 = weeklyTasktrack.getApprover1() != null
+					? weeklyTasktrack.getApprover1().getFirstName() + " "
+							+ weeklyTasktrack.getApprover1().getLastName()
 					: "";
 
 			if (null == approver1 || approver1.equals("")) {
@@ -383,23 +371,14 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			}
 
-			Date approver1SubmittedDate = weeklyTasktrack.getApprover1SubmittedDate();
-
 			JSONObject approver1Obj = new JSONObject();
 			approver1Obj.put("approver", approver1);
-
-			if (null != approver1SubmittedDate) {
-				approver1Obj.put("date", sdf.format(approver1SubmittedDate));
-			} else {
-				approver1Obj.put("date", "");
-			}
-
-			approver1Obj.put("status", approver1Status);
+	
 			response.put("approver1", approver1Obj);
 
-			String approver2 = weeklyTasktrack.getApprover2Id() != null
-					? weeklyTasktrack.getApprover2Id().getFirstName() + " "
-							+ weeklyTasktrack.getApprover2Id().getLastName()
+			String approver2 = weeklyTasktrack.getApprover2() != null
+					? weeklyTasktrack.getApprover2().getFirstName() + " "
+							+ weeklyTasktrack.getApprover2().getLastName()
 					: "";
 
 			if (null == approver2 || approver2.equals("")) {
@@ -408,23 +387,13 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			}
 
-			Date approver2SubmittedDate = weeklyTasktrack.getApprover2SubmittedDate();
 
 			JSONObject approver2Obj = new JSONObject();
 			approver2Obj.put("approver", approver2);
 
-			if (null != approver2SubmittedDate) {
-				approver2Obj.put("date", sdf.format(approver2SubmittedDate));
-			} else {
-				approver2Obj.put("date", "");
-			}
-
-			approver2Obj.put("status", approver2Status);
 			response.put("approver2", approver2Obj);
 
 			JSONObject user = new JSONObject();
-			user.put("status", weeklyTasktrack.getTimetrackStatus());
-			user.put("date", weeklyTasktrack.getUserSubmittedDate());
 			response.put("user", user);
 
 			JSONArray array = new JSONArray();
@@ -601,23 +570,17 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		}
 		 
 		if (tasktrackStatus != null) {
-
-			String approver1Status = tasktrackStatus.getApprover1Status();
-			String approver2Status = tasktrackStatus.getApprover2Status();
-			String financeStatus = tasktrackStatus.getFinanceStatus();
-
 			String[] taskStatusArray = { Constants.TaskTrackWeeklyApproval.TASKTRACK_WEEKLY_APPROVER_STATUS_APPROVED };
 			List<String> taskStatusList = Arrays.asList(taskStatusArray);
 
 			weeklyTaskTrackWithTaskResponseDTO
-					.setEnabled((taskStatusList.contains(approver1Status) || taskStatusList.contains(approver2Status)
-							|| taskStatusList.contains(financeStatus)) ? false : true);
+					.setEnabled(taskStatusList.contains(tasktrackStatus.getTimetrackFinalStatus()) ? Boolean.FALSE : Boolean.TRUE);
 
 			ProjectModel projectModel = projectservice.findById(projectId);
 
-			String approver1 = tasktrackStatus.getApprover1Id() != null
-					? tasktrackStatus.getApprover1Id().getFirstName() + " "
-							+ tasktrackStatus.getApprover1Id().getLastName()
+			String approver1 = tasktrackStatus.getApprover1() != null
+					? tasktrackStatus.getApprover1().getFirstName() + " "
+							+ tasktrackStatus.getApprover1().getLastName()
 					: "";
 
 			if (null == approver1 || approver1.equals("")) {
@@ -626,23 +589,15 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			}
 
-			Date approver1SubmittedDate = tasktrackStatus.getApprover1SubmittedDate();
 
 			JSONObject approver1Obj = new JSONObject();
 			approver1Obj.put("approver", approver1);
 
-			if (null != approver1SubmittedDate) {
-				approver1Obj.put("date", sdf.format(approver1SubmittedDate));
-			} else {
-				approver1Obj.put("date", "");
-			}
-
-			approver1Obj.put("status", approver1Status);
 			weeklyTaskTrackWithTaskResponseDTO.setApprover1(approver1Obj);
 
-			String approver2 = tasktrackStatus.getApprover1Id() != null
-					? tasktrackStatus.getApprover1Id().getFirstName() + " "
-							+ tasktrackStatus.getApprover1Id().getLastName()
+			String approver2 = tasktrackStatus.getApprover1() != null
+					? tasktrackStatus.getApprover1().getFirstName() + " "
+							+ tasktrackStatus.getApprover1().getLastName()
 					: "";
 
 			if (null == approver2 || approver2.equals("")) {
@@ -651,23 +606,12 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 			}
 
-			Date approver2SubmittedDate = tasktrackStatus.getApprover2SubmittedDate();
-
 			JSONObject approver2Obj = new JSONObject();
 			approver2Obj.put("approver", approver2);
 
-			if (null != approver2SubmittedDate) {
-				approver2Obj.put("date", sdf.format(approver2SubmittedDate));
-			} else {
-				approver2Obj.put("date", "");
-			}
-
-			approver2Obj.put("status", approver2Status);
 			weeklyTaskTrackWithTaskResponseDTO.setApprover2(approver2Obj);
 
 			JSONObject user = new JSONObject();
-			user.put("status", tasktrackStatus.getTimetrackStatus());
-			user.put("date", tasktrackStatus.getUserSubmittedDate());
 			weeklyTaskTrackWithTaskResponseDTO.setUser(user);
 		}
 		
@@ -752,9 +696,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
-		weeklytasksubmission.setUserSubmittedDate(new Date());
-		weeklytasksubmission.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
-
+	
 		Map<Object, Object> result = dailyhours.entrySet().stream().sorted(Map.Entry.comparingByKey())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
 						LinkedHashMap::new));
@@ -846,8 +788,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		weeklyApproval.setEndDate(endDate);
 		weeklyApproval.setProject(projectModel);
 		weeklyApproval.setUser(userModel);
-		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SAVED);
-		weeklyApproval.setTimetrackFinalStatus(weeklyApproval.getTimetrackStatus());
+		weeklyApproval.setTimetrackFinalStatus(UserStatus.TASKTRACK_SAVED);
 		taskWeeklyApprovalRepository.save(weeklyApproval);
 		
 		response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Insertion completed");
@@ -966,8 +907,7 @@ public class TaskWeeklyApprovalServiceImpl implements TaskWeeklyApprovalService 
 		weeklyApproval.setEndDate(endDate);
 		weeklyApproval.setProject(projectModel);
 		weeklyApproval.setUser(userModel);
-		weeklyApproval.setTimetrackStatus(Constants.UserStatus.TASKTRACK_SUBMIT);
-		weeklyApproval.setTimetrackFinalStatus(weeklyApproval.getTimetrackStatus());
+		weeklyApproval.setTimetrackFinalStatus(UserStatus.TASKTRACK_SUBMIT);
 
 		taskWeeklyApprovalRepository.save(weeklyApproval);
 		response = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Submitted successfully");
