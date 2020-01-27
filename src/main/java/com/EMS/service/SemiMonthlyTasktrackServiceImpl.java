@@ -137,23 +137,18 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 				response.put("enabled", taskStatusList.contains(approvalSemiMonthly.getFirstHalfFinalStatus())? Boolean.TRUE: Boolean.FALSE);
 			
 				String firstHalfApprover1 = null;
-				Date firstHalfSubmittedDate = null;
 				if (approvalSemiMonthly.getFirstHalfApproverOne() != null) {
 					firstHalfApprover1 =  approvalSemiMonthly.getFirstHalfApproverOne().getFirstName() + " "
 									+ approvalSemiMonthly.getFirstHalfApproverOne().getLastName();
 					
 				}
-				
-			
-				
+								
 				if (null == firstHalfApprover1 || firstHalfApprover1.equals("")) {
 					firstHalfApprover1 = null !=  projectModel.getProjectOwner()? projectModel.getProjectOwner().getFirstName() + " "
 							+ projectModel.getProjectOwner().getLastName() :"";
-
 				}
 				
 				String firstHalfApprover2 = null;
-				Date firstHalfSubmittedDate2 = null;
 				if (approvalSemiMonthly.getFirstHalfApproverTwo() != null) {
 					firstHalfApprover2 =  approvalSemiMonthly.getFirstHalfApproverTwo().getFirstName() + " "
 									+ approvalSemiMonthly.getFirstHalfApproverTwo().getLastName();
@@ -167,13 +162,11 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 				}
 				
 				JSONObject approver1 = new JSONObject();
-				approver1.put("approver", firstHalfApprover1);
-				approver1.put("date", (firstHalfSubmittedDate != null) ? sdf.format(firstHalfSubmittedDate) : "");			
+				approver1.put("approver", firstHalfApprover1);		
 				response.put("approver1", approver1);
 				
 				JSONObject approver2 = new JSONObject();
 				approver2.put("approver", firstHalfApprover2);
-				approver2.put("date", (firstHalfSubmittedDate2 != null) ? sdf.format(firstHalfSubmittedDate2) : "");
 				response.put("approver2", approver2);
 				
 				JSONObject user = new JSONObject();
@@ -210,7 +203,6 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 					response.put("enabled", taskStatusList.contains(approvalSemiMonthly.getSecondHalfFinalStatus())? Boolean.TRUE : Boolean.FALSE);
 				
 					String secondHalfApprover1 = null;
-					Date secondHalfSubmittedDate = null;
 					if (approvalSemiMonthly.getSecondHalfApproverOne() != null) {
 						secondHalfApprover1 =  approvalSemiMonthly.getSecondHalfApproverOne().getFirstName() + " "
 										+ approvalSemiMonthly.getSecondHalfApproverOne().getLastName();
@@ -225,7 +217,6 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 					}
 					
 					String secondHalfApprover2 = null;
-					Date secondHalfSubmittedDate2 = null;
 					if (approvalSemiMonthly.getSecondHalfApproverTwo() != null) {
 						secondHalfApprover2 =  approvalSemiMonthly.getSecondHalfApproverTwo().getFirstName() + " "
 										+ approvalSemiMonthly.getSecondHalfApproverTwo().getLastName();
@@ -240,12 +231,10 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 					
 					JSONObject approver1 = new JSONObject();
 					approver1.put("approver", secondHalfApprover1);
-					approver1.put("date", (secondHalfSubmittedDate != null) ? sdf.format(secondHalfSubmittedDate) : "");
 					response.put("approver1", approver1);
 					
 					JSONObject approver2 = new JSONObject();
-					approver2.put("approver", secondHalfApprover2);
-					approver2.put("date", (secondHalfSubmittedDate2 != null) ? sdf.format(secondHalfSubmittedDate2) : "");					
+					approver2.put("approver", secondHalfApprover2);				
 					response.put("approver2", approver2);
 					
 					JSONObject user = new JSONObject();
@@ -273,8 +262,6 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 
 			JSONObject approver1Obj = new JSONObject();
 			approver1Obj.put("approver", approver1);
-			approver1Obj.put("date", "");
-			approver1Obj.put("status", Constants.Approver1.TASKTRACK_OPEN);
 			response.put("approver1",approver1Obj);
 
 			String approver2 = null != projectModel.getOnsite_lead()
@@ -283,8 +270,6 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 
 			JSONObject approver2Obj = new JSONObject();
 			approver2Obj.put("approver", approver2);
-			approver2Obj.put("date", "");
-			approver2Obj.put("status", Constants.Approver2.TASKTRACK_OPEN);
 			response.put("approver2", approver2Obj);
 			
 			response.put("taskList", array);
@@ -351,7 +336,7 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 				|| (!isFirstHalf && semiMonthlyApproval.getSecondHalfFinalStatus() != null
 				&& (semiMonthlyApproval.getSecondHalfFinalStatus().equals(Constants.Approver1.TASKTRACK_FORWARDED_TO_LEVEL2)
 				|| semiMonthlyApproval.getSecondHalfFinalStatus().endsWith(Constants.Finance.TASKTRACK_APPROVED)))) {
-			return new StatusResponse("success", 200, "Timetrack has already been approved.");
+			return new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, "Timetrack has already been approved.");
 		}
 		semiMonthlyApproval.setYear(year);
 		semiMonthlyApproval.setMonth(month);

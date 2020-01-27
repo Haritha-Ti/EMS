@@ -105,20 +105,18 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 		weeklyApproval.setEndDate(endDate);
 		UserModel userInfo = userservice.getUserdetailsbyId(userId);
 
-		if (!userInfo.equals(null)) {
+		if (userInfo != null) {
 			weeklyApproval.setUser(userInfo);
 		}
 
 		Long projectId = Long.parseLong(requestData.get("projectId").toString());
 		ProjectModel projectInfo = projectservice.findById(projectId);
 
-		if (!projectInfo.equals(null)) {
+		if (projectInfo != null) {
 			weeklyApproval.setProject(projectInfo);
 		} else {
 			requeststatus = 1;
 		}
-
-		
 
 		if ((!weeklyApproval.getDay1().equals(null)) && (!weeklyApproval.getDay2().equals(null))
 				&& (!weeklyApproval.getDay3().equals(null)) && (!weeklyApproval.getDay4().equals(null))
@@ -625,7 +623,7 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 	private List<WeeklyTaskTrackWithTaskResponse> addMissingDate(List<Date> reqDateRange,
 			List<WeeklyTaskTrackWithTaskResponse> taskTrackResponseList) {
 
-		reqDateRange.forEach(date -> {
+		reqDateRange.stream().forEach(date -> {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String requestDate = sdf.format(date);
 			boolean isDatePresent = false;
@@ -634,20 +632,19 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 					isDatePresent = true;
 					 break;
 				}
-				
+
 			}
 			if(!isDatePresent) {
 				WeeklyTaskTrackWithTaskResponse taskTrackWithTaskResponse = new WeeklyTaskTrackWithTaskResponse();
 				taskTrackWithTaskResponse.setDate(sdf.format(date));
 				taskTrackWithTaskResponse.setEnabled(true);
 				taskTrackWithTaskResponse.setFinalHour(0.0);
-				taskTrackWithTaskResponse.setTaskList(new ArrayList<>());	
+				taskTrackWithTaskResponse.setTaskList(new ArrayList<>());
 				taskTrackResponseList.add(taskTrackWithTaskResponse);
 			}
 
 		});
-		return taskTrackResponseList.stream().sorted((s1, s2) -> s1.getDate().
-	            compareTo(s2.getDate())).collect(Collectors.toList());
+		return taskTrackResponseList.stream().sorted(Comparator.comparing(WeeklyTaskTrackWithTaskResponse::getDate)).collect(Collectors.toList());
 	}
 
 	@Override
