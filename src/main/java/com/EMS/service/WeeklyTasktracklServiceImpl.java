@@ -392,10 +392,7 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 			approver2Obj.put("approver", approver2);
 
 			response.put("approver2", approver2Obj);
-
-			JSONObject user = new JSONObject();
-			response.put("user", user);
-
+			
 			JSONArray array = new JSONArray();
 			for (AllocationModel al : userProjAllocations) {
 				List<Date> allocatedDates = DateUtil.getDatesBetweenTwo(al.getStartDate(), al.getEndDate());
@@ -419,19 +416,13 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 				}
 			}
 			response.put("taskList", array);
-			JSONObject user = new JSONObject();
-			user.put("status", Constants.UserStatus.TASKTRACK_OPEN);
-			user.put("date", "");
-			response.put("user", user);
-
+			
 			String approver1 = null != projectModel.getProjectOwner()
 					? projectModel.getProjectOwner().getFirstName() + " " + projectModel.getProjectOwner().getLastName()
 					: "";
 
 			JSONObject approver1Obj = new JSONObject();
 			approver1Obj.put("approver", approver1);
-			approver1Obj.put("date", "");
-			approver1Obj.put("status", Constants.Approver1.TASKTRACK_OPEN);
 			response.put("approver1", approver1Obj);
 
 			String approver2 = null != projectModel.getOnsite_lead()
@@ -440,8 +431,6 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 
 			JSONObject approver2Obj = new JSONObject();
 			approver2Obj.put("approver", approver2);
-			approver2Obj.put("date", "");
-			approver2Obj.put("status", Constants.Approver2.TASKTRACK_OPEN);
 			response.put("approver2", approver2Obj);
 
 			response.put("enabled", true);
@@ -451,16 +440,6 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 	}
 
 	public JSONObject addHoursandDaytoArray(SimpleDateFormat sdf, List<Date> allocatedDates, Double hour, Date date) {
-		JSONObject response = new JSONObject();
-		JSONObject dayResponse = new JSONObject();
-		dayResponse.put("hour", hour);
-		dayResponse.put("enabled", allocatedDates.contains(date));
-		response.put(sdf.format(date), dayResponse);
-		return response;
-	}
-
-
-	public JSONObject addTaskAandDaytoArray(SimpleDateFormat sdf, List<Date> allocatedDates, Double hour, Date date) {
 		JSONObject response = new JSONObject();
 		JSONObject dayResponse = new JSONObject();
 		dayResponse.put("hour", hour);
@@ -611,8 +590,6 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 
 			weeklyTaskTrackWithTaskResponseDTO.setApprover2(approver2Obj);
 
-			JSONObject user = new JSONObject();
-			weeklyTaskTrackWithTaskResponseDTO.setUser(user);
 		}
 		
 		
