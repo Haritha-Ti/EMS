@@ -168,7 +168,7 @@ public interface TasktrackApprovalService {
 
     ObjectNode approveHoursFinance(ObjectNode requestdata) throws Exception;
 
-    public List<Submission>   getSubmissionHistory(submissionHistoryRequestDTO requestdata);
+    public List<Submission>   getSubmissionHistory(submissionHistoryRequestDTO requestdata) throws Exception;
 
     StatusResponse approveHoursLevel2(ApproveHoursRequest requestdata) throws Exception;
     
