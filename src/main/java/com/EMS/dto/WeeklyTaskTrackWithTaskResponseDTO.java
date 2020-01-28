@@ -9,6 +9,7 @@ public class WeeklyTaskTrackWithTaskResponseDTO {
 	private Boolean enabled;
 	private JSONObject approver1;
 	private JSONObject approver2;
+	private String finalStatus;
 	private List<WeeklyTaskTrackWithTaskResponse> tasktrackList;
 	
 	public Boolean getEnabled() {
@@ -41,6 +42,14 @@ public class WeeklyTaskTrackWithTaskResponseDTO {
 
 	public void setTasktrackList(List<WeeklyTaskTrackWithTaskResponse> tasktrackList) {
 		this.tasktrackList = tasktrackList;
+	}
+
+	public String getFinalStatus() {
+		return finalStatus;
+	}
+
+	public void setFinalStatus(String finalStatus) {
+		this.finalStatus = finalStatus;
 	}
 
 	
