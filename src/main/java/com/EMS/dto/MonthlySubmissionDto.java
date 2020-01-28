@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class MonthlySubmissionDto implements Submission {
 
-	private Date trxDate;
+	private String trxDate;
 
 	private String usrInAction;
 
@@ -47,11 +47,11 @@ public class MonthlySubmissionDto implements Submission {
 	private String comments;
 
 
-	public Date getTrxDate() {
+	public String getTrxDate() {
 		return trxDate;
 	}
 
-	public void setTrxDate(Date trxDate) {
+	public void setTrxDate(String trxDate) {
 		this.trxDate = trxDate;
 	}
 

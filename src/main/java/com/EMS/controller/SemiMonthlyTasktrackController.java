@@ -21,7 +21,7 @@ import com.EMS.dto.SubmitSemiMonthlyTasktrackWithTaskRequestDto;
 import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
 import com.EMS.model.StatusResponse;
-import com.EMS.service.TasktrackApprovalSemiMonthlyService;
+import com.EMS.service.SemiMonthlyTasktrackService;
 import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,10 +29,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RestController
 @RequestMapping(value = { "/tasktrack" })
-public class TasktrackApprovalSemiMonthlyController {
+public class SemiMonthlyTasktrackController {
 
 	@Autowired
-	private TasktrackApprovalSemiMonthlyService approvalSemiMonthlyService;
+	private SemiMonthlyTasktrackService approvalSemiMonthlyService;
 
 	@Autowired
 	ObjectMapper objectmapper;
@@ -113,7 +113,7 @@ public class TasktrackApprovalSemiMonthlyController {
 	public StatusResponse getSemiMonthlyTasktrackWithTask(@RequestBody SemiMonthlyTaskTrackRequestDTO requestData) {
 		StatusResponse response = new StatusResponse();
 		try {
-			response = approvalSemiMonthlyService.getSemiMonthlyTasktrackWithTask(requestData);
+			response = new StatusResponse(Constants.SUCCESS,Constants.SUCCESS_CODE,approvalSemiMonthlyService.getSemiMonthlyTasktrackWithTask(requestData));
 			System.out.println(response);
 		} catch (Exception e) {
 

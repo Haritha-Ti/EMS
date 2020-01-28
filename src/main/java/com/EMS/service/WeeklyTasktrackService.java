@@ -12,7 +12,7 @@ import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.StatusResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public interface TaskWeeklyApprovalService {
+public interface WeeklyTasktrackService {
 	
 	StatusResponse submitWeeklyApproval(JSONObject requestData) throws ParseException,Exception;
 

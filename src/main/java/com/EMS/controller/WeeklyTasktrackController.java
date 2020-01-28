@@ -17,7 +17,7 @@ import com.EMS.dto.WeeklyTaskTrackWithTaskRequestDTO;
 import com.EMS.dto.WeeklyTaskTrackWithoutTaskRequestDTO;
 import com.EMS.model.ExceptionResponse;
 import com.EMS.model.StatusResponse;
-import com.EMS.service.TaskWeeklyApprovalService;
+import com.EMS.service.WeeklyTasktrackService;
 import com.EMS.utility.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -25,10 +25,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @RestController
 @RequestMapping(value = { "/tasktrack" })
-public class TaskWeeklyApprovalController {
+public class WeeklyTasktrackController {
 
 	@Autowired
-	private TaskWeeklyApprovalService weeklyApprovalService;
+	private WeeklyTasktrackService weeklyApprovalService;
 
 	/*
 	 * To submit timetrack weekly base for approval
