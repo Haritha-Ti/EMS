@@ -8,6 +8,8 @@ public class submissionHistoryRequestDTO {
 
     private String period;
 
+    private long sessionId;
+
     public long getLoggedId() {
         return loggedId;
     }
@@ -30,5 +32,13 @@ public class submissionHistoryRequestDTO {
 
     public void setPeriod(String period) {
         this.period = period;
+    }
+
+    public long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(long sessionId) {
+        this.sessionId = sessionId;
     }
 }
