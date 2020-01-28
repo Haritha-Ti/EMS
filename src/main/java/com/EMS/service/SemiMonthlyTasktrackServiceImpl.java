@@ -726,7 +726,7 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 		Calendar c = Calendar.getInstance();
 		c.setTime(startDate);
 
-		int month = c.get(Calendar.MONTH);
+		int month = c.get(Calendar.MONTH)+1;
 		int year = c.get(Calendar.YEAR);
 
 		TasktrackApprovalSemiMonthly tasktrackStatus = semiMonthlyRepository
@@ -833,8 +833,8 @@ public class SemiMonthlyTasktrackServiceImpl implements SemiMonthlyTasktrackServ
 
 			semiMonthlyTaskTrackWithTaskResponseDTO.setApprover2(approver2Obj);
 
-			JSONObject user = new JSONObject();
-			semiMonthlyTaskTrackWithTaskResponseDTO.setUser(user);
+//			JSONObject user = new JSONObject();
+//			semiMonthlyTaskTrackWithTaskResponseDTO.setUser(user);
 		}
 		
 		return semiMonthlyTaskTrackWithTaskResponseDTO;

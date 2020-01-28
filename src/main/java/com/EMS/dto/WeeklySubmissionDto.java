@@ -46,7 +46,7 @@ public class WeeklySubmissionDto implements Submission {
 	}
 
 	public Double getD1() {
-		return d1;
+		return d1 == null ? 0d :d1;
 	}
 
 	public void setD1(Double d1) {
@@ -54,7 +54,7 @@ public class WeeklySubmissionDto implements Submission {
 	}
 
 	public Double getD2() {
-		return d2;
+		return d2 == null ? 0d :d2;
 	}
 
 	public void setD2(Double d2) {
@@ -62,7 +62,7 @@ public class WeeklySubmissionDto implements Submission {
 	}
 
 	public Double getD3() {
-		return d3;
+		return d3 == null ? 0d :d3;
 	}
 
 	public void setD3(Double d3) {
@@ -70,7 +70,7 @@ public class WeeklySubmissionDto implements Submission {
 	}
 
 	public Double getD4() {
-		return d4;
+		return d4 == null ? 0d :d4;
 	}
 
 	public void setD4(Double d4) {
@@ -78,7 +78,7 @@ public class WeeklySubmissionDto implements Submission {
 	}
 
 	public Double getD5() {
-		return d5;
+		return d5 == null ? 0d :d5;
 	}
 
 	public void setD5(Double d5) {
@@ -86,7 +86,7 @@ public class WeeklySubmissionDto implements Submission {
 	}
 
 	public Double getD6() {
-		return d6;
+		return d6 == null ? 0d :d6;
 	}
 
 	public void setD6(Double d6) {
@@ -94,7 +94,7 @@ public class WeeklySubmissionDto implements Submission {
 	}
 
 	public Double getD7() {
-		return d7;
+		return d7 == null ? 0d :d7;
 	}
 
 	public void setD7(Double d7) {

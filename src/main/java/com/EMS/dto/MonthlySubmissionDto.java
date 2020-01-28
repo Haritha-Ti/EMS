@@ -64,7 +64,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD1() {
-		return d1;
+		return d1 == null ? 0d : d1;
 	}
 
 	public void setD1(Double d1) {
@@ -72,7 +72,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD2() {
-		return d2;
+		return d2 == null ? 0d : d2;
 	}
 
 	public void setD2(Double d2) {
@@ -80,7 +80,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD3() {
-		return d3;
+		return d3 == null ? 0d : d3;
 	}
 
 	public void setD3(Double d3) {
@@ -88,7 +88,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD4() {
-		return d4;
+		return d4 == null ? 0d : d4;
 	}
 
 	public void setD4(Double d4) {
@@ -96,7 +96,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD5() {
-		return d5;
+		return d5 == null ? 0d : d5;
 	}
 
 	public void setD5(Double d5) {
@@ -104,7 +104,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD6() {
-		return d6;
+		return d6 == null ? 0d : d6;
 	}
 
 	public void setD6(Double d6) {
@@ -112,7 +112,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD7() {
-		return d7;
+		return d7 == null ? 0d : d7;
 	}
 
 	public void setD7(Double d7) {
@@ -120,7 +120,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD8() {
-		return d8;
+		return d8 == null ? 0d : d8;
 	}
 
 	public void setD8(Double d8) {
@@ -128,7 +128,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD9() {
-		return d9;
+		return d9 == null ? 0d : d9;
 	}
 
 	public void setD9(Double d9) {
@@ -136,7 +136,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD10() {
-		return d10;
+		return d10 == null ? 0d : d10;
 	}
 
 	public void setD10(Double d10) {
@@ -144,7 +144,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD11() {
-		return d11;
+		return d11 == null ? 0d : d11;
 	}
 
 	public void setD11(Double d11) {
@@ -152,7 +152,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD12() {
-		return d12;
+		return d12 == null ? 0d : d12;
 	}
 
 	public void setD12(Double d12) {
@@ -160,7 +160,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD13() {
-		return d13;
+		return d13 == null ? 0d :d13;
 	}
 
 	public void setD13(Double d13) {
@@ -168,7 +168,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD14() {
-		return d14;
+		return d14 == null ? 0d :d14;
 	}
 
 	public void setD14(Double d14) {
@@ -176,7 +176,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD15() {
-		return d15;
+		return d15 == null ? 0d :d15;
 	}
 
 	public void setD15(Double d15) {
@@ -184,7 +184,7 @@ public class MonthlySubmissionDto implements Submission {
 	}
 
 	public Double getD16() {
-		return d16;
+		return d16 == null ? 0d :d16;
 	}
 
 	public void setD16(Double d16) {
