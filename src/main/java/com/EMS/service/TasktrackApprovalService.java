@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 
 import com.EMS.dto.ApproverOneDto;
 import com.EMS.dto.ApproverTwoDto;
-import com.EMS.dto.Submission;
 import com.EMS.dto.tasktrackapproval2.request.ApproveHoursRequest;
 import com.EMS.dto.tasktrackapproval2.request.GetTaskTrackData;
 import com.EMS.model.StatusResponse;
@@ -168,7 +167,7 @@ public interface TasktrackApprovalService {
 
     ObjectNode approveHoursFinance(ObjectNode requestdata) throws Exception;
 
-    public List<Submission>   getSubmissionHistory(submissionHistoryRequestDTO requestdata) throws Exception;
+    public List<JSONObject>   getSubmissionHistory(submissionHistoryRequestDTO requestdata) throws Exception;
 
     StatusResponse approveHoursLevel2(ApproveHoursRequest requestdata) throws Exception;
     

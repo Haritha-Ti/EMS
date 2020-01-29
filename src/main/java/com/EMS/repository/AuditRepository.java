@@ -127,7 +127,7 @@ public List<JSONObject> getProjectAuditDataByProjectIdAndDateRange(Long projectI
 @Query(value="select sm.semi_monthly_id ,sm.trx_date , sm.day1 ,sm.day10 ,sm.day11 ,sm.day12 ,sm.day13 ,sm.day14 ,sm.day15 ,sm.day16 ,sm.day17, "
 	+ " sm.day18 ,sm.day19 ,sm.day2 ,sm.day20 ,sm.day21 ,sm.day22 ,sm.day23 ,sm.day24 ,sm.day25 ,sm.day26 ,sm.day27, "
 	+ " sm.day28 ,sm.day29 ,sm.day3 ,sm.day30 ,sm.day31 ,sm.day4 ,sm.day5 ,sm.day6 ,sm.day7 ,sm.day8 ,sm.day9 , "
-	+ " sm.first_half_final_status as firstHalfStatus,sm.second_half_final_status as  secondHalfStatus, "
+	+ " sm.first_half_final_status as firstHalfStatus,sm.second_half_final_status as  secondHalfStatus,sm.month,sm.year, "
 	+ " concat(ua.last_name,' ',ua.first_name) as user,"
 	+ " case "
 	+ " when sm.user_in_action = sm.user_user_id "
@@ -149,7 +149,7 @@ public List<JSONObject> getProjectAuditDataByProjectIdAndDateRange(Long projectI
 
 	@Query(value="SELECT wk.weekly_approval_id,wk.trx_date, wk.day1,wk.day2,wk.day3,wk.day4,wk.day5,wk.day6,wk.day7, "
 	+ " wk.timetrack_final_status as status,wk.user_in_action,wk.user_user_id, wk.approver1_user_id,wk.approver2_user_id, "
-	+ " wk.finance_user_user_id,ua.first_name as user, "
+	+ " wk.finance_user_user_id,ua.first_name as user,wk.start_date "
 	+ " case"
 	+ " when wk.user_in_action = wk.user_user_id "
 	+ " then 'Consultant' "

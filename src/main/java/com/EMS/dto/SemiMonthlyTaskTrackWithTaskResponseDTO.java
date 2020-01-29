@@ -10,8 +10,10 @@ public class SemiMonthlyTaskTrackWithTaskResponseDTO {
 	private Boolean enabled;
 	private JSONObject approver1;
 	private JSONObject approver2;
-	private JSONObject user;
+//	private JSONObject user;
 	private List<SemiMonthlyTaskTrackWithTaskResponse> tasktrackList;
+	private String firstHalfFinalStatus;
+	private String secondHalfFinalStatus;
 	
 	
 	public Boolean getEnabled() {
@@ -32,18 +34,31 @@ public class SemiMonthlyTaskTrackWithTaskResponseDTO {
 	public void setApprover2(JSONObject approver2) {
 		this.approver2 = approver2;
 	}
-	public JSONObject getUser() {
-		return user;
-	}
-	public void setUser(JSONObject user) {
-		this.user = user;
-	}
+//	public JSONObject getUser() {
+//		return user;
+//	}
+//	public void setUser(JSONObject user) {
+//		this.user = user;
+//	}
 	public List<SemiMonthlyTaskTrackWithTaskResponse> getTasktrackList() {
 		return tasktrackList;
 	}
 	public void setTasktrackList(List<SemiMonthlyTaskTrackWithTaskResponse> tasktrackList) {
 		this.tasktrackList = tasktrackList;
 	}
+	public String getFirstHalfFinalStatus() {
+		return firstHalfFinalStatus;
+	}
+	public void setFirstHalfFinalStatus(String firstHalfFinalStatus) {
+		this.firstHalfFinalStatus = firstHalfFinalStatus;
+	}
+	public String getSecondHalfFinalStatus() {
+		return secondHalfFinalStatus;
+	}
+	public void setSecondHalfFinalStatus(String secondHalfFinalStatus) {
+		this.secondHalfFinalStatus = secondHalfFinalStatus;
+	}
+
 	
 	
 }

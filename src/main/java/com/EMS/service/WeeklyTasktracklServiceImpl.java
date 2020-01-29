@@ -392,6 +392,7 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 			approver2Obj.put("approver", approver2);
 
 			response.put("approver2", approver2Obj);
+			response.put("finalStatus", weeklyTasktrack.getTimetrackFinalStatus());
 			
 			JSONArray array = new JSONArray();
 			for (AllocationModel al : userProjAllocations) {
@@ -434,6 +435,7 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 			response.put("approver2", approver2Obj);
 
 			response.put("enabled", true);
+			response.put("finalStatus", UserStatus.TASKTRACK_OPEN);
 			responseFinal = new StatusResponse(Constants.SUCCESS, Constants.SUCCESS_CODE, response);
 		}
 		return responseFinal;
@@ -589,7 +591,7 @@ public class WeeklyTasktracklServiceImpl implements WeeklyTasktrackService {
 			approver2Obj.put("approver", approver2);
 
 			weeklyTaskTrackWithTaskResponseDTO.setApprover2(approver2Obj);
-
+			weeklyTaskTrackWithTaskResponseDTO.setFinalStatus(tasktrackStatus.getTimetrackFinalStatus());
 		}
 		
 		
